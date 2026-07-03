@@ -15,9 +15,16 @@ import { fullTitle, type SEO } from '../lib/seo';
 
 interface Props {
   seo: SEO;
+  /**
+   * 'site' (default) renders the shared Footer (+ back-to-top).
+   * 'custom' skips it — the page supplies its own via the default slot.
+   * Only the homepage uses 'custom': its legacy footer is VISIBLY different
+   * (Tier-2 unification pending sign-off — see docs/legacy-style-audit.md §E2).
+   */
+  footer?: 'site' | 'custom';
 }
 
-const { seo } = Astro.props;
+const { seo, footer = 'site' } = Astro.props;
 const site = Astro.site!.href;
 const canonical = new URL(seo.path, site).href;
 const title = fullTitle(seo.title);
@@ -75,7 +82,7 @@ const title = fullTitle(seo.title);
       <slot />
     </main>
 
-    <Footer />
+    {footer === 'site' && <Footer />}
     <MegaNav />
 
     <slot name="body-end" />
