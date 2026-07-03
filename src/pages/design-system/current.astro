@@ -1,0 +1,737 @@
+---
+/**
+ * Design System — "What is used" · /design-system/current/
+ * The honest as-built inventory of the legacy static site, extracted from the
+ * full audit (docs/legacy-style-audit.md). Values here are HISTORICAL LITERALS
+ * — this doc documents the OLD values, so hardcoded hexes are correct here.
+ * Internal tooling docs (noindex).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Design System — What Is Used (Legacy Inventory)',
+  description:
+    'The honest as-built style inventory of the legacy Shriram site: ~150 colors grouped by near-duplicate cluster, the two-stylesheet fork, and the off-scale type / off-grid spacing / gradient recipes the token system resolves.',
+  path: '/design-system/current/',
+  noindex: true,
+};
+
+/* ---- Colour inventory (audit §A1). Literal legacy hexes — history. ---- */
+type Sw = { hex: string; count: string; use: string };
+
+const darkInks: Sw[] = [
+  { hex: '#404040', count: '73', use: 'FAQ answer text; card / check SVG icon strokes' },
+  { hex: '#333333', count: '69', use: 'nav-link ink, .btn-dark bg, FAQ question, hamburger, chevrons' },
+  { hex: '#1d1d1d', count: '25', use: 'hero radial-gradient end; overlay sidebar gradient' },
+  { hex: '#202318', count: '13', use: 'gold-button text (homepage), index SVG arrows' },
+  { hex: '#383838', count: '5', use: '.btn-ghost:hover bg' },
+  { hex: '#2b2b2b', count: '4', use: '.btn-ghost bg (duplicated per page)' },
+  { hex: '#1c1c16', count: '2', use: '--ink body text' },
+  { hex: '#231a06', count: '2', use: '--gold-ink' },
+  { hex: '#0a0b07', count: '2', use: 'homepage footer bg (--color-dark-900)' },
+  { hex: '#222320', count: '1', use: '.faq-side text' },
+  { hex: '#2c2c27', count: '1', use: '.foot-bottom border' },
+  { hex: '#15150f', count: '1', use: 'site footer bg' },
+  { hex: '#121212', count: '1', use: '--field-ink filled input' },
+];
+
+const olives: Sw[] = [
+  { hex: '#2e3914', count: '53', use: '--olive-title / --olive-ink; homepage button ink; olive icons' },
+  { hex: '#2d3813', count: '2', use: '--olive-head (1 RGB pt from #2e3914)' },
+  { hex: '#4f583b', count: '28', use: 'hero-gradient stop 1; sip invested colour' },
+  { hex: '#363a2c', count: '10', use: 'hero / sidebar gradient middle stop' },
+  { hex: '#3a3c39', count: '10', use: 'overlay headings, view-all' },
+  { hex: '#5c6151', count: '4', use: 'about muted text / dividers' },
+  { hex: '#26301a', count: '4', use: 'dark-card hover bg' },
+  { hex: '#1b2010', count: '3', use: '--olive-deep dark cards, .to-top' },
+  { hex: '#1a2010', count: '2', use: 'home --color-dark-800 (1 pt from #1b2010)' },
+  { hex: '#3a471b', count: '2', use: 'dark-card hover border' },
+  { hex: '#46463c', count: '2', use: '--ink-2' },
+  { hex: '#4d6710', count: '1', use: 'index accent' },
+];
+
+const sages: Sw[] = [
+  { hex: '#bfc1bc', count: '9', use: 'body text on dark cards' },
+  { hex: '#c9cac7', count: '6', use: 'hero lead, breadcrumbs' },
+  { hex: '#6b6f5e', count: '5', use: 'secondary text (partner / support)' },
+  { hex: '#838383', count: '4', use: '.btn-ghost border' },
+  { hex: '#8a8a8a', count: '4', use: '--field-label' },
+  { hex: '#595959', count: '3', use: '--ink-3 leads' },
+  { hex: '#666666', count: '3', use: 'home --color-muted' },
+  { hex: '#8d8e84', count: '3', use: 'doc-card hover stroke' },
+  { hex: '#9a9a8e', count: '3', use: '--muted-2 footer links' },
+  { hex: '#6d6e6a', count: '2', use: 'secondary text' },
+  { hex: '#73736a', count: '2', use: '--muted card body' },
+  { hex: '#8d9088', count: '2', use: '.appr .idx, breadcrumb sep' },
+  { hex: '#b4b4a6', count: '2', use: 'footer contact, socials' },
+  { hex: '#bcaf99', count: '2', use: 'overlay idle item' },
+  { hex: '#7c7c70', count: '1', use: 'footer copyright' },
+  { hex: '#b3b3aa', count: '1', use: 'disabled field ink' },
+  { hex: '#999999', count: '1', use: '--field-ph placeholder' },
+];
+
+const golds: Sw[] = [
+  { hex: '#f3b83f', count: '16', use: '--gold-btn / home --color-brand CTA bg' },
+  { hex: '#f2b83f', count: '14', use: '--gold-2 hero .g, about icons (1 pt from #f3b83f)' },
+  { hex: '#fff0d7', count: '10', use: 'warm chip / step-pill bg' },
+  { hex: '#ebdec6', count: '6', use: 'overlay gradient start, --pcard-border' },
+  { hex: '#d4982a', count: '3', use: 'home --color-brand-hover' },
+  { hex: '#e1dbc6', count: '3', use: 'home warm border' },
+  { hex: '#e0a82e', count: '2', use: '--gold step numbers' },
+  { hex: '#e3cd9b', count: '2', use: 'demat card border' },
+  { hex: '#ffcb09', count: '1', use: '--field-bd-active focus border' },
+  { hex: '#ffd277', count: '1', use: 'sip slider accent' },
+  { hex: '#e0d3ba', count: '1', use: '--pcard-hover-bd' },
+  { hex: '#c79a38', count: '1', use: 'products details' },
+];
+
+const creams: Sw[] = [
+  { hex: '#f8f4e8', count: '8', use: 'home FAQ / advisory card bg' },
+  { hex: '#fffdf8', count: '5', use: '--card' },
+  { hex: '#fffcf3', count: '4', use: 'homepage body bg (≠ --page!)' },
+  { hex: '#fcf8ef', count: '2', use: '--page site bg' },
+  { hex: '#fef8ee', count: '2', use: '--sec-light' },
+  { hex: '#f6efe1', count: '2', use: '--sec-tint' },
+  { hex: '#fbf5e8', count: '1', use: '--pcard-hover' },
+  { hex: '#fefaf0', count: '1', use: 'home brand-pale' },
+  { hex: '#fdf4dc', count: '1', use: 'home brand-light' },
+  { hex: '#f5f3ed', count: '1', use: 'about tile' },
+  { hex: '#f2f1ea', count: '1', use: 'about tile' },
+  { hex: '#f0efe8', count: '1', use: 'about tile' },
+  { hex: '#f0ede3', count: '1', use: 'partner detail' },
+  { hex: '#e6e3da', count: '1', use: 'sip detail' },
+  { hex: '#f2eee3', count: '1', use: 'products detail' },
+];
+
+const neutrals: Sw[] = [
+  { hex: '#ffffff', count: '71', use: 'nav bg, hero H1, overlay bg' },
+  { hex: '#efefef', count: '4', use: 'mobile-menu dividers' },
+  { hex: '#cccccc', count: '4', use: '--field-bd input border' },
+  { hex: '#e1e0db', count: '3', use: '--card-border (+ border-soft)' },
+  { hex: '#f3f3f3', count: '3', use: 'sip segmented control' },
+  { hex: '#e0ddd8', count: '2', use: 'overlay divider' },
+  { hex: '#ededec', count: '2', use: 'mobile-menu bottom border' },
+  { hex: '#f7f7f7', count: '2', use: 'home n100' },
+  { hex: '#edebe6', count: '1', use: '--row-line' },
+  { hex: '#e6e6e6', count: '1', use: 'disabled field border' },
+  { hex: '#e0e0e0', count: '1', use: 'disabled field border (dup)' },
+  { hex: '#dddddd', count: '1', use: 'home hero-card divider' },
+  { hex: '#f1f1ef', count: '1', use: 'disabled field bg' },
+];
+
+const functional: Sw[] = [
+  { hex: '#2f7ef4', count: '17', use: '--blue login / verify' },
+  { hex: '#067a45', count: '4', use: 'form success' },
+  { hex: '#1c5fc4', count: '2', use: 'link hover' },
+  { hex: '#009d58', count: '2', use: '--green ticks' },
+  { hex: '#dbf0e2', count: '2', use: 'success tint' },
+  { hex: '#daead7', count: '1', use: 'success tint (dup)' },
+  { hex: '#ff3236', count: '1', use: '--field-error' },
+];
+
+/* ---- Near-duplicate clusters (audit §A2) ---- */
+const clusters: { title: string; note: string; hexes: string[] }[] = [
+  { title: 'Near-black “body ink”', note: '→ collapses to ~4 charcoal tokens', hexes: ['#333333', '#383838', '#2b2b2b', '#404040', '#1c1c16', '#121212', '#222320'] },
+  { title: 'Brand gold', note: '#f3b83f ← #f2b83f; hover #d4982a ← #c79a38 → 1 gold + hover', hexes: ['#f3b83f', '#f2b83f', '#d4982a', '#c79a38', '#e0a82e'] },
+  { title: 'Brand olive', note: '#2e3914 ← #2d3813; #1b2010 ← #1a2010 → 2 tokens', hexes: ['#2e3914', '#2d3813', '#1b2010', '#1a2010'] },
+  { title: 'Gold-button ink (one role, 3 inks)', note: '→ collapses to 1 token', hexes: ['#202318', '#231a06', '#2e3914'] },
+  { title: 'Creams', note: '15 backgrounds → 5 proposed', hexes: ['#fffdf8', '#fffcf3', '#fcf8ef', '#fef8ee', '#f6efe1', '#f8f4e8', '#fefaf0', '#fdf4dc', '#fbf5e8', '#f5f3ed', '#f2f1ea', '#f0efe8', '#f0ede3', '#e6e3da', '#f2eee3'] },
+  { title: 'Light sages', note: '~9 within a few points → #bfc1bc + #c9cac7', hexes: ['#bfc1bc', '#c9cac7', '#c4c6c1', '#c9c6ba', '#c9c8c0', '#d7d7cd'] },
+  { title: 'Hairlines', note: '~11 → #e1e0db + #efefef', hexes: ['#e1e0db', '#e0ddd8', '#edebe6', '#ededec', '#efefef', '#e6e6e6', '#e0e0e0'] },
+];
+
+/* ---- Type / spacing / effects (audit §B / §C / §D) ---- */
+const typeSizes: { px: string; count: string; flag?: string }[] = [
+  { px: '10px', count: '4' },
+  { px: '12px', count: '33' },
+  { px: '14px', count: '91' },
+  { px: '15px', count: '2', flag: 'off-scale → 14' },
+  { px: '16px', count: '84' },
+  { px: '18px', count: '19' },
+  { px: '19px', count: '1', flag: 'off-scale → 20' },
+  { px: '20px', count: '20' },
+  { px: '24px', count: '14' },
+  { px: '28px', count: '1' },
+  { px: '32px', count: '12' },
+  { px: '40px', count: '8' },
+  { px: '104px', count: '1', flag: 'about ghost numeral (page-local)' },
+];
+
+const spacing: { px: string; count: string }[] = [
+  { px: '16px', count: '155' }, { px: '8px', count: '80' }, { px: '24px', count: '70' },
+  { px: '32px', count: '60' }, { px: '56px', count: '42' }, { px: '40px', count: '39' },
+  { px: '12px', count: '39' }, { px: '20px', count: '33' }, { px: '4px', count: '30' },
+  { px: '48px', count: '15' }, { px: '96px', count: '13' }, { px: '28px', count: '13' },
+  { px: '36px', count: '10' }, { px: '72px', count: '8' }, { px: '144px', count: '7' },
+  { px: '80px', count: '6' }, { px: '64px', count: '5' },
+];
+
+const offGrid = ['gap:6', 'padding:10px 12px (.nps-logo)', 'gap:10 ×3', 'gap:14 ×2', 'clamp mins 18 / 14', 'padding-inline-start:21px', 'padding-top:5px', 'padding:7px 20px', 'padding:16px 10px'];
+
+const gradients: { role: string; recipe: string }[] = [
+  { role: 'Standard page hero', recipe: 'radial 125% 210% at 100% −8% · #4f583b → #363a2c → #1d1d1d' },
+  { role: 'Index hero', recipe: 'distinct olive stops (#3f4733 / #2a2d23 / #3b422c / #282c1e)' },
+  { role: 'Index dark band', recipe: '#14160f / #1a1a13 / #23261c / #282c1e stops' },
+  { role: 'Products orbit', recipe: '#3a3f30 / #2e3223 / #454430 band' },
+];
+
+const durations = ['0.2s (58×)', '0.25s (19×)', '0.3s (17×)', '0.6s (8×)', '0.48s (6×)', '0.35s (5×)', '0.38s (2×)', '0.22s (3×)', '0.15s (3×)'];
+
+/* ---- The two-stylesheet fork (audit §E2) ---- */
+const fork: { comp: string; styles: string; home: string }[] = [
+  { comp: 'Nav + mobile menu', styles: 'canonical', home: 'byte-identical duplicate' },
+  { comp: 'Mega-nav overlay', styles: 'canonical', home: 'exists ×2 (one dead), reconciled by !important pins' },
+  { comp: 'Footer', styles: 'bg #15150f, solid grays, 36px socials', home: 'bg #0a0b07, alpha-whites, 32px socials — VISIBLY different' },
+  { comp: 'Gold button', styles: '40px, ink #2e3914, radius 4px', home: '48px variant, ink #202318, radius 6px, hover-translateY — 4 specs total' },
+  { comp: 'FAQ', styles: 'bg #fffdf8, <button> mechanism', home: 'bg #f8f4e8, <details> + interpolate-size' },
+  { comp: 'Hero H1', styles: '40px', home: 'clamp() !important' },
+  { comp: 'Page background', styles: '#fcf8ef (--page)', home: '#fffcf3 (≠ --page)' },
+  { comp: 'Font stack', styles: 'Outfit only', home: 'adds "Inter" fallback + --font-mono (rule violation)' },
+  { comp: 'Breakpoints', styles: 'max-width 560 / 768 / 900 / 1024 / 1300 / 1500', home: 'min-width 640 / 1024 / 1280' },
+];
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <p class="ds-eyebrow">Doc 1 · the “before”</p>
+        <h1>What Is <span class="g">Used</span></h1>
+        <p class="lead">
+          The honest as-built inventory of the legacy site — what it actually rendered, extracted
+          from the full audit. This is the sprawl the token system resolves.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTRO ================= -->
+  <section class="section sec-light" id="sec-intro" data-section="intro">
+    <div class="ds-lead-block">
+      <p>
+        This is what the legacy site <b>actually rendered</b>, extracted from the full audit
+        (<code>docs/legacy-style-audit.md</code>). It shows the sprawl the token system resolves:
+        <b>~150 distinct colours</b> for what the proposed system expresses in ~45 primitives,
+        <b>two parallel stylesheets</b> (<code>styles.css</code> + a homepage-only
+        <code>home.css</code> fork), a mega-nav overlay declared three times, 15 cream backgrounds,
+        12 dark charcoals, 4 hero-gradient recipes, and 9 transition durations. Every value on this
+        page is a historical literal — this doc records history, not the system.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= COLOURS AS-FOUND ================= -->
+  <section class="section" id="sec-colors" data-section="colors">
+    <h2 class="sec-title">Colours as-found</h2>
+    <p class="sec-lead ds-section-lead">
+      The audit’s colour inventory (§A1), grouped. Chip · hex · occurrence count · example use.
+    </p>
+
+    <div class="ds-groups">
+      <div class="ds-group">
+        <h3 class="ds-group-h">Dark inks / charcoals <span>· 12+ competing “body ink” values</span></h3>
+        <div class="sw-grid">
+          {darkInks.map((s) => (
+            <div class="sw">
+              <span class="sw-chip" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="ds-group">
+        <h3 class="ds-group-h">Olive / brand greens</h3>
+        <div class="sw-grid">
+          {olives.map((s) => (
+            <div class="sw">
+              <span class="sw-chip" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="ds-group">
+        <h3 class="ds-group-h">Muted grays / sages <span>· ~17 near-neighbours</span></h3>
+        <div class="sw-grid">
+          {sages.map((s) => (
+            <div class="sw">
+              <span class="sw-chip" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="ds-group">
+        <h3 class="ds-group-h">Golds</h3>
+        <div class="sw-grid">
+          {golds.map((s) => (
+            <div class="sw">
+              <span class="sw-chip" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="ds-group">
+        <h3 class="ds-group-h">Creams <span>· 15 light surfaces</span></h3>
+        <div class="sw-grid">
+          {creams.map((s) => (
+            <div class="sw">
+              <span class="sw-chip sw-chip--bordered" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="ds-group">
+        <h3 class="ds-group-h">Neutral grays</h3>
+        <div class="sw-grid">
+          {neutrals.map((s) => (
+            <div class="sw">
+              <span class="sw-chip sw-chip--bordered" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="ds-group">
+        <h3 class="ds-group-h">Functional</h3>
+        <div class="sw-grid">
+          {functional.map((s) => (
+            <div class="sw">
+              <span class="sw-chip" style={`background:${s.hex}`}></span>
+              <div class="sw-meta">
+                <code class="sw-hex">{s.hex}</code>
+                <span class="sw-count">{s.count}×</span>
+                <span class="sw-use">{s.use}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NEAR-DUPLICATE CLUSTERS ================= -->
+  <section class="section sec-tint" id="sec-clusters" data-section="clusters">
+    <h2 class="sec-title">Near-duplicate clusters</h2>
+    <p class="sec-lead ds-section-lead">
+      The same visual role expressed by many almost-identical hexes (§A2). Seen side by side, the
+      duplication is obvious — each cluster collapses to a small number of tokens.
+    </p>
+
+    <div class="ds-clusters">
+      {clusters.map((c) => (
+        <div class="clu">
+          <div class="clu-head">
+            <h3>{c.title}</h3>
+            <span class="clu-note">{c.note}</span>
+          </div>
+          <div class="clu-row">
+            {c.hexes.map((h) => (
+              <div class="clu-chip">
+                <span class="clu-swatch" style={`background:${h}`}></span>
+                <code>{h}</code>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= THE TWO-STYLESHEET FORK ================= -->
+  <section class="section" id="sec-fork" data-section="fork">
+    <h2 class="sec-title">The two-stylesheet fork</h2>
+    <p class="sec-lead ds-section-lead">
+      <code>styles.css</code> (12 pages) vs the homepage-only <code>home.css</code> fork (§E2).
+      Nav is identical; the footer, buttons and FAQ render visibly differently.
+    </p>
+    <div class="t-scroll">
+      <table class="ds-table">
+        <thead>
+          <tr><th>Component</th><th><code>styles.css</code></th><th><code>home.css</code> (homepage)</th></tr>
+        </thead>
+        <tbody>
+          {fork.map((r) => (
+            <tr><td class="ds-k">{r.comp}</td><td>{r.styles}</td><td>{r.home}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= TYPE / SPACING / EFFECTS ================= -->
+  <section class="section sec-light" id="sec-tokens" data-section="tokens">
+    <h2 class="sec-title">Type, spacing &amp; effects as-found</h2>
+
+    <div class="ds-facts">
+      <div class="fact-col">
+        <h3 class="ds-group-h">Font sizes (px / count)</h3>
+        <div class="t-scroll">
+          <table class="ds-table ds-table--compact">
+            <thead><tr><th>Size</th><th>Count</th><th>Note</th></tr></thead>
+            <tbody>
+              {typeSizes.map((t) => (
+                <tr class={t.flag ? 'is-flag' : ''}>
+                  <td class="ds-k">{t.px}</td>
+                  <td>{t.count}×</td>
+                  <td>{t.flag ?? ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="ds-fine">
+          Weights 400 (80×) / 500 (92×) / 600 (40×) / 700 (12×) / 300 (2×). Weight 800 loaded but
+          unused; weight 300 used on <code>.nps-item</code> yet not loaded on 12 pages → synthesised.
+        </p>
+      </div>
+
+      <div class="fact-col">
+        <h3 class="ds-group-h">Spacing frequency (px / count)</h3>
+        <div class="t-scroll">
+          <table class="ds-table ds-table--compact">
+            <thead><tr><th>Value</th><th>Count</th></tr></thead>
+            <tbody>
+              {spacing.map((s) => (
+                <tr><td class="ds-k">{s.px}</td><td>{s.count}×</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="ds-fine">
+          <b>Off-grid:</b> {offGrid.join(' · ')}.
+        </p>
+      </div>
+    </div>
+
+    <div class="ds-facts ds-facts--2">
+      <div class="fact-col">
+        <h3 class="ds-group-h">Hero-gradient recipes <span>· 4 for one role</span></h3>
+        <div class="t-scroll">
+          <table class="ds-table ds-table--compact">
+            <thead><tr><th>Role</th><th>Recipe</th></tr></thead>
+            <tbody>
+              {gradients.map((g) => (
+                <tr><td class="ds-k">{g.role}</td><td>{g.recipe}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fact-col">
+        <h3 class="ds-group-h">Transition durations <span>· 9 in use</span></h3>
+        <div class="ds-chips">
+          {durations.map((d) => <span class="ds-pill">{d}</span>)}
+        </div>
+        <p class="ds-fine">
+          Plus 5 easings and shadows: fab <code>0 6px 20px rgba(0,0,0,.18)</code> (×7, duplicated
+          per page), gold glow (×4), sip control (×2). Home <code>--shadow-*</code> tokens defined
+          but never used.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Doc 1 — legacy inventory. Chrome uses tokens; the SWATCHES are
+     hardcoded legacy hexes on purpose (this doc records old values). ===== */
+  .ds-eyebrow {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-gold-400);
+    margin-bottom: 16px;
+  }
+  code {
+    font-weight: 600;
+  }
+
+  .ds-lead-block {
+    max-width: 820px;
+  }
+  .ds-lead-block p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+  }
+  .ds-lead-block b,
+  .ds-fine b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  .ds-lead-block code {
+    color: var(--color-text-heading-dark);
+  }
+
+  .ds-section-lead {
+    margin-top: 12px;
+    margin-bottom: 40px;
+    max-width: 760px;
+  }
+  .ds-section-lead code {
+    color: var(--color-text-heading-dark);
+  }
+
+  /* ---- colour groups ---- */
+  .ds-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .ds-group-h {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-heading-dark);
+    margin-bottom: 24px;
+  }
+  .ds-group-h span {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+
+  .sw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .sw {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 12px;
+    padding: 12px 16px;
+  }
+  .sw-chip {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 8px;
+  }
+  .sw-chip--bordered {
+    border: 1px solid var(--color-border-card);
+  }
+  .sw-meta {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    gap: 4px 12px;
+    min-width: 0;
+  }
+  .sw-hex {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+  }
+  .sw-count {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+  .sw-use {
+    grid-column: 1 / -1;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ---- clusters ---- */
+  .ds-clusters {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .clu {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .clu-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 16px;
+  }
+  .clu-head h3 {
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--color-text-primary);
+  }
+  .clu-note {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-gold-600);
+  }
+  .clu-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .clu-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .clu-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-card);
+    flex: none;
+  }
+  .clu-chip code {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+  }
+
+  /* ---- tables ---- */
+  .ds-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .ds-table th,
+  .ds-table td {
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--color-border-hairline);
+    vertical-align: top;
+  }
+  .ds-table th {
+    background: var(--color-olive-900);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .ds-table th code {
+    color: var(--color-gold-200);
+  }
+  .ds-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .ds-table td {
+    font-weight: 400;
+    color: var(--color-text-tertiary);
+  }
+  .ds-table .ds-k {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+  .ds-table--compact th,
+  .ds-table--compact td {
+    padding: 10px 16px;
+  }
+  .ds-table tr.is-flag td {
+    background: var(--color-cream-450);
+  }
+  .ds-table tr.is-flag .ds-k {
+    color: var(--color-gold-600);
+  }
+
+  /* ---- facts layout ---- */
+  .ds-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px;
+    align-items: start;
+  }
+  .ds-facts--2 {
+    margin-top: 48px;
+  }
+  .fact-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ds-fine {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+  .ds-fine code {
+    color: var(--color-text-tertiary);
+  }
+
+  .ds-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ds-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+  }
+
+  @media (max-width: 900px) {
+    .ds-facts {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 768px) {
+    .sw-grid {
+      grid-template-columns: 1fr;
+    }
+    .clu {
+      padding: 20px;
+    }
+  }
+</style>
