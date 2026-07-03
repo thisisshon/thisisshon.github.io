@@ -1,0 +1,230 @@
+---
+/**
+ * Calculators hub — /calculators/
+ * Financial-calculator card grid with on-brand dark hero. Pixel parity with
+ * legacy calculators/index.html.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Calculators — Shriram Financial Services',
+  description:
+    'Free financial calculators from Shriram — SIP, lumpsum, SWP, fixed deposit and NPS. Plan investments and estimate returns instantly, no sign-up.',
+  path: '/calculators/',
+};
+
+// Hero trust chips.
+const CHIPS = ['100% Free', 'Instant Results', 'No Sign-up Required', 'Accurate Projections'];
+
+// Calculator cards (title → description). The Demat CTA tile is rendered separately.
+const CALCS = [
+  {
+    title: 'SIP Calculator',
+    desc: 'Project the future value of your monthly SIP investments.',
+  },
+  {
+    title: 'Lumpsum Calculator',
+    desc: 'See how a one-time investment grows over your chosen horizon.',
+  },
+  {
+    title: 'SWP Calculator',
+    desc: 'Plan steady withdrawals while the rest of your corpus stays invested.',
+  },
+  {
+    title: 'Fixed Deposit Calculator',
+    desc: 'Estimate maturity value and interest earned on your deposit.',
+  },
+  {
+    title: 'NPS Calculator',
+    desc: 'Forecast your retirement corpus and expected monthly pension.',
+  },
+];
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="calc-hero" id="sec-hero" data-section="hero">
+    <h1>The Calculators You Need, <span class="g">All in One Place.</span></h1>
+    <p class="ch-lead">
+      Plan investments, estimate returns, optimise taxes, and map your retirement &mdash; all the
+      financial tools you need, free and instant.
+    </p>
+    <div class="ch-chips">
+      {
+        CHIPS.map((label) => (
+          <span class="chip">
+            <span class="tk" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>{' '}
+            {label}
+          </span>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ================= CALCULATORS ================= -->
+  <section class="section stack" id="sec-calculators" data-section="calculators" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Explore Our Calculators</h2>
+      <p class="sec-lead">
+        Pick a tool and get instant, accurate projections to plan every part of your financial
+        journey.
+      </p>
+    </div>
+    <div class="calc-grid">
+      {
+        CALCS.map((c) => (
+          <a class="calc-card" href="#">
+            <span class="cc-title">{c.title}</span>
+            <span class="cc-desc">{c.desc}</span>
+            <span class="cc-cta">Calculate Now <span class="arr">&rarr;</span></span>
+          </a>
+        ))
+      }
+      <div class="calc-card cta-tile">
+        <span class="cc-title">Open a Demat Account</span>
+        <span class="cc-desc">
+          Like what you see? Start investing in under 5 minutes &mdash; zero paperwork.
+        </span>
+        <a class="btn-gold" href="/demat/">Open Demat Account</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ================= Calculators page ================= */
+  /* on-brand dark hero (matches the Equity hero gradient) */
+  .calc-hero {
+    background: radial-gradient(125% 210% at 100% -8%, var(--color-olive-600) 0%, var(--color-olive-800) 50%, var(--color-charcoal-850) 100%);
+    min-height: clamp(440px, 29vw, 552px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 72px var(--pad);
+  }
+  .calc-hero h1 {
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 1.5;
+    color: var(--color-white);
+    max-width: 780px;
+  }
+  .calc-hero h1 .g {
+    color: var(--color-gold-400);
+  }
+  .calc-hero .ch-lead {
+    margin-top: 16px;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--color-sage-100);
+    max-width: 600px;
+  }
+  .calc-hero .ch-chips {
+    margin-top: 40px;
+    padding-top: 36px;
+    border-top: 1px solid #52544b; /* page-local — Tier-2 candidate (single-use hairline on gradient) */
+    max-width: 840px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+  }
+  .calc-hero .chip {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* page-local — Tier-2 candidate (off-grid) */
+    font-weight: 500;
+    font-size: 16px;
+    color: #e9e9e9; /* page-local — Tier-2 candidate (sage) */
+  }
+  .calc-hero .chip .tk {
+    color: var(--color-gold-400);
+    font-size: 16px;
+  }
+
+  /* calculator cards grid */
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .calc-card {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: inherit;
+    transition: border-color 0.22s ease;
+  }
+  /* minimal hover: crisp olive border + arrow nudge (no shadow / lift) */
+  a.calc-card:hover {
+    border-color: var(--color-olive-950);
+  }
+  .cc-title {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+  }
+  .cc-desc {
+    flex: 1 1 auto;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+  .cc-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-heading-dark);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .cc-cta .arr {
+    transition: transform 0.25s ease;
+  }
+  a.calc-card:hover .cc-cta .arr {
+    transform: translateX(5px);
+  }
+
+  /* demat CTA tile (fills the 6th grid cell) */
+  .cta-tile {
+    background: var(--color-olive-950);
+    border-color: var(--color-olive-950);
+  }
+  .cta-tile .cc-title {
+    color: var(--color-white);
+  }
+  .cta-tile .cc-desc {
+    color: var(--color-sage-200);
+  }
+  .cta-tile .btn-gold {
+    margin-top: 4px;
+  }
+
+  @media (max-width: 1024px) {
+    .calc-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .calc-grid {
+      grid-template-columns: 1fr;
+    }
+    .calc-hero {
+      padding: 72px var(--pad);
+    }
+    .calc-hero h1 {
+      font-size: clamp(28px, 7vw, 40px);
+    }
+    .calc-hero .ch-lead {
+      font-size: 16px;
+    }
+  }
+</style>

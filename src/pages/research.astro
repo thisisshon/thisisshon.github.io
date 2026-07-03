@@ -1,0 +1,428 @@
+---
+/**
+ * Research Centre — /research/
+ * SEBI-registered research marketing page. Pixel parity with legacy
+ * research.html.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// General Questions — legacy content verbatim, same order.
+const FAQS = [
+  {
+    q: "Who produces Shriram's research?",
+    a: 'All research is produced in-house by SEBI-registered research analysts across our fundamental, technical and derivatives desks. Every report is original, first-hand analysis — never an aggregation of third-party headlines — and carries the disclosures the regulator requires.',
+  },
+  {
+    q: 'How often are research calls published?',
+    a: 'Research calls are published every trading day on a fixed schedule. Intraday and short-term ideas go out before the market opens and are updated live through the session, while positional and long-term ideas are released as our analysts identify high-conviction opportunities.',
+  },
+  {
+    q: 'How do I receive research alerts?',
+    a: 'Download the Antara app, complete onboarding and enable alerts from the Home screen. Once alerts are on, every new research call and market update is pushed to your device the moment it is published, so you never miss a time-sensitive idea.',
+  },
+  {
+    q: 'What does market commentary cover?',
+    a: 'Our desk publishes commentary three times a trading day — a pre-session outlook, a mid-session pulse and an end-of-day wrap. Each update covers index movements, sector rotation, key support and resistance levels, FII/DII activity and what to watch next.',
+  },
+  {
+    q: 'Do I need a demat account to read the reports?',
+    a: 'A summary of each call is visible to everyone, but full reports — with detailed analysis, price targets and model portfolios — are unlocked when you open a Shriram demat account or log in to the Antara app. Opening an account takes only a few minutes online.',
+  },
+  {
+    q: 'Is past research performance a guarantee of future returns?',
+    a: 'No. Investments in securities are subject to market risk, and past performance is not indicative of future results. Our research is intended to inform your decisions, not to guarantee outcomes — always read the full report and consider your own risk profile before acting.',
+  },
+];
+
+const seo = {
+  title: 'Research Centre — Shriram Financial Services',
+  description:
+    'Shriram Financial Research Centre — original, SEBI-registered research across equity, technical and derivatives. Daily research calls, market alerts and commentary, delivered on the Antara app.',
+  path: '/research/',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Shriram Financial <span class="g">Research Centre</span></h1>
+      <p class="lead">Original, accountable research from SEBI-registered analysts — across equity, technical and derivatives. Research calls, market alerts and daily commentary, all in one place.</p>
+      <div class="cta"><a class="btn-gold" href="/demat/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered analysts</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;200+ stocks covered</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Daily research calls</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== What is Research & Why Does It Matter? ===== -->
+  <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is Research &amp; Why Does It Matter?</h2>
+      <p class="sec-lead">Research is a systematic process of analysing financial markets, securities and economic data to generate informed investment recommendations. At Shriram Financial Services Research, our analysts study price charts, company financials, industry trends and macroeconomic factors to produce actionable insights.</p>
+      <p class="sec-lead">Research-backed investing reduces emotional decisions and improves outcomes. Our reports give you the same quality of analysis used by institutional investors — covering when to buy, when to hold and what price to target.</p>
+    </div>
+  </section>
+
+  <!-- ===== All-In-One Research Desk ===== -->
+  <section class="section stack sec-tint" id="sec-desk" data-section="desk" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">All-In-One Research Desk</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">One desk, every asset class. Our specialists cover the full spread of the Indian markets so you never have to stitch insights together from a dozen sources.</p>
+    </div>
+    <div class="cat-grid">
+      <div class="cat"><h4>Equity Research</h4><p>Buy, hold and sell calls on large, mid and small caps with clear entry, target and stop-loss levels.</p></div>
+      <div class="cat"><h4>Technical Analysis</h4><p>Chart patterns, price action and indicators to time entries and exits with greater precision.</p></div>
+      <div class="cat"><h4>Derivatives &amp; F&amp;O</h4><p>Options strategies, futures setups and hedging ideas for active traders managing risk.</p></div>
+      <div class="cat"><h4>Fundamental Research</h4><p>Company deep-dives, financial modelling and valuation reports on a stock's intrinsic worth.</p></div>
+      <div class="cat"><h4>Mutual Fund Picks</h4><p>Curated fund shortlists and SIP recommendations mapped to your goals and horizon.</p></div>
+      <div class="cat"><h4>Commodities</h4><p>Trend views on gold, silver, crude and base metals, with macro drivers explained.</p></div>
+      <div class="cat"><h4>Currency</h4><p>USD-INR and major cross-rate outlooks for traders and importers-exporters alike.</p></div>
+      <div class="cat"><h4>Macro &amp; Sector</h4><p>Policy, rates and sector-rotation notes so you see the big picture behind every call.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Explore Our Research Types ===== -->
+  <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Explore Our Research Types</h2>
+      <p class="sec-lead">Whether you trade intraday, invest for the long term or build wealth through SIPs — we have a dedicated research stream for you. Each type is produced by specialist analysts and published on a fixed schedule.</p>
+    </div>
+    <div class="approaches">
+      <a class="appr" href="#">
+        <div class="appr-main">
+          <p class="idx">Stream 01</p>
+          <div class="appr-tt"><h4>Intraday &amp; Short-Term Calls</h4><p>Same-day and swing ideas with defined entry, target and stop-loss — published before the bell and updated live through the session.</p></div>
+        </div>
+        <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+      </a>
+      <a class="appr" href="#">
+        <div class="appr-main">
+          <p class="idx">Stream 02</p>
+          <div class="appr-tt"><h4>Positional &amp; Long-Term Ideas</h4><p>Conviction picks backed by fundamental research and valuation, with a multi-month to multi-year view for portfolio builders.</p></div>
+        </div>
+        <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+      </a>
+      <a class="appr" href="#">
+        <div class="appr-main">
+          <p class="idx">Stream 03</p>
+          <div class="appr-tt"><h4>SIP &amp; Mutual Fund Picks</h4><p>Goal-mapped fund shortlists and disciplined SIP plans for investors compounding wealth steadily over time.</p></div>
+        </div>
+        <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+      </a>
+    </div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Why Shriram Research ===== -->
+  <section class="section stack sec-tint" id="sec-why" data-section="why" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Why Shriram Financial Services Research?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">We are not a news aggregator or an algorithm-driven screener. We are a team of SEBI-registered analysts who produce original, accountable research — across three disciplines, under one roof, every trading day.</p>
+    </div>
+    <div class="risks">
+      <div class="risk"><h4>SEBI-Registered</h4><p>Every call is issued by registered research analysts, held to the standards and disclosures the regulator requires.</p></div>
+      <div class="risk"><h4>Original, Not Aggregated</h4><p>We don't repackage headlines. Each report is first-hand analysis built from the data up.</p></div>
+      <div class="risk"><h4>Three Disciplines</h4><p>Fundamental, technical and derivatives desks under one roof, so ideas are cross-checked from every angle.</p></div>
+      <div class="risk"><h4>Accountable Calls</h4><p>Clear entry, target and stop-loss on every idea — we publish our track record, not just our wins.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Access Full Research Reports (dark focus band) ===== -->
+  <section class="section rpt" id="sec-access" data-section="access">
+    <div class="rpt-in">
+      <h2>Get Full Access to In-Depth Insights</h2>
+      <p>Unlock the complete research library — detailed reports, price targets, model portfolios and analyst calls. Open a demat account or log in to the Antara app to read every report in full.</p>
+      <div class="rpt-cta">
+        <a class="btn-gold" href="/demat/">Open Demat Account</a>
+        <a class="btn-ghost-r" href="#">Analyse Research</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Market Alerts & Commentary ===== -->
+  <section class="section stack sec-light" id="sec-alerts" data-section="alerts" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Market Alerts &amp; Commentary</h2>
+      <p class="sec-lead">Never miss an analyst call. Choose how you want to receive research alerts and market commentary — delivered directly on the Antara app, so informed decisions are always a tap away.</p>
+    </div>
+
+    <div class="row-2">
+      <div class="card lead-card">
+        <h4 class="card-h"><span class="ic-24" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3a5 5 0 0 0-5 5c0 4-2 5-2 7h14c0-2-2-3-2-7a5 5 0 0 0-5-5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Market Alerts</h4>
+        <p class="card-p">Research alerts let you know about updates and new research calls the instant they are published. Enable alerts in the Antara app and the desk pushes every fresh idea straight to your device.</p>
+      </div>
+      <div class="card lead-card">
+        <h4 class="card-h"><span class="ic-24" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H7l-3 3V5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8 9h8M8 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></span>Market Commentary</h4>
+        <p class="card-p">Our analyst desk publishes market commentary three times every trading day — a pre-session outlook, a mid-session pulse and an end-of-day wrap covering index moves, sector rotation, key levels and FII/DII flows.</p>
+      </div>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">How to Check Your Calls &amp; Commentary</h3>
+        <p class="sub-lead">Two quick paths inside the Antara app — one for research calls, one for daily commentary.</p>
+      </div>
+      <div class="row-2">
+        <div class="card">
+          <h4 class="card-h" style="margin-bottom:24px">How to Check Research Calls</h4>
+          <div class="how-list">
+            <div class="how-step"><span class="hn">1</span><span class="ht"><b>Step 1</b><span>Download and complete onboarding in the Antara app.</span></span></div>
+            <div class="how-sep"></div>
+            <div class="how-step"><span class="hn">2</span><span class="ht"><b>Step 2</b><span>Open the app and navigate to the Home screen.</span></span></div>
+            <div class="how-sep"></div>
+            <div class="how-step"><span class="hn">3</span><span class="ht"><b>Step 3</b><span>In the Home screen's top section, refer to the Research Calls section.</span></span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h4 class="card-h" style="margin-bottom:24px">How to Check Market Commentary</h4>
+          <div class="how-list">
+            <div class="how-step"><span class="hn">1</span><span class="ht"><b>Step 1</b><span>Download and complete onboarding in the Antara app.</span></span></div>
+            <div class="how-sep"></div>
+            <div class="how-step"><span class="hn">2</span><span class="ht"><b>Step 2</b><span>Open the app and navigate to the Home screen.</span></span></div>
+            <div class="how-sep"></div>
+            <div class="how-step"><span class="hn">3</span><span class="ht"><b>Step 3</b><span>In the bottom section, refer to Market News &amp; Update Calls.</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="access-bar">
+      <div class="ab-tt">
+        <h3>Get access to these exclusive features now!</h3>
+        <p>Log in to the Antara app or open a demat account to switch on research alerts and commentary.</p>
+      </div>
+      <div class="ab-cta">
+        <a class="btn-gold" href="#">Login Now</a>
+        <a class="btn-ghost-r" href="/demat/">Open Demat Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated research-led plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/support/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Put Research-Led Investing to Work</h3>
+        <p class="ct-sub">Open your demat account in minutes and unlock every research call, alert and report.</p>
+      </div>
+      <a class="btn-gold" href="/demat/">Open Demat Account</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Research Centre — page-specific components only. Every value reuses the
+     shared design tokens, radii, container padding and 8px grid rhythm. ===== */
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* Dark "Access Full Research Reports" band — the one place the alternating
+     backgrounds give way to a focus block. Solid hex only (§2b). */
+  .rpt {
+    background: var(--color-olive-950); /* legacy --olive-deep */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .rpt .rpt-in {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 720px;
+  }
+  .rpt h2 {
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 1.5;
+    color: var(--color-white);
+    text-transform: capitalize;
+  }
+  .rpt p {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--color-sage-100); /* #c9cac7 (Tier 1: absorbed by sage-100) */
+  }
+  .rpt .rpt-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  /* Secondary CTA for dark surfaces: outline in white on olive.
+     NOTE: this is a page-local VARIANT of the shared .btn-ghost (which is a
+     charcoal ghost, #2b2b2b bg / #838383 border). Research's differs — olive
+     bg + white border + olive hover — so it is renamed .btn-ghost-r to avoid
+     colliding with (and being outranked by) the global .btn-ghost. Solid hex. */
+  .btn-ghost-r {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: var(--cta-w);
+    border-radius: 4px;
+    background: var(--color-olive-950); /* legacy --olive-deep */
+    border: 1px solid var(--color-white);
+    color: var(--color-white);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.5;
+    text-decoration: none;
+    transition: background 0.25s ease;
+  }
+  .btn-ghost-r:hover {
+    background: var(--color-olive-925); /* #26301a (Tier 1: absorbed by olive-925) */
+  }
+
+  /* Two-column intro cards for Alerts & Commentary reuse .row-2 / .card */
+  .lead-card .card-h {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ic-24 {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 8px;
+    background: var(--color-surface-section-tint); /* legacy --sec-tint */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-heading-dark); /* legacy --olive-title */
+  }
+  .ic-24 svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  /* "How to check …" numbered step cards (vertical, gold numbers) */
+  .how-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .how-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .how-step .hn {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-gold-500); /* legacy --gold */
+    width: 24px;
+    flex: none;
+  }
+  .how-step .ht {
+    flex: 1 0 0;
+    min-width: 0;
+  }
+  .how-step .ht b {
+    font-weight: 600;
+    color: var(--color-text-primary); /* legacy --ink */
+  }
+  .how-step .ht span {
+    display: block;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary); /* legacy --ink-3 */
+    line-height: 1.5;
+  }
+  .how-sep {
+    height: 1px;
+    background: var(--color-border-hairline); /* legacy --row-line */
+    width: 100%;
+  }
+
+  /* Feature-access bar — heading left, dual CTAs right (like the calc ready-bar) */
+  .access-bar {
+    background: var(--color-text-heading-dark); /* legacy --olive-title */
+    border-radius: 24px;
+    padding: 40px var(--container-pad);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .access-bar .ab-tt {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .access-bar h3 {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.5;
+    color: var(--color-white);
+  }
+  .access-bar p {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-sage-200); /* #bfc1bc (Tier 1: absorbed by sage-200) */
+  }
+  .access-bar .ab-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  /* Outline button matches the bar fill so it reads as an outline, not an inset block.
+     Needs its own hover — the base .btn-ghost-r:hover is outranked by the rule above. */
+  .access-bar .btn-ghost-r {
+    background: var(--color-text-heading-dark); /* legacy --olive-title */
+  }
+  .access-bar .btn-ghost-r:hover {
+    background: var(--color-olive-925); /* #26301a */
+  }
+
+  @media (max-width: 768px) {
+    .rpt h2 {
+      font-size: clamp(28px, 7vw, 40px);
+    }
+    .access-bar h3 {
+      font-size: clamp(20px, 5.4vw, 24px);
+    }
+    .access-bar .ab-cta .btn-gold,
+    .access-bar .ab-cta .btn-ghost-r {
+      width: 100%;
+    }
+  }
+</style>
