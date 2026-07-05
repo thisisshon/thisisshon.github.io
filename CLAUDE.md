@@ -136,6 +136,11 @@ off against each other:
     `.cta-box` and dark CTA/"access" bands — which are centred by their own component design, as
     on equity. Do not centre ordinary content headings anywhere.
 
+13. **The FAQ section header is always "General Questions".** Every page's FAQ block
+    (`<h2 class="faq-title">…</h2>` above `FaqAccordion`) reads exactly **General Questions** —
+    never "FAQs — <Topic>", "Frequently Asked Questions" or any variant. Apply on every new page
+    build and fix any divergent header you encounter, unless a specific page is told otherwise.
+
 ---
 
 ## ▶️ Running / preview
