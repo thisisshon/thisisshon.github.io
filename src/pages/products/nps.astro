@@ -1,0 +1,306 @@
+---
+/**
+ * NPS — /products/nps/
+ * Long-form National Pension System guide. Built entirely from the shared
+ * design-system components in global.css (hero, .section/.sec-title, .card,
+ * .cat-grid, .product-page_table, .steps, .risks, FaqAccordion, .cta-box).
+ * The only page-scoped CSS is a generic responsive card grid (.nps-cards),
+ * token-bound. Nested route → BaseLayout / component imports at ../../ depth.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqAccordion from '../../components/sections/FaqAccordion.astro';
+import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../../lib/seo';
+
+// Asset classes an NPS subscriber can invest across.
+const ASSETS = [
+  {
+    h: 'Equity (E)',
+    p: 'Invests in equity market instruments for long-term growth. Allocation is capped at 75% until age 50, tapering with age under most schemes.',
+  },
+  {
+    h: 'Corporate Debt (C)',
+    p: 'Invests in bonds issued by companies and financial institutions, offering steadier returns than equity with moderate credit risk.',
+  },
+  {
+    h: 'Government Securities (G)',
+    p: 'Invests in central and state government bonds — the lowest-risk asset class in NPS, backed by sovereign issuers.',
+  },
+  {
+    h: 'Alternative Assets (A)',
+    p: 'Invests in instruments such as REITs, InvITs and AIFs. Available only under Active Choice, with allocation capped at 5%.',
+  },
+];
+
+// Active vs Auto investment choice.
+const CHOICE = [
+  {
+    h: 'Active Choice',
+    p: 'You decide the split across Equity, Corporate Debt, Government Securities and Alternatives yourself — within regulatory caps — and can switch the mix as your risk appetite changes.',
+  },
+  {
+    h: 'Auto Choice (Lifecycle Fund)',
+    p: 'Your allocation is set automatically by a lifecycle fund — Aggressive (LC75), Moderate (LC50) or Conservative (LC25) — that gradually shifts from equity to debt as you age.',
+  },
+];
+
+// Withdrawal & annuity considerations at exit.
+const EXIT = [
+  {
+    h: 'Lump-Sum at 60',
+    p: 'On maturity at 60, up to 60% of the corpus can be withdrawn as a lump sum, and this portion is currently tax-free in the subscriber’s hands.',
+  },
+  {
+    h: 'Mandatory Annuity',
+    p: 'At least 40% of the corpus must be used to buy an annuity from a PFRDA-empanelled insurer, which pays you a regular pension for life.',
+  },
+  {
+    h: 'Partial Withdrawal',
+    p: 'From Tier I, you may withdraw up to 25% of your own contributions after three years for specified needs such as education, marriage, home purchase or medical treatment.',
+  },
+  {
+    h: 'Early Exit',
+    p: 'If you exit before 60, at least 80% of the corpus must go towards an annuity and only up to 20% can be taken as a lump sum, subject to conditions.',
+  },
+];
+
+// General Questions — plain-text answers, shared with the FAQPage schema.
+const FAQS = [
+  {
+    q: 'What is the National Pension System (NPS)?',
+    a: 'NPS is a voluntary, long-term retirement savings scheme regulated by the Pension Fund Regulatory and Development Authority (PFRDA). You contribute during your working years, the money is invested in a market-linked mix of equity and debt, and it builds a retirement corpus that provides a lump sum and a regular pension at retirement.',
+  },
+  {
+    q: 'Who can open an NPS account?',
+    a: 'Any Indian citizen — resident or non-resident — between 18 and 70 years of age can open an NPS account. It is open to salaried employees, self-employed individuals and NRIs, and requires a PAN, KYC and a bank account.',
+  },
+  {
+    q: 'What is the difference between a Tier I and Tier II account?',
+    a: 'Tier I is the primary retirement account with restricted withdrawals and tax benefits; a PRAN is issued for it. Tier II is a voluntary, savings-style add-on with no withdrawal lock-in and no tax benefit (except for certain government employees). You need an active Tier I account to open a Tier II account.',
+  },
+  {
+    q: 'What is a PRAN?',
+    a: 'A PRAN — Permanent Retirement Account Number — is a unique 12-digit number assigned to every NPS subscriber. It stays with you for life and remains the same even if you change jobs, employers or cities.',
+  },
+  {
+    q: 'How much tax can I save with NPS?',
+    a: 'Contributions to Tier I qualify for deduction under Section 80CCD(1) within the overall ₹1.5 lakh limit of Section 80C, plus an exclusive additional deduction of up to ₹50,000 under Section 80CCD(1B). Employer contributions are separately deductible under Section 80CCD(2), subject to limits.',
+  },
+  {
+    q: 'What returns can I expect from NPS?',
+    a: 'NPS returns are market-linked and not guaranteed — they depend on your asset mix and the performance of your chosen pension fund managers. Historically, the equity and debt schemes have delivered competitive long-term returns, and the low cost structure helps compounding over time.',
+  },
+  {
+    q: 'What happens to my NPS corpus at retirement?',
+    a: 'On reaching 60, you can withdraw up to 60% of the corpus as a tax-free lump sum, while at least 40% must be used to purchase an annuity that pays you a regular pension for life. Partial and early-exit rules apply if you need to access funds sooner.',
+  },
+];
+
+const site = Astro.site!.href;
+
+const seo = {
+  title: 'NPS — National Pension System Guide | Shriram Financial Services',
+  description:
+    'Understand the National Pension System — Tier I vs Tier II, asset classes E/C/G/A, Active vs Auto choice, tax benefits under 80CCD, and withdrawal rules at 60 — with Shriram.',
+  path: '/products/nps/',
+  jsonLd: [
+    faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products/' },
+        { name: 'NPS', path: '/products/nps/' },
+      ],
+      site
+    ),
+    organizationSchema(site),
+  ],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Build a Retirement Corpus With the <span class="g">National Pension System</span></h1>
+      <p class="lead">A voluntary, market-linked retirement scheme regulated by PFRDA — with an exclusive extra tax benefit, low costs and the flexibility to shape your own asset mix.</p>
+      <div class="cta"><a class="btn-gold" href="/demat/">Start Investing</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;PFRDA-regulated</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Extra ₹50k tax benefit</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Low cost</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Market-linked growth</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== What Is NPS ===== -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is the National Pension System?</h2>
+      <p class="sec-lead">The National Pension System (NPS) is a voluntary, defined-contribution retirement savings scheme regulated by the Pension Fund Regulatory and Development Authority (PFRDA). You contribute regularly during your working years; the money is invested by professional pension fund managers across a market-linked mix of equity and debt; and it accumulates into a retirement corpus that provides both a lump sum and a lifelong pension. Open to every Indian citizen aged 18 to 70, NPS is portable across jobs, employers and locations through a single Permanent Retirement Account Number (PRAN).</p>
+    </div>
+  </section>
+
+  <!-- ===== Tier I vs Tier II ===== -->
+  <section class="section stack sec-tint" id="sec-tiers" data-section="tiers" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Tier I vs Tier II Accounts</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">NPS offers two account types. Tier I is the core retirement account with tax benefits and a withdrawal lock-in; Tier II is an optional, flexible savings account you can open alongside it.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Tier I</p></div><div class="cell th"><p>Tier II</p></div>
+      <div class="cell tb"><p class="k">Purpose</p></div><div class="cell tb"><p class="v">Primary retirement account (PRAN issued)</p></div><div class="cell tb"><p class="v">Voluntary savings add-on to an active Tier I</p></div>
+      <div class="cell tb"><p class="k">Withdrawal</p></div><div class="cell tb"><p class="v">Restricted — locked in until 60, partial withdrawal after 3 years</p></div><div class="cell tb"><p class="v">Fully flexible — withdraw anytime, no lock-in</p></div>
+      <div class="cell tb"><p class="k">Tax Benefit</p></div><div class="cell tb"><p class="v">Yes — 80CCD(1), 80CCD(1B) and 80CCD(2)</p></div><div class="cell tb"><p class="v">None, except a 3-year lock-in option for government employees</p></div>
+      <div class="cell tb"><p class="k">Minimum Contribution</p></div><div class="cell tb"><p class="v">₹500 to open, ₹1,000 per financial year to stay active</p></div><div class="cell tb"><p class="v">₹1,000 to open, no minimum annual balance</p></div>
+    </div></div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Start Investing</a>
+  </section>
+
+  <!-- ===== Asset Classes & Investment Choice ===== -->
+  <section class="section stack sec-light" id="sec-assets" data-section="assets" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Asset Classes &amp; Investment Choice</h2>
+      <p class="sec-lead">Your NPS contributions are invested across four asset classes. You control the mix either directly, or let a lifecycle fund manage it for you as you age.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">The Four Asset Classes</h3>
+        <p class="sub-lead">Each carries its own risk-return profile, and NPS blends them to balance growth with stability.</p>
+      </div>
+      <div class="cat-grid">
+        {ASSETS.map((a) => (
+          <div class="cat"><h4>{a.h}</h4><p>{a.p}</p></div>
+        ))}
+      </div>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Active vs Auto Choice</h3>
+        <p class="sub-lead">Two ways to decide how your money is allocated across those asset classes.</p>
+      </div>
+      <div class="row-2">
+        {CHOICE.map((c) => (
+          <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Tax Benefits ===== -->
+  <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Tax Benefits</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">NPS is one of the few instruments that stacks multiple deductions — including one that sits over and above the ₹1.5 lakh Section 80C ceiling.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Section</p></div><div class="cell th"><p>Who It Applies To</p></div><div class="cell th"><p>Deduction Limit</p></div>
+      <div class="cell tb"><p class="k">80CCD(1)</p></div><div class="cell tb"><p class="v">Your own contribution (within 80C)</p></div><div class="cell tb"><p class="v">Part of the overall ₹1.5 lakh 80C limit</p></div>
+      <div class="cell tb"><p class="k">80CCD(1B)</p></div><div class="cell tb"><p class="v">Your own contribution (exclusive to NPS)</p></div><div class="cell tb"><p class="v">Additional up to ₹50,000, over and above 80C</p></div>
+      <div class="cell tb"><p class="k">80CCD(2)</p></div><div class="cell tb"><p class="v">Employer contribution</p></div><div class="cell tb"><p class="v">Up to 10% of salary (14% for government employees)</p></div>
+    </div></div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Start Investing</a>
+  </section>
+
+  <!-- ===== How to Open & Contribute ===== -->
+  <section class="section stack sec-light" id="sec-open" data-section="open" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How to Open &amp; Contribute</h2>
+      <p class="sec-lead">Getting started takes just a few steps — from generating your PRAN to making your first contribution.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Generate Your PRAN</h4><p>Register online via eNPS or a Point of Presence (POP) to get your Permanent Retirement Account Number.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Complete PAN / KYC</h4><p>Submit your PAN, complete Aadhaar-based eKYC and link your bank account.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Choose Fund Manager &amp; Allocation</h4><p>Select a PFRDA-registered pension fund manager and pick Active or Auto Choice for your asset mix.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Contribute &amp; Track</h4><p>Invest via one-off or recurring contributions and monitor your corpus as it grows.</p></div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Start Investing</a>
+  </section>
+
+  <!-- ===== Withdrawal & Annuity ===== -->
+  <section class="section stack sec-tint" id="sec-exit" data-section="exit" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Withdrawal &amp; Annuity at 60</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">NPS is designed for the long haul, so access to the corpus is structured. Here is how withdrawals, the mandatory annuity and early exits work.</p>
+    </div>
+    <div class="nps-cards">
+      {EXIT.map((e) => (
+        <div class="card"><h4 class="card-h">{e.h}</h4><p class="card-p">{e.p}</p></div>
+      ))}
+    </div>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Because a large part of the corpus converts into a lifelong annuity, treat NPS as a dedicated retirement allocation — align your contributions, asset choice and horizon with the pension you want at 60.</p>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated, research-led retirement plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/support/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Start Building Your Retirement Corpus</h3>
+        <p class="ct-sub">Open your account in minutes and begin contributing to NPS with zero paperwork.</p>
+      </div>
+      <a class="btn-gold" href="/demat/">Start Investing</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== nps — page-specific only ===== */
+
+  /* Generic responsive card grid for the withdrawal/annuity card set (the shared
+     .row-2 is 2-up and .cat-grid's border math is tuned for its own cell count;
+     this handles arbitrary counts). Values are on the 8px grid. */
+  .nps-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  .nps-cards .card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (max-width: 560px) {
+    .nps-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

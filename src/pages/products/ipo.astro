@@ -1,0 +1,382 @@
+---
+/**
+ * IPO — /products/ipo/
+ * Long-form Initial Public Offering guide. Built entirely from the shared
+ * design-system components in global.css (hero, .section/.sec-title, .card,
+ * .product-page_table, .risks, .steps, .cat-grid, FaqAccordion, .cta-box).
+ * The only page-scoped CSS is a token-bound glossary list (.gloss).
+ * Nested route → BaseLayout / component imports at ../../ depth.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqAccordion from '../../components/sections/FaqAccordion.astro';
+import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../../lib/seo';
+
+// Issue-structure cards — two ways an IPO can be priced and two ways shares are sourced.
+const STRUCTURE = [
+  {
+    h: 'Fixed Price Issue',
+    p: 'The company sets a single, fixed price per share in the prospectus. Investors know exactly what they will pay, and demand is only known after the issue closes.',
+  },
+  {
+    h: 'Book Building Issue',
+    p: 'The company offers a price band (a floor and a cap). Investors bid within the band, and the final cut-off price is discovered from the demand generated across all bids.',
+  },
+  {
+    h: 'Fresh Issue',
+    p: 'The company creates and sells new shares to raise fresh capital. The money goes to the company, and the total number of outstanding shares increases.',
+  },
+  {
+    h: 'Offer for Sale (OFS)',
+    p: 'Existing shareholders — promoters or early investors — sell part of their holding to the public. The proceeds go to those selling shareholders, not the company.',
+  },
+];
+
+// How to apply — five-step ASBA/UPI flow through a broker or bank.
+const STEPS = [
+  { h: 'Pick an Open IPO', p: 'Browse live and upcoming IPOs, read the RHP and check the price band, lot size and issue dates.' },
+  { h: 'Place Your Bid', p: 'Apply through your broker or bank at cut-off or a chosen price within the band, in multiples of the lot size.' },
+  { h: 'Block Funds via UPI / ASBA', p: 'The application amount is blocked in your bank account through UPI or ASBA — it stays in your account until allotment.' },
+  { h: 'Allotment', p: 'On finalisation, shares are credited to your Demat account; if oversubscribed, allotment may be partial or by lottery.' },
+  { h: 'Listing Day', p: 'Blocked funds for un-allotted shares are released, and allotted shares begin trading on the NSE/BSE from the listing date.' },
+];
+
+// Key IPO terms — term + plain-language definition.
+const TERMS = [
+  {
+    t: 'Price Band',
+    d: 'In a book-built issue, the range between a floor price and a cap price within which investors place their bids. The final price is set inside this band.',
+  },
+  {
+    t: 'Lot Size',
+    d: 'The minimum number of shares you can apply for, and the multiple in which you must bid. Retail applications start at one lot and are capped at ₹2 lakh.',
+  },
+  {
+    t: 'Cut-off Price',
+    d: 'An option for retail investors to bid at whatever final price the company sets within the band, ensuring the bid stays valid regardless of the discovered price.',
+  },
+  {
+    t: 'Grey Market Premium (GMP)',
+    d: 'An unofficial, unregulated indicator of the premium at which IPO shares trade before listing. It signals sentiment but is not a reliable guide to listing gains.',
+  },
+  {
+    t: 'ASBA',
+    d: 'Application Supported by Blocked Amount — the mandatory mechanism where your application money is blocked, not debited, until shares are allotted.',
+  },
+  {
+    t: 'RII / NII / QIB',
+    d: 'The three investor categories: Retail Individual Investors (up to ₹2 lakh), Non-Institutional Investors (above ₹2 lakh) and Qualified Institutional Buyers.',
+  },
+];
+
+// Investor-category reservation cards.
+const CATEGORIES = [
+  { h: 'Retail (RII)', p: 'Individual investors applying for up to ₹2 lakh. A minimum 35% of a book-built issue is reserved for this category.' },
+  { h: 'Non-Institutional (NII)', p: 'Individuals, HUFs and bodies applying above ₹2 lakh. At least 15% of a book-built issue is reserved for NIIs.' },
+  { h: 'Qualified Institutional (QIB)', p: 'Mutual funds, banks, FPIs and insurers. Up to 50% of a book-built issue is allocated to this category.' },
+  { h: 'Anchor Investors', p: 'A sub-set of QIBs who commit ahead of the issue opening, lending confidence and helping anchor the price band.' },
+];
+
+// Allotment & listing rows — scenario / what happens.
+const ALLOT_ROWS = [
+  {
+    k: 'Under-subscribed',
+    m: 'Demand is below the shares on offer. All valid applicants typically receive a full allotment, subject to minimum-subscription rules.',
+  },
+  {
+    k: 'Fully subscribed',
+    m: 'Demand roughly matches supply. Applicants generally receive the shares they applied for at the final issue price.',
+  },
+  {
+    k: 'Over-subscribed (retail)',
+    m: 'Demand exceeds supply. Allotment is made by lottery in multiples of the lot size, so each successful applicant gets at least one lot.',
+  },
+  {
+    k: 'No allotment',
+    m: 'If your name is not drawn in the lottery, you receive no shares and the amount blocked in your account is released in full.',
+  },
+];
+
+// Risks to weigh before applying.
+const RISKS = [
+  { h: 'No Allotment Risk', p: 'A heavily oversubscribed IPO is allotted by lottery — applying is no guarantee you will receive any shares at all.' },
+  { h: 'Listing-Day Volatility', p: 'Prices can swing sharply on debut. A stock may list below its issue price, turning an anticipated gain into an immediate loss.' },
+  { h: 'Valuation Risk', p: 'IPOs are often priced to favour the seller. A rich valuation can limit upside and leave little margin of safety for new investors.' },
+  { h: 'Lock-in & Limited History', p: 'Anchor and promoter shares carry lock-ins that can pressure prices on release, and a newly listed company has a short public track record.' },
+];
+
+// General Questions — plain-text answers, shared with the FAQPage schema.
+const FAQS = [
+  {
+    q: 'What is an IPO?',
+    a: 'An IPO, or Initial Public Offering, is the process through which a private company offers its shares to the public for the first time and gets listed on a stock exchange such as the NSE or BSE. It lets the company raise capital and gives investors a chance to own a part of the business.',
+  },
+  {
+    q: 'Do I need a Demat account to apply for an IPO?',
+    a: 'Yes. IPO shares are allotted only in electronic form, so a Demat account is mandatory to apply. You also need a bank account with UPI or ASBA to block the application amount, and a PAN linked to your Demat account.',
+  },
+  {
+    q: 'What is the difference between a fixed price and a book-building IPO?',
+    a: 'In a fixed-price issue the company sets one price per share upfront. In a book-building issue the company offers a price band, investors bid within it, and the final cut-off price is discovered from overall demand.',
+  },
+  {
+    q: 'How does IPO allotment work if the issue is oversubscribed?',
+    a: 'When retail demand exceeds the shares on offer, allotment is done by a computerised lottery in multiples of the lot size. Every successful applicant receives at least one lot, and applicants who are not drawn receive no shares — the blocked funds are then released.',
+  },
+  {
+    q: 'What is ASBA and how does UPI fit in?',
+    a: 'ASBA stands for Application Supported by Blocked Amount. Your application money is blocked in your bank account rather than debited, and it is released or debited only after allotment. Retail investors can authorise this block through a UPI mandate when applying via a broker.',
+  },
+  {
+    q: 'What is Grey Market Premium (GMP)?',
+    a: 'GMP is the premium at which IPO shares are traded unofficially before they list. It reflects market sentiment but is unregulated and unreliable, so it should not be treated as a guarantee of listing-day gains.',
+  },
+  {
+    q: 'Is there any fee to apply for an IPO?',
+    a: 'No. There is no application fee to apply for an IPO through Shriram. Your funds are simply blocked via UPI or ASBA until allotment, and standard charges apply only if and when you later sell the allotted shares.',
+  },
+];
+
+const site = Astro.site!.href;
+
+const seo = {
+  title: 'IPO — How to Apply for an Initial Public Offering in India | Shriram Financial Services',
+  description:
+    'Understand IPOs in India — fixed-price vs book-building issues, how to apply via UPI and ASBA, key terms, allotment, listing and risks — with research-led guidance from Shriram.',
+  path: '/products/ipo/',
+  jsonLd: [
+    faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products/' },
+        { name: 'IPO', path: '/products/ipo/' },
+      ],
+      site
+    ),
+    organizationSchema(site),
+  ],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Invest in Companies at Their <span class="g">Public Debut</span></h1>
+      <p class="lead">Apply for Initial Public Offerings on the NSE and BSE — with UPI-backed applications, research-led insights and transparent, zero-fee guidance from Shriram.</p>
+      <div class="cta"><a class="btn-gold" href="/demat/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;UPI &amp; ASBA</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-regulated</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Zero application fee</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== What Is an IPO ===== -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is an IPO?</h2>
+      <p class="sec-lead">An Initial Public Offering, or IPO, is the process by which a privately held company offers its shares to the general public for the first time and lists them on a stock exchange such as the National Stock Exchange (NSE) or Bombay Stock Exchange (BSE). The company raises capital from a wide base of investors, while investors get the opportunity to own a stake in the business from the very start of its public life. Every IPO in India is regulated by the Securities and Exchange Board of India (SEBI), which reviews the offer document and protects investor interests.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Why Companies Go Public</h3>
+        <p class="sub-lead">Listing on an exchange serves the company and its early backers in a few distinct ways.</p>
+      </div>
+      <div class="row-2">
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">Raise Growth Capital</h4>
+          <p class="card-p">A fresh issue of shares brings new money into the company to fund expansion, repay debt or invest in operations — without the fixed obligations of a loan.</p>
+        </div>
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">Provide an Exit &amp; Liquidity</h4>
+          <p class="card-p">Listing lets early investors and promoters sell part of their holding, and gives all shareholders a transparent, exchange-traded market to buy and sell shares.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== IPO Types & Structure ===== -->
+  <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">IPO Types &amp; Structure</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every IPO is defined by two choices — how the shares are priced, and where the shares being sold come from.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Pricing &amp; Share Source</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Fixed-price versus book-building sets the price; fresh issue versus offer for sale sets who receives the money.</p>
+      </div>
+      <div class="row-2">
+        {STRUCTURE.map((c) => (
+          <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
+        ))}
+      </div>
+    </div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== How to Apply for an IPO ===== -->
+  <section class="section stack sec-light" id="sec-apply" data-section="apply" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How to Apply for an IPO</h2>
+      <p class="sec-lead">From picking an open issue to listing day, applying for an IPO through Shriram takes just a few guided steps.</p>
+    </div>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="steps">
+        {STEPS.slice(0, 3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 1}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+      <div class="steps">
+        {STEPS.slice(3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 4}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+    </div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Key IPO Terms ===== -->
+  <section class="section stack sec-tint" id="sec-terms" data-section="terms" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Key IPO Terms</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The core vocabulary that appears in every offer document — worth understanding before you place a bid.</p>
+    </div>
+    <div class="card">
+      <dl class="gloss">
+        {TERMS.map((t) => (
+          <div><dt>{t.t}</dt><dd>{t.d}</dd></div>
+        ))}
+      </dl>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Investor Categories &amp; Reservation</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Every book-built issue reserves portions of the offer for different classes of investor.</p>
+      </div>
+      <div class="cat-grid">
+        {CATEGORIES.map((c) => (
+          <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Allotment & Listing ===== -->
+  <section class="section stack sec-light" id="sec-allotment" data-section="allotment" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Allotment &amp; Listing</h2>
+      <p class="sec-lead">How shares are allotted depends entirely on demand. Whatever the outcome, any money blocked for shares you do not receive is released back to your account.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Subscription Scenario</p></div><div class="cell th"><p>What Happens to Allotment</p></div><div class="cell th"><p>Blocked Funds</p></div>
+      {ALLOT_ROWS.map((r) => (
+        <>
+          <div class="cell tb"><p class="k">{r.k}</p></div>
+          <div class="cell tb"><p class="v">{r.m}</p></div>
+          <div class="cell tb"><p class="v">Debited only for shares allotted; the balance is released.</p></div>
+        </>
+      ))}
+    </div></div>
+    <a class="btn-gold" href="/demat/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Risks to Weigh ===== -->
+  <section class="section stack sec-tint" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Risks to Weigh</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">An IPO is an investment, not a guaranteed gain. Understand what can move against you before you apply.</p>
+    </div>
+    <div class="risks">
+      {RISKS.map((r) => (
+        <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated, research-led plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/support/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Ready for the Next IPO?</h3>
+        <p class="ct-sub">Open your Demat account in minutes and apply to Initial Public Offerings with zero paperwork.</p>
+      </div>
+      <a class="btn-gold" href="/demat/">Open Demat Account</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== ipo — page-specific only ===== */
+
+  /* Key-terms glossary — a definition list inside a shared .card.
+     Mirrors the bonds glossary pattern; all values on the 8px grid,
+     colours bound to tokens. */
+  .gloss {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .gloss > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 0;
+    border-top: 1px solid var(--color-border-hairline);
+  }
+  .gloss > div:first-child {
+    padding-top: 0;
+  }
+  .gloss > div:last-child {
+    padding-bottom: 0;
+  }
+  .gloss dt {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-primary);
+  }
+  .gloss dd {
+    margin: 0;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+  }
+
+  @media (max-width: 768px) {
+    .gloss dt,
+    .gloss dd {
+      font-size: 14px;
+    }
+  }
+</style>
