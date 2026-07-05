@@ -1,0 +1,215 @@
+---
+/**
+ * Sitemap — /sitemap/
+ * A public, human-facing directory of the whole site (distinct from the
+ * machine-readable /sitemap-index.xml that @astrojs/sitemap emits at build).
+ *
+ * Scale note: the link groups are BUILT FROM navigation.ts (the single source
+ * of truth). New nav entries appear here automatically — no hand-maintained
+ * second list to drift out of sync. Only the top-level "Company" and "Legal"
+ * groups (pages that don't live in the mega-nav) are declared locally.
+ *
+ * Layout: standard shared .hero, then the .pgroup pattern (same as
+ * products/index.astro) — each group is an uppercase header + blurb over a
+ * uniform grid of compact link tiles, so a 15-link group and a 3-link group
+ * read with equal weight. Every page (section landing pages included) is a
+ * tile — nothing is hidden behind a "view all". Left-aligned headers
+ * (rule 12); one shared .cta-box.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { megaNavSections, type NavLink } from '../data/navigation';
+import { breadcrumbSchema } from '../lib/seo';
+
+interface SmGroup {
+  title: string;
+  blurb: string;
+  links: NavLink[];
+}
+
+const isReal = (l: NavLink) => l.href !== '#';
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+
+// Top-level pages that don't sit under a mega-nav panel.
+const company: SmGroup = {
+  title: 'Company',
+  blurb: 'Who we are and how to get started with Shriram.',
+  links: [
+    { label: 'Home', href: '/' },
+    { label: 'About Us', href: '/about/' },
+    { label: 'Open a Demat Account', href: '/demat/' },
+    { label: 'Become a Partner', href: '/become-a-partner/' },
+  ],
+};
+
+// One-line blurbs keyed by mega-nav section id.
+const blurbs: Record<string, string> = {
+  products: 'Everything you can trade, invest in or borrow against.',
+  'research-centre': 'Research-led ideas across technical, fundamental and funds.',
+  calculators: 'Plan your returns before you commit a rupee.',
+  support: 'Reach us, raise a concern or find the right disclosure.',
+};
+
+// Section landing pages surfaced as their own tile (labelled as the page,
+// not "view all"). Skipped where the hub already appears among the links.
+const hubLabels: Record<string, string> = {
+  products: 'Product Suite',
+  'research-centre': 'Research Centre',
+};
+
+// Products / Research / Calculators / Support — flattened from the nav tree.
+const navGroups: SmGroup[] = megaNavSections.map((s) => {
+  const links = s.columns.flatMap((c) => c.linkGroups.flat()).filter(isReal);
+  const hub = s.viewAll && isReal(s.viewAll) ? s.viewAll.href : null;
+  const label = hubLabels[s.id];
+  if (hub && label && !links.some((l) => l.href === hub)) {
+    links.unshift({ label, href: hub });
+  }
+  return { title: s.heading, blurb: blurbs[s.id] ?? '', links };
+});
+
+// Legal & compliance — curated real pages (kept out of the mega-nav).
+const legal: SmGroup = {
+  title: 'Legal & Compliance',
+  blurb: 'Policies, charters and regulatory disclosures.',
+  links: [
+    { label: 'Privacy Policy', href: '/privacy/' },
+    { label: 'Investor Charter', href: '/investor-charter/' },
+    { label: 'Mandatory Member Details', href: '/mandatory-member-details/' },
+    { label: 'Grievance Redressal', href: '/support/grievance-redressal/' },
+    { label: 'SEBI SCORES', href: 'https://scores.sebi.gov.in' },
+  ],
+};
+
+const groups: SmGroup[] = [company, ...navGroups, legal];
+
+const seo = {
+  title: 'Sitemap — Shriram Financial Services',
+  description:
+    'Browse every section of the Shriram Financial Services site in one place — products, research, calculators, support and legal disclosures.',
+  path: '/sitemap/',
+  jsonLd: [
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Sitemap', path: '/sitemap/' },
+      ],
+      'https://uat.shriramsecurities.com'
+    ),
+  ],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Find Your Way Around <span class="g">Our Site</span></h1>
+      <p class="lead">A complete directory of everything on Shriram Financial Services — every product, research desk, calculator and support page, organised in one place.</p>
+      <div class="cta"><a class="btn-gold" href="/demat/">Open Demat Account</a></div>
+    </div>
+  </section>
+
+  <!-- ================= SITE DIRECTORY ================= -->
+  <section class="section stack sec-light" id="sec-map" data-section="map" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Site Directory</h2>
+      <p class="sec-lead">Jump straight to any page. Sections mirror the main navigation, so what you see in the menu, you'll find here.</p>
+    </div>
+
+    {groups.map((g) => (
+      <div class="pgroup">
+        <div class="pgroup-head">
+          <h3>{g.title}</h3>
+          <p>{g.blurb}</p>
+        </div>
+        <div class="sm-link-grid">
+          {g.links.map((l) => (
+            <a
+              class="sm-link"
+              href={l.href}
+              {...(isExternal(l.href) ? { target: '_blank', rel: 'noopener' } : {})}
+            >
+              <span class="lb">{l.label}</span>
+              <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Didn't Find What You Were Looking For?</h3>
+        <p class="ct-sub">Our team is ready to point you in the right direction — reach out any time.</p>
+      </div>
+      <a class="btn-gold" href="/support/">Contact Support</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== sitemap — page-local directory tiles (extends the .pgroup pattern) ===== */
+
+  /* Uniform tile grid — decouples visual weight from link count. */
+  .sm-link-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .sm-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-product-card);
+    border-radius: var(--radius-md); /* 8px — small tile */
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+  .sm-link:hover {
+    background: var(--color-cream-300);
+    border-color: var(--color-tan-400);
+  }
+  .sm-link .lb {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-primary);
+  }
+  .sm-link .arr {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--color-text-heading-dark);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .sm-link:hover .arr,
+  .sm-link:focus-visible .arr {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .sm-link .arr svg {
+    display: block;
+  }
+
+  @media (max-width: 1080px) {
+    .sm-link-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 760px) {
+    .sm-link-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 480px) {
+    .sm-link-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

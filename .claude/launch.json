@@ -25,6 +25,13 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["astro", "preview", "--port", "4336"],
       "port": 4336
+    },
+    {
+      "name": "astro-verify",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["astro", "preview", "--port", "4344"],
+      "port": 4344,
+      "autoPort": false
     }
   ]
 }

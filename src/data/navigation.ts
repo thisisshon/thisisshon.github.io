@@ -189,7 +189,7 @@ export const footerColumns: FooterColumn[] = [
       { label: 'Open Demat Account', href: '/demat/' },
       { label: 'Regulatory', href: '#' },
       { label: 'Antara Platform', href: '#' },
-      { label: 'Sitemap', href: '#' },
+      { label: 'Sitemap', href: '/sitemap/' },
     ],
   },
   {
