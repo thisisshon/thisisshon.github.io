@@ -7,6 +7,7 @@
  * /fixed-deposit/ — this is the calculator tool.)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 import { otherCalculators, calcHref } from '../data/calculators';
@@ -45,10 +46,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'FD Calculator' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Estimate Your Returns With The <span class="g">Fixed Deposit Calculator</span></h1>
       <p class="lead">Work out exactly what your deposit will be worth at maturity — adjust the amount, interest rate, tenure and compounding frequency.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -64,7 +66,7 @@ const seo = {
   </section>
 
   <!-- ===== FD Calculator ===== -->
-  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px">
+  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">Fixed Deposit Calculator</h2>
     <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly. Switch the compounding frequency to match your bank.</p>
 
@@ -121,7 +123,7 @@ const seo = {
             </div>
           </div>
 
-          <div class="res-cards">
+          <div class="res-cards" data-reveal-row>
             <div class="res-card">
               <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Invested Amount</div>
               <div class="res-val" id="r-inv">₹1,00,000</div>
@@ -186,7 +188,7 @@ const seo = {
   <!-- ===== Explore More ===== -->
   <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
     <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid">
+    <div class="explore-grid" data-reveal-row>
       {
         MORE.map((c) => (
           <a class="xcard" href={calcHref(c.slug)}>

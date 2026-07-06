@@ -4,6 +4,7 @@
  * Legal long-form page. Mirrors privacy-policy.astro structure and shared styles.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 
 const seo = {
   title: 'Terms & Conditions',
@@ -13,10 +14,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Terms & Conditions' }]} />
+    <div class="hero-inner" data-enter>
       <div class="hero-content">
         <h1>Terms &amp; <span class="g">Conditions</span></h1>
         <p class="lead">
@@ -51,7 +53,7 @@ const seo = {
   </section>
 
   <!-- ================= ACCEPTANCE + ELIGIBILITY + REGISTRATION ================= -->
-  <section class="section sec-light" id="sec-intro" data-section="intro">
+  <section class="section sec-light" id="sec-intro" data-section="intro" data-enter="2">
     <div class="legal">
       <div class="policy">
         <p class="updated">Last updated: 6 July 2026</p>

@@ -5,6 +5,7 @@
  * support/grievance-redressal/index.html.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 
 const seo = {
   title: 'Grievance Redressal — Raise & Escalate a Complaint',
@@ -73,10 +74,11 @@ const ESCALATIONS = [
 ];
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Grievance Redressal' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Grievance <span class="g">Redressal</span></h1>
       <p class="lead">Not satisfied with a product or service? Here's how to raise a complaint — and exactly who to contact at each level until it's resolved.</p>
       <div class="hero-contacts">
@@ -93,7 +95,7 @@ const ESCALATIONS = [
   </section>
 
   <!-- ================= HOW TO RAISE A GRIEVANCE ================= -->
-  <section class="section stack sec-light" id="sec-policy" data-section="policy" style="gap:56px">
+  <section class="section stack sec-light" id="sec-policy" data-section="policy" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:24px">
       <h2 class="sub-title">How to Raise a Grievance</h2>
       <p class="sub-lead">Customers who are not satisfied or have a grievance about the products or services provided by the Company can address their complaint to the contacts below. We're here Monday to Saturday, 9 AM – 6 PM.</p>
@@ -123,7 +125,7 @@ const ESCALATIONS = [
       All teams: 3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru – 560 020 · Monday to Friday, 9:30 AM – 5:30 PM.
     </div>
 
-    <div class="esc-grid">
+    <div class="esc-grid" data-reveal-row>
       {
         ESCALATIONS.map((e) => (
           <article class="esc-card">

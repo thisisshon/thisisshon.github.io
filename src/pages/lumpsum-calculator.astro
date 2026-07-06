@@ -6,6 +6,7 @@
  * .ready-* / .bullets / .explore-grid); page carries only content + its maths.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 import { otherCalculators, calcHref } from '../data/calculators';
@@ -45,10 +46,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'Lumpsum Calculator' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Grow A One-Time Investment With The <span class="g">Lumpsum Calculator</span></h1>
       <p class="lead">See how a single investment could grow over time — just set your amount, horizon and expected rate of return.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -64,7 +66,7 @@ const seo = {
   </section>
 
   <!-- ===== Lumpsum Calculator ===== -->
-  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px">
+  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">Lumpsum Calculator</h2>
     <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly.</p>
 
@@ -115,7 +117,7 @@ const seo = {
             </div>
           </div>
 
-          <div class="res-cards">
+          <div class="res-cards" data-reveal-row>
             <div class="res-card">
               <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Invested Amount</div>
               <div class="res-val" id="r-inv">₹1,00,000</div>
@@ -180,7 +182,7 @@ const seo = {
   <!-- ===== Explore More ===== -->
   <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
     <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid">
+    <div class="explore-grid" data-reveal-row>
       {
         MORE.map((c) => (
           <a class="xcard" href={calcHref(c.slug)}>

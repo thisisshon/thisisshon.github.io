@@ -8,6 +8,7 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -255,10 +256,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Bonds' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Your Guide to <span class="g">Bond Investments</span> in India</h1>
       <p class="lead">Understand bond types, returns, risks and investment strategies to make informed fixed-income decisions.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -274,7 +276,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is a Bond? ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is a Bond?</h2>
       <p class="sec-lead">A bond is a fixed-income investment where you lend money to an issuer — a government, public sector entity, municipal authority or company — in exchange for regular interest payments and repayment of the invested amount at maturity. In simple terms, when you invest in a bond you are lending money to the issuer, rather than buying ownership as you do in equities.</p>
@@ -300,7 +302,7 @@ const seo = {
       <h2 class="sec-title">Types of Bonds in India</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">The Indian bond market offers multiple fixed-income instruments for different needs, risk profiles and time horizons. Here are a few.</p>
     </div>
-    <div class="bond-cards">
+    <div class="bond-cards" data-reveal-row>
       {TYPES.map((c) => (
         <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
       ))}
@@ -332,7 +334,7 @@ const seo = {
       <h2 class="sec-title">How to Evaluate a Bond</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Before investing, look beyond the coupon rate. These four parameters help you judge a bond on its merits.</p>
     </div>
-    <div class="risks">
+    <div class="risks" data-reveal-row>
       {EVALUATE.map((e) => (
         <div class="risk"><h4>{e.h}</h4><p>{e.p}</p></div>
       ))}
@@ -346,7 +348,7 @@ const seo = {
       <p class="sec-lead">Bond investment in the secondary market through Shriram Financial Services takes just a few steps.</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
-      <div class="steps">
+      <div class="steps" data-reveal-row>
         {STEPS.slice(0, 3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
@@ -354,7 +356,7 @@ const seo = {
           </>
         ))}
       </div>
-      <div class="steps">
+      <div class="steps" data-reveal-row>
         {STEPS.slice(3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
@@ -372,7 +374,7 @@ const seo = {
       <h2 class="sec-title">Bond Investment Strategies</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">A bond portfolio works best when it is aligned with your investment horizon, cash-flow needs and interest-rate outlook. Instead of buying bonds at random, use structured strategies to manage risk and improve efficiency.</p>
     </div>
-    <div class="bond-cards">
+    <div class="bond-cards" data-reveal-row>
       {STRATEGIES.map((s) => (
         <div class="card"><h4 class="card-h">{s.h}</h4><p class="card-p">{s.p}</p></div>
       ))}
@@ -385,7 +387,7 @@ const seo = {
       <h2 class="sec-title">Risks &amp; Warning Signs in Bonds</h2>
       <p class="sec-lead">Even established issuers carry risk. These are the signals worth watching when you review any bond.</p>
     </div>
-    <div class="bond-cards">
+    <div class="bond-cards" data-reveal-row>
       {WARNINGS.map((w) => (
         <div class="card"><h4 class="card-h">{w.h}</h4><p class="card-p">{w.p}</p></div>
       ))}

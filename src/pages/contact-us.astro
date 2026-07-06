@@ -6,6 +6,7 @@
  * Pixel parity with legacy support/index.html.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 
 const seo = {
   title: 'Contact Us — Customer Care, Branch Locator & Downloads',
@@ -35,11 +36,12 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Contact Us' }]} />
     <div class="hero-grid">
-      <div class="hero-inner">
+      <div class="hero-inner" data-enter>
         <h1>How Can We <span class="g">Help You?</span></h1>
         <p class="lead">Reach our support team across multiple channels. We're here Monday to Saturday, 9 AM – 6 PM IST.</p>
         <div class="hero-contacts">
@@ -128,7 +130,7 @@ const seo = {
 
   <!-- ================= PANEL: CUSTOMER CARE ================= -->
   <section class="section stack tabpanel sec-light" id="panel-care" role="tabpanel" aria-labelledby="tab-care"
-           data-section="care" style="gap:40px">
+           data-section="care" style="gap:40px" data-enter="2">
     <div class="stack reveal" style="gap:16px">
       <h2 class="sub-title">Get in Touch</h2>
       <p class="sub-lead">Choose the channel that works best for you.</p>
@@ -137,7 +139,7 @@ const seo = {
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"></circle><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       Support hours: Monday – Saturday, 9:00 AM to 6:00 PM IST. Closed on public holidays.
     </div>
-    <div class="chan-grid reveal">
+    <div class="chan-grid reveal" data-reveal-row>
       <div class="chan">
         <span class="chan-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg></span>
         <h3>Toll-free helpline</h3>
@@ -228,7 +230,7 @@ const seo = {
 
     <div class="doc-group reveal" data-cat="grievance">
       <p class="doc-cat">Grievance</p>
-      <div class="doc-grid">
+      <div class="doc-grid" data-reveal-row>
         <div class="doc-card">
           <span class="nm">Grievance Redressal Policy</span>
           <span class="upd">Updated Jun 2025</span>
@@ -244,7 +246,7 @@ const seo = {
 
     <div class="doc-group reveal" data-cat="account-opening">
       <p class="doc-cat">Account Opening</p>
-      <div class="doc-grid">
+      <div class="doc-grid" data-reveal-row>
         <div class="doc-card">
           <span class="nm">Account Opening Form — Individual</span>
           <span class="upd">Updated Apr 2025</span>
@@ -265,7 +267,7 @@ const seo = {
 
     <div class="doc-group reveal" data-cat="kyc">
       <p class="doc-cat">KYC &amp; Compliance</p>
-      <div class="doc-grid">
+      <div class="doc-grid" data-reveal-row>
         <div class="doc-card">
           <span class="nm">KYC Modification Form</span>
           <span class="upd">Updated Jan 2025</span>
@@ -286,7 +288,7 @@ const seo = {
 
     <div class="doc-group reveal" data-cat="dp-demat">
       <p class="doc-cat">DP / Demat</p>
-      <div class="doc-grid">
+      <div class="doc-grid" data-reveal-row>
         <div class="doc-card">
           <span class="nm">DIS (Delivery Instruction Slip)</span>
           <span class="upd">Updated Jan 2025</span>
@@ -302,7 +304,7 @@ const seo = {
 
     <div class="doc-group reveal" data-cat="funds">
       <p class="doc-cat">Funds &amp; Settlement</p>
-      <div class="doc-grid">
+      <div class="doc-grid" data-reveal-row>
         <div class="doc-card">
           <span class="nm">Bank Account Change Request</span>
           <span class="upd">Updated Feb 2025</span>
@@ -867,7 +869,7 @@ const seo = {
 
   /* ---------- Downloads: category groups, card grid, search + chip toolbar and
      empty state now live in global.css (.doc-group/.doc-cat/.doc-toolbar/.doc-search/
-     .doc-chips/.doc-chip/.doc-empty) — shared with /investor-charter/. ---------- */
+     .doc-chips/.doc-chip/.doc-empty) — shared with /regulatory-documents/investor-charter/. ---------- */
 
   /* ---------- final CTA (dark, centered — shared with About).
      .btn-ghost base is global now; only the page-scoped hover overrides remain. ---------- */

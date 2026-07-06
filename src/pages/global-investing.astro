@@ -9,6 +9,7 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -122,10 +123,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Global Investing' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Invest in <span class="g">US Stocks &amp; ETFs</span> from India</h1>
       <p class="lead">Diversify beyond home. Own the world's leading companies through the RBI's LRS route — with fractional investing, USD assets and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -141,7 +143,7 @@ const seo = {
   </section>
 
   <!-- ===== Why Invest Globally ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Why Invest Globally</h2>
       <p class="sec-lead">Investing globally lets you look beyond the Indian economy and participate in the growth of the world's largest markets. It adds a layer of diversification, gives you exposure to USD-denominated assets, and lets you own world-leading brands that aren't listed in India. For Indian investors, global investing is a way to reduce concentration risk and complement a domestic portfolio — not replace it.</p>
@@ -151,7 +153,7 @@ const seo = {
         <h3 class="sub-title">The Case for Going Global</h3>
         <p class="sub-lead">Three reasons Indian investors add international exposure to their portfolios.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Diversification</h4>
           <p class="card-p">Spreading investments across geographies reduces reliance on a single economy. When Indian markets are flat, global holdings can perform differently, smoothing overall returns.</p>
@@ -179,7 +181,7 @@ const seo = {
       <h2 class="sec-title">How to Invest from India</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Investing abroad from India is a regulated, straightforward process routed through the RBI's Liberalised Remittance Scheme. Three steps take you from account opening to your first US trade.</p>
     </div>
-    <div class="steps">
+    <div class="steps" data-reveal-row>
       {STEPS.map((s, i) => (
         <>
           {i > 0 && <div class="step-div" />}
@@ -246,7 +248,7 @@ const seo = {
       <h2 class="sec-title">What You Can Invest In</h2>
       <p class="sec-lead">Once your global investing account is funded, a wide universe of US-listed instruments opens up — from individual blue-chip stocks to diversified funds and ready-made thematic portfolios.</p>
     </div>
-    <div class="gi-cards">
+    <div class="gi-cards" data-reveal-row>
       {INVEST_IN.map((c) => (
         <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
       ))}
@@ -256,7 +258,7 @@ const seo = {
         <h3 class="sub-title">Popular Ways to Get Started</h3>
         <p class="sub-lead">Common entry points for Indian investors building global exposure.</p>
       </div>
-      <div class="cat-grid">
+      <div class="cat-grid" data-reveal-row>
         <div class="cat"><h4>Blue-Chip Stocks</h4><p>Own established US market leaders across technology and consumer sectors.</p></div>
         <div class="cat"><h4>Index ETFs</h4><p>Track a broad US index for instant, low-cost market diversification.</p></div>
         <div class="cat"><h4>Sector ETFs</h4><p>Target a specific sector such as technology, healthcare or energy.</p></div>
@@ -276,7 +278,7 @@ const seo = {
       <h2 class="sec-title">Risks to Weigh</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Global investing adds currency and cross-border dimensions on top of ordinary market risk. Understand what can move against you before you commit capital.</p>
     </div>
-    <div class="risks">
+    <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}

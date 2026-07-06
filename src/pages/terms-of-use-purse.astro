@@ -5,6 +5,7 @@
  * Mirrors the privacy-policy.astro structure (hero + .legal/.policy blocks).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 
 const seo = {
   title: 'Terms of Use — Purse Mobile App',
@@ -14,10 +15,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Terms of Use — Purse' }]} />
+    <div class="hero-inner" data-enter>
       <div class="hero-content">
         <h1>Terms of Use &mdash; <span class="g">Purse</span></h1>
         <p class="lead">
@@ -51,7 +53,7 @@ const seo = {
   </section>
 
   <!-- ================= ACCEPTANCE + LICENCE ================= -->
-  <section class="section sec-light" id="sec-acceptance" data-section="acceptance">
+  <section class="section sec-light" id="sec-acceptance" data-section="acceptance" data-enter="2">
     <div class="legal">
       <div class="policy">
         <p class="updated">Last updated: 6 July 2026</p>

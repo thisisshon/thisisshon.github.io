@@ -7,6 +7,7 @@
  * content + maths. (The NPS *product* page lives at /nps/.)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 import { otherCalculators, calcHref } from '../data/calculators';
@@ -45,10 +46,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'NPS Calculator' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Plan Your Retirement With The <span class="g">NPS Calculator</span></h1>
       <p class="lead">Project the corpus you'll build by 60, the lump-sum you can withdraw and the monthly pension your annuity could pay.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -64,7 +66,7 @@ const seo = {
   </section>
 
   <!-- ===== NPS Calculator ===== -->
-  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px">
+  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">NPS Calculator</h2>
     <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly. Contributions are assumed to run until you turn 60.</p>
 
@@ -124,7 +126,7 @@ const seo = {
             </div>
           </div>
 
-          <div class="res-cards">
+          <div class="res-cards" data-reveal-row>
             <div class="res-card">
               <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Invested Amount</div>
               <div class="res-val" id="r-inv">₹18,00,000</div>
@@ -138,7 +140,7 @@ const seo = {
           <div class="bar-div" role="presentation"></div>
 
           <!-- annuitisation outcomes -->
-          <div class="res-cards">
+          <div class="res-cards" data-reveal-row>
             <div class="res-card">
               <div class="res-top">Lump-sum Withdrawal</div>
               <div class="res-val" id="r-lump">₹68,37,976</div>
@@ -203,7 +205,7 @@ const seo = {
   <!-- ===== Explore More ===== -->
   <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
     <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid">
+    <div class="explore-grid" data-reveal-row>
       {
         MORE.map((c) => (
           <a class="xcard" href={calcHref(c.slug)}>

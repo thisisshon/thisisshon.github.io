@@ -7,6 +7,7 @@
  * feed the card/step/table maps. Nested route → imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -111,10 +112,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Margin Trading Facility' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Buy More Than Your Cash Allows With <span class="g">Margin Trading</span></h1>
       <p class="lead">Amplify your buying power with Margin Trading Facility — pay a part of the trade, let Shriram fund the rest, and pledge the shares as collateral, all with transparent charges.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -130,7 +132,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is MTF ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Margin Trading Facility?</h2>
       <p class="sec-lead">Margin Trading Facility (MTF) lets you buy more shares than your available cash would normally allow. You pay a fraction of the total order value as margin, and the broker funds the remaining amount. The shares you purchase are pledged as collateral against that funding, and you pay interest on the funded portion for as long as you hold the position. MTF is a SEBI-regulated, delivery-based product — you actually own the shares, unlike in F&amp;O where you trade contracts.</p>
@@ -140,7 +142,7 @@ const seo = {
         <h3 class="sub-title">Why Traders Use MTF</h3>
         <p class="sub-lead">Two things set MTF apart from a plain cash purchase — leverage and ownership.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">More Buying Power</h4>
           <p class="card-p">A limited amount of cash can command a larger position — often up to four times your margin — letting you act on a conviction without waiting to accumulate the full amount.</p>
@@ -160,7 +162,7 @@ const seo = {
       <p class="sec-lead" style="color:var(--color-text-secondary)">From your first margin payment to the final square-off — five steps that define every MTF trade.</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
-      <div class="steps">
+      <div class="steps" data-reveal-row>
         {STEPS.slice(0, 3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
@@ -168,7 +170,7 @@ const seo = {
           </>
         ))}
       </div>
-      <div class="steps">
+      <div class="steps" data-reveal-row>
         {STEPS.slice(3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
@@ -203,7 +205,7 @@ const seo = {
       <h2 class="sec-title">Eligibility &amp; Approved Securities</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Not every account or every stock qualifies for MTF. Here is what you and the security both need to meet.</p>
     </div>
-    <div class="row-2">
+    <div class="row-2" data-reveal-row>
       <div class="card check-card">
         <h4 class="ch-title">Who Can Use MTF</h4>
         <div class="check-list">
@@ -254,7 +256,7 @@ const seo = {
       <h2 class="sec-title">Risks to Weigh</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Leverage magnifies both outcomes. Understand these risks before you fund a position with MTF.</p>
     </div>
-    <div class="risks">
+    <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}

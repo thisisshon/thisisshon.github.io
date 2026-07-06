@@ -1,0 +1,36 @@
+---
+/**
+ * Breadcrumb — the hero breadcrumb trail (rule 7 hero, sitewide except homepage).
+ * Renders the canonical `.crumbs` markup (styled + animated in global.css). Home
+ * (L0) is intentionally omitted — the header logo is Home. Pass the visible trail
+ * (parent categories → current page); the last item renders as aria-current text,
+ * the rest as links. Keep it in sync with the page's breadcrumbSchema JSON-LD.
+ */
+interface Crumb {
+  name: string;
+  href?: string;
+}
+interface Props {
+  trail: Crumb[];
+}
+const { trail } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {
+      trail.map((c, i) => (
+        <Fragment>
+          {i > 0 && (
+            <li aria-hidden="true" class="crumb-sep">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </li>
+          )}
+          <li>
+            {c.href ? <a href={c.href}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
+          </li>
+        </Fragment>
+      ))
+    }
+  </ol>
+</nav>

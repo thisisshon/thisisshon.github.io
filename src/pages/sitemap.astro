@@ -17,6 +17,7 @@
  * (rule 12); one shared .cta-box.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import { megaNavSections, type NavLink } from '../data/navigation';
 import { breadcrumbSchema } from '../lib/seo';
 
@@ -102,10 +103,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Sitemap' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Find Your Way Around <span class="g">Our Site</span></h1>
       <p class="lead">A complete directory of everything on Shriram Financial Services — every product, research desk, calculator and support page, organised in one place.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -113,7 +115,7 @@ const seo = {
   </section>
 
   <!-- ================= SITE DIRECTORY ================= -->
-  <section class="section stack sec-light" id="sec-map" data-section="map" style="gap:56px">
+  <section class="section stack sec-light" id="sec-map" data-section="map" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Site Directory</h2>
       <p class="sec-lead">Jump straight to any page. Sections mirror the main navigation, so what you see in the menu, you'll find here.</p>
@@ -125,7 +127,7 @@ const seo = {
           <h3>{g.title}</h3>
           <p>{g.blurb}</p>
         </div>
-        <div class="sm-link-grid">
+        <div class="sm-link-grid" data-reveal-row>
           {g.links.map((l) => (
             <a
               class="sm-link"

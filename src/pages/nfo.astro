@@ -8,6 +8,7 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -150,10 +151,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'NFO' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Get In Early on a <span class="g">New Fund Offer</span></h1>
       <p class="lead">Subscribe to newly launched mutual-fund schemes at their ₹10 offer price — with 0% commission, AMFI-registered access and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -169,7 +171,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is an NFO ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is an NFO?</h2>
       <p class="sec-lead">A New Fund Offer, or NFO, is the launch of a brand-new mutual-fund scheme by an Asset Management Company (AMC). For a limited subscription window, investors can buy units of the scheme at a fixed offer price — typically ₹10 per unit, its face value — before it opens for regular transactions. Just as an IPO is a company’s first sale of shares, an NFO is a fund’s first sale of units. Once the offer closes, the AMC deploys the money it has collected into the securities defined by the scheme’s mandate, and the NAV begins to move with the market.</p>
@@ -179,7 +181,7 @@ const seo = {
         <h3 class="sub-title">How the ₹10 Offer Works</h3>
         <p class="sub-lead">Two things to keep in mind about that headline entry price before you subscribe.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">A Face Value, Not a Discount</h4>
           <p class="card-p">The ₹10 price is simply the starting NAV. It does not make the fund cheaper — the number of units you get is larger, but the value of what you own is the same.</p>
@@ -222,7 +224,7 @@ const seo = {
         <h3 class="sub-title">By Structure &amp; Mandate</h3>
         <p class="sub-lead">Open-ended versus close-ended sets your liquidity; the mandate sets your exposure.</p>
       </div>
-      <div class="cat-grid">
+      <div class="cat-grid" data-reveal-row>
         {TYPES.map((c) => (
           <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
         ))}
@@ -237,7 +239,7 @@ const seo = {
       <p class="sec-lead" style="color:var(--color-text-secondary)">Subscribing to a New Fund Offer through Shriram takes just a few guided steps within the offer window.</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
-      <div class="steps">
+      <div class="steps" data-reveal-row>
         {STEPS.slice(0, 3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
@@ -245,7 +247,7 @@ const seo = {
           </>
         ))}
       </div>
-      <div class="steps">
+      <div class="steps" data-reveal-row>
         {STEPS.slice(3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
@@ -263,7 +265,7 @@ const seo = {
       <h2 class="sec-title">What to Check Before Investing</h2>
       <p class="sec-lead">Because there is no track record to lean on, an NFO deserves closer scrutiny of the fund house and the mandate itself.</p>
     </div>
-    <div class="row-2">
+    <div class="row-2" data-reveal-row>
       <div class="card check-card">
         <h4 class="ch-title">Your NFO Checklist</h4>
         <div class="check-list">
@@ -320,7 +322,7 @@ const seo = {
         <h3 class="sub-title">Risks to Weigh</h3>
         <p class="sub-lead" style="color:var(--color-text-secondary)">Backing a scheme with no history means accepting a different set of uncertainties.</p>
       </div>
-      <div class="risks">
+      <div class="risks" data-reveal-row>
         {RISKS.map((r) => (
           <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
         ))}

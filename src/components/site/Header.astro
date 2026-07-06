@@ -85,6 +85,7 @@ import MobileMenu from './MobileMenu.astro';
       nav.classList.remove('open');
       menu.classList.remove('open');
       toggle?.setAttribute('aria-expanded', 'false');
+      document.documentElement.style.overflow = ''; // release background scroll lock
     };
 
     if (toggle && menu) {
@@ -92,6 +93,10 @@ import MobileMenu from './MobileMenu.astro';
         const open = nav.classList.toggle('open');
         menu.classList.toggle('open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        // Lock background scroll on the root (not <body>): locking <body> turns it into
+        // the scroll container and breaks the sticky header, which then scrolls up and
+        // leaves a gap above the fixed menu.
+        document.documentElement.style.overflow = open ? 'hidden' : '';
       });
       menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu));
     }
@@ -103,6 +108,7 @@ import MobileMenu from './MobileMenu.astro';
     window.addEventListener(
       'scroll',
       () => {
+        if (nav.classList.contains('open')) return; // keep header put while the menu is open
         const y = window.pageYOffset;
         if (Math.abs(y - last) < DELTA) return; // ignore tiny jitters
         if (y > last && y > THRESHOLD) {

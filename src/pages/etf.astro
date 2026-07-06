@@ -11,6 +11,7 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
@@ -56,10 +57,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'ETFs' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Invest in <span class="g">Exchange Traded Funds</span> in India</h1>
       <p class="lead">An ETF is a basket of securities that trades on NSE/BSE like a stock — combining mutual-fund diversification with stock-like liquidity. Invest in 100+ ETFs across equity, gold, debt, sectoral and international categories with a SEBI-registered broker backed by 40+ years of trust.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -75,12 +77,12 @@ const seo = {
   </section>
 
   <!-- ================= WHAT IS AN ETF ================= -->
-  <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is an ETF? — Meaning &amp; Definition</h2>
       <p class="sec-lead">An ETF is a basket of securities that trades on NSE/BSE like a stock — pooling investor money into a fund that mirrors an index, with units traded live on the exchange. Unlike a mutual fund, which is priced once daily, an ETF trades like a stock all day.</p>
     </div>
-    <div class="row-2">
+    <div class="row-2" data-reveal-row>
       <div class="card">
         <h4 class="card-h">Traded like a stock</h4>
         <p class="card-p">Units are listed on the exchange and bought or sold at live market price throughout the trading day, settling into your demat account.</p>
@@ -98,7 +100,7 @@ const seo = {
       <h2 class="sec-title">How ETFs Work — Creation &amp; Redemption Mechanism</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Behind the scenes, an Authorised Participant keeps an ETF's market price anchored to the value of the securities it holds.</p>
     </div>
-    <ol class="flow">
+    <ol class="flow" data-reveal-row>
       <li class="flow-step"><span class="flow-num">1</span><p class="flow-tx">Authorised Participant (AP) assembles the underlying securities basket.</p></li>
       <li class="flow-step"><span class="flow-num">2</span><p class="flow-tx">Fund house issues ETF units to the AP in exchange for the basket (&ldquo;creation&rdquo;).</p></li>
       <li class="flow-step"><span class="flow-num">3</span><p class="flow-tx">Units are listed and traded on NSE/BSE like any other share.</p></li>
@@ -114,7 +116,7 @@ const seo = {
       <h2 class="sec-title">Types of ETFs Available in India</h2>
       <p class="sec-lead">From broad equity indices to gold, bonds, sectors and global markets — a category for almost every goal and risk appetite.</p>
     </div>
-    <div class="etf-types">
+    <div class="etf-types" data-reveal-row>
       <div class="etf-type">
         <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
         <h4>Equity ETF</h4><p>Nifty / Sensex</p>
@@ -167,7 +169,7 @@ const seo = {
       <h2 class="sec-title">How to Invest in ETFs with Shriram</h2>
       <p class="sec-lead">Six steps from account opening to your first ETF trade — and tracking it thereafter.</p>
     </div>
-    <ol class="flow" style="width:100%">
+    <ol class="flow" data-reveal-row style="width:100%">
       <li class="flow-step"><span class="flow-num">1</span><p class="flow-tx">Open a demat account with PAN, Aadhaar and bank details.</p></li>
       <li class="flow-step"><span class="flow-num">2</span><p class="flow-tx">Activate your linked trading account.</p></li>
       <li class="flow-step"><span class="flow-num">3</span><p class="flow-tx">Search the ETF ticker on the trading platform.</p></li>
@@ -247,7 +249,7 @@ const seo = {
       <h2 class="sec-title">ETF Portfolio Construction — How to Build a Passive Portfolio</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs are versatile building blocks for a low-cost, diversified portfolio. Two model approaches, from simple to more advanced:</p>
     </div>
-    <div class="row-2" style="width:100%">
+    <div class="row-2" data-reveal-row style="width:100%">
       <div class="card">
         <h4 class="card-h">Beginner: 3-ETF portfolio</h4>
         <div class="stack" style="gap:12px">
@@ -308,7 +310,7 @@ const seo = {
       <h2 class="sec-title">Documents &amp; Eligibility for Investing in ETFs</h2>
       <p class="sec-lead">Any resident Indian adult (18+) with a valid PAN and Aadhaar can open a demat account. NRIs can also invest, subject to FEMA and RBI guidelines, using an NRO/NRE-linked trading account.</p>
     </div>
-    <div class="row-2" style="width:100%">
+    <div class="row-2" data-reveal-row style="width:100%">
       <div class="card check-card">
         <h4 class="ch-title">Documents Required</h4>
         <div class="check-list">
