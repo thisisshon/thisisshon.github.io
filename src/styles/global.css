@@ -392,9 +392,10 @@
 
   /* ===== document card (shared "view / download" card) =====
      One canonical card for document/download listings: a name, an optional meta
-     line, and one or two underlined action links. Used by /investor-charter/ and
-     /mandatory-member-details/; /support/ Downloads carries a page-local copy with
-     its own filter states. Consolidates the former page-local .ch-card dupe (rule 2). */
+     line, and one or two underlined action links. Used by
+     /regulatory-documents/investor-charter/, /regulatory-documents/mandatory-member-details/
+     and /contact-us/ (Downloads) — all via the shared filter toolbar below.
+     Consolidates the former page-local .ch-card dupe (rule 2). */
   .doc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; }
   .doc-card {
     background: var(--color-surface-card); border: 1px solid var(--color-border-card);
@@ -422,8 +423,8 @@
   }
 
   /* Document filter toolbar — search field + category chips + grouped grids +
-     empty state. Shared by /investor-charter/ and /support/ (Downloads); the
-     per-page script toggles `.hide` on cards/groups and `.show` on the empty note. */
+     empty state. Shared by /regulatory-documents/investor-charter/ and /contact-us/
+     (Downloads); the per-page script toggles `.hide` on cards/groups and `.show` on the empty note. */
   .doc-group { display: flex; flex-direction: column; }
   .doc-cat {
     font-weight: 600; font-size: 12px; letter-spacing: 1.2px; /* eyebrow tracking */
@@ -494,6 +495,44 @@
     display: flex; flex-direction: column; justify-content: center; overflow: hidden;
     background: radial-gradient(125% 210% at 100% -8%, var(--color-olive-600) 0%, var(--color-olive-800) 50%, var(--color-charcoal-850) 100%);
   }
+
+  /* ===== Breadcrumb — plain text trail in the hero. Sitewide on every page
+     EXCEPT the homepage. Flush to the --pad gutter (144px at full width) and
+     vertically CENTRED in the band between the header line and the H1. The
+     hero becomes three auto-margin gaps of equal size — above the breadcrumb,
+     between it and the content, and below the content — so the breadcrumb is
+     symmetrically centred over the H1 text and the content sits balanced. The
+     hero-inner's own 56px padding is dropped here so that freed space becomes
+     the distributable slack (otherwise the tall content fills the hero and the
+     gaps collapse). No container chrome — links reuse the reserved sage
+     tokens. Home (L0) is intentionally omitted: the header logo is Home. ===== */
+  .hero:has(.crumbs) { justify-content: flex-start; }
+  .hero:has(.crumbs) .crumbs { margin-block: auto; }
+  .hero:has(.crumbs) .hero-inner,
+  .hero:has(.crumbs) .hero-grid { margin-bottom: auto; }
+  /* Desktop only: drop hero-inner's padding so its 112px becomes distributable
+     slack for the auto-margin centring. Scoped to desktop so it never fights the
+     mobile padding below (a logical-vs-physical cascade would otherwise let the
+     mobile rule win regardless of specificity). */
+  @media (min-width: 769px) { .hero:has(.crumbs) .hero-inner { padding-block: 0; } }
+  /* Enters last, with the same enter-rise motion as the hero content: the
+     hero-inner ([data-enter]) plays for 0.7s from load; the breadcrumb follows
+     a further 0.5s later → 1.2s delay. `both` holds it hidden until then.
+     Reduced-motion users skip it (below) so the delay never hides it. */
+  .crumbs { align-self: flex-start; animation: enter-rise 0.7s var(--ease-reveal) 1.2s both; }
+  .crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .crumbs li { display: inline-flex; align-items: center; gap: 8px; }
+  .crumbs a { font-weight: 400; font-size: var(--text-sm); color: var(--color-sage-100); text-decoration: none; transition: color var(--dur-fast) ease; }
+  .crumbs a:hover { color: var(--color-white); }
+  .crumbs [aria-current="page"] { font-weight: 500; font-size: var(--text-sm); color: var(--color-white); }
+  .crumbs .crumb-sep { flex: none; display: inline-flex; color: var(--color-sage-450); }
+  .crumbs .crumb-sep svg { display: block; width: 16px; height: 16px; }
+  @media (prefers-reduced-motion: reduce) { .crumbs { animation: none; } }
+  /* NB: the mobile centring override lives UNLAYERED further down (search
+     "Breadcrumb — mobile"): the mobile `.hero-inner { padding: 48px 0 }` rule is
+     itself unlayered, so a layered override here — however specific — can never
+     beat it. See the note there. */
+
   .hero-inner { padding: 56px 0; display: flex; flex-direction: column; }
   .hero h1 { font-weight: 500; font-size: 40px; color: var(--color-white); max-width: var(--hero-text-w); }
   .hero h1 .g { color: var(--color-gold-400); }
@@ -1022,30 +1061,55 @@
 @media (max-width: 1300px) {
   .nav-links, .nav-right { display: none; }
   .nav-toggle { display: flex; }
+  /* Full-screen menu — fills the viewport below the 80px header, fades in as one
+     surface while its rows stagger up. Frosted white layer (sanctioned translucency). */
   .mobile-menu {
-    display: block; overflow: hidden; max-height: 0;
-    position: fixed; top: 80px; left: 0; right: 0; z-index: var(--z-mobile-menu);
-    background: rgba(255, 255, 255, 0.97); /* frosted layer with backdrop-filter — sanctioned translucency */
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    transition: max-height 0.35s ease;
+    display: flex; flex-direction: column;
+    position: fixed; top: 80px; left: 0; right: 0; bottom: 0; z-index: var(--z-mobile-menu);
+    background: var(--color-white); /* solid, opaque — clean full-screen surface */
+    overflow-y: auto; overscroll-behavior: contain;
+    opacity: 0; visibility: hidden; transform: translateY(-8px);
+    transition: opacity 0.35s var(--ease-standard), transform 0.35s var(--ease-standard), visibility 0s linear 0.35s;
   }
-  .mobile-menu.open { max-height: calc(100vh - 80px); overflow-y: auto; border-bottom: 1px solid var(--color-gray-150); }
-  .mm-inner { padding: 8px var(--pad) 24px; display: flex; flex-direction: column; }
-  .mm-inner a.mlink { padding: 16px 0; font-weight: 500; font-size: 16px; color: var(--color-charcoal-700); border-bottom: 1px solid var(--color-gray-150); }
-  .mm-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-  .mm-actions .login { font-weight: 600; font-size: 16px; color: var(--color-link); }
-  .mm-actions .btn-dark { width: 100%; }
+  .mobile-menu.open { opacity: 1; visibility: visible; transform: none; transition: opacity 0.35s var(--ease-standard), transform 0.35s var(--ease-standard), visibility 0s; }
+  /* Brand accent — a gold hairline at the very top of the panel that wipes in from the
+     left on open, out on close. Absolute (not fixed): the panel's own transform makes it
+     a containing block, so a fixed line resolves against the panel and jumps mid-screen
+     during the entry animation. */
+  .mobile-menu::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--color-gold-400);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 0.4s var(--ease-standard);
+    z-index: 1;
+  }
+  .mobile-menu.open::before { transform: scaleX(1); }
+  .mm-inner { flex: 1 0 auto; padding: 32px var(--pad) 40px; display: flex; flex-direction: column; }
+  .mm-inner a.mlink { padding: 24px 0; font-weight: 500; font-size: 22px; color: var(--color-charcoal-700); }
+  /* Staggered row reveal — each top-level row fades + slides in on open, reverses on close.
+     Entry is staggered via nth-child transition-delay; the closed state carries no delay so
+     exit collapses cleanly together. (Same fade-up idiom as [data-reveal-row].) */
+  .mm-inner > * { opacity: 0; transform: translateY(-8px); transition: opacity 0.3s var(--ease-standard), transform 0.3s var(--ease-standard); }
+  .mobile-menu.open .mm-inner > * { opacity: 1; transform: none; }
+  .mobile-menu.open .mm-inner > *:nth-child(1) { transition-delay: 60ms; }
+  .mobile-menu.open .mm-inner > *:nth-child(2) { transition-delay: 120ms; }
+  .mobile-menu.open .mm-inner > *:nth-child(3) { transition-delay: 180ms; }
+  .mobile-menu.open .mm-inner > *:nth-child(4) { transition-delay: 240ms; }
+  .mobile-menu.open .mm-inner > *:nth-child(5) { transition-delay: 300ms; }
+  .mobile-menu.open .mm-inner > *:nth-child(n + 6) { transition-delay: 360ms; }
+  .mm-actions { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: auto; padding-top: 40px; }
+  .mm-actions .login { font-weight: 600; font-size: 16px; color: var(--color-link); text-align: center; }
+  .mm-actions .btn-dark { width: 100%; height: 56px; }
 
   /* Expandable panel-backed items (mWeb) */
-  .mm-group { border-bottom: 1px solid var(--color-gray-150); }
-  .mm-acc { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 0; background: none; border: 0; cursor: pointer; font-weight: 500; font-size: 16px; color: var(--color-charcoal-700); text-align: left; }
-  .mm-acc .mm-chev { width: 16px; height: 16px; flex: none; transition: transform 0.3s ease; }
-  .mm-group.open .mm-acc .mm-chev { transform: rotate(180deg); }
+  .mm-acc { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 24px 0; background: none; border: 0; cursor: pointer; font-weight: 500; font-size: 22px; color: var(--color-charcoal-700); text-align: left; }
+  .mm-acc .mm-chev { width: 20px; height: 20px; flex: none; color: var(--color-text-tertiary); transition: transform 0.3s ease; }
+  .mm-group.open .mm-acc .mm-chev { transform: rotate(180deg); color: var(--color-gold-400); }
   .mm-sub { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s var(--ease-standard); }
   .mm-group.open .mm-sub { grid-template-rows: 1fr; }
   .mm-sub-in { overflow: hidden; min-height: 0; display: flex; flex-direction: column; }
-  .mm-sublink { padding: 12px 0 12px 16px; font-weight: 400; font-size: 15px; color: var(--color-text-tertiary); } /* 15px = legacy off-scale, kept (Tier-2: 14px) */
-  .mm-sub-in .mm-sublink:first-child { padding-top: 4px; }
+  .mm-sublink { padding: 12px 0 12px 16px; font-weight: 400; font-size: 16px; color: var(--color-text-tertiary); }
+  .mm-sub-in .mm-sublink:first-child { padding-top: 8px; }
   .mm-sub-in .mm-sublink:last-child { padding-bottom: 16px; }
   .mm-sub-cta { font-weight: 600; color: var(--color-text-heading-dark); }
 }
@@ -1092,6 +1156,15 @@
   .feats { padding-top: 32px; }
 
   .hero-inner { padding: 48px 0; }
+  /* Breadcrumb — mobile centring. Must sit here, UNLAYERED, alongside the
+     `.hero-inner { padding: 48px 0 }` above: that rule is unlayered, so a copy
+     inside @layer components loses to it regardless of specificity. Give the
+     crumb-bearing hero enough min-height to create free space, and drop the
+     padding just re-added so that space is distributable; the shared auto-margins
+     then split it into three equal gaps, placing the breadcrumb at the exact
+     midpoint of the header→H1 band with balanced spacing above and below. */
+  .hero:has(.crumbs) { min-height: 560px; }
+  .hero:has(.crumbs) .hero-inner { padding-top: 0; padding-bottom: 0; }
   .hero h1 { font-size: clamp(28px, 7vw, 40px); }
   .hero .lead { font-size: 16px; line-height: 1.6; }
 
@@ -1158,4 +1231,59 @@
 .js-reveal [data-reveal].is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js-reveal [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* Staggered row reveal — [data-reveal-row] fades its children up left-to-right as
+   the row enters view (same fade-up as [data-reveal]; the BaseLayout Reveal script
+   adds .is-visible to the row). Children stagger by column via nth-child. Add the
+   attribute to any row/grid container to opt it in. */
+.js-reveal [data-reveal-row] > * { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s var(--ease-reveal); will-change: opacity, transform; }
+.js-reveal [data-reveal-row] > *:nth-child(2) { transition-delay: 80ms; }
+.js-reveal [data-reveal-row] > *:nth-child(3) { transition-delay: 160ms; }
+.js-reveal [data-reveal-row] > *:nth-child(4) { transition-delay: 240ms; }
+.js-reveal [data-reveal-row] > *:nth-child(n + 5) { transition-delay: 320ms; }
+.js-reveal [data-reveal-row].is-visible > * { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal [data-reveal-row] > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* Reveal-motion variant — a page opts in via mainClass="rev-rise-scale" (on <main>)
+   to give its scroll reveals a "rise + soft scale" instead of the plain fade-up:
+   content settles up AND scales from 98% → 100%. Only the hidden start transform
+   changes; the shared transition + .is-visible (transform:none) do the rest. */
+.js-reveal .rev-rise-scale [data-reveal],
+.js-reveal .rev-rise-scale [data-reveal-row] > * {
+  transform: translateY(14px) scale(0.98);
+}
+
+/* Page-entrance — sections marked [data-enter] "rise + soft scale" in on page load
+   to soften arrival from another page, matching the scroll-reveal motion so the
+   whole page reads as one language. These sit above the fold, so a scroll reveal
+   can't animate them (it resolves instantly); a keyframe plays on load instead.
+   `both` holds the hidden start state so there's no flash. Their inner content opts
+   out of the scroll reveal (BaseLayout) so the block eases in as one. The global
+   reduced-motion rule neutralises the animation for those users. */
+@keyframes enter-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+[data-enter] { animation: enter-rise 0.7s var(--ease-reveal) both; }
+[data-enter='2'] { animation-delay: 0.7s; }
+
+/* Hero landing choreography (equity, via mainClass="rev-rise-scale"): the hero
+   CONTENT loads first sitting near the hero's vertical centre (lifted up by
+   --hero-lift), holds, then settles DOWN into its final position as the breadcrumb
+   enters (the shared .crumbs animation at 1.2s). Overrides the plain [data-enter]
+   rise for the hero content only. --hero-lift ≈ the centre→final offset; tune to
+   taste. Unlayered so it beats the @layer-components hero rules; reduced-motion is
+   handled by the global override (snaps straight to the final state). */
+@keyframes hero-center-drop {
+  0%   { opacity: 0; transform: translateY(calc(-1 * (var(--hero-lift) + 6px))) scale(0.98); }
+  41%  { opacity: 1; transform: translateY(calc(-1 * var(--hero-lift))) scale(1); }
+  70%  { opacity: 1; transform: translateY(calc(-1 * var(--hero-lift))) scale(1); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.rev-rise-scale .hero-inner[data-enter] {
+  --hero-lift: 40px;
+  animation: hero-center-drop 1.7s var(--ease-reveal) both;
 }

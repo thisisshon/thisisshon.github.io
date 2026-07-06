@@ -11,6 +11,7 @@
  *  - .stat   — legal/restricted status pills (token-bound to success/danger)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
@@ -51,9 +52,10 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Currency' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Currency trading in India, <span class="g">explained from the first trade to the last expiry</span></h1>
       <p class="lead">Trade USDINR, EURINR, GBPINR and JPYINR on regulated exchanges with margins that start in the low single digits of contract value. No offshore account, no FEMA grey area — just exchange-traded currency derivatives, settled in rupees.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -69,7 +71,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is Currency Trading ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Currency Trading?</h2>
       <p class="sec-lead">Currency trading is the buying and selling of one currency against another with the aim of profiting from changes in the exchange rate, or to lock in a future rate against a known exposure. In India, this happens almost entirely through currency derivatives — exchange-traded futures and options contracts on currency pairs — rather than the spot, over-the-counter market that most people associate with the word "forex."</p>
@@ -84,7 +86,7 @@ const seo = {
       <p class="sec-lead" style="color:var(--color-text-secondary)">Every trade moves through three layers: the exchange that matches orders, the clearing corporation that guarantees settlement, and your broker that holds the margin.</p>
     </div>
     <div class="stack" style="gap:32px">
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Exchange</h4>
           <p class="card-p">NSE and BSE run separate currency derivatives segments. Prices are quoted and matched electronically — the same order-book mechanism used for equity futures.</p>
@@ -94,7 +96,7 @@ const seo = {
           <p class="card-p">Once a trade is matched, the clearing corporation becomes the counterparty to both sides. It collects margin from both buyer and seller and guarantees settlement even if one party defaults.</p>
         </div>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Daily settlement</h4>
           <p class="card-p">Open positions are marked to market every trading day. Gains are credited and losses are debited from your margin account daily, rather than waiting until the contract expires.</p>
@@ -152,7 +154,7 @@ const seo = {
       <h2 class="sec-title">Is Currency Trading Legal in India?</h2>
       <p class="sec-lead">Yes — through the right channel. Exchange-traded currency derivatives on NSE and BSE are fully legal and regulated. The legal grey area exists entirely on the offshore side.</p>
     </div>
-    <div class="row-2">
+    <div class="row-2" data-reveal-row>
       <div class="card">
         <span class="stat ok">Legal</span>
         <p class="card-p">Currency futures and options traded through a SEBI-registered broker, on NSE or BSE, settled through a recognised clearing corporation, in INR.</p>
@@ -180,7 +182,7 @@ const seo = {
       <h2 class="sec-title">How to Start Currency Trading</h2>
       <p class="sec-lead">Six steps from account activation to managing your first position through to expiry.</p>
     </div>
-    <div class="vsteps">
+    <div class="vsteps" data-reveal-row>
       <div class="vstep">
         <div class="vnum">1</div>
         <div class="vbody"><h4>Open or use your existing trading &amp; demat account</h4><p>Sign up with a SEBI-registered broker. Currency derivatives don't require a separate demat holding since contracts are cash-settled, but most brokers bundle the segment with your standard account.</p></div>
@@ -220,7 +222,7 @@ const seo = {
         <h3 class="sub-title">Technical Indicators Traders Lean On</h3>
         <p class="sub-lead" style="color:var(--color-text-secondary)">Four widely used indicators for timing entries and reading momentum on rupee pairs.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">RSI (Relative Strength Index)</h4>
           <p class="card-p">Flags when a pair has moved sharply enough, in a short time, that a pause or reversal becomes more likely — useful for timing entries on USDINR's frequent intraday swings.</p>
@@ -230,7 +232,7 @@ const seo = {
           <p class="card-p">Tracks the relationship between two moving averages to highlight when momentum is building or fading, often used to confirm a trend before entering.</p>
         </div>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Pivot points</h4>
           <p class="card-p">Calculated from the prior session's high, low and close, pivots give intraday traders pre-set levels to watch for support, resistance, and breakout confirmation.</p>

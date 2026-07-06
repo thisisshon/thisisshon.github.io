@@ -8,6 +8,7 @@
  * token-bound. Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -117,10 +118,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'NPS' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Build a Retirement Corpus With the <span class="g">National Pension System</span></h1>
       <p class="lead">A voluntary, market-linked retirement scheme regulated by PFRDA — with an exclusive extra tax benefit, low costs and the flexibility to shape your own asset mix.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Investing</a></div>
@@ -136,7 +138,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is NPS ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is the National Pension System?</h2>
       <p class="sec-lead">The National Pension System (NPS) is a voluntary, defined-contribution retirement savings scheme regulated by the Pension Fund Regulatory and Development Authority (PFRDA). You contribute regularly during your working years; the money is invested by professional pension fund managers across a market-linked mix of equity and debt; and it accumulates into a retirement corpus that provides both a lump sum and a lifelong pension. Open to every Indian citizen aged 18 to 70, NPS is portable across jobs, employers and locations through a single Permanent Retirement Account Number (PRAN).</p>
@@ -170,7 +172,7 @@ const seo = {
         <h3 class="sub-title">The Four Asset Classes</h3>
         <p class="sub-lead">Each carries its own risk-return profile, and NPS blends them to balance growth with stability.</p>
       </div>
-      <div class="cat-grid">
+      <div class="cat-grid" data-reveal-row>
         {ASSETS.map((a) => (
           <div class="cat"><h4>{a.h}</h4><p>{a.p}</p></div>
         ))}
@@ -181,7 +183,7 @@ const seo = {
         <h3 class="sub-title">Active vs Auto Choice</h3>
         <p class="sub-lead">Two ways to decide how your money is allocated across those asset classes.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         {CHOICE.map((c) => (
           <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
         ))}
@@ -210,7 +212,7 @@ const seo = {
       <h2 class="sec-title">How to Open &amp; Contribute</h2>
       <p class="sec-lead">Getting started takes just a few steps — from generating your PRAN to making your first contribution.</p>
     </div>
-    <div class="steps">
+    <div class="steps" data-reveal-row>
       <div class="step">
         <div class="num">1</div>
         <div class="st-body"><h4>Generate Your PRAN</h4><p>Register online via eNPS or a Point of Presence (POP) to get your Permanent Retirement Account Number.</p></div>
@@ -240,7 +242,7 @@ const seo = {
       <h2 class="sec-title">Withdrawal &amp; Annuity at 60</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">NPS is designed for the long haul, so access to the corpus is structured. Here is how withdrawals, the mandatory annuity and early exits work.</p>
     </div>
-    <div class="nps-cards">
+    <div class="nps-cards" data-reveal-row>
       {EXIT.map((e) => (
         <div class="card"><h4 class="card-h">{e.h}</h4><p class="card-p">{e.p}</p></div>
       ))}

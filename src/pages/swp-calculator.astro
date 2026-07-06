@@ -6,6 +6,7 @@
  * Built on the shared calculator UI in global.css; page carries content + maths.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 import { otherCalculators, calcHref } from '../data/calculators';
@@ -44,10 +45,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'SWP Calculator' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Plan A Steady Income With The <span class="g">SWP Calculator</span></h1>
       <p class="lead">See how long your corpus lasts when you draw a fixed amount each month — while the rest stays invested and keeps growing.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -63,7 +65,7 @@ const seo = {
   </section>
 
   <!-- ===== SWP Calculator ===== -->
-  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px">
+  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">SWP Calculator</h2>
     <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly.</p>
 
@@ -123,7 +125,7 @@ const seo = {
             </div>
           </div>
 
-          <div class="res-cards">
+          <div class="res-cards" data-reveal-row>
             <div class="res-card">
               <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Final Value</div>
               <div class="res-val" id="r-fin">₹3,90,180</div>
@@ -188,7 +190,7 @@ const seo = {
   <!-- ===== Explore More ===== -->
   <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
     <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid">
+    <div class="explore-grid" data-reveal-row>
       {
         MORE.map((c) => (
           <a class="xcard" href={calcHref(c.slug)}>

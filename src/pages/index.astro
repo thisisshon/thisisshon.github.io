@@ -221,7 +221,7 @@ const seo = {
               <!-- Right: full-height card rail with glassy top/bottom edge fades -->
               <div class="why-box-8">
                 <div id="differ-scroll" class="why-box-9">
-                  <div class="why-box-10" style="box-shadow:0 18px 40px -12px rgba(243,184,63,0.30);">
+                  <div class="why-box-10">
                     <div class="why-box-11">
                       <div class="why-box-12">
                         <h3 class="why-subtitle" style="font-family:var(--font-sans)">
@@ -241,7 +241,7 @@ const seo = {
                         </li>
                       </ul>
                     </div>
-                  </div><div class="why-box-10" style="box-shadow:0 18px 40px -12px rgba(243,184,63,0.30);">
+                  </div><div class="why-box-10">
                     <div class="why-box-11">
                       <div class="why-box-12">
                         <h3 class="why-subtitle" style="font-family:var(--font-sans)">
@@ -262,7 +262,7 @@ const seo = {
                         </li>
                       </ul>
                     </div>
-                  </div><div class="why-box-10" style="box-shadow:0 18px 40px -12px rgba(243,184,63,0.30);">
+                  </div><div class="why-box-10">
                     <div class="why-box-11">
                       <div class="why-box-12">
                         <h3 class="why-subtitle" style="font-family:var(--font-sans)">
@@ -283,7 +283,7 @@ const seo = {
                         </li>
                       </ul>
                     </div>
-                  </div><div class="why-box-10" style="box-shadow:0 18px 40px -12px rgba(243,184,63,0.30);">
+                  </div><div class="why-box-10">
                     <div class="why-box-11">
                       <div class="why-box-12">
                         <h3 class="why-subtitle" style="font-family:var(--font-sans)">
@@ -320,6 +320,7 @@ const seo = {
       </div>
     </section>
 
+
     <!-- ================= STRATEGIC ADVISORY ================= -->
     <section class="el-sec-2">
       <div class="advisory-box">
@@ -330,7 +331,7 @@ const seo = {
           First SIP or full portfolio rebalance — every move is backed by SEBI-registered research
           and a dedicated advisor who knows your goals.
         </p>
-        <div class="advisory-box-2">
+        <div class="advisory-box-2" data-reveal-row>
           <div class="advisory-card advisory-box-3">
             <img src="/images/advisory/icon-1.png" alt="" class="advisory-img" />
             <div class="advisory-box-5">
@@ -935,7 +936,7 @@ const seo = {
             style="background-image:repeating-linear-gradient(90deg,#EBDEC6 0 7px,transparent 7px 14px);"
           >
           </div>
-          <div class="steps-box-7">
+          <div class="steps-box-7" data-reveal-row>
             <div class="steps-box-8">
               <div class="steps-box-9">
                 <img src="/images/step-icon-1.svg" alt="" class="steps-img-2" />
@@ -1695,7 +1696,20 @@ const seo = {
   .differ-fade-bottom .pb2 { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 22%, transparent 68%);  mask-image: linear-gradient(to top, #000 0%, #000 22%, transparent 68%); }
   .differ-fade-bottom .pb3 { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 44%);  mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 44%); }
   .differ-fade-bottom .pb4 { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 6%,  transparent 24%);  mask-image: linear-gradient(to top, #000 0%, #000 6%,  transparent 24%); }
+  /* Dark tint painted ON TOP of the blur (::after paints above the .pb layers) so
+     content dissolves into the panel's dark edge instead of blurring into a light
+     halo. Ramps from the panel's dark (#1d1d1d) at the edge to transparent inward,
+     tracking the blur ramp. */
+  .differ-fade::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .differ-fade-top::after { background: linear-gradient(to bottom, #1d1d1d 0%, #1d1d1d 16%, transparent 66%); }
+  .differ-fade-bottom::after { background: linear-gradient(to top, #1d1d1d 0%, #1d1d1d 16%, transparent 66%); }
   .why-box-10 {
+    position: relative;
     display: flex;
     height: 410px;
     width: 100%;
@@ -1710,11 +1724,27 @@ const seo = {
     -webkit-backdrop-filter: blur(28px);
     backdrop-filter: blur(28px);
     border: 2px solid #ffffff45; /* Tier-2: rgba(255,255,255,0.27) over gradient */
-    border-bottom: 2px solid #f3b83f; /* --color-gold-400 — gold accent (Figma 1056:6784) */
     padding-inline: 32px;
     padding-block: 40px;
   }
+  /* Subtle frosted-glass grain — self-contained monochrome SVG noise (no external
+     asset; CSP-safe), tiled and held very low so it reads as texture on the glass
+     surface without touching legibility. Sits above the frost, below the content
+     (which is lifted with z-index). Decorative translucency, like the frost. */
+  .why-box-10::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+    opacity: 0.1; /* decorative grain — sanctioned (frosted-glass texture); tune 0.05–0.15 */
+    mix-blend-mode: overlay;
+  }
   .why-box-11 {
+    position: relative;
+    z-index: 1;
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -2608,9 +2638,18 @@ const seo = {
     }
     .product-box {
       display: flex;
-      min-height: min(923px, 100vh - 96px);
+      min-height: calc(100vh - 96px);
       flex-direction: column;
       justify-content: center;
+      /* Full-height section, viewport-relative with NO 923px cap so it scales up
+         to fill much larger screens too — the same height model as the "Why
+         Shriram" pin (.why-fill). Adapts to the nav auto-hide: when the header
+         retracts (html.header-hidden) reclaim its 80px on the same 0.3s ease
+         (96px → 16px = +80px). */
+      transition: min-height 0.3s ease-in-out;
+    }
+    :global(html.header-hidden) .product-box {
+      min-height: calc(100vh - 16px);
     }
     .product-box-2 {
       padding-block: 80px;

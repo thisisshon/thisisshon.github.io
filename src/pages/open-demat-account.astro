@@ -6,6 +6,7 @@
  * timeline, FAQ, dark CTA. Pixel parity with legacy demat.html.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
@@ -50,11 +51,12 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Open a Demat Account' }]} />
     <div class="hero-grid">
-      <div class="hero-inner">
+      <div class="hero-inner" data-enter>
         <h1>Open a <span class="g">Demat Account</span> in Minutes</h1>
         <p class="lead">Hold stocks, bonds, ETFs, and mutual fund units digitally. SEBI-registered, CDSL-partnered, fully paperless — start investing today.</p>
         <div class="hero-feats">
@@ -99,14 +101,14 @@ const seo = {
   </section>
 
   <!-- ================= WHAT IS A DEMAT ACCOUNT? ================= -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px">
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is A Demat Account?</h2>
       <div class="def-body">
         <p>An electronic account that holds your financial securities — stocks, bonds, ETFs, mutual fund units, and government securities — in digital form instead of physical certificates. It is maintained by CDSL or NSDL through a SEBI-registered Depository Participant like Shriram Financial Services. Combined with a Trading account (opened simultaneously), it gives you the ability to buy and sell securities on NSE and BSE instantly.</p>
       </div>
     </div>
-    <div class="row-2">
+    <div class="row-2" data-reveal-row>
       <div class="card">
         <h3 class="card-h">Held With</h3>
         <p class="card-p">Your securities sit with CDSL or NSDL — SEBI-regulated, government-backed central depositories — not on paper.</p>
@@ -124,7 +126,7 @@ const seo = {
       <h2 class="sec-title">Why Open A Demat Account With Shriram?</h2>
       <p class="sec-lead">Everything you need to invest professionally — at zero or flat-fee costs, with expert guidance from Day 1.</p>
     </div>
-    <div class="feat-grid">
+    <div class="feat-grid" data-reveal-row>
       <div class="fcell">
         <h3>Hold All Investments Digitally</h3>
         <p>Stocks, bonds, ETFs, mutual fund units, government securities — all in one digital account. No physical certificates, no storage risk.</p>
@@ -180,7 +182,7 @@ const seo = {
       <h2 class="sec-title">Documents Required</h2>
       <p class="sec-lead">Just four documents — all uploaded digitally from your phone or laptop. No physical copies, no branch visit.</p>
     </div>
-    <div class="steps">
+    <div class="steps" data-reveal-row>
       <div class="step"><span class="num">01</span><div class="st-body"><h4>PAN Card</h4><p>Mandatory for all investors. Used for identity verification and tax compliance under SEBI and IT regulations.</p></div></div>
       <div class="step-div" aria-hidden="true"></div>
       <div class="step"><span class="num">02</span><div class="st-body"><h4>Aadhaar Card</h4><p>For address proof and Aadhaar-based e-Sign. An OTP is sent to your Aadhaar-linked mobile number.</p></div></div>
@@ -208,7 +210,7 @@ const seo = {
 
     <div class="flow">
       <div class="flow-line" aria-hidden="true"></div>
-      <div class="flow-row">
+      <div class="flow-row" data-reveal-row>
         <div class="flow-step">
           <span class="flow-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.2" stroke="#2e3914" stroke-width="1.6"></circle><path d="M4.5 19a5.6 5.6 0 0 1 10.4-2.7" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round"></path><path d="m15.4 18.4 1.8 1.8 3.4-3.7" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
           <div class="flow-tx"><h4>Basic Information</h4><p>Name, mobile number, PAN — takes under two minutes.</p></div>

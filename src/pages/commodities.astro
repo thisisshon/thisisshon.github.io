@@ -8,6 +8,7 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -129,10 +130,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Commodities' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Trade <span class="g">Commodities</span> on MCX &amp; NCDEX</h1>
       <p class="lead">Buy and sell gold, silver, crude oil, base metals and agricultural futures with low margins, live market data and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -148,7 +150,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is Commodity Trading ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Commodity Trading?</h2>
       <p class="sec-lead">Commodity trading is the buying and selling of raw materials — precious metals, energy, industrial metals and farm produce — through standardised futures and options contracts. Rather than holding the physical asset, you trade a contract whose value tracks the underlying commodity. In India these contracts trade electronically on two SEBI-regulated exchanges, giving investors a transparent, well-supervised marketplace to speculate on prices, hedge exposure or diversify a portfolio.</p>
@@ -158,7 +160,7 @@ const seo = {
         <h3 class="sub-title">Where Commodities Trade</h3>
         <p class="sub-lead">Two major exchanges enable transparent, electronic trading across the commodity segment:</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Multi Commodity Exchange (MCX)</h4>
           <p class="card-p">India's largest commodity exchange, where bullion, energy and base metals such as gold, silver, crude oil and copper trade with deep liquidity and transparent price discovery.</p>
@@ -174,7 +176,7 @@ const seo = {
         <h3 class="sub-title">Futures &amp; Options</h3>
         <p class="sub-lead">Commodities are traded through two kinds of derivative contracts, each with its own risk profile.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Commodity Futures</h4>
           <p class="card-p">An agreement to buy or sell a fixed quantity of a commodity at a set price on a future date. Traded on margin, with a defined lot size and monthly expiry.</p>
@@ -193,7 +195,7 @@ const seo = {
       <h2 class="sec-title">Types of Commodities</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Commodities fall into four broad groups, each traded on its primary exchange and driven by its own set of price factors.</p>
     </div>
-    <div class="comm-cards">
+    <div class="comm-cards" data-reveal-row>
       {GROUPS.map((g) => (
         <div class="card"><h4 class="card-h">{g.h}</h4><p class="card-p">{g.p}</p></div>
       ))}
@@ -203,7 +205,7 @@ const seo = {
         <h3 class="sub-title">Commonly Traded Commodities</h3>
         <p class="sub-lead" style="color:var(--color-text-secondary)">A snapshot of the most actively traded contracts across the four groups.</p>
       </div>
-      <div class="cat-grid">
+      <div class="cat-grid" data-reveal-row>
         <div class="cat"><h4>Gold</h4><p>The benchmark bullion contract — a classic inflation hedge and safe-haven asset.</p></div>
         <div class="cat"><h4>Silver</h4><p>A precious and industrial metal, more volatile than gold with strong demand cycles.</p></div>
         <div class="cat"><h4>Crude Oil</h4><p>Highly liquid energy contract tracking global benchmarks and inventory data.</p></div>
@@ -281,7 +283,7 @@ const seo = {
       <h2 class="sec-title">Trading Strategies</h2>
       <p class="sec-lead">Traders use commodities for different reasons — to protect a physical position, to profit from a directional view, or to exploit price differences across markets. Match the approach to your goal, capital and risk appetite.</p>
     </div>
-    <div class="approaches">
+    <div class="approaches" data-reveal-row>
       {STRATEGIES.map((s, i) => (
         <a class="appr" href="#">
           <div class="appr-main">
@@ -309,7 +311,7 @@ const seo = {
       <h2 class="sec-title">Risks to Weigh</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading offers real opportunity, but leverage and global sensitivity make it high-risk. Understand what can move against you before you commit capital.</p>
     </div>
-    <div class="risks">
+    <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}

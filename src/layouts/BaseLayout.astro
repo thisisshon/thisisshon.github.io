@@ -22,9 +22,11 @@ interface Props {
    * (Tier-2 unification pending sign-off — see docs/legacy-style-audit.md §E2).
    */
   footer?: 'site' | 'custom';
+  /** Optional class on <main> — e.g. opt a page into a reveal-motion variant. */
+  mainClass?: string;
 }
 
-const { seo, footer = 'site' } = Astro.props;
+const { seo, footer = 'site', mainClass } = Astro.props;
 const site = Astro.site!.href;
 const canonical = new URL(seo.path, site).href;
 const title = fullTitle(seo.title);
@@ -79,7 +81,7 @@ const title = fullTitle(seo.title);
 
     <Header />
 
-    <main id="main">
+    <main id="main" class={mainClass}>
       <slot />
     </main>
 
@@ -101,21 +103,16 @@ const title = fullTitle(seo.title);
         ].join(',');
 
         const blocks = Array.from(document.querySelectorAll<HTMLElement>(SELECTOR)).filter(
-          (el) => !el.classList.contains('sr-only')
+          // skip sr-only, and anything inside a [data-enter] section (that whole
+          // section eases in on load as one block — don't also reveal its children)
+          (el) => !el.classList.contains('sr-only') && !el.closest('[data-enter]')
         );
+        // Rows opt in via [data-reveal-row]; their children stagger left-to-right
+        // via CSS (nth-child). We only add .is-visible to the row here.
+        const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal-row]'));
 
-        if (blocks.length) {
+        if (blocks.length || rows.length) {
           document.documentElement.classList.add('js-reveal');
-          blocks.forEach((el) => el.setAttribute('data-reveal', ''));
-
-          // gentle stagger between blocks that share a parent
-          blocks.forEach((el) => {
-            const sibs = Array.from(el.parentNode!.children).filter((c) =>
-              c.hasAttribute('data-reveal')
-            );
-            const i = sibs.indexOf(el);
-            if (i > 0) el.style.transitionDelay = `${Math.min(i * 70, 280)}ms`;
-          });
 
           const io = new IntersectionObserver(
             (entries) => {
@@ -129,7 +126,22 @@ const title = fullTitle(seo.title);
             { rootMargin: '0px 0px -8% 0px', threshold: 0.06 }
           );
 
-          blocks.forEach((el) => io.observe(el));
+          if (blocks.length) {
+            blocks.forEach((el) => el.setAttribute('data-reveal', ''));
+
+            // gentle stagger between blocks that share a parent
+            blocks.forEach((el) => {
+              const sibs = Array.from(el.parentNode!.children).filter((c) =>
+                c.hasAttribute('data-reveal')
+              );
+              const i = sibs.indexOf(el);
+              if (i > 0) el.style.transitionDelay = `${Math.min(i * 70, 280)}ms`;
+            });
+
+            blocks.forEach((el) => io.observe(el));
+          }
+
+          rows.forEach((el) => io.observe(el));
         }
       }
     </script>

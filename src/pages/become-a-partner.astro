@@ -8,6 +8,7 @@
  * Pixel parity with legacy become-a-partner.html.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
@@ -40,10 +41,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Become a Partner' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Partner With Us. Earn <span class="g">Unlimited Income.</span></h1>
       <p class="lead">Join India's fastest-growing partner network. Build your own financial advisory practice — backed by the Shriram brand, technology and research.</p>
       <div class="cta">
@@ -62,12 +64,12 @@ const seo = {
   </section>
 
   <!-- ================= METRICS BAND ================= -->
-  <section class="section stack sec-light" id="sec-stats" data-section="stats" style="gap:56px">
+  <section class="section stack sec-light" id="sec-stats" data-section="stats" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">A Network Built To Reward You</h2>
       <p class="sec-lead">Thousands of partners already earn alongside India's trusted financial brand — with nothing to invest to get started.</p>
     </div>
-    <div class="stat-band">
+    <div class="stat-band" data-reveal-row>
       <div class="stat-cell"><span class="stat-num">5 Lakh+</span><span class="stat-lb">Active clients across the network</span></div>
       <div class="stat-cell"><span class="stat-num">40%</span><span class="stat-lb">Revenue share on referred trades</span></div>
       <div class="stat-cell"><span class="stat-num">&#8377;0</span><span class="stat-lb">Investment required to start</span></div>
@@ -80,7 +82,7 @@ const seo = {
       <h2 class="sec-title">Why Partner With Shriram?</h2>
       <p class="sec-lead">Everything you need to build a profitable advisory practice — the brand, the technology and the research, all on our books.</p>
     </div>
-    <div class="feat-grid">
+    <div class="feat-grid" data-reveal-row>
       <div class="fcell">
         <span class="fi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V9m5 10V5m5 14v-7m5 7V3" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round"></path></svg></span>
         <h3>Earn Recurring Income</h3>
@@ -120,7 +122,7 @@ const seo = {
       <h2 class="sec-title">Who Can Become A Partner?</h2>
       <p class="sec-lead">If you have a client network or a passion for finance, there is a partnership path for you.</p>
     </div>
-    <div class="cat-grid">
+    <div class="cat-grid" data-reveal-row>
       <div class="cat">
         <h4>Sub-Broker / Remisier</h4>
         <p>Grow your book with a research-led brand and transparent, lifetime revenue share.</p>
@@ -154,7 +156,7 @@ const seo = {
       <h2 class="sec-title">How It Works</h2>
       <p class="sec-lead">Four simple steps from sign-up to your first monthly payout — fully digital, no paperwork.</p>
     </div>
-    <div class="steps">
+    <div class="steps" data-reveal-row>
       <div class="step"><span class="num">01</span><div class="st-body"><h4>Register In 30 Seconds</h4><p>Share your name, mobile number and city to start. No documents needed to express interest.</p></div></div>
       <div class="step-div" aria-hidden="true"></div>
       <div class="step"><span class="num">02</span><div class="st-body"><h4>Get Onboarded</h4><p>Complete a fully digital KYC and partner agreement — typically within 2&ndash;3 business days.</p></div></div>

@@ -8,6 +8,7 @@
  * member documents — the scale North Star. No page-local component forks (rule 2).
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/site/Breadcrumb.astro';
 import { organizationSchema } from '../../lib/seo';
 
 // Mandatory member-disclosure documents → one shared .doc-card each.
@@ -31,10 +32,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Regulatory Documents', href: '/regulatory-documents/' }, { name: 'Mandatory Member Details' }]} />
+    <div class="hero-inner" data-enter>
       <h1><span class="g">Mandatory Member Details</span></h1>
       <p class="lead">
         All mandatory disclosures, investor rights, grievance mechanisms and compliance documents
@@ -44,7 +46,7 @@ const seo = {
   </section>
 
   <!-- ================= DOCUMENT LIST (shared .doc-card grid) ================= -->
-  <section class="section stack sec-light" id="sec-docs" data-section="docs">
+  <section class="section stack sec-light" id="sec-docs" data-section="docs" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sub-title">Disclosure Documents</h2>
       <p class="sub-lead">
@@ -53,7 +55,7 @@ const seo = {
       </p>
     </div>
 
-    <div class="doc-grid">
+    <div class="doc-grid" data-reveal-row>
       {
         DOCS.map((name) => (
           <article class="doc-card">
@@ -93,7 +95,7 @@ const seo = {
     scroll-margin-top: 96px;
   }
 
-  /* shared .doc-grid, spaced below the section intro (matches /investor-charter/). */
+  /* shared .doc-grid, spaced below the section intro (matches /regulatory-documents/investor-charter/). */
   .doc-grid {
     margin-top: 32px;
   }

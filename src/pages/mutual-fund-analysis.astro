@@ -10,6 +10,7 @@
  * scale to thousands of instances — the scale North Star.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
@@ -86,7 +87,7 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- Inline icon set — every glyph is a real <svg> (rule 4), sized 24. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
@@ -101,7 +102,8 @@ const seo = {
 
   <!-- ================= HERO (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Research Centre', href: '/research-hub/' }, { name: 'Mutual Fund Research' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Invest in the Right <span class="g">Mutual Funds</span></h1>
       <p class="lead">Research-led fund analysis from SEBI-registered analysts — rated on returns consistency, risk-adjusted metrics, cost and manager track record. Curated shortlists and 0% commission direct plans.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -116,12 +118,12 @@ const seo = {
   </section>
 
   <!-- ================= WHAT OUR MF RESEARCH COVERS ================= -->
-  <section class="section stack sec-light" id="sec-covers" data-section="covers" style="gap:56px">
+  <section class="section stack sec-light" id="sec-covers" data-section="covers" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Our Mutual Fund Research Covers</h2>
       <p class="sec-lead">A mutual fund is more than its headline return. Our desk analyses every scheme across performance, risk, portfolio and cost — turning fund-house factsheets into an independent, comparable view so you can choose on merit, not marketing.</p>
     </div>
-    <div class="feat-grid">
+    <div class="feat-grid" data-reveal-row>
       {COVERS.map((c) => (
         <article class="fcard">
           <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#mi-${c.icon}`} /></svg></span>
@@ -159,7 +161,7 @@ const seo = {
       <h2 class="sec-title">Curated Fund Lists &amp; Model Portfolios</h2>
       <p class="sec-lead">Skip the 2,000-scheme scroll. Start from a shortlist our analysts have already vetted, or invest across a ready-made model portfolio mapped to your goal and risk profile — reviewed and rebalanced every quarter.</p>
     </div>
-    <div class="approaches">
+    <div class="approaches" data-reveal-row>
       {STREAMS.map((s) => (
         <a class="appr" href={s.href}>
           <div class="appr-main">

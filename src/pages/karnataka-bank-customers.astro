@@ -7,6 +7,7 @@
  * Nested route → BaseLayout / imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 
 // "Everything you need to trade with confidence" — nine benefits (real SVG icons).
 const BENEFITS = [
@@ -86,11 +87,12 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Karnataka Bank 3-in-1' }]} />
     <div class="hero-grid">
-      <div class="hero-inner">
+      <div class="hero-inner" data-enter>
         <p class="kb-eyebrow">Karnataka Bank online trading services · in alliance with Shriram Financial Services</p>
         <h1>Trade online with your <span class="g">Karnataka Bank</span> 3-in-1 account</h1>
         <p class="lead">A special online trading facility for Karnataka Bank customers — link your existing bank and demat accounts to a Shriram trading account and invest seamlessly, with research and support at hand.</p>
@@ -148,12 +150,12 @@ const seo = {
   </section>
 
   <!-- ================= EVERYTHING YOU NEED ================= -->
-  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px">
+  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Everything you need to trade with confidence</h2>
       <p class="sec-lead">Swift, safe and convenient online trading designed for both first-time investors and active traders.</p>
     </div>
-    <div class="kb-grid">
+    <div class="kb-grid" data-reveal-row>
       {BENEFITS.map((b) => (
         <div class="kb-card">
           <span class="kb-ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={b.icon} /></span>
@@ -170,7 +172,7 @@ const seo = {
       <h2 class="sec-title">Why Karnataka Bank customers choose us</h2>
       <p class="sec-lead">An integrated 3-in-1 experience that keeps your banking, demat and trading working together.</p>
     </div>
-    <div class="kb-why">
+    <div class="kb-why" data-reveal-row>
       {REASONS.map((r) => (
         <div class="kb-reason">
           <h3>{r.title}</h3>

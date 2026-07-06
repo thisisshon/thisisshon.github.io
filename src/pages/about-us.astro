@@ -11,6 +11,7 @@
  * collide. Preserved to keep this page's exact reveal behaviour.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 
 const seo = {
   title: 'About Us',
@@ -20,10 +21,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'About Us' }]} />
+    <div class="hero-inner" data-enter>
       <div class="hero-content">
         <h1>India's Trusted Financial Companion <span class="g">Since 2000</span></h1>
         <p class="lead">A Shriram Group company delivering personalised equity, mutual fund and insurance solutions to retail and HNI clients across 21 states.</p>
@@ -41,7 +43,7 @@ const seo = {
   </section>
 
   <!-- ================= COMPANY OVERVIEW + REGULATORY ================= -->
-  <section class="section stack sec-light" id="sec-overview" data-section="overview" style="gap:56px">
+  <section class="section stack sec-light" id="sec-overview" data-section="overview" style="gap:56px" data-enter="2">
     <div class="stack reveal" style="gap:16px">
       <h2 class="sec-title">Company Overview</h2>
       <p class="sec-lead">Shriram Financial Securities (formerly Way2Wealth Brokers Pvt. Ltd.) is a subsidiary of Shriram Credit Company Ltd and part of the Shriram Group — one of India's largest financial services conglomerates.</p>
@@ -52,7 +54,7 @@ const seo = {
         <h3 class="sub-title">Regulatory Standing</h3>
         <p class="sub-lead">Fully licensed and regulated by India's financial market authorities.</p>
       </div>
-      <div class="reg-grid">
+      <div class="reg-grid" data-reveal-row>
         <div class="reg-cell">
           <span class="reg-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6v5c0 4.4 3 8 7 9 4-1 7-4.6 7-9V6l-7-3Z" stroke="#2e3914" stroke-width="1.5" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="#2e3914" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <h4 class="card-h">SEBI Stockbroker</h4>
@@ -96,7 +98,7 @@ const seo = {
       <h2 class="sec-title">Mission, Vision &amp; Values</h2>
       <p class="sec-lead">The principles that guide every client interaction and business decision at Shriram Financial Securities.</p>
     </div>
-    <div class="mvv reveal">
+    <div class="mvv reveal" data-reveal-row>
       <div class="mvv-card">
         <span class="mvv-ghost" aria-hidden="true">01</span>
         <span class="mvv-num">MISSION</span>
@@ -167,7 +169,7 @@ const seo = {
       <h2 class="sec-title">What We Do</h2>
       <p class="sec-lead">A full-service financial securities firm offering broking, distribution, fund-based services and research.</p>
     </div>
-    <div class="do-grid reveal">
+    <div class="do-grid reveal" data-reveal-row>
       <div class="do-col">
         <h3 class="do-cat">Broking</h3>
         <a class="do-item" href="/equity/"><h4>Equity &amp; Derivatives</h4><p>NSE, BSE, MSEI trading with institutional empanelment and algo capabilities.</p></a>
@@ -201,7 +203,7 @@ const seo = {
       <h2 class="sec-title">Key Milestones</h2>
       <p class="sec-lead">From a small web-trading startup in Bengaluru to a pan-India financial services brand.</p>
     </div>
-    <div class="timeline reveal">
+    <div class="timeline reveal" data-reveal-row>
       <ol class="tl-col">
         <li class="tl-item"><span class="tl-year">2000</span><p class="tl-text">Incorporated as Sivan Web Trading Pvt. Ltd., Bengaluru. Rebranded as Way2Wealth Securities.</p></li>
         <li class="tl-item"><span class="tl-year">2008</span><p class="tl-text">Launched commodities business; 100th franchise outlet inaugurated.</p></li>
@@ -223,7 +225,7 @@ const seo = {
       <h2 class="sec-title">Key Managerial Personnel</h2>
       <p class="sec-lead">The leadership steering Shriram Financial Securities across strategy, technology, governance and compliance.</p>
     </div>
-    <div class="team-grid reveal">
+    <div class="team-grid reveal" data-reveal-row>
       <div class="card team-card">
         <span class="ico-tile avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="#f3b83f" stroke-width="1.6"/><path d="M5.5 19a6.5 6.5 0 0 1 13 0" stroke="#f3b83f" stroke-width="1.6" stroke-linecap="round"/></svg></span>
         <h3 class="team-name">Placeholder Name</h3>
@@ -284,7 +286,7 @@ const seo = {
         <a href="https://www.google.com/maps/search/?api=1&amp;query=Rukmini+Towers+Sheshadripuram+Bengaluru" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg>Get directions</a>
       </div>
     </div>
-    <div class="office-grid reveal">
+    <div class="office-grid reveal" data-reveal-row>
       <div class="card office-card">
         <h4>Chennai</h4>
         <address>Shriram House, No. 4, Burkit Road, T. Nagar, Chennai – 600 017</address>

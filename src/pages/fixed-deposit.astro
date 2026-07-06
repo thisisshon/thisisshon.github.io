@@ -8,6 +8,7 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -113,10 +114,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Fixed Deposit' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Grow Your Savings Safely With a <span class="g">Fixed Deposit</span></h1>
       <p class="lead">Lock in a lump sum for a fixed tenure at an assured rate of interest — with predictable, market-independent returns, flexible payouts and DICGC-insured bank deposits.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Account</a></div>
@@ -132,7 +134,7 @@ const seo = {
   </section>
 
   <!-- ===== What Is a Fixed Deposit ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is a Fixed Deposit?</h2>
       <p class="sec-lead">A Fixed Deposit is a low-risk investment in which you place a lump sum with a bank or company for a fixed tenure at an assured rate of interest. The rate is locked in when you book the deposit, so your returns stay predictable regardless of how market interest rates move afterwards. In return for committing your money for a set period, you earn a higher rate than an ordinary savings account — and with bank FDs, your deposit is insured by DICGC up to ₹5 lakh per depositor per bank.</p>
@@ -145,7 +147,7 @@ const seo = {
       <h2 class="sec-title">Types of Fixed Deposits</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">FDs come in several variants that differ by payout structure, tenure, tax treatment and issuer. Choosing the right one depends on your income needs and goals.</p>
     </div>
-    <div class="fd-cards">
+    <div class="fd-cards" data-reveal-row>
       {TYPES.map((t) => (
         <div class="card"><h4 class="card-h">{t.h}</h4><p class="card-p">{t.p}</p></div>
       ))}
@@ -208,7 +210,7 @@ const seo = {
       <h2 class="sec-title">Things to Consider</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Fixed deposits are safe, but they are not risk-free. Weigh these factors before you commit your money for a fixed term.</p>
     </div>
-    <div class="risks">
+    <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}

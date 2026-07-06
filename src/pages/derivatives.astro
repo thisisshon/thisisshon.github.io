@@ -7,6 +7,7 @@
  * card/cat/table maps. Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
@@ -132,10 +133,11 @@ const seo = {
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity Derivatives' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Trade Futures &amp; Options With <span class="g">Equity Derivatives</span></h1>
       <p class="lead">Take leveraged positions, hedge your portfolio and trade the Nifty, Bank Nifty and F&amp;O stocks with low margins, live data and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -151,7 +153,7 @@ const seo = {
   </section>
 
   <!-- ===== What Are Derivatives ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Are Equity Derivatives?</h2>
       <p class="sec-lead">A derivative is a contract whose value is derived from an underlying asset — in the equity market, that asset is a stock or a stock index. Rather than owning the shares, you trade a contract that tracks their price. In India these contracts trade in the Futures &amp; Options (F&amp;O) segment of the NSE and BSE, regulated by SEBI. Traders use them to speculate on price direction, to hedge existing holdings, and to profit from pricing differences across markets.</p>
@@ -161,7 +163,7 @@ const seo = {
         <h3 class="sub-title">Futures &amp; Options Explained</h3>
         <p class="sub-lead">The two building blocks of the F&amp;O segment — one carries an obligation, the other carries a right.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Futures</h4>
           <p class="card-p">A futures contract obligates both the buyer and the seller to trade the underlying at an agreed price on a set expiry date. It moves point-for-point with the underlying, offers leverage through margin, and is used for directional views and hedging.</p>
@@ -185,7 +187,7 @@ const seo = {
         <h3 class="sub-title">Instruments You Can Trade</h3>
         <p class="sub-lead" style="color:var(--color-text-secondary)">Index-based contracts track the broad market; single-stock contracts track one company.</p>
       </div>
-      <div class="row-2">
+      <div class="row-2" data-reveal-row>
         {INSTRUMENTS.map((c) => (
           <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
         ))}
@@ -196,7 +198,7 @@ const seo = {
         <h3 class="sub-title">Key F&amp;O Terms</h3>
         <p class="sub-lead" style="color:var(--color-text-secondary)">The essential vocabulary every derivatives trader should know before placing a trade.</p>
       </div>
-      <div class="cat-grid">
+      <div class="cat-grid" data-reveal-row>
         {TERMS.map((t) => (
           <div class="cat"><h4>{t.h}</h4><p>{t.p}</p></div>
         ))}
@@ -260,7 +262,7 @@ const seo = {
       <h2 class="sec-title">Trading Strategies</h2>
       <p class="sec-lead">Derivatives serve three broad purposes — protecting a portfolio, taking a view, and capturing pricing gaps. Match the strategy to your goal and risk appetite.</p>
     </div>
-    <div class="approaches">
+    <div class="approaches" data-reveal-row>
       {STRATEGIES.map((s, i) => (
         <a class="appr" href="#">
           <div class="appr-main">
@@ -279,7 +281,7 @@ const seo = {
       <h2 class="sec-title">Risks to Weigh</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Leverage cuts both ways. Understand what can move against you before you commit margin to a derivatives position.</p>
     </div>
-    <div class="risks">
+    <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}

@@ -5,8 +5,9 @@
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
-import { faqPageSchema } from '../lib/seo';
+import { faqPageSchema, breadcrumbSchema } from '../lib/seo';
 
 // General Questions — legacy content verbatim, same order (first item open).
 const FAQS = [
@@ -40,18 +41,31 @@ const FAQS = [
   },
 ];
 
+const site = Astro.site!.href;
+
 const seo = {
   title: 'Equity',
   description:
     'Learn how to buy and invest in equity stocks in India — exchanges, share types, costs, taxes, strategies and risks — with research-led guidance from Shriram.',
   path: '/equity/',
-  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+  jsonLd: [
+    faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products/' },
+        { name: 'Equity', path: '/equity/' },
+      ],
+      site
+    ),
+  ],
 };
 ---
 
-<BaseLayout seo={seo}>
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
   <section class="hero" id="sec-hero" data-section="hero">
-    <div class="hero-inner">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity' }]} />
+    <div class="hero-inner" data-enter>
       <h1>Build Long-Term Wealth Through <span class="g">Equity Investing</span></h1>
       <p class="lead">Buy and invest in equity stocks in India with live market data, deep research insights, stock analysis tools and expert-backed guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
@@ -67,7 +81,7 @@ const seo = {
   </section>
 
   <!-- ===== What Are Equity Stocks ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Are Equity Stocks?</h2>
       <p class="sec-lead">Equity stocks, also known as shares, represent ownership in a company. When you purchase equity shares, you become a partial owner of that company and gain rights to a portion of its assets and earnings. In India, equity stocks trade on two major exchanges, with all activity regulated by the Securities and Exchange Board of India (SEBI) to protect investor interests.</p>
@@ -117,7 +131,7 @@ const seo = {
         <h3 class="sub-title">By Size and Style</h3>
         <p class="sub-lead">The main categories investors use to classify and compare stocks.</p>
       </div>
-      <div class="cat-grid">
+      <div class="cat-grid" data-reveal-row>
         <div class="cat"><h4>Large Cap</h4><p>Top 100 companies by market capitalisation — stable and lower risk.</p></div>
         <div class="cat"><h4>Mid Cap</h4><p>Companies ranked 101–250 — a balance of growth potential and stability.</p></div>
         <div class="cat"><h4>Small Cap</h4><p>Companies ranked beyond 250 — higher growth potential with higher risk.</p></div>
@@ -137,7 +151,7 @@ const seo = {
       <h2 class="sec-title">How to Start Investing</h2>
       <p class="sec-lead">Four simple steps from sign-up to your first trade — plus exactly what you'll need to qualify.</p>
     </div>
-    <div class="steps">
+    <div class="steps" data-reveal-row>
       <div class="step">
         <div class="num">1</div>
         <div class="st-body"><h4 style="white-space:nowrap">Open Demat &amp; Trading Account</h4><p>Open a Demat and trading account online with Shriram in minutes.</p></div>
