@@ -1,0 +1,450 @@
+---
+/**
+ * Karnataka Bank × Shriram — /karnataka-bank-customers/
+ * Co-branded partner landing page (Figma V4 1011:6991). Built to the design
+ * system, NOT pixel-copied from the wireframe: standard two-column hero + shared
+ * lead-capture form (.hf-field), tokenised benefit cards, left-accent "why" grid.
+ * Nested route → BaseLayout / imports at ../../ depth.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// "Everything you need to trade with confidence" — nine benefits (real SVG icons).
+const BENEFITS = [
+  {
+    title: 'Swift, Safe & Convenient',
+    body: 'Fast, secure and easy online trading from wherever you are.',
+    icon: '<path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/>',
+  },
+  {
+    title: 'Trade Anytime, Anywhere',
+    body: 'Place orders without geographical limits, including after market hours.',
+    icon: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9S14.5 18.5 12 21c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3Z"/>',
+  },
+  {
+    title: 'One Solution for All Markets',
+    body: 'Trade Equity, Derivatives and Currency from a single login.',
+    icon: '<path d="M12 3l9 5-9 5-9-5 9-5Z"/><path d="M3 12l9 5 9-5M3 16l9 5 9-5"/>',
+  },
+  {
+    title: 'Platforms for Beginners & Active Investors',
+    body: "The right platform whether you're just starting out or trading actively.",
+    icon: '<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 21h8M12 18v3"/>',
+  },
+  {
+    title: 'Trained Relationship Manager',
+    body: 'Dedicated support and advice through your relationship manager.',
+    icon: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+  },
+  {
+    title: "Call 'n' Trade Facility",
+    body: "Place orders over the phone while you're on the move.",
+    icon: '<path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z"/>',
+  },
+  {
+    title: 'Real-Time Limit Enhancement',
+    body: 'Funds transferred reflect instantly so you can trade without delay.',
+    icon: '<path d="M13 3 4 14h7l-1 7 9-11h-7l1-7Z"/>',
+  },
+  {
+    title: 'Quality Research & Advisory',
+    body: 'Backed by sound in-house research to support informed decisions.',
+    icon: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4M9 11h4M11 9v4"/>',
+  },
+  {
+    title: 'Competitive Brokerage',
+    body: 'Among the most competitive rates, with no hidden charges.',
+    icon: '<path d="M12.5 3H20v7.5L11 19.5 4.5 13 12.5 3Z"/><circle cx="16" cy="7.5" r="1.4"/>',
+  },
+];
+
+// "Why Karnataka Bank customers choose us" — four left-accent cards.
+const REASONS = [
+  {
+    title: 'Integrated 3-in-1 Account',
+    body: 'Your Karnataka Bank Savings account, your Karnataka Bank Demat account (both internet-enabled) and an online trading account with Shriram Financial Services — all three integrated into a single 3-in-1 account.',
+  },
+  {
+    title: 'Link Your Existing Karnataka Bank Savings',
+    body: 'Already bank with Karnataka Bank? Simply enable internet banking on your savings account and pair it with an online trading account from Shriram Financial Services.',
+  },
+  {
+    title: 'Single-Screen Trading for Multiple Products',
+    body: 'Trade Equity, Derivatives, Commodities and Currency Futures across segments simultaneously (subject to activation) — keeping watch on different markets from one screen.',
+  },
+  {
+    title: 'Competitive Brokerage',
+    body: 'One of the most competitive brokerage rates in the market — you are in safe hands, with no hidden charges involved.',
+  },
+];
+
+const seo = {
+  title:
+    'Karnataka Bank 3-in-1 Online Trading Account',
+  description:
+    'Trade online with your Karnataka Bank 3-in-1 account — link your Karnataka Bank savings and demat accounts to a Shriram trading account for seamless, research-led investing.',
+  path: '/karnataka-bank-customers/',
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-grid">
+      <div class="hero-inner">
+        <p class="kb-eyebrow">Karnataka Bank online trading services · in alliance with Shriram Financial Services</p>
+        <h1>Trade online with your <span class="g">Karnataka Bank</span> 3-in-1 account</h1>
+        <p class="lead">A special online trading facility for Karnataka Bank customers — link your existing bank and demat accounts to a Shriram trading account and invest seamlessly, with research and support at hand.</p>
+
+        <!-- co-brand lockup -->
+        <div class="kb-cobrand" aria-label="Shriram Financial Services in alliance with Karnataka Bank">
+          <span class="kb-logo"><img src="/assets/shriram-group.svg" alt="Shriram Financial Services" /></span>
+          <span class="kb-x" aria-hidden="true"></span>
+          <span class="kb-bank">Karnataka Bank</span>
+        </div>
+
+        <div class="hero-feats">
+          <div class="feats">
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">SEBI-registered</span></div>
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Research-led</span></div>
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Full-service</span></div>
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Transparent</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- lead-capture card (shared .hf-field component) -->
+      <form class="hero-form hero-aside" aria-label="Open your Karnataka Bank demat account" onsubmit="return false;">
+        <div class="hf-head">
+          <h2>Open Your Demat Account</h2>
+        </div>
+        <div class="hf-body">
+          <div class="hf-field">
+            <div class="hf-field-in">
+              <label for="kb-name">Full Name</label>
+              <input id="kb-name" name="name" type="text" autocomplete="name" placeholder="e.g. Ritesh Kumar" />
+            </div>
+          </div>
+          <div class="hf-field">
+            <span class="hf-flag" aria-hidden="true"></span>
+            <span class="hf-divider" aria-hidden="true"></span>
+            <div class="hf-field-in">
+              <label for="kb-mobile">Mobile Number</label>
+              <input id="kb-mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="+91 00000 00000" />
+            </div>
+          </div>
+          <div class="hf-field">
+            <div class="hf-field-in">
+              <label for="kb-city">City</label>
+              <input id="kb-city" name="city" type="text" autocomplete="address-level2" placeholder="e.g. Mumbai" />
+            </div>
+          </div>
+          <div class="hf-actions">
+            <button class="btn-gold" type="submit">Get Started</button>
+            <p class="hf-note">By submitting, you authorise Shriram Financial Services to contact you regarding the Karnataka Bank trading facility, overriding any DND/NDNC registration.</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= EVERYTHING YOU NEED ================= -->
+  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Everything you need to trade with confidence</h2>
+      <p class="sec-lead">Swift, safe and convenient online trading designed for both first-time investors and active traders.</p>
+    </div>
+    <div class="kb-grid">
+      {BENEFITS.map((b) => (
+        <div class="kb-card">
+          <span class="kb-ico" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={b.icon} /></span>
+          <h3>{b.title}</h3>
+          <p>{b.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= WHY KARNATAKA BANK CUSTOMERS CHOOSE US ================= -->
+  <section class="section stack sec-tint" id="sec-why" data-section="why" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Why Karnataka Bank customers choose us</h2>
+      <p class="sec-lead">An integrated 3-in-1 experience that keeps your banking, demat and trading working together.</p>
+    </div>
+    <div class="kb-why">
+      {REASONS.map((r) => (
+        <div class="kb-reason">
+          <h3>{r.title}</h3>
+          <p>{r.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box dark">
+      <div class="ct-tt">
+        <h3>Open your Karnataka Bank <span class="g">3-in-1 account</span></h3>
+        <p class="ct-sub">SEBI-registered · Research-led · Full-service · Transparent — invest seamlessly with Shriram.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn-gold" href="#sec-hero">Get Started</a>
+        <a class="btn-ghost" href="tel:18001031212">Talk to an Expert</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Karnataka Bank partner page — page-local styles. All values reference tokens. ===== */
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* ---------- hero extras: eyebrow + co-brand lockup ----------
+     Hero layout (.hero-grid / .hero-inner / .hero-aside) is canonical in global.css. */
+  .kb-eyebrow {
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold-400);
+    margin-bottom: 16px;
+    max-width: var(--hero-text-w);
+  }
+  .kb-cobrand {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .kb-logo {
+    display: inline-flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--color-white);
+    border-radius: 8px;
+  }
+  .kb-logo img {
+    height: 32px;
+    width: auto;
+    display: block;
+  }
+  .kb-x {
+    width: 1px;
+    height: 40px;
+    /* Tier-2: warmgray-200 (#e1e0db) @ .5 flattened over the hero gradient's
+       olive-800 zone (rule 5 — opacity faux-tint removed; single representative
+       value since the divider sits over a gradient). */
+    background: #888a79;
+    flex: none;
+  }
+  .kb-bank {
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 0.5px;
+    color: var(--color-white);
+    white-space: nowrap;
+  }
+
+  /* ---------- lead-capture form (cream card on the dark hero) ----------
+     Mirrors the shared demat lead card: .hero-aside owns width; .hf-field is the
+     canonical shared input component from global.css. */
+  .hero-form {
+    background: var(--color-cream-350);
+    border: 1px solid var(--color-tan-300);
+    border-radius: 24px;
+    padding: clamp(32px, 3.4vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .hf-head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .hero-form h2 {
+    font-weight: 500;
+    font-size: clamp(22px, 2vw, 26px);
+    color: var(--color-olive-600);
+    line-height: 1.4;
+  }
+  .hf-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  /* Demat-style phone-flag prefix — the India flag is illustration content, kept verbatim. */
+  .hf-flag {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex: none;
+    border: 1px solid var(--color-gray-200);
+    background: linear-gradient(180deg, #ff9933 33%, #fff 33% 66%, #138808 66%);
+  }
+  .hf-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--color-gray-200);
+    flex: none;
+  }
+  .hf-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .hero-form .btn-gold {
+    width: 100%;
+    height: 48px;
+  }
+  .hf-note {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-charcoal-700);
+    line-height: 1.5;
+  }
+
+  /* ---------- "Everything you need" — 3-col tokenised benefit cards ---------- */
+  .kb-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .kb-card {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    padding: var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .kb-ico {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 8px;
+    background: var(--color-gold-100);
+    color: var(--color-text-heading-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .kb-ico svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
+  .kb-card h3 {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+  .kb-card p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- "Why customers choose us" — 2-col left-accent cards ---------- */
+  .kb-why {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .kb-reason {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-card);
+    border-left: 4px solid var(--color-gold-400);
+    border-radius: 16px;
+    padding: var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .kb-reason h3 {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-heading-dark);
+    line-height: 1.5;
+  }
+  .kb-reason p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- final CTA (dark, shared .cta-box shell) ---------- */
+  .cta-box.dark {
+    background: var(--color-olive-950);
+  }
+  .cta-box.dark .ct-tt {
+    color: var(--color-white);
+  }
+  .cta-box.dark h3 .g {
+    color: var(--color-gold-400);
+  }
+  .cta-box.dark .ct-sub {
+    color: var(--color-sage-200);
+  }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+  .cta-actions .btn-gold:hover {
+    filter: brightness(0.96);
+  }
+  .cta-actions .btn-ghost:hover {
+    background: var(--color-charcoal-650);
+    border-color: var(--color-white);
+  }
+
+  /* ---------- responsive (hero two-column stacking is canonical @980px) ---------- */
+  @media (max-width: 1024px) {
+    .kb-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .kb-why {
+      grid-template-columns: 1fr;
+    }
+    .kb-card p,
+    .kb-reason p {
+      font-size: 14px;
+    }
+  }
+  @media (max-width: 560px) {
+    .kb-grid {
+      grid-template-columns: 1fr;
+    }
+    .kb-cobrand {
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+  }
+</style>
+
+<script>
+  /* Digit-group the hero mobile field (matches the demat lead card). */
+  const mob = document.getElementById('kb-mobile') as HTMLInputElement | null;
+  if (mob) {
+    mob.addEventListener('input', () => {
+      let d = mob.value.replace(/\D/g, '');
+      if (d.slice(0, 2) === '91') {
+        d = d.slice(2);
+      }
+      d = d.slice(0, 10);
+      mob.value = d ? '+91 ' + (d.length > 5 ? d.slice(0, 5) + ' ' + d.slice(5) : d) : '';
+    });
+  }
+</script>

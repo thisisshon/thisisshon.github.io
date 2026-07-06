@@ -1,0 +1,668 @@
+---
+/**
+ * Open a Demat Account — /open-demat-account/
+ * Lead-capture landing page. Two-column hero (persuasion + form card),
+ * definition, benefit grid, eligibility checklist, documents, icon
+ * timeline, FAQ, dark CTA. Pixel parity with legacy demat.html.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+const FAQS = [
+  {
+    q: 'What is a Demat account and why do I need one?',
+    a: 'A Demat (Dematerialised) account holds your investments — shares, mutual funds, bonds — in digital form instead of physical certificates. It is mandatory for trading on NSE and BSE and for applying to IPOs. Think of it as your digital locker for all financial securities.',
+  },
+  {
+    q: 'How long does it take to open a Demat account with Shriram?',
+    a: 'The account opening process takes under 10 minutes online. Account activation happens within 24 hours of successful KYC completion. You will receive your Client ID and Antara platform access via email and SMS.',
+  },
+  {
+    q: 'Is there any charge to open a Demat account?',
+    a: 'Account opening is currently free (₹0). The Annual Maintenance Charge (AMC) is ₹300 + GST per year, waived for the first year. Equity delivery brokerage is permanently zero — you only pay ₹20 flat per order for intraday and F&O trades.',
+  },
+  {
+    q: 'What documents are required to open a Demat account?',
+    a: 'You need: PAN card, Aadhaar card (for address proof and e-Sign), a cancelled cheque or bank statement, and a passport-size photograph. All documents are uploaded digitally — no physical copies or branch visit needed.',
+  },
+  {
+    q: 'Can NRIs open a Demat account with Shriram?',
+    a: 'Yes. NRIs can open a Demat account through RBI-approved routes using NRE or NRO bank accounts. Please contact our support team for NRI-specific account opening guidance and documentation.',
+  },
+  {
+    q: 'Do I get a Trading account along with the Demat account?',
+    a: 'Yes — both Demat and Trading accounts are opened simultaneously when you apply with Shriram. Your Trading account is used to buy and sell on NSE and BSE; the Demat account holds the securities after settlement.',
+  },
+  {
+    q: 'Is it safe to open a Demat account online?',
+    a: 'Absolutely. The process is SEBI-compliant and uses Aadhaar OTP-based e-Sign. All documents are encrypted in transit and storage. Your securities are held with CDSL — a government-backed, SEBI-regulated depository.',
+  },
+];
+
+const seo = {
+  title:
+    'Open a Demat Account Online — Free, Paperless in 10 Minutes',
+  description:
+    'Open a free Demat account online with Shriram — 100% paperless, SEBI-registered, CDSL-backed. Zero delivery brokerage, free SEBI research and activation within 24 hours.',
+  path: '/open-demat-account/',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-grid">
+      <div class="hero-inner">
+        <h1>Open a <span class="g">Demat Account</span> in Minutes</h1>
+        <p class="lead">Hold stocks, bonds, ETFs, and mutual fund units digitally. SEBI-registered, CDSL-partnered, fully paperless — start investing today.</p>
+        <div class="hero-feats">
+          <div class="feats">
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">SEBI-registered</span></div>
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">CDSL-partnered</span></div>
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Zero brokerage</span></div>
+            <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Free research</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- lead-capture card -->
+      <form class="hero-form hero-aside" aria-label="Get started" onsubmit="return false;">
+        <div class="hf-head">
+          <h2>Let&rsquo;s Get Started</h2>
+          <div class="hf-meta">
+            <span>100% Paperless</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>Open Within Minutes</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span>SEBI Regulated</span>
+          </div>
+        </div>
+        <div class="hf-body">
+          <div class="hf-field">
+            <span class="hf-flag" aria-hidden="true"></span>
+            <span class="hf-divider" aria-hidden="true"></span>
+            <div class="hf-field-in">
+              <label for="hf-mobile">Mobile Number</label>
+              <input id="hf-mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="+91 00000 00000" />
+            </div>
+          </div>
+          <p class="hf-note">By continuing, I agree to receive the OTP and updates via SMS/WhatsApp</p>
+          <div class="hf-actions">
+            <button class="btn-gold" type="submit">Get Started</button>
+            <p class="hf-login">Already a part of us? <a href="#">Login Here.</a></p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= WHAT IS A DEMAT ACCOUNT? ================= -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is A Demat Account?</h2>
+      <div class="def-body">
+        <p>An electronic account that holds your financial securities — stocks, bonds, ETFs, mutual fund units, and government securities — in digital form instead of physical certificates. It is maintained by CDSL or NSDL through a SEBI-registered Depository Participant like Shriram Financial Services. Combined with a Trading account (opened simultaneously), it gives you the ability to buy and sell securities on NSE and BSE instantly.</p>
+      </div>
+    </div>
+    <div class="row-2">
+      <div class="card">
+        <h3 class="card-h">Held With</h3>
+        <p class="card-p">Your securities sit with CDSL or NSDL — SEBI-regulated, government-backed central depositories — not on paper.</p>
+      </div>
+      <div class="card">
+        <h3 class="card-h">What You Can Hold</h3>
+        <p class="card-p">Equity Shares, Bonds, ETFs, Mutual Fund units and Government Securities — together in a single account.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHY OPEN WITH SHRIRAM? ================= -->
+  <section class="section stack sec-tint" id="sec-why" data-section="why" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Why Open A Demat Account With Shriram?</h2>
+      <p class="sec-lead">Everything you need to invest professionally — at zero or flat-fee costs, with expert guidance from Day 1.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="fcell">
+        <h3>Hold All Investments Digitally</h3>
+        <p>Stocks, bonds, ETFs, mutual fund units, government securities — all in one digital account. No physical certificates, no storage risk.</p>
+      </div>
+      <div class="fcell">
+        <h3>₹0 Delivery Brokerage</h3>
+        <p>Buy and hold shares for absolutely zero brokerage. Your returns stay yours, entirely — forever.</p>
+      </div>
+      <div class="fcell">
+        <h3>Free SEBI Research Access</h3>
+        <p>SEBI-registered equity research, daily trade ideas, and mutual fund recommendations — from Day 1 of account activation.</p>
+      </div>
+      <div class="fcell">
+        <h3>Dedicated Relationship Manager</h3>
+        <p>A named RM is assigned to your account within 48 hours of activation — available on call, WhatsApp, and email.</p>
+      </div>
+      <div class="fcell">
+        <h3>Antara Trading Platform</h3>
+        <p>Trade, invest in mutual funds, track your portfolio, and apply for IPOs — all from one unified web and mobile platform.</p>
+      </div>
+      <div class="fcell">
+        <h3>CDSL Depository Backed</h3>
+        <p>Your securities held securely with CDSL — a SEBI-regulated, government-backed central depository.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AM I READY? — ELIGIBILITY CHECKLIST ================= -->
+  <section class="section stack sec-light" id="sec-ready" data-section="ready" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Am I Ready To Open A Demat Account?</h2>
+      <p class="sec-lead">If you can tick all five boxes below, you are ready to open your account right now.</p>
+    </div>
+    <div class="card check-card" style="gap:0">
+      <ul class="check-list" style="list-style:none;margin:0;padding:0">
+        <li class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="tx">You are 18 years of age or older (minors can invest through a registered guardian)</span></li>
+        <li class="check-sep" aria-hidden="true"></li>
+        <li class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="tx">You have a valid PAN card in your name</span></li>
+        <li class="check-sep" aria-hidden="true"></li>
+        <li class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="tx">You have an Aadhaar card linked to your active mobile number</span></li>
+        <li class="check-sep" aria-hidden="true"></li>
+        <li class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="tx">You have an active bank account in your name — savings or current</span></li>
+        <li class="check-sep" aria-hidden="true"></li>
+        <li class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="tx">You are an Indian resident (NRIs can invest via RBI-approved NRE/NRO routes)</span></li>
+      </ul>
+    </div>
+    <div class="cta-center"><a class="btn-gold" href="#sec-hero">Open a Demat Account</a></div>
+  </section>
+
+  <!-- ================= DOCUMENTS REQUIRED ================= -->
+  <section class="section stack sec-tint" id="sec-documents" data-section="documents" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Documents Required</h2>
+      <p class="sec-lead">Just four documents — all uploaded digitally from your phone or laptop. No physical copies, no branch visit.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="num">01</span><div class="st-body"><h4>PAN Card</h4><p>Mandatory for all investors. Used for identity verification and tax compliance under SEBI and IT regulations.</p></div></div>
+      <div class="step-div" aria-hidden="true"></div>
+      <div class="step"><span class="num">02</span><div class="st-body"><h4>Aadhaar Card</h4><p>For address proof and Aadhaar-based e-Sign. An OTP is sent to your Aadhaar-linked mobile number.</p></div></div>
+      <div class="step-div" aria-hidden="true"></div>
+      <div class="step"><span class="num">03</span><div class="st-body"><h4>Bank Account Proof</h4><p>A cancelled cheque or recent 3-month bank statement to link your savings or current account for fund transfers.</p></div></div>
+      <div class="step-div" aria-hidden="true"></div>
+      <div class="step"><span class="num">04</span><div class="st-body"><h4>Passport Photo</h4><p>A passport-size photograph — can be taken with your phone camera during the online account opening process.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ================= HOW TO OPEN — ICON TIMELINE ================= -->
+  <section class="section stack sec-light" id="sec-steps" data-section="steps" style="gap:56px">
+    <div class="howto-head">
+      <div class="ht-text">
+        <div class="ht-copy">
+          <h2 class="sec-title">How Soon Can I Open A Trading Account?</h2>
+          <p class="sec-lead"><b>Within minutes.</b> You can create a Trading Account swiftly in a five-stage online process that can be completed on any of your devices.</p>
+        </div>
+        <a class="btn-gold" href="#sec-hero" style="align-self:flex-start">Open a Demat Account</a>
+      </div>
+      <div class="howto-rocket" aria-hidden="true">
+        <img src="/assets/rocket.png" alt="" />
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-line" aria-hidden="true"></div>
+      <div class="flow-row">
+        <div class="flow-step">
+          <span class="flow-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.2" stroke="#2e3914" stroke-width="1.6"></circle><path d="M4.5 19a5.6 5.6 0 0 1 10.4-2.7" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round"></path><path d="m15.4 18.4 1.8 1.8 3.4-3.7" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <div class="flow-tx"><h4>Basic Information</h4><p>Name, mobile number, PAN — takes under two minutes.</p></div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="3" width="10" height="18" rx="2.4" stroke="#2e3914" stroke-width="1.6"></rect><path d="M10.5 18h3" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round"></path></svg></span>
+          <div class="flow-tx"><h4>Complete eKYC via Aadhaar</h4><p>OTP-based verification — no physical forms or branch visits.</p></div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" stroke="#2e3914" stroke-width="1.6" stroke-linejoin="round"></path><path d="M14 3v5h5" stroke="#2e3914" stroke-width="1.6" stroke-linejoin="round"></path><path d="m8.8 14.6 1.8 1.8 3.5-3.7" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <div class="flow-tx"><h4>Upload Documents</h4><p>Bank proof and a live photograph from your phone's camera.</p></div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5h16" stroke="#2e3914" stroke-width="1.6" stroke-linecap="round"></path><path d="M5.5 15.2 14.6 6l3.2 3.2-9.1 9.2-3.8.6.6-3.8Z" stroke="#2e3914" stroke-width="1.6" stroke-linejoin="round"></path></svg></span>
+          <div class="flow-tx"><h4>Digital eSign</h4><p>Aadhaar-based e-sign replaces physical signature on all forms.</p></div>
+        </div>
+        <div class="flow-step">
+          <span class="flow-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#2e3914" stroke-width="1.6"></circle><path d="M10.2 8.6 15.6 12l-5.4 3.4V8.6Z" fill="#2e3914"></path></svg></span>
+          <div class="flow-tx"><h4>Account Activation</h4><p>Credentials delivered to your registered email. Start investing.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
+          </div>
+          <a class="btn-gold" href="#">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box dark">
+      <div class="ct-tt">
+        <h3>Open a Demat Account and <span class="g">Start Investing Today</span></h3>
+        <p class="ct-sub">Free account opening · Zero delivery brokerage · CDSL-backed · 100% paperless · SEBI-registered.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn-gold" href="#sec-hero">Open Demat Account</a>
+        <a class="btn-ghost" href="tel:18001031212">Talk to an Expert</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Open Demat Account — page-specific styles. Values reuse shared tokens. ===== */
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* ---------- hero: persuasion column + lead-capture form.
+     Layout (.hero-grid / .hero-inner / .hero-aside width + mobile stacking) is
+     canonical in global.css — only the form's own look lives here. ---------- */
+  .hero .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  /* light "Let's Get Started" lead-capture card (width + flex come from .hero-aside) */
+  .hero-form {
+    background: var(--color-cream-350);
+    border: 1px solid var(--color-tan-300);
+    border-radius: 24px;
+    padding: clamp(32px, 3.4vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .hf-head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .hero-form h2 {
+    font-weight: 500;
+    font-size: clamp(26px, 2.4vw, 32px); /* page-local — Tier-2 candidate (26px off-scale min) */
+    color: var(--color-olive-600);
+    line-height: 1.4;
+  }
+  .hf-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .hf-meta span {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--color-gray-650);
+    white-space: nowrap;
+  }
+  .hf-meta .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-gray-300);
+    flex: none;
+  }
+  .hf-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  /* Input field (.hf-field / .hf-field-in) is the shared canonical component in
+     global.css — see DESIGN-SYSTEM.md §4.15. Only the Demat phone-flag prefix
+     decoration is page-specific. The flag's #ff9933/#138808 are illustration
+     content (the India flag) — kept verbatim, not tokenised. */
+  .hf-flag {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex: none;
+    border: 1px solid var(--color-gray-200);
+    background: linear-gradient(180deg, #ff9933 33%, #fff 33% 66%, #138808 66%);
+  }
+  .hf-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--color-gray-200);
+    flex: none;
+  }
+  .hf-note {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--color-charcoal-700);
+    line-height: 1.5;
+  }
+  .hf-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .hero-form .btn-gold {
+    width: 100%;
+    height: 48px;
+  }
+  .hf-login {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--color-charcoal-700);
+  }
+  .hf-login a {
+    color: var(--color-link);
+  }
+
+  /* ---------- "What is a Demat account?" — vertical definition, full-width copy ---------- */
+  .def-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .def-body p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+    line-height: 1.5;
+  }
+
+  /* ---------- "Why open with Shriram?" — 3-col bordered benefit grid ---------- */
+  .feat-grid {
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--color-surface-card);
+  }
+  .fcell {
+    padding: var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-right: 1px solid var(--color-border-card);
+    border-bottom: 1px solid var(--color-border-card);
+  }
+  .fcell:nth-child(3n) {
+    border-right: 0;
+  }
+  .fcell:nth-child(n + 4) {
+    border-bottom: 0;
+  }
+  .fcell h3 {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+  .fcell p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- "How to open" — header (copy + rocket) over an icon timeline ---------- */
+  .howto-head {
+    position: relative;
+  }
+  .ht-text {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .ht-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ht-copy .sec-lead b {
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+  /* rocket pinned to the right edge of the page; bleeds into the section side padding */
+  .howto-rocket {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    right: calc(-1 * var(--pad));
+    transform: translateY(-50%);
+    width: clamp(300px, 38vw, 520px);
+    pointer-events: none;
+  }
+  .howto-rocket img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* full-bleed dashed timeline with icon nodes + centered captions */
+  .flow {
+    position: relative;
+  }
+  .flow-line {
+    position: absolute;
+    top: 32px;
+    left: calc(-1 * var(--pad));
+    right: calc(-1 * var(--pad));
+    height: 0;
+    border-top: 1.5px dashed #e3cd9b; /* page-local — Tier-2 candidate (dashed timeline tan) */
+    z-index: 0;
+  }
+  .flow-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .flow-step {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .flow-ico {
+    flex: none;
+    height: 64px;
+    padding: 0 32px;
+    border-radius: 24px;
+    background: var(--color-gold-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-ico svg {
+    width: 28px; /* page-local — Tier-2 candidate (off the 16/20/24/32 icon scale) */
+    height: 28px;
+    display: block;
+  }
+  .flow-tx {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+  .flow-tx h4 {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-heading-dark);
+    line-height: 1.5;
+  }
+  .flow-tx p {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    max-width: 234px; /* page-local — Tier-2 candidate (off-grid caption cap) */
+  }
+
+  /* ---------- centered standalone section CTA ---------- */
+  .cta-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ---------- final CTA (dark) ---------- */
+  .cta-box.dark {
+    background: var(--color-olive-950);
+  }
+  .cta-box.dark .ct-tt {
+    color: var(--color-white);
+  }
+  .cta-box.dark h3 .g {
+    color: var(--color-gold-400);
+  }
+  .cta-box.dark .ct-sub {
+    color: var(--color-sage-200);
+  }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+  .cta-actions .btn-gold,
+  .cta-actions .btn-ghost {
+    transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+  .cta-actions .btn-gold:hover {
+    filter: brightness(0.96);
+  }
+  .cta-actions .btn-ghost:hover {
+    background: var(--color-charcoal-650);
+    border-color: var(--color-white);
+  }
+
+  /* ---------- responsive (two-column hero stacking is canonical in global.css @980px) ---------- */
+  @media (max-width: 1024px) {
+    .feat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .feat-grid .fcell {
+      border-right: 1px solid var(--color-border-card);
+      border-bottom: 1px solid var(--color-border-card);
+    }
+    .feat-grid .fcell:nth-child(2n) {
+      border-right: 0;
+    }
+    .feat-grid .fcell:nth-child(n + 5) {
+      border-bottom: 0;
+    }
+    /* tablet & below: drop the rocket so it never overlaps the copy — keep the steps */
+    .howto-rocket {
+      display: none;
+    }
+  }
+  /* mweb: header stacks, rocket drops, timeline becomes a vertical left-aligned flow */
+  @media (max-width: 900px) {
+    .ht-text {
+      max-width: none;
+    }
+    .flow-line {
+      display: none;
+    }
+    .flow-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    .flow-step {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+      padding-bottom: 32px;
+      position: relative;
+    }
+    .flow-step:last-child {
+      padding-bottom: 0;
+    }
+    .flow-ico {
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      flex: none;
+      position: relative;
+      z-index: 1;
+    }
+    .flow-tx {
+      align-items: flex-start;
+      text-align: left;
+      gap: 8px;
+      padding-top: 5px; /* page-local — Tier-2 candidate (off-grid nudge) */
+    }
+    .flow-tx p {
+      max-width: none;
+    }
+    .flow-step::before {
+      content: '';
+      position: absolute;
+      left: 27px; /* page-local — Tier-2 candidate (off-grid connector offset) */
+      top: 56px;
+      bottom: 0;
+      border-left: 1.5px dashed #e3cd9b; /* page-local — Tier-2 candidate (dashed timeline tan) */
+    }
+    .flow-step:last-child::before {
+      display: none;
+    }
+  }
+  @media (max-width: 768px) {
+    .def-body p {
+      font-size: 14px;
+    }
+    .fcell p {
+      font-size: 14px;
+    }
+  }
+  @media (max-width: 560px) {
+    .feat-grid {
+      grid-template-columns: 1fr;
+    }
+    .feat-grid .fcell {
+      border-right: 0 !important;
+      border-bottom: 1px solid var(--color-border-card) !important;
+    }
+    .feat-grid .fcell:last-child {
+      border-bottom: 0 !important;
+    }
+  }
+</style>
+
+<script>
+  /* ---- Demat page enhancement: digit-group the hero mobile field ----
+     Scroll-reveal + back-to-top are owned by BaseLayout / shared CSS. */
+  const mob = document.getElementById('hf-mobile') as HTMLInputElement | null;
+  if (mob) {
+    mob.addEventListener('input', () => {
+      let d = mob.value.replace(/\D/g, '');
+      if (d.slice(0, 2) === '91') {
+        d = d.slice(2);
+      }
+      d = d.slice(0, 10);
+      mob.value = d ? '+91 ' + (d.length > 5 ? d.slice(0, 5) + ' ' + d.slice(5) : d) : '';
+    });
+  }
+</script>

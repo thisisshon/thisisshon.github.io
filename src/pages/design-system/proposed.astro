@@ -694,6 +694,10 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
         <h3>Heading alignment</h3>
         <p>The hero H1, every <code>.sec-title</code> and every <code>.sub-title</code> (with their leads) are <b>left-aligned</b> — never centred, no <code>max-width</code> cap on the lead. The only centred text is the promotional bands (<code>.cta-box</code> and dark CTA / access bands). Reference: <code>products/equity.astro</code>.</p>
       </div>
+      <div class="rule">
+        <h3>Mobile tap targets</h3>
+        <p>Every tappable control presents a <b>≥44px</b> touch area on mobile — the site standard is <b>48px</b> (on the 8px grid, matching <code>.hf-field</code> and <code>.to-top</code>). <b>Pad out the hit area</b>, never enlarge the icon: the glyph stays on its 16/20/24/32 scale while the container / <code>min-width</code> / <code>min-height</code> grows to 48px. See footer <code>.socials a</code> and <code>.nav-toggle</code>. This governs tap area, not font size — micro-labels (the <code>.hf-field</code> floating label ~10px) are a sanctioned exception.</p>
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -817,7 +821,8 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   }
   .tok-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* min(280px,100%) so a track never exceeds a narrow (<312px) viewport */
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
     gap: 16px;
   }
   .tok {
@@ -862,6 +867,11 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 32px;
     align-items: start;
+  }
+  /* let the grid item shrink so its inner .t-scroll table scrolls instead of
+     forcing the (1fr = minmax(auto,1fr)) column to the table's 431px width */
+  .sem-block {
+    min-width: 0;
   }
   .sem-h {
     font-weight: 500;

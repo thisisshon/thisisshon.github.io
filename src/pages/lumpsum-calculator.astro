@@ -1,0 +1,354 @@
+---
+/**
+ * Lumpsum Calculator — /lumpsum-calculator/
+ * Interactive one-time-investment future-value calculator. Built on the shared
+ * calculator UI in global.css (.calc-* / .field / .slider / .bar-* / .res-* /
+ * .ready-* / .bullets / .explore-grid); page carries only content + its maths.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+import { otherCalculators, calcHref } from '../data/calculators';
+
+const MORE = otherCalculators('lumpsum');
+
+// General-Questions FAQ.
+const FAQS = [
+  {
+    q: 'What is a lumpsum investment?',
+    a: 'A lumpsum investment is a single, one-time deployment of capital into a mutual fund, stock or other instrument — as opposed to a SIP, where you invest a fixed amount at regular intervals. Because the full amount is invested from day one, every rupee compounds for the entire investment horizon.',
+  },
+  {
+    q: 'How is the future value of a lumpsum calculated?',
+    a: 'The calculator uses the standard compound-interest formula: A = P × (1 + r)ⁿ, where P is your invested amount, r is the expected annual rate of return and n is the number of years. It compounds your capital once a year over the full term to project the maturity value.',
+  },
+  {
+    q: 'Is a lumpsum better than a SIP?',
+    a: 'Neither is universally better — it depends on your situation. A lumpsum can outperform when markets rise steadily after you invest, because your full capital is working from the start. A SIP averages your entry price across market cycles and suits investors deploying money gradually from monthly income. Many investors use both.',
+  },
+  {
+    q: 'What rate of return should I assume?',
+    a: 'For equity-oriented funds, a long-term assumption of 10–12% per annum is common, while debt funds are modelled lower. Real returns fluctuate year to year, so it is wise to run the calculator with both an optimistic and a conservative rate to understand the range of possible outcomes.',
+  },
+  {
+    q: 'Are the projected returns guaranteed?',
+    a: 'No. Market-linked investments do not offer guaranteed returns — the figures here are illustrative and assume a constant annual rate compounded over the full term. Actual returns depend on market performance and are not assured.',
+  },
+];
+
+const seo = {
+  title: 'Lumpsum Calculator — Estimate One-Time Investment Returns',
+  description:
+    'Free lumpsum calculator to estimate the future value of a one-time investment. Adjust amount, duration and expected return — instant results, no sign-up.',
+  path: '/lumpsum-calculator/',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Grow A One-Time Investment With The <span class="g">Lumpsum Calculator</span></h1>
+      <p class="lead">See how a single investment could grow over time — just set your amount, horizon and expected rate of return.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">100% Free</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Instant Results</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">No Sign-up Required</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Accurate Projections</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Lumpsum Calculator ===== -->
+  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px">
+    <h2 class="sec-title">Lumpsum Calculator</h2>
+    <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly.</p>
+
+    <div class="calc-row">
+      <!-- inputs -->
+      <div class="card calc-panel">
+        <div class="fields">
+          <div class="field">
+            <div class="field-top">
+              <label for="amt">Total investment</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="1,00,000" aria-label="Total investment amount in rupees" /></div>
+            </div>
+            <input class="slider" id="amtR" type="range" min="1000" max="10000000" step="1000" value="100000" aria-label="Total investment amount" />
+            <div class="slider-scale"><span>₹1,000</span><span>₹1,00,00,000</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="dur">Investment duration</label>
+              <div class="field-val"><input id="dur" type="text" inputmode="numeric" value="10" aria-label="Investment duration in years" /><span class="sfx">Yr</span></div>
+            </div>
+            <input class="slider" id="durR" type="range" min="1" max="40" step="1" value="10" aria-label="Investment duration in years" />
+            <div class="slider-scale"><span>1 Yr</span><span>40 Yr</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="rate">Expected rate of return</label>
+              <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="12" aria-label="Expected annual rate of return in percent" /><span class="sfx">%</span></div>
+            </div>
+            <input class="slider" id="rateR" type="range" min="1" max="30" step="0.5" value="12" aria-label="Expected annual rate of return in percent" />
+            <div class="slider-scale"><span>1%</span><span>30%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- results -->
+      <div class="calc-results">
+        <div class="bar-wrap">
+          <div class="bar-top">
+            <div class="bar-head">
+              <span class="bar-cap">Total Assumed Value</span>
+              <span class="bar-tot" id="d-tot">₹3,10,585</span>
+            </div>
+            <div class="stack-bar" role="img" aria-label="Total assumed value split between invested amount and estimated returns">
+              <div class="seg seg-inv" id="seg-inv" style="width:32%"></div>
+              <div class="seg seg-ret" id="seg-ret" style="width:68%"></div>
+            </div>
+          </div>
+
+          <div class="res-cards">
+            <div class="res-card">
+              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Invested Amount</div>
+              <div class="res-val" id="r-inv">₹1,00,000</div>
+            </div>
+            <div class="res-card">
+              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Estimated Returns</div>
+              <div class="res-val" id="r-ret">₹2,10,585</div>
+            </div>
+          </div>
+
+          <div class="bar-div" role="presentation"></div>
+
+          <p class="bar-note">Note: Figures are illustrative and assume a constant annual rate of return compounded over the full term; actual market returns fluctuate and are not guaranteed.</p>
+        </div>
+
+        <div class="ready-bar">
+          <p class="ready-text">Invest a <b id="cta-amt">₹1,00,000 lumpsum</b> and grow your wealth</p>
+          <a class="ready-btn" href="/open-demat-account/">Open Demat Account</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="sr-only" id="sr-summary" aria-live="polite"></p>
+  </section>
+
+  <!-- ===== What Is A Lumpsum Calculator ===== -->
+  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
+    <h2 class="sec-title">What Is A Lumpsum Calculator?</h2>
+    <p class="sec-lead">A lumpsum calculator is a free online tool that estimates the maturity value of a single, one-time investment. By entering the amount you plan to invest, how long you intend to stay invested and an expected annual rate of return, it projects how much your capital could grow. It removes the guesswork from planning, giving you an instant, data-backed picture of a one-shot investment so you can set realistic goals and invest with confidence.</p>
+  </section>
+
+  <!-- ===== How A Lumpsum Calculator Helps You ===== -->
+  <section class="section stack sec-light" id="sec-help" data-section="help" style="gap:24px">
+    <h2 class="sec-title">How A Lumpsum Calculator Helps You</h2>
+    <p class="sec-lead">Working out compound growth by hand is tedious and error-prone. A lumpsum calculator does it in seconds, so you can focus on the decisions that matter:</p>
+    <ul class="bullets">
+      <li>Instantly estimate the future value of a one-time investment without any manual maths.</li>
+      <li>Compare scenarios by changing your amount, duration or expected return to find what fits your goals.</li>
+      <li>See clearly how much of your final corpus is your own capital versus estimated returns.</li>
+      <li>Decide whether to invest a windfall as a lumpsum or spread it out — with numbers, not guesswork.</li>
+    </ul>
+  </section>
+
+  <!-- ===== How Does A Lumpsum Calculator Work ===== -->
+  <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
+    <h2 class="sec-title">How Does A Lumpsum Calculator Work?</h2>
+    <p class="sec-lead">The calculator uses the standard compound-interest formula for a one-time investment: A = P × (1 + r)ⁿ, where P is your invested amount, r is the expected annual rate of return and n is the number of years you stay invested. Because the entire amount compounds from day one for the full term, even a modest rate of return can produce substantial growth over long horizons — a direct illustration of the power of compounding.</p>
+  </section>
+
+  <!-- ===== Advantages Of A Lumpsum Calculator ===== -->
+  <section class="section stack sec-light" id="sec-adv" data-section="adv" style="gap:24px">
+    <h2 class="sec-title">Advantages Of A Lumpsum Calculator</h2>
+    <p class="sec-lead">Whether you are deploying a bonus, an inheritance or accumulated savings, a lumpsum calculator brings clarity to your planning:</p>
+    <ul class="bullets">
+      <li>Accurate, instant projections that account for compounding across the entire horizon.</li>
+      <li>Completely free to use, with no sign-up required and results delivered in real time.</li>
+      <li>Helps you gauge whether a one-time investment aligns with your goals and timeframe.</li>
+      <li>Makes the long-term payoff of staying invested easy to visualise and commit to.</li>
+    </ul>
+  </section>
+
+  <!-- ===== Explore More ===== -->
+  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+    <h2 class="sec-title">Explore More</h2>
+    <div class="explore-grid">
+      {
+        MORE.map((c) => (
+          <a class="xcard" href={calcHref(c.slug)}>
+            <span class="xc-title">{c.title}</span>
+            <span class="xc-desc">{c.desc}</span>
+            <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
+          </div>
+          <a class="btn-gold" href="#">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Lumpsum calculator — calculator UI is shared in global.css. Page-local:
+     General Questions sits on --sec-light, so the accordion + helper side card
+     need a defined edge. */
+  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
+  .faq-side { border: 1px solid var(--color-border-card); }
+</style>
+
+<script>
+  // Lumpsum calculator — compound growth of a single one-time investment.
+  const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const amt = document.getElementById('amt') as HTMLInputElement;
+  const amtR = document.getElementById('amtR') as HTMLInputElement;
+  const dur = document.getElementById('dur') as HTMLInputElement;
+  const durR = document.getElementById('durR') as HTMLInputElement;
+  const rate = document.getElementById('rate') as HTMLInputElement;
+  const rateR = document.getElementById('rateR') as HTMLInputElement;
+
+  const segInv = document.getElementById('seg-inv') as HTMLElement;
+  const segRet = document.getElementById('seg-ret') as HTMLElement;
+  let last = { inv: 0, ret: 0, tot: 0 };
+
+  function digits(s: string) {
+    return String(s).replace(/[^0-9.]/g, '');
+  }
+  function clamp(v: number, mn: number, mx: number) {
+    return Math.max(mn, Math.min(mx, v));
+  }
+  function fillSlider(sl: HTMLInputElement) {
+    const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
+    sl.style.background =
+      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
+  }
+  function countTo(el: HTMLElement, from: number, to: number, fn: (n: number) => string) {
+    if (reduce || from === to) {
+      el.textContent = fn(to);
+      return;
+    }
+    let t0: number | null = null;
+    const d = 350;
+    function tick(ts: number) {
+      if (t0 === null) t0 = ts;
+      const t = Math.min(1, (ts - t0) / d);
+      const e = 1 - Math.pow(1 - t, 3);
+      el.textContent = fn(from + (to - from) * e);
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function render(animate: boolean) {
+    const amount = clamp(parseFloat(digits(amt.value)) || 0, +amtR.min, +amtR.max);
+    const years = clamp(parseFloat(digits(dur.value)) || 0, +durR.min, +durR.max);
+    const ratePct = clamp(parseFloat(digits(rate.value)) || 0, +rateR.min, +rateR.max);
+
+    const fv = amount * Math.pow(1 + ratePct / 100, years);
+    const invested = amount;
+    const returns = fv - invested;
+    const rupee = (v: number) => '₹' + fmt.format(Math.round(v));
+
+    if (animate) {
+      countTo(document.getElementById('r-inv') as HTMLElement, last.inv, invested, rupee);
+      countTo(document.getElementById('r-ret') as HTMLElement, last.ret, returns, rupee);
+      countTo(document.getElementById('d-tot') as HTMLElement, last.tot, fv, rupee);
+    } else {
+      (document.getElementById('r-inv') as HTMLElement).textContent = rupee(invested);
+      (document.getElementById('r-ret') as HTMLElement).textContent = rupee(returns);
+      (document.getElementById('d-tot') as HTMLElement).textContent = rupee(fv);
+    }
+    last = { inv: invested, ret: returns, tot: fv };
+
+    const invPct = fv > 0 ? (invested / fv) * 100 : 0;
+    segInv.style.width = invPct + '%';
+    segRet.style.width = 100 - invPct + '%';
+
+    (document.getElementById('cta-amt') as HTMLElement).textContent =
+      '₹' + fmt.format(amount) + ' lumpsum';
+    (document.getElementById('sr-summary') as HTMLElement).textContent =
+      'Projected total value ' + rupee(fv) + ' from ' + rupee(invested) + ' invested over ' + years + ' years.';
+
+    updateUrl(amount, years, ratePct);
+    amtR.setAttribute('aria-valuetext', '₹' + fmt.format(amount));
+    durR.setAttribute('aria-valuetext', years + ' years');
+    rateR.setAttribute('aria-valuetext', ratePct + ' percent');
+  }
+
+  function updateUrl(amount: number, years: number, ratePct: number) {
+    const q = '?amt=' + amount + '&dur=' + years + '&rate=' + ratePct;
+    try {
+      history.replaceState(null, '', q);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function pairNumberAndSlider(numEl: HTMLInputElement, slEl: HTMLInputElement, group: boolean) {
+    slEl.addEventListener('input', function () {
+      numEl.value = group ? fmt.format(+slEl.value) : slEl.value;
+      fillSlider(slEl);
+      render(false);
+    });
+    numEl.addEventListener('input', function () {
+      const raw = parseFloat(digits(numEl.value)) || 0;
+      if (group) numEl.value = raw ? fmt.format(raw) : '';
+      slEl.value = String(clamp(raw, +slEl.min, +slEl.max));
+      fillSlider(slEl);
+      render(false);
+    });
+    numEl.addEventListener('change', function () {
+      const v = clamp(parseFloat(digits(numEl.value)) || +slEl.min, +slEl.min, +slEl.max);
+      numEl.value = group ? fmt.format(v) : String(v);
+      slEl.value = String(v);
+      fillSlider(slEl);
+      render(true);
+    });
+  }
+  pairNumberAndSlider(amt, amtR, true);
+  pairNumberAndSlider(dur, durR, false);
+  pairNumberAndSlider(rate, rateR, false);
+
+  (function initFromUrl() {
+    const p = new URLSearchParams(location.search);
+    function setNum(el: HTMLInputElement, sl: HTMLInputElement, key: string, group: boolean) {
+      if (!p.has(key)) return;
+      const v = clamp(parseFloat(p.get(key) || '') || +sl.min, +sl.min, +sl.max);
+      sl.value = String(v);
+      el.value = group ? fmt.format(v) : String(v);
+    }
+    setNum(amt, amtR, 'amt', true);
+    setNum(dur, durR, 'dur', false);
+    setNum(rate, rateR, 'rate', false);
+  })();
+
+  [amtR, durR, rateR].forEach(fillSlider);
+  render(true);
+</script>

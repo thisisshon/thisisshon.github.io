@@ -8,7 +8,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { calculators, calcHref } from '../../data/calculators';
 
 const seo = {
-  title: 'Calculators — Shriram Financial Services',
+  title: 'Calculators',
   description:
     'Free financial calculators from Shriram — SIP, lumpsum, SWP, fixed deposit and NPS. Plan investments and estimate returns instantly, no sign-up.',
   path: '/calculators/',
@@ -58,7 +58,7 @@ const CALCS = calculators;
           <a class="calc-card" href={calcHref(c.slug)}>
             <span class="cc-title">{c.title}</span>
             <span class="cc-desc">{c.desc}</span>
-            <span class="cc-cta">Calculate Now <span class="arr">&rarr;</span></span>
+            <span class="cc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
           </a>
         ))
       }
@@ -67,7 +67,7 @@ const CALCS = calculators;
         <span class="cc-desc">
           Like what you see? Start investing in under 5 minutes &mdash; zero paperwork.
         </span>
-        <a class="btn-gold" href="/demat/">Open Demat Account</a>
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
       </div>
     </div>
   </section>
@@ -172,7 +172,13 @@ const CALCS = calculators;
     font-size: 16px;
   }
   .cc-cta .arr {
+    display: inline-flex;
     transition: transform 0.25s ease;
+  }
+  .cc-cta .arr svg {
+    display: block;
+    width: 16px;
+    height: 16px;
   }
   a.calc-card:hover .cc-cta .arr {
     transform: translateX(5px);

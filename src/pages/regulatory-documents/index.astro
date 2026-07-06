@@ -1,0 +1,166 @@
+---
+/**
+ * Regulatory Documents — /regulatory-documents/
+ * Hub page indexing the company's regulatory / compliance documents. The two
+ * live sub-pages (Investor Charter, Mandatory Member Details) plus the standard
+ * SEBI / exchange disclosure documents render as the shared view/download
+ * .doc-card (.doc-grid / .doc-card, global.css) — the same card used by
+ * /regulatory-documents/regulatory-documents/investor-charter/. DATA-DRIVEN (DOCS below) so the
+ * template scales to any number of documents (rule 1). No component forks (rule 2).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { organizationSchema } from '../../lib/seo';
+
+// Hub cards → one shared .doc-card each. The two live sub-pages use their real
+// URLs; the remaining disclosures link to '#' until the real PDFs are wired in.
+const DOCS = [
+  {
+    name: 'Investor Charter',
+    meta: 'Effective Apr 2025',
+    href: '/regulatory-documents/investor-charter/',
+    download: false,
+  },
+  {
+    name: 'Mandatory Member Details',
+    meta: 'Updated Jul 2026',
+    href: '/regulatory-documents/mandatory-member-details/',
+    download: false,
+  },
+  {
+    name: 'Rights & Obligations of Investors',
+    meta: 'Effective Apr 2025',
+    href: '#',
+    download: true,
+  },
+  {
+    name: 'Risk Disclosure Document (RDD)',
+    meta: 'Effective Apr 2025',
+    href: '#',
+    download: true,
+  },
+  {
+    name: 'Guidance Note on FATCA & CRS',
+    meta: 'Updated Jan 2025',
+    href: '#',
+    download: true,
+  },
+  {
+    name: 'Policies & Procedures',
+    meta: 'Updated Mar 2025',
+    href: '#',
+    download: true,
+  },
+  {
+    name: "Do's & Don'ts for Investors",
+    meta: 'Updated Jun 2025',
+    href: '#',
+    download: true,
+  },
+  {
+    name: 'Investor Grievance & SCORES',
+    meta: 'Updated Jun 2025',
+    href: '#',
+    download: true,
+  },
+];
+
+const site = Astro.site!.href;
+const seo = {
+  title: 'Regulatory Documents',
+  description:
+    'Regulatory and compliance documents from Shriram Financial Services in one place — Investor Charter, Mandatory Member Details, risk disclosures, policies and SEBI-mandated investor rights. View online or download as PDF.',
+  path: '/regulatory-documents/',
+  jsonLd: [organizationSchema(site)],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO (standardised, rule 7) ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Regulatory <span class="g">Documents</span></h1>
+      <p class="lead">
+        Every regulatory and compliance document from Shriram Financial Services — investor
+        charters, member disclosures, risk documents and policies — in one place. View online or
+        download as PDF.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= DOCUMENT LIST (shared .doc-card grid) ================= -->
+  <section class="section stack sec-light" id="sec-docs" data-section="docs">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Compliance & Regulatory Documents</h2>
+      <p class="sec-lead">
+        The mandatory disclosures required under SEBI and exchange regulations, together with our
+        investor charters and policies. Read each online, or download the signed PDF for your
+        records.
+      </p>
+    </div>
+
+    <div class="doc-grid">
+      {
+        DOCS.map((d) => (
+          <article class="doc-card">
+            <h3 class="nm">{d.name}</h3>
+            <span class="upd">
+              {d.download ? 'PDF' : 'Page'}
+              <span class="sep">·</span>
+              {d.meta}
+            </span>
+            <div class="doc-links">
+              <a class="doc-dl" href={d.href} aria-label={`View — ${d.name}`}>
+                View
+              </a>
+              {d.download && (
+                <a class="doc-dl" href={d.href} download aria-label={`Download — ${d.name}`}>
+                  Download
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ================= IMPORTANT DISCLOSURE ================= -->
+  <section class="section stack sec-tint" id="sec-disclosure" data-section="disclosure">
+    <p class="disc">
+      <strong>Important Disclosure:</strong> Investments in securities markets are subject to market
+      risks. Read all related documents carefully before investing. Shriram Financial Services
+      Limited is registered with SEBI as a Stock Broker (Registration Nos. INB231103833,
+      INB011103839), Research Analyst (INH000009624) and CDSL Depository Participant
+      (IN-DP-165-2015). AMFI-registered Mutual Fund Distributor: ARN 29483. PFRDA-registered NPS
+      Point of Presence. CIN: U65100TN1974PLC006603. Registered Office: Shriram House, No. 4,
+      Burkit Road, T. Nagar, Chennai – 600 017.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Regulatory Documents hub — page-local styles only. The document cards
+     use the shared .doc-grid / .doc-card component from global.css; only the
+     disclosure fine print is page-specific. ===== */
+  .section {
+    scroll-margin-top: 96px;
+  }
+
+  /* shared .doc-grid, spaced below the section intro (matches /regulatory-documents/investor-charter/). */
+  .doc-grid {
+    margin-top: 32px;
+  }
+
+  /* compliance disclosure — plain fine print on the tinted band. */
+  .disc {
+    max-width: 1288px;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-tertiary);
+    overflow-wrap: anywhere; /* break long reg/CIN numbers so they can't overflow at 320px */
+  }
+  .disc strong {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+</style>

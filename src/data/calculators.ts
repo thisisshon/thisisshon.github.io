@@ -13,7 +13,7 @@
  */
 
 export interface CalcMeta {
-  /** URL slug → /calculators/<slug>/ */
+  /** URL slug → /<slug>-calculator/ */
   slug: string;
   /** Full card / nav title, e.g. "SIP Calculator". */
   title: string;
@@ -57,7 +57,7 @@ export const calculators: CalcMeta[] = [
 ];
 
 /** Build the canonical directory-format URL for a calculator slug. */
-export const calcHref = (slug: string): string => `/calculators/${slug}/`;
+export const calcHref = (slug: string): string => `/${slug}-calculator/`;
 
 /** Every calculator except `slug` — feeds a detail page's "Explore More" rail. */
 export const otherCalculators = (slug: string): CalcMeta[] =>

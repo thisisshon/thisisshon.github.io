@@ -1,0 +1,307 @@
+---
+/**
+ * Loan Against Securities (LAS) — /loan-against-shares/
+ * Long-form product page. Built entirely from the shared design-system
+ * components in global.css (hero, .section/.sec-title, .card, .cat-grid,
+ * .steps, .product-page_table, .check-card, .risks, FaqAccordion, .cta-box).
+ * No page-scoped CSS — the eight-cell .cat-grid handles the securities grid.
+ * Nested route → BaseLayout / component imports at ../../ depth.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
+
+// Approved securities and indicative loan-to-value by type (fills the .cat-grid).
+const SECURITIES = [
+  { h: 'Approved Shares', p: 'Listed equity shares on the lender-approved list — LTV up to ~50% of value.' },
+  { h: 'Mutual Fund Units', p: 'Equity and debt fund units pledged via RTA/depository — LTV ~50%–80%.' },
+  { h: 'Bonds & NCDs', p: 'Listed government and corporate bonds — LTV up to ~80% for high-rated paper.' },
+  { h: 'Exchange-Traded Funds', p: 'Approved equity and debt ETFs held in your demat account — LTV up to ~50%.' },
+  { h: 'Sovereign Gold Bonds', p: 'RBI-issued SGBs pledged as collateral — a stable, sovereign-backed asset.' },
+  { h: 'Government Securities', p: 'G-Secs and treasury bills — among the highest LTVs given sovereign backing.' },
+  { h: 'Life Insurance Policies', p: 'Select traditional policies with a surrender value can be assigned as security.' },
+  { h: 'Fixed Maturity Plans', p: 'Approved close-ended debt schemes accepted subject to the lender list.' },
+];
+
+// How a Loan Against Securities works — five steps.
+const STEPS = [
+  { h: 'Pledge Securities from Your Demat', p: 'Select the approved shares, bonds, ETFs or fund units you want to pledge and mark a digital lien from your demat account.' },
+  { h: 'Get a Sanctioned Overdraft Limit', p: 'The lender sets a credit limit as a percentage of the current value of your pledged securities, typically within a working day.' },
+  { h: 'Draw Funds When You Need Them', p: 'Withdraw against the limit in part or in full, straight to your linked bank account — like an overdraft ready to use.' },
+  { h: 'Repay and Re-Draw Flexibly', p: 'Repay any time to free up your limit, then draw again as needed. There is no fixed EMI on the unused portion.' },
+  { h: 'Pay Interest Only on What You Use', p: 'Interest accrues only on the utilised amount for the days it stays outstanding — your securities remain invested throughout.' },
+];
+
+// LAS vs selling shares vs personal loan.
+const COMPARE = [
+  { k: 'Keeps Portfolio Intact', l: 'Yes — shares stay in your name and keep their upside', r: 'No — you sell and give up future gains', p: 'Not applicable' },
+  { k: 'Cost', l: 'Interest only on the amount used', r: 'Brokerage / exit cost, plus opportunity cost', p: 'Higher interest on the full sanctioned amount' },
+  { k: 'Speed of Access', l: 'Quick — digital pledge, often same day', r: 'T+1 settlement for sale proceeds', p: 'Days — full underwriting and approval' },
+  { k: 'Tax Event', l: 'No sale, so no capital-gains tax triggered', r: 'Sale triggers capital-gains tax', p: 'No sale, no tax event' },
+  { k: 'Best Suited For', l: 'Short-term liquidity while staying invested', r: 'When you want to exit the position', p: 'Unsecured, one-off funding needs' },
+];
+
+// Risks to weigh with a Loan Against Securities.
+const RISKS = [
+  { h: 'Margin Call on Price Fall', p: 'If the market value of your pledged securities drops below the required cover, the lender can issue a margin call asking you to repay part of the loan or pledge more securities at short notice.' },
+  { h: 'Part-Sale of Pledged Shares', p: 'If a margin call is not met in time, the lender is entitled to invoke the pledge and sell part of your holdings to restore the cover — potentially at an unfavourable price.' },
+  { h: 'Interest Cost', p: 'Interest accrues on every rupee utilised. If a drawdown stays outstanding for long, cumulative interest can erode the benefit of staying invested.' },
+  { h: 'Pledged Securities Are Locked', p: "You can't sell, transfer or deliver pledged securities until the lien is released, which can limit your ability to react during volatile markets." },
+];
+
+// General Questions — plain-text answers, shared with the FAQPage schema.
+const FAQS = [
+  {
+    q: 'What is a Loan Against Securities?',
+    a: 'A Loan Against Securities (LAS) is a secured overdraft where you pledge financial assets — shares, bonds, ETFs, mutual fund units or government securities — as collateral and receive a credit limit against their value. You continue to own the securities and stay invested, while borrowing against them and paying interest only on the amount you use.',
+  },
+  {
+    q: 'Which securities can I pledge for a loan?',
+    a: 'Lenders maintain an approved list that typically includes listed equity shares, government and corporate bonds, exchange-traded funds, mutual fund units, sovereign gold bonds and government securities. Only securities on the approved list can be pledged, and the loan-to-value varies by asset type.',
+  },
+  {
+    q: 'How much can I borrow against my securities?',
+    a: 'The sanctioned limit is a percentage of the current value of your pledged securities. Equity shares and equity ETFs usually carry a loan-to-value of around 50%, while debt instruments such as bonds and government securities can command up to about 80% because they are less volatile.',
+  },
+  {
+    q: 'Do I have to sell my shares to raise funds?',
+    a: 'No. You only pledge your securities — they remain in your demat account, keep their market upside and continue to earn dividends or interest. Because nothing is sold, no capital-gains tax is triggered and your portfolio stays intact.',
+  },
+  {
+    q: 'How is interest charged on a Loan Against Securities?',
+    a: 'Interest is charged only on the amount you actually draw, not on the full sanctioned limit, and only for the days it stays outstanding. This overdraft-style structure means an unused limit costs you nothing in interest.',
+  },
+  {
+    q: 'What happens if my pledged shares fall in value?',
+    a: 'If the value of your pledged securities falls below the required cover, the lender may issue a margin call to repay part of the loan or pledge additional securities. If the call is not met, the lender can invoke the pledge and sell part of the holdings to recover dues.',
+  },
+  {
+    q: 'Can I sell my pledged securities while the loan is running?',
+    a: 'No. Pledged securities are locked under a lien and cannot be sold, transferred or delivered until the loan is repaid and the lien is released. Any securities you have not pledged remain fully available for you to trade.',
+  },
+];
+
+const site = Astro.site!.href;
+
+const seo = {
+  title: 'Loan Against Securities (LAS) — Borrow Without Selling Your Stocks',
+  description:
+    'Pledge shares, bonds, ETFs and mutual funds for an instant overdraft limit — keep your portfolio invested and pay interest only on what you use. Understand LAS loan-to-value, charges, eligibility and risks with Shriram.',
+  path: '/loan-against-shares/',
+  jsonLd: [
+    faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products/' },
+        { name: 'Loan Against Securities', path: '/loan-against-shares/' },
+      ],
+      site
+    ),
+    organizationSchema(site),
+  ],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Borrow Against Your Portfolio <span class="g">Without Selling</span></h1>
+      <p class="lead">Pledge your shares, bonds, ETFs and mutual funds for an instant overdraft limit — keep your portfolio invested and pay interest only on the amount you actually use.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Don't sell your stocks</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Overdraft limit</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Interest only on usage</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Digital pledge</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== What Is a Loan Against Securities ===== -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is a Loan Against Securities?</h2>
+      <p class="sec-lead">A Loan Against Securities (LAS) is a secured line of credit that lets you borrow money by pledging financial assets — shares, bonds, ETFs, mutual fund units or government securities — instead of selling them. You mark a digital lien on the securities in your demat account, the lender sanctions an overdraft limit against their current value, and you draw down cash whenever you need it. Your securities stay in your name, keep their market upside and continue to earn returns, and no capital-gains tax is triggered because nothing is sold.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Why Pledge Instead of Sell?</h3>
+        <p class="sub-lead">The core reasons investors borrow against a portfolio rather than liquidate it.</p>
+      </div>
+      <div class="row-2">
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">Keep Your Portfolio Working</h4>
+          <p class="card-p">Your holdings stay invested and continue to participate in market gains, dividends and interest. You raise cash for a short-term need without disturbing a long-term plan.</p>
+        </div>
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">Pay Interest Only on What You Use</h4>
+          <p class="card-p">The sanctioned limit waits ready like an overdraft. Interest accrues only on the amount drawn, for the days it stays outstanding — never on the full limit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Approved Securities & LTV ===== -->
+  <section class="section stack sec-tint" id="sec-securities" data-section="securities" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Approved Securities &amp; Loan-to-Value</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">You can pledge a wide range of assets, each with its own loan-to-value. Debt and sovereign instruments carry a higher LTV than equities because they are less volatile.</p>
+    </div>
+    <div class="cat-grid">
+      {SECURITIES.map((s) => (
+        <div class="cat"><h4>{s.h}</h4><p>{s.p}</p></div>
+      ))}
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== How LAS Works ===== -->
+  <section class="section stack sec-light" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How a Loan Against Securities Works</h2>
+      <p class="sec-lead">Five simple steps from pledging your holdings to drawing down funds — entirely digital, straight from your demat account.</p>
+    </div>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="steps">
+        {STEPS.slice(0, 3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 1}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+      <div class="steps">
+        {STEPS.slice(3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 4}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Interest & Charges ===== -->
+  <section class="section stack sec-tint" id="sec-charges" data-section="charges" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Interest &amp; Charges</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">A Loan Against Securities is priced like an overdraft — you pay for what you use, plus a few one-time and annual charges. Indicative terms are shown below; final terms depend on the lender and your portfolio.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3">
+      <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Basis</p></div><div class="cell th"><p>Indicative Range</p></div>
+      <div class="cell tb"><p class="k">Interest Rate</p></div><div class="cell tb"><p class="v">On the amount utilised, per annum</p></div><div class="cell tb"><p class="v">~9% – 12% p.a.</p></div>
+      <div class="cell tb"><p class="k">Processing Fee</p></div><div class="cell tb"><p class="v">One-time, on sanction</p></div><div class="cell tb"><p class="v">Up to ~1% of limit</p></div>
+      <div class="cell tb"><p class="k">Renewal Fee</p></div><div class="cell tb"><p class="v">Annual, to keep the limit active</p></div><div class="cell tb"><p class="v">Nominal, fixed</p></div>
+      <div class="cell tb"><p class="k">Pledge / Lien Charges</p></div><div class="cell tb"><p class="v">Per pledge request via depository</p></div><div class="cell tb"><p class="v">Nominal, per transaction</p></div>
+      <div class="cell tb"><p class="k">Foreclosure Charge</p></div><div class="cell tb"><p class="v">On early closure of the facility</p></div><div class="cell tb"><p class="v">Usually nil</p></div>
+    </div></div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== LAS vs Selling Shares vs Personal Loan ===== -->
+  <section class="section stack sec-light" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">LAS vs Selling Shares vs Personal Loan</h2>
+      <p class="sec-lead">Three ways to raise cash — pledging your securities, selling them, or taking an unsecured loan. Here is how they compare on the factors that matter most.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered">
+      <div class="cell th"><p>Factor</p></div><div class="cell th"><p>Loan Against Securities</p></div><div class="cell th"><p>Selling Shares</p></div><div class="cell th"><p>Personal Loan</p></div>
+      {COMPARE.map((c) => (
+        <>
+          <div class="cell tb"><p class="k">{c.k}</p></div>
+          <div class="cell tb"><p class="v">{c.l}</p></div>
+          <div class="cell tb"><p class="v">{c.r}</p></div>
+          <div class="cell tb"><p class="v">{c.p}</p></div>
+        </>
+      ))}
+    </div></div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Eligibility & Documents ===== -->
+  <section class="section stack sec-tint" id="sec-eligibility" data-section="eligibility" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Eligibility &amp; Documents</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">What you need to qualify for a Loan Against Securities and complete the digital pledge.</p>
+    </div>
+    <div class="row-2">
+      <div class="card check-card">
+        <h4 class="ch-title">Eligibility Criteria</h4>
+        <div class="check-list">
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Indian resident individual, 18+ years of age</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Active demat account holding the securities to be pledged</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Completed KYC and securities held in your own name</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Securities on the lender's approved list</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Portfolio meeting the lender's minimum pledge value</p></div>
+        </div>
+      </div>
+      <div class="card check-card">
+        <h4 class="ch-title">Documents Required</h4>
+        <div class="check-list">
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card (mandatory)</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Aadhaar card for identity verification</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Demat account statement of the holdings to be pledged</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Cancelled cheque or bank statement of the linked account</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Valid mobile number and email ID for OTP-based pledge</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Risks to Weigh ===== -->
+  <section class="section stack sec-light" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Risks to Weigh</h2>
+      <p class="sec-lead">Borrowing against a market-linked portfolio carries risk. Understand what can move against you before you draw down.</p>
+    </div>
+    <div class="risks">
+      {RISKS.map((r) => (
+        <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help you weigh a pledge against selling and show what a dedicated, research-led plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Raise Cash Without Selling Your Portfolio</h3>
+        <p class="ct-sub">Open your Demat account in minutes and pledge your securities with zero paperwork.</p>
+      </div>
+      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
+    </div>
+  </section>
+</BaseLayout>

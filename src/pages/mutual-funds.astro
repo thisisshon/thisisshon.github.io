@@ -1,0 +1,347 @@
+---
+/**
+ * Mutual Funds — /mutual-funds/
+ * Product long-form page. Net-new page built entirely from the shared design
+ * system (tokens + component classes in global.css); structural sibling of
+ * products/equity.astro. Nested route → BaseLayout / component imports at ../../ depth.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// General Questions — mutual-fund domain content, first item open.
+const FAQS = [
+  {
+    q: 'What is a mutual fund?',
+    a: 'A mutual fund pools money from many investors and invests it, on their behalf, in a diversified portfolio of stocks, bonds or other securities. It is managed by a professional fund manager at an Asset Management Company (AMC) and regulated by SEBI. You own units of the fund, and their value moves with the fund’s Net Asset Value (NAV).',
+  },
+  {
+    q: 'What is the difference between a Direct and a Regular plan?',
+    a: 'A Direct plan is bought straight from the AMC with no distributor commission, so its expense ratio is lower and your returns compound faster. A Regular plan is bought through a distributor and carries a built-in trail commission. Shriram offers Direct plans at 0% commission, so more of your money stays invested.',
+  },
+  {
+    q: 'What is an SIP and how much do I need to start?',
+    a: 'A Systematic Investment Plan (SIP) invests a fixed amount at regular intervals — usually monthly — regardless of market level. It builds discipline, averages your purchase cost across market cycles (rupee-cost averaging) and harnesses compounding. You can start an SIP with as little as ₹500 per month.',
+  },
+  {
+    q: 'Do I need a Demat account to invest in mutual funds?',
+    a: 'Not always — mutual fund units can be held in a statement (folio) form without a Demat account. However, holding them in your Demat account gives you a single consolidated view alongside your stocks and ETFs, and simplifies transmission and pledging. With Shriram you can invest either way.',
+  },
+  {
+    q: 'How are mutual fund returns taxed?',
+    a: 'Taxation depends on the fund type and holding period. For equity funds, gains held over 12 months are Long-Term Capital Gains taxed at 12.5% above ₹1.25 lakh a year; shorter holdings are Short-Term at 20%. Debt fund gains are added to your income and taxed at your slab rate. Dividends (IDCW) are taxed at your slab rate.',
+  },
+  {
+    q: 'What is an expense ratio?',
+    a: 'The expense ratio is the annual fee an AMC charges to manage the fund, expressed as a percentage of assets. It covers fund management, administration and distribution. It is deducted from the NAV, so a lower expense ratio — as in a Direct plan — leaves more return in your hands over the long run.',
+  },
+  {
+    q: 'Are mutual funds safe?',
+    a: 'Mutual funds are regulated by SEBI and your money is held by an independent custodian, so the structure is transparent and well-governed. However, returns are market-linked and not guaranteed — the value of your units can rise or fall. Diversification and a long horizon reduce risk, but do not eliminate it.',
+  },
+];
+
+const seo = {
+  title: 'Mutual Funds',
+  description:
+    'Invest in 3,000+ mutual funds in Direct Plans at 0% commission. Compare fund types, SIP vs lumpsum, costs and taxes with research-led guidance from Shriram.',
+  path: '/mutual-funds/',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Grow Long-Term Wealth With <span class="g">Mutual Funds</span></h1>
+      <p class="lead">Compare 3,000+ mutual funds and invest in Direct Plans at 0% commission. Start a disciplined SIP from just ₹500 a month with research-led guidance from Shriram.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;AMFI-registered</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;0% commission</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;3,000+ funds</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== What Are Mutual Funds ===== -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Are Mutual Funds?</h2>
+      <p class="sec-lead">A mutual fund pools money from many investors and invests it, on their behalf, in a professionally managed portfolio of stocks, bonds or other securities. You own units of the fund in proportion to your investment, and their value moves with the fund's Net Asset Value (NAV). Every scheme is managed by an Asset Management Company (AMC) and regulated by the Securities and Exchange Board of India (SEBI) to protect investor interests.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">How a Mutual Fund Works</h3>
+        <p class="sub-lead">Two building blocks decide what you own and what it is worth on any given day:</p>
+      </div>
+      <div class="row-2">
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">AMC &amp; Fund Manager</h4>
+          <p class="card-p">An Asset Management Company runs the scheme, and a professional fund manager decides what to buy and sell in line with the fund's stated objective — so you get institutional research and active management without picking individual securities yourself.</p>
+        </div>
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">Units &amp; NAV</h4>
+          <p class="card-p">Your money buys units at the day's Net Asset Value — the fund's total holdings, minus expenses, divided by units outstanding. As the underlying portfolio rises or falls, the NAV moves with it, and your returns track the value of the units you hold.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Types of Mutual Funds ===== -->
+  <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Types of Mutual Funds</h2>
+      <p class="sec-lead">Funds are grouped two ways — by what they invest in, and by how you can enter and exit them.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">By Structure</h3>
+        <p class="sub-lead">How units are bought and sold determines your liquidity and flexibility.</p>
+      </div>
+      <div class="row-2">
+        <div class="card">
+          <h4 class="card-h">Open-Ended Funds</h4>
+          <p class="card-p">You can buy or redeem units on any business day at the prevailing NAV. There is no fixed maturity, making these the most flexible and widely held type of mutual fund.</p>
+        </div>
+        <div class="card">
+          <h4 class="card-h">Close-Ended Funds</h4>
+          <p class="card-p">Units are issued only during the New Fund Offer and have a fixed maturity. They trade on the exchange in between, so liquidity depends on market demand rather than the AMC.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">By Asset Class</h3>
+        <p class="sub-lead">The main categories investors use to match a fund to their goal and risk appetite.</p>
+      </div>
+      <div class="cat-grid">
+        <div class="cat"><h4>Equity Funds</h4><p>Invest mainly in stocks — higher growth potential over the long term with higher risk.</p></div>
+        <div class="cat"><h4>Debt Funds</h4><p>Invest in bonds and money-market instruments — steadier returns with lower risk.</p></div>
+        <div class="cat"><h4>Hybrid Funds</h4><p>Blend equity and debt in one scheme to balance growth against stability.</p></div>
+        <div class="cat"><h4>Index Funds</h4><p>Passively track an index like the Nifty 50 at a low cost, with no stock selection.</p></div>
+        <div class="cat"><h4>ELSS Funds</h4><p>Equity funds with a 3-year lock-in offering tax deduction under Section 80C.</p></div>
+        <div class="cat"><h4>Liquid Funds</h4><p>Very short-duration debt funds for parking surplus cash with easy access.</p></div>
+        <div class="cat"><h4>Solution-Oriented</h4><p>Goal-linked funds for retirement or a child's future, with a defined lock-in.</p></div>
+        <div class="cat"><h4>Fund of Funds</h4><p>Invest in other mutual funds rather than directly in securities, for wider diversification.</p></div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== How to Start Investing ===== -->
+  <section class="section stack sec-light" id="sec-getting-started" data-section="getting-started" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Start Investing</h2>
+      <p class="sec-lead">Four simple steps from sign-up to your first SIP — plus exactly what you'll need to qualify.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4 style="white-space:nowrap">Open Your Account</h4><p>Open a free account online with Shriram in minutes — fully paperless.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Complete PAN / KYC / Bank Linking</h4><p>Submit your PAN, complete KYC with Aadhaar and link your bank account.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Compare and Choose Funds</h4><p>Use research, ratings and screeners to shortlist funds matched to your goals.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Start an SIP or Lumpsum</h4><p>Invest a lumpsum or set up an SIP from ₹500, and watch your portfolio grow.</p></div>
+      </div>
+    </div>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Eligibility &amp; Documents</h3>
+        <p class="sub-lead">Everything you need to qualify and complete your account opening.</p>
+      </div>
+      <div class="row-2">
+        <div class="card check-card">
+          <h4 class="ch-title">Eligibility Criteria</h4>
+          <div class="check-list">
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Indian resident (NRIs can invest through specific routes)</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Valid PAN card</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Active bank account in your name</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Completed KYC verification</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">18+ years of age (minors can invest through guardians)</p></div>
+          </div>
+        </div>
+        <div class="card check-card">
+          <h4 class="ch-title">Documents Required</h4>
+          <div class="check-list">
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card (mandatory)</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Aadhaar card for identity verification</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Address proof (Aadhaar, Passport, Utility Bill)</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Cancelled cheque or bank statement</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Passport-size photograph</p></div>
+            <div class="check-sep"></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Valid mobile number and email ID</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Costs & Taxes ===== -->
+  <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Costs &amp; Taxes</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to invest, and how your gains are taxed — with no hidden costs.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Charges &amp; Expense Ratio</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">A clear breakdown of the charges that apply across Direct and Regular plans.</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t3">
+        <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Direct Plan</p></div><div class="cell th"><p>Regular Plan</p></div>
+        <div class="cell tb"><p class="k">Commission</p></div><div class="cell tb"><p class="v">0% (buy from AMC)</p></div><div class="cell tb"><p class="v">Built-in trail</p></div>
+        <div class="cell tb"><p class="k">Expense Ratio</p></div><div class="cell tb"><p class="v">Lower (0.2%–1.2%)</p></div><div class="cell tb"><p class="v">Higher (1.0%–2.25%)</p></div>
+        <div class="cell tb"><p class="k">Exit Load</p></div><div class="cell tb"><p class="v">0%–1% if redeemed early</p></div><div class="cell tb"><p class="v">0%–1% if redeemed early</p></div>
+        <div class="cell tb"><p class="k">Stamp Duty</p></div><div class="cell tb"><p class="v">0.005% on purchase</p></div><div class="cell tb"><p class="v">0.005% on purchase</p></div>
+        <div class="cell tb"><p class="k">Transaction Fee</p></div><div class="cell tb"><p class="v">Nil</p></div><div class="cell tb"><p class="v">Nil</p></div>
+      </div></div>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Tax on Mutual Funds — Equity vs Debt</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">How capital gains are treated depends on the type of fund and how long you hold it.</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t3">
+        <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Equity Funds</p></div><div class="cell th"><p>Debt Funds</p></div>
+        <div class="cell tb"><p class="k">Long-Term Holding</p></div><div class="cell tb"><p class="v">More than 12 months</p></div><div class="cell tb"><p class="v">Taxed at slab (no LTCG benefit)</p></div>
+        <div class="cell tb"><p class="k">LTCG Rate</p></div><div class="cell tb"><p class="v">12.5% above ₹1.25 lakh/year</p></div><div class="cell tb"><p class="v">As per income slab</p></div>
+        <div class="cell tb"><p class="k">Short-Term Holding</p></div><div class="cell tb"><p class="v">Up to 12 months</p></div><div class="cell tb"><p class="v">Any period</p></div>
+        <div class="cell tb"><p class="k">STCG Rate</p></div><div class="cell tb"><p class="v">20% flat</p></div><div class="cell tb"><p class="v">As per income slab</p></div>
+        <div class="cell tb"><p class="k">Dividend (IDCW)</p></div><div class="cell tb"><p class="v">Taxed at slab rate</p></div><div class="cell tb"><p class="v">Taxed at slab rate</p></div>
+      </div></div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Analyse and Decide ===== -->
+  <section class="section stack sec-light" id="sec-analyse" data-section="analyse" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Analyse and Decide</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">How to research a fund, choose the way you invest, compare your options and weigh the risks.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Research Approaches</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Two complementary approaches, backed by data-driven insights and research-led ideas.</p>
+      </div>
+      <div class="approaches">
+        <a class="appr" href="/research-hub/">
+          <div class="appr-main">
+            <p class="idx">Approach 01</p>
+            <div class="appr-tt"><h4>Performance &amp; Ratios</h4><p>Compare returns across cycles alongside expense ratio, rolling returns and risk-adjusted measures like the Sharpe ratio.</p></div>
+          </div>
+          <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+        </a>
+        <a class="appr" href="/research-hub/">
+          <div class="appr-main">
+            <p class="idx">Approach 02</p>
+            <div class="appr-tt"><h4>Portfolio &amp; Manager</h4><p>Assess the fund's holdings, sector mix, portfolio quality and the track record of the manager and AMC behind it.</p></div>
+          </div>
+          <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">SIP vs Lumpsum</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Match your cash flow, time and risk appetite to the right way of investing.</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t3 bordered">
+        <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>SIP</p></div><div class="cell th"><p>Lumpsum</p></div>
+        <div class="cell tb"><p class="k">How It Works</p></div><div class="cell tb"><p class="v">Fixed amount at regular intervals</p></div><div class="cell tb"><p class="v">One-time investment</p></div>
+        <div class="cell tb"><p class="k">Entry Amount</p></div><div class="cell tb"><p class="v">From ₹500 per month</p></div><div class="cell tb"><p class="v">Larger one-time corpus</p></div>
+        <div class="cell tb"><p class="k">Market Timing</p></div><div class="cell tb"><p class="v">Not needed — averages cost</p></div><div class="cell tb"><p class="v">Timing affects returns</p></div>
+        <div class="cell tb"><p class="k">Best Suited For</p></div><div class="cell tb"><p class="v">Salaried, steady savers</p></div><div class="cell tb"><p class="v">Investors with surplus capital</p></div>
+        <div class="cell tb"><p class="k">Volatility Impact</p></div><div class="cell tb"><p class="v">Cushioned by averaging</p></div><div class="cell tb"><p class="v">Fully exposed at entry</p></div>
+      </div></div>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Mutual Funds vs Fixed Deposits</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Compare market-linked investing with a traditional fixed deposit across the factors that matter most.</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t3 bordered">
+        <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Mutual Funds</p></div><div class="cell th"><p>Fixed Deposits</p></div>
+        <div class="cell tb"><p class="k">Returns</p></div><div class="cell tb"><p class="v">Market-linked, potentially higher</p></div><div class="cell tb"><p class="v">Fixed, assured rate</p></div>
+        <div class="cell tb"><p class="k">Risk</p></div><div class="cell tb"><p class="v">Market risk, diversified</p></div><div class="cell tb"><p class="v">Very low</p></div>
+        <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">Redeem any business day</p></div><div class="cell tb"><p class="v">Penalty on premature exit</p></div>
+        <div class="cell tb"><p class="k">Management</p></div><div class="cell tb"><p class="v">Professionally managed</p></div><div class="cell tb"><p class="v">Bank-held deposit</p></div>
+        <div class="cell tb"><p class="k">Taxation</p></div><div class="cell tb"><p class="v">Capital gains treatment</p></div><div class="cell tb"><p class="v">Interest taxed at slab</p></div>
+        <div class="cell tb"><p class="k">Suitable For</p></div><div class="cell tb"><p class="v">Wealth creation over time</p></div><div class="cell tb"><p class="v">Capital preservation</p></div>
+      </div></div>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Risks to Weigh</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Understand what can move against you before you commit capital.</p>
+      </div>
+      <div class="risks">
+        <div class="risk"><h4>Market Risk</h4><p>The value of your units can fall when equity or bond markets decline due to economic or global events.</p></div>
+        <div class="risk"><h4>Credit Risk</h4><p>In debt funds, a bond issuer may default or be downgraded, affecting the fund's returns.</p></div>
+        <div class="risk"><h4>Interest-Rate Risk</h4><p>Rising rates reduce the value of existing bonds, pulling down debt fund NAVs.</p></div>
+        <div class="risk"><h4>Liquidity Risk</h4><p>In stressed markets, some holdings may be harder to sell at fair value, affecting redemptions.</p></div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Start Your SIP Within Minutes</h3>
+        <p class="ct-sub">Invest in Direct Plan mutual funds at 0% commission — with zero paperwork.</p>
+      </div>
+      <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+    </div>
+  </section>
+</BaseLayout>

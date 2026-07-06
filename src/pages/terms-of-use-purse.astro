@@ -1,0 +1,363 @@
+---
+/**
+ * Terms of Use — Purse Mobile App — /terms-of-use-purse/
+ * Legal long-form page for the Purse mobile trading/investment app.
+ * Mirrors the privacy-policy.astro structure (hero + .legal/.policy blocks).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Terms of Use — Purse Mobile App',
+  description:
+    'Terms of Use for the Purse mobile trading app by Shriram Financial Services — app licence, biometric and MPIN login, market data and order placement, charges, risk disclosure and liability.',
+  path: '/terms-of-use-purse/',
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <h1>Terms of Use &mdash; <span class="g">Purse</span></h1>
+        <p class="lead">
+          The terms that govern your access to and use of Purse, the Shriram Financial Services
+          mobile app for trading, investing and managing your portfolio.
+        </p>
+        <div class="hero-feats">
+          <div class="feats">
+            <div class="feat">
+              <span class="tk" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </span>
+              <span class="lb">SEBI-registered broker</span>
+            </div>
+            <div class="feat">
+              <span class="tk" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </span>
+              <span class="lb">Biometric &amp; MPIN login</span>
+            </div>
+            <div class="feat">
+              <span class="tk" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </span>
+              <span class="lb">Live NSE &amp; BSE data</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACCEPTANCE + LICENCE ================= -->
+  <section class="section sec-light" id="sec-acceptance" data-section="acceptance">
+    <div class="legal">
+      <div class="policy">
+        <p class="updated">Last updated: 6 July 2026</p>
+        <h2 class="sub-title">Acceptance of Terms</h2>
+        <p>
+          These Terms of Use (&ldquo;Terms&rdquo;) govern your download, installation and use of
+          <b>Purse</b>, the mobile application published by Shriram Financial Services
+          (&ldquo;Shriram&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo; or &ldquo;our&rdquo;). By
+          installing Purse, creating a login, or placing an order through the app, you confirm that
+          you have read, understood and agree to be bound by these Terms and by the account terms,
+          risk disclosures and policies that apply to your Shriram trading and Demat account.
+        </p>
+        <p>
+          If you do not agree with any part of these Terms, you must not install or continue to use
+          Purse. These Terms operate alongside &mdash; and not in place of &mdash; the exchange,
+          depository and SEBI rules that govern your account. Where a conflict arises, the
+          applicable regulatory requirement prevails.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">App Licence &amp; Permitted Use</h2>
+        <p>
+          Subject to your compliance with these Terms, we grant you a limited, personal,
+          non-exclusive, non-transferable and revocable licence to install and use Purse on a mobile
+          device that you own or control, solely to access the products and services offered through
+          your Shriram account. The following are <b>not</b> permitted:
+        </p>
+        <ul class="legal-list">
+          <li>
+            <b>Reverse engineering</b> &mdash; decompiling, disassembling or otherwise attempting to
+            derive the source code, or circumventing any security or licensing control in the app.
+          </li>
+          <li>
+            <b>Automated access</b> &mdash; using bots, scrapers, scripts or unauthorised APIs to
+            place orders, extract market data or interact with the app at machine scale.
+          </li>
+          <li>
+            <b>Sharing access</b> &mdash; permitting any other person to trade through your login, or
+            using the app on behalf of a third party without our written authorisation.
+          </li>
+          <li>
+            <b>Unlawful use</b> &mdash; any use that breaches applicable law, exchange bye-laws or
+            SEBI regulations, or that interferes with the integrity or performance of the app.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACCOUNT + MARKET DATA ================= -->
+  <section class="section sec-tint" id="sec-account" data-section="account">
+    <div class="legal">
+      <div class="policy">
+        <h2 class="sub-title">Account &amp; Authentication</h2>
+        <p>
+          Access to Purse requires a valid Shriram trading account and a login secured by an MPIN
+          and, where you enable it, device biometrics (fingerprint or face recognition). You are
+          responsible for keeping your MPIN, biometric enrolment and registered device confidential
+          and secure. Any order, instruction or transaction authenticated through your MPIN or
+          biometrics is treated as validly authorised by you.
+        </p>
+        <p>
+          Biometric authentication is processed locally on your device and is provided as a
+          convenience; we may require MPIN or OTP verification for sensitive actions. You must notify
+          us immediately at <a href="mailto:support@shriramsecurities.com">support@shriramsecurities.com</a>
+          or <a href="tel:18001031212">1800 103 1212</a> if you suspect unauthorised access, loss of
+          your device, or compromise of your credentials, so that we can suspend access.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">Market Data &amp; Order Placement</h2>
+        <p>
+          Purse displays quotes, charts, indices and other market data sourced from the exchanges
+          and third-party providers. Market data may be delayed, interrupted or subject to
+          correction, and is provided for your information only &mdash; it is not investment advice
+          or a recommendation to buy or sell any security.
+        </p>
+        <p>
+          Orders you place through Purse are transmitted to the relevant exchange (NSE or BSE) for
+          execution and remain subject to exchange trading hours, price bands, margin requirements,
+          risk-management checks and settlement rules. We do not guarantee that any order will be
+          received, accepted or executed, and you are responsible for verifying the status of every
+          order and the resulting positions in your account.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CHARGES + RISK ================= -->
+  <section class="section sec-light" id="sec-charges" data-section="charges">
+    <div class="legal">
+      <div class="policy">
+        <h2 class="sub-title">Charges &amp; Fees</h2>
+        <p>
+          Use of Purse is subject to the brokerage, statutory levies, depository charges and other
+          fees set out in your account&rsquo;s tariff schedule, as amended from time to time. Taxes,
+          exchange transaction charges, SEBI turnover fees, stamp duty and GST apply as prescribed by
+          law and are debited to your account.
+        </p>
+        <p>
+          Your mobile network operator may charge you for data used while the app is running; those
+          charges are your responsibility. We will give you notice of any material change to our own
+          fee schedule as required by applicable regulation.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">Risk Disclosure</h2>
+        <p>
+          Trading and investment in securities carry a high degree of risk, including the possible
+          loss of your entire invested capital. Prices can move rapidly, and leverage or intraday
+          positions can magnify both gains and losses. Past performance is not indicative of future
+          results.
+        </p>
+        <p>
+          You should trade only after assessing your own financial situation, objectives and risk
+          appetite, and after reading the exchange-mandated risk disclosure documents applicable to
+          your account. Shriram does not, through Purse, offer any assurance of returns, and you
+          alone bear the consequences of the trading and investment decisions you make.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AVAILABILITY + DEVICE SECURITY ================= -->
+  <section class="section sec-tint" id="sec-availability" data-section="availability">
+    <div class="legal">
+      <div class="policy">
+        <h2 class="sub-title">App Availability &amp; Updates</h2>
+        <p>
+          We aim to keep Purse available and reliable, but access may be interrupted by scheduled
+          maintenance, upgrades, network conditions, force-majeure events or factors outside our
+          control. We do not warrant uninterrupted or error-free operation, and we may modify,
+          suspend or discontinue any feature of the app at any time.
+        </p>
+        <p>
+          We may release updates that add, change or remove functionality, or that are required for
+          security, regulatory or compatibility reasons. Some updates may be mandatory; if you do not
+          install them, parts of the app may stop working. Continuing to use Purse after an update
+          confirms your acceptance of the current version of these Terms.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">Device Security &amp; User Responsibility</h2>
+        <p>
+          You are responsible for the security of the device on which you install Purse. The app
+          should not be used on a rooted, jailbroken or otherwise compromised device, as this can
+          undermine the security controls that protect your account and data.
+        </p>
+        <ul class="legal-list">
+          <li>
+            <b>Keep the app updated</b> &mdash; install the latest version and your device&rsquo;s
+            security patches promptly.
+          </li>
+          <li>
+            <b>Protect your device</b> &mdash; enable a screen lock, keep biometrics enrolled only
+            for yourself, and never share your MPIN.
+          </li>
+          <li>
+            <b>Beware of fraud</b> &mdash; we never ask for your MPIN, OTP or full password; treat
+            any such request as an attempt at fraud.
+          </li>
+          <li>
+            <b>Report loss immediately</b> &mdash; contact us at once if your device is lost or
+            stolen so that access can be suspended.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= IP + LIABILITY + GOVERNING LAW ================= -->
+  <section class="section sec-light" id="sec-legal" data-section="legal">
+    <div class="legal">
+      <div class="policy">
+        <h2 class="sub-title">Intellectual Property</h2>
+        <p>
+          Purse, including its name, logos, design, interface, software, content and underlying
+          technology, is owned by or licensed to Shriram and is protected by intellectual-property
+          laws. These Terms grant you a right to use the app; they do not transfer any ownership to
+          you.
+        </p>
+        <p>
+          You may not copy, reproduce, distribute, publicly display, modify or create derivative
+          works from any part of the app, nor remove or obscure any proprietary notice, except as
+          expressly permitted by these Terms or by applicable law.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">Limitation of Liability</h2>
+        <p>
+          To the fullest extent permitted by law, Shriram is not liable for any indirect, incidental,
+          special or consequential loss, or for any loss of profits, opportunity or data, arising out
+          of or in connection with your use of, or inability to use, Purse &mdash; including delays,
+          failed or partial order execution, market-data errors, or interruptions caused by network,
+          device or third-party factors.
+        </p>
+        <p>
+          Nothing in these Terms limits any liability that cannot be excluded under applicable law or
+          under the rules of SEBI and the exchanges. Your statutory rights as an investor remain
+          unaffected.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">Governing Law &amp; Jurisdiction</h2>
+        <p>
+          These Terms are governed by and construed in accordance with the laws of India. Any dispute
+          arising out of or relating to Purse or these Terms is subject to the exclusive jurisdiction
+          of the competent courts in India, without prejudice to any dispute-resolution or grievance
+          mechanism prescribed by SEBI or the exchanges.
+        </p>
+      </div>
+
+      <div class="policy">
+        <h2 class="sub-title">Amendments</h2>
+        <p>
+          We may update these Terms from time to time to reflect changes in our services, technology
+          or applicable regulation. The &ldquo;last updated&rdquo; date above always reflects the
+          version currently in force, and your continued use of Purse after any change constitutes
+          acceptance of the revised Terms. If you have any questions, contact us at
+          <a href="mailto:support@shriramsecurities.com">support@shriramsecurities.com</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Terms of Use (Purse) — page-specific styles. Values reuse the shared tokens. ===== */
+  .section {
+    scroll-margin-top: 96px;
+  }
+
+  /* legal document column — constrained measure for long-form reading */
+  .legal {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  .policy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .policy p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+    overflow-wrap: anywhere; /* break long emails/URLs so they can't overflow at 320px */
+  }
+  .policy p b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  .policy a {
+    color: var(--color-link);
+  }
+  .policy p.updated {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+
+  /* bulleted list — olive-green markers */
+  .legal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .legal-list li {
+    position: relative;
+    padding-left: 24px;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+  }
+  .legal-list li::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text-heading-dark);
+  }
+  .legal-list li b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 768px) {
+    .legal {
+      gap: 48px;
+    }
+    .policy p,
+    .legal-list li {
+      font-size: 14px;
+    }
+  }
+</style>

@@ -141,6 +141,18 @@ off against each other:
     never "FAQs — <Topic>", "Frequently Asked Questions" or any variant. Apply on every new page
     build and fix any divergent header you encounter, unless a specific page is told otherwise.
 
+14. **🟢 Interactive controls meet a 48px mobile tap target.** Every tappable control (icon
+    button, icon-only link, hamburger, social link) must present a **≥44px** touch area on
+    mobile; the site standard is **48px** — on the 8px grid and matching `.hf-field` (48px box)
+    and the `.to-top` FAB. Reach it by **padding out the hit area**, not by enlarging the icon:
+    the icon glyph stays on its `16/20/24/32` scale (rule 4) while the container/`min-width`/
+    `min-height`/padding grows to 48px. Canonical examples in `global.css`: footer `.socials a`
+    (48px box) and `.nav-toggle` (48×48 via `min-width`/`min-height`, 24px bars unchanged). Text
+    links/buttons that are already ≥44px tall via their padding are fine as-is. **Exception:** this
+    governs *tap area*, not font size — there is **no** universal minimum font-size rule; designed
+    micro-labels (the `.hf-field` floating label at ~10px, compact eyebrow/badge text) are
+    sanctioned and must not be "fixed."
+
 ---
 
 ## ▶️ Running / preview
@@ -148,7 +160,7 @@ off against each other:
 - Install: `npm install`. Dev: `npm run dev` → `localhost:4321`. Build: `npm run build` →
   `./dist/`. Preview build: `npm run preview`.
 - Clean, directory-format URLs everywhere (`build.format: 'directory'`): a page at
-  `src/pages/products/equity.astro` serves at `/products/equity/`. The legacy reference site
+  `src/pages/equity.astro` serves at `/equity/`. The legacy reference site
   (`../Project 1`) can run alongside for pixel comparison (`python3 ../Project\ 1/serve.py`,
   port 4178, or the `static` launch config).
 
@@ -173,24 +185,78 @@ docs/                   legacy-style-audit.md, porting-guide.md, and the build s
 
 ## 📄 Pages
 
+**43 pages total.** URLs are **flat/top-level** — product and calculator detail pages live directly at `src/pages/<slug>.astro` (root), NOT nested under `products/`/`calculators/`. The `products/` and `calculators/` folders keep only their **hub** `index.astro`. Detail pages are **template-driven** (`equity.astro` is the reference for product pages). Every FAQ block reads exactly **General Questions** (rule 13). Every `<title>` is normalised by `fullTitle()` to `<Page Title> | Shriram Financial Services` — page `seo.title` values carry **no** brand suffix. All heroes use the shared `.hero` except `/calculators/` (documented `.calc-hero` variant).
+
+**Core & company**
 | URL | Source | Page |
 |---|---|---|
-| `/` | `pages/index.astro` | Homepage (video hero + glass Demat card, pinned "Why Shriram", advisory cards, dark product grid, steps, Antara band, `<details>` FAQ). The legacy homepage footer fork is retired — the V4 dark footer (brand/contact + 5 link columns + compliance bands, from `navigation.ts`) is unified sitewide. |
-| `/about/` | `pages/about.astro` | About Us (stat hero, MVV, timeline). |
-| `/demat/` | `pages/demat.astro` | Open a Demat Account (two-column hero + lead-capture form, phone-flag field decoration). |
+| `/` | `pages/index.astro` | Homepage (video hero + glass Demat card, pinned "Why Shriram", advisory cards, dark product grid, steps, `<details>` FAQ). Unified shared `Footer`. |
+| `/about-us/` | `pages/about-us.astro` | About Us (stat hero, MVV, timeline). |
+| `/open-demat-account/` | `pages/open-demat-account.astro` | Open a Demat Account (two-column hero + lead-capture form, phone-flag decoration). |
 | `/become-a-partner/` | `pages/become-a-partner.astro` | Become a Partner (Apply form, eligibility checker, portfolio tabs). |
-| `/research/` | `pages/research/index.astro` | Research Centre (V4 landing: hub hero, All-In-One desk grid, three research streams via shared `.appr` cards, Why-Shriram feature grid, dark access band, alerts/commentary columns, FAQ). |
-| `/research/technical/` | `pages/research/technical.astro` | Technical Research (gated daily note, research-report grid). |
-| `/privacy/` | `pages/privacy.astro` | Privacy Policy (the pilot port — reference example). |
-| `/investor-charter/` | `pages/investor-charter.astro` | Investor Charter (shared `.doc-card` view/download grid). |
-| `/mandatory-member-details/` | `pages/mandatory-member-details.astro` | Mandatory Member Details (SEBI member disclosures; same shared `.doc-card` grid as Investor Charter). |
-| `/products/` | `pages/products/index.astro` | Product Suite (breadcrumb hero, `.pgroup`/`.pcard` grids, orbit band). |
-| `/products/equity/` | `pages/products/equity.astro` | Equity product page. |
-| `/calculators/` | `pages/calculators/index.astro` | Calculators hub (uses `.calc-hero` — a **sanctioned** wide chip-rail hero variant, not the shared `.hero`; the calculator *detail* pages use `.hero`). |
-| `/calculators/sip/` | `pages/calculators/sip.astro` | SIP Calculator (inline calculator script). |
-| `/support/` | `pages/support/index.astro` | Contact/Support hub (tabbed: Customer Care / Branch Locator / Downloads). |
-| `/support/grievance-redressal/` | `pages/support/grievance-redressal.astro` | Grievance Redressal. |
-| `/design-system/` (+ `current/`, `proposed/`) | `pages/design-system/` | Design-system docs (noindex; the Figma artifact). |
+| `/karnataka-bank-customers/` | `pages/karnataka-bank-customers.astro` | Karnataka Bank 3-in-1 (co-brand hero lockup + lead-capture form). |
+| `/sitemap/` | `pages/sitemap.astro` | HTML sitemap (link index, built from `navigation.ts`). |
+
+**Products** — flat at `pages/<slug>.astro` (template-driven; `equity` is the reference). Hub at `pages/products/index.astro`.
+| URL | Page |
+|---|---|
+| `/products/` | Product Suite hub (breadcrumb hero, `.pgroup`/`.pcard` grids, orbit band). |
+| `/equity/` | Equity — **reference** product-page template. |
+| `/derivatives/` | Equity Derivatives (F&O). |
+| `/mtf/` | Margin Trading Facility (MTF). |
+| `/commodities/` | Commodity Trading (MCX/NCDEX). |
+| `/currency/` | Currency Trading. |
+| `/mutual-funds/` | Mutual Funds. |
+| `/etf/` | ETFs. |
+| `/ipo/` | IPO. |
+| `/nfo/` | New Fund Offers (NFO). |
+| `/nps/` | National Pension System (NPS). |
+| `/bonds/` | Bonds. |
+| `/fixed-deposit/` | Fixed Deposit (FD). |
+| `/loan-against-mutual-fund/` | Loan Against Mutual Funds (LAMF). |
+| `/loan-against-shares/` | Loan Against Securities (LAS). |
+| `/global-investing/` | Global Investing (US stocks & ETFs). |
+
+**Research** — flat at `pages/<slug>.astro`
+| URL | Source | Page |
+|---|---|---|
+| `/research-hub/` | `pages/research-hub.astro` | Research Centre (hub hero, `.appr` cards, feature grid, dark access band, FAQ). |
+| `/technical-analysis/` | `pages/technical-analysis.astro` | Technical Research (gated daily note, research-report grid). |
+| `/fundamental-analysis/` | `pages/fundamental-analysis.astro` | Fundamental Research (process, coverage, FAQ). |
+| `/mutual-fund-analysis/` | `pages/mutual-fund-analysis.astro` | Mutual Fund Research (ratings, model portfolios, FAQ). |
+
+**Calculators** — detail pages flat at `pages/<slug>-calculator.astro` (`calcHref` in `data/calculators.ts` → `/<slug>-calculator/`). Hub at `pages/calculators/index.astro` (kept **isolated** for future calculators; `.calc-hero`).
+| URL | Page |
+|---|---|
+| `/calculators/` | Calculators hub (**sanctioned** `.calc-hero`; isolated, not in primary nav flow). |
+| `/sip-calculator/` | SIP Calculator. |
+| `/lumpsum-calculator/` | Lumpsum Calculator. |
+| `/swp-calculator/` | SWP Calculator. |
+| `/nps-calculator/` | NPS Calculator. |
+| `/fd-calculator/` | Fixed Deposit Calculator. |
+
+**Support**
+| URL | Source | Page |
+|---|---|---|
+| `/contact-us/` | `pages/contact-us.astro` | Contact/Support hub (tabbed: Customer Care / Branch Locator / Downloads). |
+| `/grievance-redressal/` | `pages/grievance-redressal.astro` | Grievance Redressal. |
+
+**Legal & compliance** — regulatory docs nested under the `regulatory-documents/` hub.
+| URL | Source | Page |
+|---|---|---|
+| `/privacy-policy/` | `pages/privacy-policy.astro` | Privacy Policy. |
+| `/terms-and-conditions/` | `pages/terms-and-conditions.astro` | Terms & Conditions (legal long-form). |
+| `/terms-of-use-purse/` | `pages/terms-of-use-purse.astro` | Terms of Use — Purse mobile app. |
+| `/regulatory-documents/` | `pages/regulatory-documents/index.astro` | Regulatory Documents hub (`.doc-card` grid → the two docs below + SEBI/exchange disclosures). |
+| `/regulatory-documents/investor-charter/` | `pages/regulatory-documents/investor-charter.astro` | Investor Charter (shared `.doc-card` view/download grid). |
+| `/regulatory-documents/mandatory-member-details/` | `pages/regulatory-documents/mandatory-member-details.astro` | Mandatory Member Details (SEBI disclosures). |
+
+**Design system** (noindex — the Figma artifact)
+| URL | Source | Page |
+|---|---|---|
+| `/design-system/` (+ `current/`, `proposed/`) | `pages/design-system/` | Design-system docs (noindex). |
+
+> **Skipped:** `/antara/` (Shriram X platform) was intentionally not built; the homepage "Explore Shriram X" / login links and the footer "Explore Antara" are inert `#` placeholders awaiting that page.
 
 **Adding a new page:** create `src/pages/<path>.astro`, import `BaseLayout`, pass a `seo` object,
 and build from the shared component classes + tokens in `global.css`. Copy an existing page of a

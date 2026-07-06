@@ -1,0 +1,361 @@
+---
+/**
+ * NFO — /nfo/
+ * Long-form New Fund Offer guide. Built entirely from the shared design-system
+ * components in global.css (hero, .section/.sec-title, .card, .product-page_table,
+ * .risks, .steps, .cat-grid, .check-card, FaqAccordion, .cta-box). No page-scoped
+ * CSS is needed — the card sets use the shared .row-2 and .cat-grid grids.
+ * Nested route → BaseLayout / component imports at ../../ depth.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
+
+// NFO vs an existing fund — comparison rows.
+const COMPARE_ROWS = [
+  {
+    k: 'Track Record',
+    n: 'None yet — the scheme is brand new with no performance history to review.',
+    e: 'An established record of returns across market cycles you can evaluate.',
+  },
+  {
+    k: 'NAV at Entry',
+    n: 'Offered at a fixed ₹10 face value during the subscription window.',
+    e: 'Bought at the prevailing NAV, which reflects the fund’s current holdings.',
+  },
+  {
+    k: 'Portfolio Visibility',
+    n: 'Only the stated mandate is known; actual holdings are built after launch.',
+    e: 'The current portfolio and sector allocation are fully disclosed.',
+  },
+  {
+    k: 'Fund Size (AUM)',
+    n: 'Starts from zero and depends on how much the NFO collects.',
+    e: 'A known asset base, indicating investor confidence and scale.',
+  },
+  {
+    k: 'Availability',
+    n: 'Open only for a limited subscription period.',
+    e: 'Open for purchase any business day (for open-ended schemes).',
+  },
+];
+
+// Types of NFOs — structure and mandate cards.
+const TYPES = [
+  { h: 'Open-Ended NFO', p: 'After the offer closes the scheme reopens for continuous purchase and redemption at NAV, offering ongoing liquidity for investors.' },
+  { h: 'Close-Ended NFO', p: 'Units are issued only during the NFO and the scheme has a fixed maturity. Units are listed on the exchange to provide an exit route before maturity.' },
+  { h: 'ELSS (Tax-Saving)', p: 'An equity-linked savings scheme offering deductions under Section 80C, with a mandatory three-year lock-in on each investment.' },
+  { h: 'Thematic / Sectoral', p: 'A fund built around a specific theme or sector — such as manufacturing, energy or digital. Concentrated exposure means higher potential and higher risk.' },
+  { h: 'Index Fund / ETF', p: 'A passive scheme that tracks a benchmark index. An NFO can be a low-cost way to enter a newly launched index or factor strategy.' },
+  { h: 'Hybrid / Multi-Asset', p: 'Blends equity, debt and sometimes other assets in one scheme, aiming to balance growth potential with relative stability.' },
+];
+
+// How to invest in an NFO — five-step flow.
+const STEPS = [
+  { h: 'Open Demat & KYC', p: 'Open your account with Shriram and complete PAN and Aadhaar-based KYC — a one-time step.' },
+  { h: 'Browse Live NFOs', p: 'Explore open New Fund Offers by category, AMC and mandate, and read each scheme’s SID and KIM.' },
+  { h: 'Check the Mandate', p: 'Match the scheme’s objective, risk-o-meter and expense ratio against your goals and risk appetite.' },
+  { h: 'Invest During the Window', p: 'Apply within the subscription period at the ₹10 offer price, via lump sum or by registering an SIP.' },
+  { h: 'Track After Allotment', p: 'Units are allotted at ₹10 NAV once the NFO closes; monitor the daily NAV and your holdings in the dashboard.' },
+];
+
+// What to check before investing — checklist rows.
+const CHECKS = [
+  'AMC pedigree — the fund house’s track record, size and processes',
+  'Fund manager experience across market cycles',
+  'Scheme mandate and how it fits your existing portfolio',
+  'Total expense ratio (TER) versus comparable existing funds',
+  'Lock-in or maturity terms — three years for ELSS, fixed tenure for close-ended',
+  'Benchmark index and the risk-o-meter rating',
+];
+
+// Taxation rows — equity vs debt / hybrid treatment.
+const TAX_ROWS = [
+  {
+    k: 'Short-Term Gains',
+    e: 'Held ≤ 12 months — taxed at 20% (Section 111A).',
+    d: 'Held ≤ 24 months — taxed at your income-tax slab rate.',
+  },
+  {
+    k: 'Long-Term Gains',
+    e: 'Held > 12 months — 12.5%, with gains up to ₹1.25 lakh a year exempt.',
+    d: 'Held > 24 months — taxed at 12.5% without indexation.',
+  },
+  {
+    k: 'Classification',
+    e: 'Schemes with 65%+ in Indian equities are taxed as equity funds.',
+    d: 'Debt-oriented and many hybrid schemes follow debt-fund rules.',
+  },
+];
+
+// Risks specific to New Fund Offers.
+const RISKS = [
+  { h: 'No Track Record', p: 'An NFO has no past performance to assess. You are backing the stated mandate and the fund house rather than proven results.' },
+  { h: 'The ₹10 Myth', p: 'A ₹10 NAV is not “cheaper” than an existing fund. Value comes from the portfolio the fund builds, not the entry price per unit.' },
+  { h: 'Liquidity (Close-Ended)', p: 'Close-ended schemes cannot be redeemed before maturity. Exiting means selling on the exchange, often at a discount to NAV.' },
+  { h: 'Deployment Risk', p: 'A new scheme takes time to invest its corpus, so early returns can lag while cash is gradually put to work in the market.' },
+];
+
+// General Questions — plain-text answers, shared with the FAQPage schema.
+const FAQS = [
+  {
+    q: 'What is an NFO?',
+    a: 'A New Fund Offer, or NFO, is the launch of a new mutual-fund scheme by an Asset Management Company. During a limited subscription window, investors can buy units of the scheme at a fixed face value of ₹10 before it opens for regular transactions.',
+  },
+  {
+    q: 'Is a ₹10 NFO cheaper than an existing fund?',
+    a: 'No. The ₹10 offer price is just a face value, not a measure of value. What matters is the quality of the portfolio the fund builds. An existing fund with a higher NAV is not more expensive — the NAV simply reflects the value of what it already holds.',
+  },
+  {
+    q: 'What is the difference between an open-ended and a close-ended NFO?',
+    a: 'An open-ended scheme reopens for continuous purchase and redemption at NAV after the NFO closes, so you have ongoing liquidity. A close-ended scheme issues units only during the NFO and has a fixed maturity; to exit early you must sell the listed units on the exchange.',
+  },
+  {
+    q: 'How is an NFO taxed?',
+    a: 'Taxation depends on the scheme type. Equity-oriented schemes (65%+ in Indian equities) are taxed at 20% short-term and 12.5% long-term above a ₹1.25 lakh annual exemption. Debt-oriented and many hybrid schemes are taxed as per debt-fund rules based on your holding period and slab.',
+  },
+  {
+    q: 'Should I invest in an NFO or an existing fund?',
+    a: 'An existing fund lets you review its track record, current portfolio and fund size before investing, which reduces uncertainty. An NFO makes most sense when it offers a genuinely differentiated strategy — a new index, theme or asset mix — that is not already available in the market.',
+  },
+  {
+    q: 'What is the lock-in period for an NFO?',
+    a: 'Most open-ended NFOs have no lock-in. ELSS tax-saving schemes carry a mandatory three-year lock-in on each investment, and close-ended schemes are effectively locked until maturity, with the exchange offering the only interim exit.',
+  },
+  {
+    q: 'Do I pay any commission to invest in an NFO through Shriram?',
+    a: 'No. Shriram offers direct-plan NFOs with 0% commission, so your entire investment is put to work in the scheme. Standard scheme charges such as the expense ratio still apply and are disclosed in the scheme documents.',
+  },
+];
+
+const site = Astro.site!.href;
+
+const seo = {
+  title: 'NFO — A Guide to New Fund Offers in India',
+  description:
+    'Understand New Fund Offers in India — how NFOs work, NFO vs existing funds, types, how to invest, what to check, taxation and risks — with research-led guidance from Shriram.',
+  path: '/nfo/',
+  jsonLd: [
+    faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products/' },
+        { name: 'NFO', path: '/nfo/' },
+      ],
+      site
+    ),
+    organizationSchema(site),
+  ],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Get In Early on a <span class="g">New Fund Offer</span></h1>
+      <p class="lead">Subscribe to newly launched mutual-fund schemes at their ₹10 offer price — with 0% commission, AMFI-registered access and research-led guidance from Shriram.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;New at ₹10 NAV</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;0% commission</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;AMFI-registered</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== What Is an NFO ===== -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is an NFO?</h2>
+      <p class="sec-lead">A New Fund Offer, or NFO, is the launch of a brand-new mutual-fund scheme by an Asset Management Company (AMC). For a limited subscription window, investors can buy units of the scheme at a fixed offer price — typically ₹10 per unit, its face value — before it opens for regular transactions. Just as an IPO is a company’s first sale of shares, an NFO is a fund’s first sale of units. Once the offer closes, the AMC deploys the money it has collected into the securities defined by the scheme’s mandate, and the NAV begins to move with the market.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">How the ₹10 Offer Works</h3>
+        <p class="sub-lead">Two things to keep in mind about that headline entry price before you subscribe.</p>
+      </div>
+      <div class="row-2">
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">A Face Value, Not a Discount</h4>
+          <p class="card-p">The ₹10 price is simply the starting NAV. It does not make the fund cheaper — the number of units you get is larger, but the value of what you own is the same.</p>
+        </div>
+        <div class="card" style="border-color:var(--color-border-card)">
+          <h4 class="card-h">Value Comes from the Portfolio</h4>
+          <p class="card-p">Your returns depend on the securities the fund buys after launch, not the entry price. A well-run scheme with a clear mandate matters far more than a low NAV.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NFO vs Existing Fund ===== -->
+  <section class="section stack sec-tint" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">NFO vs an Existing Fund</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">A new scheme offers novelty, but an established fund offers evidence. Weigh the two across the factors that shape your decision.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>New Fund Offer</p></div><div class="cell th"><p>Existing Fund</p></div>
+      {COMPARE_ROWS.map((r) => (
+        <>
+          <div class="cell tb"><p class="k">{r.k}</p></div>
+          <div class="cell tb"><p class="v">{r.n}</p></div>
+          <div class="cell tb"><p class="v">{r.e}</p></div>
+        </>
+      ))}
+    </div></div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Types of NFOs ===== -->
+  <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Types of NFOs</h2>
+      <p class="sec-lead">New Fund Offers span every fund structure and mandate. The two questions that matter most are how you can exit, and what the scheme invests in.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">By Structure &amp; Mandate</h3>
+        <p class="sub-lead">Open-ended versus close-ended sets your liquidity; the mandate sets your exposure.</p>
+      </div>
+      <div class="cat-grid">
+        {TYPES.map((c) => (
+          <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How to Invest in an NFO ===== -->
+  <section class="section stack sec-tint" id="sec-invest" data-section="invest" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How to Invest in an NFO</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Subscribing to a New Fund Offer through Shriram takes just a few guided steps within the offer window.</p>
+    </div>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="steps">
+        {STEPS.slice(0, 3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 1}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+      <div class="steps">
+        {STEPS.slice(3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 4}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== What to Check Before Investing ===== -->
+  <section class="section stack sec-light" id="sec-check" data-section="check" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What to Check Before Investing</h2>
+      <p class="sec-lead">Because there is no track record to lean on, an NFO deserves closer scrutiny of the fund house and the mandate itself.</p>
+    </div>
+    <div class="row-2">
+      <div class="card check-card">
+        <h4 class="ch-title">Your NFO Checklist</h4>
+        <div class="check-list">
+          {CHECKS.map((c, i) => (
+            <>
+              {i > 0 && <div class="check-sep" />}
+              <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">{c}</p></div>
+            </>
+          ))}
+        </div>
+      </div>
+      <div class="card check-card">
+        <h4 class="ch-title">Read the Scheme Documents</h4>
+        <div class="check-list">
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Scheme Information Document (SID) — the full mandate and rules</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Key Information Memorandum (KIM) — the concise summary</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">The risk-o-meter rating for the scheme</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Exit load and minimum investment amount</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">The benchmark the scheme will be measured against</p></div>
+        </div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Taxation & Risks ===== -->
+  <section class="section stack sec-tint" id="sec-tax-risks" data-section="tax-risks" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Taxation &amp; Risks</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">How your gains are taxed depends on the scheme’s classification — and every NFO carries risks that come with backing something new.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Taxation by Scheme Type</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Equity-oriented and debt-oriented schemes follow different capital-gains rules.</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t3 bordered">
+        <div class="cell th"><p>Aspect</p></div><div class="cell th"><p>Equity-Oriented</p></div><div class="cell th"><p>Debt / Hybrid</p></div>
+        {TAX_ROWS.map((r) => (
+          <>
+            <div class="cell tb"><p class="k">{r.k}</p></div>
+            <div class="cell tb"><p class="v">{r.e}</p></div>
+            <div class="cell tb"><p class="v">{r.d}</p></div>
+          </>
+        ))}
+      </div></div>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Risks to Weigh</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Backing a scheme with no history means accepting a different set of uncertainties.</p>
+      </div>
+      <div class="risks">
+        {RISKS.map((r) => (
+          <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated, research-led plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Be First to the Next New Fund Offer</h3>
+        <p class="ct-sub">Open your Demat account in minutes and subscribe to NFOs with zero paperwork and 0% commission.</p>
+      </div>
+      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
+    </div>
+  </section>
+</BaseLayout>

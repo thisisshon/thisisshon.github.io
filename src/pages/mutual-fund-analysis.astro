@@ -1,0 +1,275 @@
+---
+/**
+ * Mutual Fund Analysis — /mutual-fund-analysis/
+ * Research-Centre content page on Shriram's Mutual Fund Research offering.
+ * Root route → BaseLayout / component imports at ../ depth. Built entirely
+ * from the shared design system: standardised olive hero (rule 7), shared
+ * section / card / .appr / check-list / FAQ / CTA components, and page-local
+ * styles ONLY for the icon feature grid (reused across sections). Every value
+ * binds to a token (rule 9); the grids are data-driven so the same templates
+ * scale to thousands of instances — the scale North Star.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// What Our MF Research Covers — six capability cards. Each `icon` maps to an
+// inline <svg> in the ICON defs below (rule 4: real SVGs only, 16/20/24/32).
+const COVERS = [
+  { icon: 'bars', title: 'Fund performance tracking', body: 'Rolling and point-to-point returns across 1, 3, 5 and 10-year windows — benchmarked against category and index, not just the fund house factsheet.' },
+  { icon: 'shield', title: 'Risk & volatility metrics', body: 'Standard deviation, Sharpe, Sortino and maximum drawdown — so you see the ride, not only the destination.' },
+  { icon: 'search', title: 'Portfolio & holdings review', body: 'Sector tilts, concentration, market-cap mix and overlap between funds — read against each scheme’s stated mandate.' },
+  { icon: 'clock', title: 'SIP & category flow tracking', body: 'Where monthly SIP money, NFOs and category flows are moving — across equity, debt and hybrid.' },
+  { icon: 'target', title: 'Fund manager track record', body: 'Tenure, style consistency and how the manager has handled prior drawdowns — the record behind the returns.' },
+  { icon: 'wallet', title: 'Cost & expense analysis', body: 'Expense ratio, exit load and the direct-vs-regular cost gap — quantified in rupees over your holding period.' },
+];
+
+// How We Rate & Shortlist Funds — five weighted screens, shown as a checklist.
+const SHORTLIST = [
+  'Returns consistency — rolling-return outperformance across market cycles, not a single lucky year',
+  'Risk-adjusted metrics — Sharpe, Sortino and downside capture, so return per unit of risk is what counts',
+  'Expense ratio — lower recurring cost compounds; every scheme is screened on total cost of ownership',
+  'Fund manager track record — tenure, style discipline and how the manager navigated past corrections',
+  'Portfolio quality — credit and liquidity checks on debt, concentration and overlap checks on equity',
+];
+
+// The three research streams — rendered as the shared dark .appr cards.
+const STREAMS = [
+  {
+    kicker: 'List 01', title: 'Equity Fund Shortlist', href: '#',
+    body: 'Category-wise picks across large, mid, small, flexi and index funds — each with our rating, rolling-return record and the reason it made the list.',
+  },
+  {
+    kicker: 'List 02', title: 'Debt & Hybrid Shortlist', href: '#',
+    body: 'Screened for credit quality, duration and downside protection — liquid, short-duration, corporate-bond and balanced-advantage funds for the stable core of your portfolio.',
+  },
+  {
+    kicker: 'List 03', title: 'Model SIP Portfolios', href: '#',
+    body: 'Ready-made fund baskets mapped to goal and risk profile — conservative, balanced and aggressive — rebalanced and reviewed each quarter by our desk.',
+  },
+];
+
+// Frequently Asked Questions — first item open (site convention).
+const FAQS = [
+  {
+    q: 'What is mutual fund research?',
+    a: 'Mutual fund research is the systematic analysis of a scheme’s returns, risk, portfolio and costs to judge whether it is worth your money. Our analysts study rolling returns, risk-adjusted metrics, the fund manager’s record and the expense ratio, then rate and shortlist funds so you can invest with a clear reason rather than on past-performance headlines.',
+  },
+  {
+    q: 'How do you rate and shortlist funds?',
+    a: 'Every fund is screened on five weighted factors — returns consistency across market cycles, risk-adjusted metrics such as Sharpe and Sortino, the expense ratio, the fund manager’s track record, and portfolio quality. A fund makes the shortlist only when it clears all five, not on one strong year alone.',
+  },
+  {
+    q: 'What is the difference between direct and regular plans?',
+    a: 'A regular plan pays a distributor commission that is built into its expense ratio, so it costs you more every year. A direct plan cuts out the commission — 0% distributor payout — which lowers the expense ratio and lets more of your money compound. The portfolio, fund manager and NAV date are identical; only the cost differs. Over a long SIP the saving can be substantial.',
+  },
+  {
+    q: 'Are Shriram’s direct plans really 0% commission?',
+    a: 'Yes. When you invest through Shriram in direct plans, there is no distributor commission embedded in the scheme — you get the lower direct-plan expense ratio. Our research desk shortlists funds on merit, independent of any commission, so the recommendation is aligned with your returns, not a payout.',
+  },
+  {
+    q: 'What is a model portfolio?',
+    a: 'A model portfolio is a ready-made basket of shortlisted funds mapped to a goal and risk profile — conservative, balanced or aggressive. Instead of picking schemes one by one, you invest across a curated mix that our desk reviews and rebalances each quarter, keeping the allocation on track.',
+  },
+  {
+    q: 'Do I need a demat account to invest in mutual funds?',
+    a: 'You can hold mutual funds either in your demat account alongside your equities, or in a statement-of-account form. Opening a Shriram demat account takes a few minutes online and gives you a single consolidated view of funds and stocks, plus full access to our fund research, shortlists and model portfolios.',
+  },
+];
+
+const seo = {
+  title: 'Mutual Fund Analysis',
+  description:
+    'Research-led mutual fund analysis from SEBI-registered analysts — returns consistency, risk-adjusted metrics, expense ratios and manager track records, plus curated shortlists and 0% commission direct plans.',
+  path: '/mutual-fund-analysis/',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- Inline icon set — every glyph is a real <svg> (rule 4), sized 24. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="mi-bars"><path d="M5 20V11M12 20V4M19 20v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+      <g id="mi-shield"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g id="mi-search"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+      <g id="mi-clock"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g id="mi-target"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g>
+      <g id="mi-wallet"><rect x="3.5" y="6" width="17" height="13" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9h13a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-13" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16" cy="12.5" r="1.1" fill="currentColor"/></g>
+    </defs>
+  </svg>
+
+  <!-- ================= HERO (standardised, rule 7) ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Invest in the Right <span class="g">Mutual Funds</span></h1>
+      <p class="lead">Research-led fund analysis from SEBI-registered analysts — rated on returns consistency, risk-adjusted metrics, cost and manager track record. Curated shortlists and 0% commission direct plans.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered analysts</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;0% commission direct plans</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Curated shortlists &amp; model portfolios</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT OUR MF RESEARCH COVERS ================= -->
+  <section class="section stack sec-light" id="sec-covers" data-section="covers" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Our Mutual Fund Research Covers</h2>
+      <p class="sec-lead">A mutual fund is more than its headline return. Our desk analyses every scheme across performance, risk, portfolio and cost — turning fund-house factsheets into an independent, comparable view so you can choose on merit, not marketing.</p>
+    </div>
+    <div class="feat-grid">
+      {COVERS.map((c) => (
+        <article class="fcard">
+          <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#mi-${c.icon}`} /></svg></span>
+          <h3>{c.title}</h3>
+          <p>{c.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= HOW WE RATE & SHORTLIST ================= -->
+  <section class="section stack sec-tint" id="sec-shortlist" data-section="shortlist" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How We Rate &amp; Shortlist Funds</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every fund is screened on the same five factors before it earns a place on our list. A single strong year is never enough — a scheme has to clear all five to make the shortlist.</p>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="check-list">
+        {SHORTLIST.map((item, i) => (
+          <>
+            {i > 0 && <div class="check-sep"></div>}
+            <div class="check-row">
+              <span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+              <p class="tx">{item}</p>
+            </div>
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CURATED LISTS / MODEL PORTFOLIOS ================= -->
+  <section class="section stack sec-light" id="sec-lists" data-section="lists" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Curated Fund Lists &amp; Model Portfolios</h2>
+      <p class="sec-lead">Skip the 2,000-scheme scroll. Start from a shortlist our analysts have already vetted, or invest across a ready-made model portfolio mapped to your goal and risk profile — reviewed and rebalanced every quarter.</p>
+    </div>
+    <div class="approaches">
+      {STREAMS.map((s) => (
+        <a class="appr" href={s.href}>
+          <div class="appr-main">
+            <p class="idx">{s.kicker}</p>
+            <div class="appr-tt">
+              <h4>{s.title}</h4>
+              <p>{s.body}</p>
+            </div>
+            <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div style="display:flex"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+  </section>
+
+  <!-- ================= DIRECT VS REGULAR ================= -->
+  <section class="section stack sec-tint" id="sec-direct" data-section="direct" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Direct vs Regular Plans</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Same portfolio, same fund manager, same NAV — one key difference. Regular plans carry a distributor commission inside their expense ratio; direct plans don’t. Invest in direct plans through Shriram at 0% commission, and let the lower cost compound in your favour.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Direct Plan</p></div><div class="cell th"><p>Regular Plan</p></div>
+      <div class="cell tb"><p class="k">Distributor Commission</p></div><div class="cell tb"><p class="v">0% — none embedded</p></div><div class="cell tb"><p class="v">Built into the expense ratio</p></div>
+      <div class="cell tb"><p class="k">Expense Ratio</p></div><div class="cell tb"><p class="v">Lower</p></div><div class="cell tb"><p class="v">Higher</p></div>
+      <div class="cell tb"><p class="k">Portfolio &amp; Fund Manager</p></div><div class="cell tb"><p class="v">Identical</p></div><div class="cell tb"><p class="v">Identical</p></div>
+      <div class="cell tb"><p class="k">NAV</p></div><div class="cell tb"><p class="v">Higher (lower costs compound)</p></div><div class="cell tb"><p class="v">Lower</p></div>
+      <div class="cell tb"><p class="k">Long-Term Impact</p></div><div class="cell tb"><p class="v">More of your money stays invested</p></div><div class="cell tb"><p class="v">Commission drags on returns</p></div>
+      <div class="cell tb"><p class="k">Best For</p></div><div class="cell tb"><p class="v">Research-led, cost-aware investors</p></div><div class="cell tb"><p class="v">Those wanting a distributor intermediary</p></div>
+    </div></div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ================= GENERAL QUESTIONS ================= -->
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show which funds fit your goals — and what a research-led, direct-plan portfolio would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Build Your Fund Portfolio the Research-Led Way</h3>
+        <p class="ct-sub">Open your demat account in minutes and unlock every fund shortlist, model portfolio and 0% commission direct plan.</p>
+      </div>
+      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Mutual Fund Analysis — page-local components only. Every value binds
+     to a design token; the shared hero/section/card/check-list/.appr/table/FAQ/
+     CTA all come from global.css. The only genuinely-new block is the icon
+     feature grid (reused by the "covers" section), lifted from the shared
+     research-hub feature-card language so the two pages stay uniform. ===== */
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* The FAQ sits on --sec-light, so stroke the accordion AND the side card
+     together (background-dependent rule — same as research-hub / technical). */
+  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
+  .faq-side { border: 1px solid var(--color-border-card); }
+
+  /* ===== Icon feature grid (COVERS) ===== */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; width: 100%; }
+  .fcard {
+    background: var(--color-surface-card); border: 1px solid var(--color-border-card);
+    border-radius: 24px; padding: var(--container-pad);
+    display: flex; flex-direction: column; gap: 16px;
+    transition: border-color 0.22s ease;
+  }
+  .fcard:hover { border-color: var(--color-sage-450); }
+  /* icon tile — 48px container (8px grid), warm gold tint + olive brand icon */
+  .fic { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--color-gold-100); color: var(--color-text-heading-dark); display: inline-flex; align-items: center; justify-content: center; }
+  .fic svg { width: 24px; height: 24px; display: block; }
+  .fcard h3 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
+  .fcard p { font-weight: 400; font-size: 16px; color: var(--color-text-muted); }
+
+  /* ===== responsive ===== */
+  @media (max-width: 1024px) {
+    .feat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .approaches { flex-wrap: wrap; }
+    .approaches .appr { flex: 1 1 calc(50% - 12px); }
+  }
+  @media (max-width: 820px) {
+    .approaches .appr { flex: 1 1 100%; }
+  }
+  @media (max-width: 768px) {
+    .fcard p { font-size: 14px; }
+  }
+  @media (max-width: 640px) {
+    .feat-grid { grid-template-columns: 1fr; }
+  }
+</style>

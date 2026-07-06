@@ -1,0 +1,422 @@
+---
+/**
+ * Research Centre — /research-hub/  (V4 "Research Landing Page")
+ *
+ * The research hub, built to the Figma V4 wireframe (node 991-6700) but rendered
+ * entirely in the shared design system: the standardised olive hero (rule 7),
+ * shared section / card / .approaches research cards / FAQ / CTA components, and
+ * page-local styles ONLY for the genuinely-new blocks — the icon feature grid
+ * (reused across two sections), the dark "access" band, and the alerts columns.
+ * Every value binds to a token (rule 9); the grids are data-driven so the same
+ * templates scale to thousands of instances — the scale North Star.
+ *
+ * Nested route → imports at ../../ depth (sibling of research/technical.astro).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// "All-In-One Research Desk" — six capability cards (wireframe, verbatim). Each
+// `icon` maps to an inline <svg> in the ICON map below (rule 4: real SVGs only).
+const DESK = [
+  { icon: 'calendar', title: 'Daily & weekly notes', body: 'Short, dated reads on where the market stands — published every trading day, not just when something breaks.' },
+  { icon: 'bars', title: 'Stock & sector coverage', body: 'Coverage that follows a company across quarters, not just the day it reports its results.' },
+  { icon: 'candles', title: 'Technical levels, marked', body: 'Support, resistance and the level that would change our mind — set out before the session, not after.' },
+  { icon: 'search', title: 'Fundamental deep-dives', body: 'Margins, debt and management commentary, read against what the business actually said on its concall.' },
+  { icon: 'clock', title: 'Mutual fund flow tracking', body: 'Where SIP money, NFOs and category flows are moving each month, across equity, debt and hybrid.' },
+  { icon: 'shield', title: 'One desk, three disciplines', body: 'Technical, fundamental and mutual fund research from a single SEBI-registered desk — not three vendors.' },
+];
+
+// The three research streams — rendered as the shared dark .appr cards (the
+// design-system "research approach cards"), linked to their landing pages.
+const TYPES = [
+  {
+    kicker: 'Stream 01', title: 'Technical Research', href: '/technical-analysis/',
+    body: 'Chart-based calls on indices and stocks — with clear entry levels, price targets and stop-losses. Published daily for intraday ideas and weekly for positional trades.',
+    tags: ['Intraday Calls', 'Positional Ideas', 'Index Outlook', 'F&O Levels'],
+  },
+  {
+    kicker: 'Stream 02', title: 'Fundamental Research', href: '/fundamental-analysis/',
+    body: 'In-depth company analysis covering quarterly performance, management commentary, valuation and multi-quarter growth outlook — including sector reports and initiating-coverage notes.',
+    tags: ['Company Reports', 'Earnings Reviews', 'Sector Coverage', 'Initiating Coverage'],
+  },
+  {
+    kicker: 'Stream 03', title: 'Mutual Fund Research', href: '/mutual-fund-analysis/',
+    body: 'Monthly fund rankings, SIP performance tracking and NFO reviews — across equity, debt and hybrid categories. Know which categories are attracting flows and which are losing them.',
+    tags: ['SIP Tracker', 'NFO Reviews', 'Category Flows', 'Fund Rankings'],
+  },
+];
+
+// "Why Shriram Research?" — five reasons, same feature-card template as DESK.
+const WHY = [
+  { icon: 'globe', title: 'Multi-asset coverage', body: 'Equity, commodities (MCX Gold, Silver, Crude) and mutual funds — all in one hub.' },
+  { icon: 'target', title: 'Actionable insights', body: 'Specific entry, target and stop-loss levels — not just analysis, but clear calls.' },
+  { icon: 'users', title: 'Institutional-grade research', body: 'The same depth of analysis the professionals rely on, brought to every client.' },
+  { icon: 'bolt', title: 'Published every market day', body: 'Daily EQ Trend and Commodity Trend delivered before market open. Never miss a setup or pivot level.' },
+  { icon: 'book', title: 'Full PDF reports with data tables', body: 'Pivot tables for all Nifty 50 stocks, commodity futures strategy and support/resistance levels — all in downloadable PDFs.' },
+];
+
+// Market alerts / commentary — two columns, each with a "how to check" walk-through.
+const ALERTS = [
+  {
+    icon: 'bell', title: 'Market Alerts',
+    body: 'Research alerts let you know updates and research calls the instant they publish — just enable alerts in the Antara app.',
+    howTitle: 'How to Check Research Calls',
+    howLead: 'Never miss an analyst call. Choose how you want to receive research alerts — directly on the Antara App.',
+    steps: [
+      'Download and complete onboarding in the Antara app.',
+      'Open the Antara app and go to the Home screen.',
+      'In the Home-screen top section, refer to the Research Call section.',
+    ],
+  },
+  {
+    icon: 'chat', title: 'Market Commentary',
+    body: 'Our analyst desk publishes market commentary three times every trading day — a pre-session outlook before the open, a mid-session pulse as trade develops, and an end-of-day wrap with sector and FII/DII data. Each update covers index moves, sector rotation and the levels that matter.',
+    howTitle: 'How to Check Market Commentary',
+    howLead: 'Watch the market commentary regularly to make informed decisions.',
+    steps: [
+      'Download and complete onboarding in the Antara app.',
+      'Open the Antara app and go to the Home screen.',
+      'In the Home-screen bottom section, refer to the Market News & Update Call section.',
+    ],
+  },
+];
+
+// Frequently Asked Questions — first item open (site convention).
+const FAQS = [
+  {
+    q: 'What is Shriram Research?',
+    a: 'Shriram Research is the in-house research division of Shriram Financial Services. We publish daily technical trend notes, fundamental stock analysis and monthly mutual fund reviews — all produced by SEBI-registered analysts across three disciplines, under one roof.',
+  },
+  {
+    q: 'What types of research reports are available?',
+    a: 'Three streams: Technical Research (daily and weekly index, stock and commodity trend notes with entry, target and stop-loss), Fundamental Research (company deep-dives, earnings reviews and initiating coverage) and Mutual Fund Research (fund rankings, SIP tracking and NFO reviews).',
+  },
+  {
+    q: 'Do I need to login to read the reports?',
+    a: 'Report titles and short overviews are open to everyone. Full reports — with detailed levels, PDFs and data tables — and daily alerts unlock when you log in to the Antara app or open a Shriram demat account.',
+  },
+  {
+    q: 'How do I open a demat account to access research?',
+    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account — once verified, every research PDF, pivot table and trade idea is unlocked in full.',
+  },
+  {
+    q: 'Is the research free for clients?',
+    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library — every technical note, fundamental report, pivot table and fund review — at no extra charge.',
+  },
+  {
+    q: 'How often are reports published?',
+    a: 'Daily trend notes for indices and commodities go out before the market opens on every trading day. Weekly strategies, fundamental deep-dives and monthly fund reviews are published on a fixed schedule through the month.',
+  },
+];
+
+const seo = {
+  title: 'Research Centre',
+  description:
+    'Institutional-grade research from SEBI-registered analysts — daily technical trend notes, fundamental deep-dives and mutual fund reviews across equity, commodities and funds, in one hub.',
+  path: '/research-hub/',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- Inline icon set — every glyph is a real <svg> (rule 4), sized 16/20/24. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="ri-calendar"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 9h16M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+      <g id="ri-bars"><path d="M5 20V11M12 20V4M19 20v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+      <g id="ri-candles"><path d="M8 3v3M8 15v6M16 3v6M16 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="5.5" y="6" width="5" height="9" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="9" width="5" height="9" rx="1" stroke="currentColor" stroke-width="1.6"/></g>
+      <g id="ri-search"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+      <g id="ri-clock"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g id="ri-shield"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g id="ri-globe"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5S14.5 18.1 12 20.5C9.5 18.1 8.2 15.1 8.2 12S9.5 5.9 12 3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
+      <g id="ri-target"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g>
+      <g id="ri-users"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 5.2A3.2 3.2 0 0 1 18 11m-.5 3.8c2.1.6 3.5 2.5 3.5 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+      <g id="ri-bolt"><path d="M13 3 5 13h6l-1 8 8-10h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
+      <g id="ri-book"><path d="M6 4h9a3 3 0 0 1 3 3v13H8a2 2 0 0 0-2 2V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 20a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
+      <g id="ri-bell"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+      <g id="ri-chat"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4v-4H6a2 2 0 0 1-2-2V6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+    </defs>
+  </svg>
+
+  <!-- ================= HERO (standardised, rule 7) ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Shriram Financial <span class="g">Research Hub</span></h1>
+      <p class="lead">Institutional-grade research, produced daily by SEBI-registered analysts. Access the full library by logging in or opening your demat account.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered analysts</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Published every trading day</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Technical · Fundamental · Funds</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT IS RESEARCH ================= -->
+  <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is Research &amp; Why Does It Matter?</h2>
+      <p class="sec-lead">Research is the systematic analysis of markets, securities and economic data to produce informed investment recommendations. Our analysts study price charts, company financials, industry trends and macro factors to turn that into actionable insight. Research-backed investing reduces emotional decisions and improves outcomes — the same quality of analysis institutional investors rely on, covering when to buy, when to hold and what price to target.</p>
+    </div>
+  </section>
+
+  <!-- ================= ALL-IN-ONE RESEARCH DESK ================= -->
+  <section class="section stack sec-tint" id="sec-desk" data-section="desk" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">All-In-One Research Desk</h2>
+      <p class="sec-lead">Everything you need to make an informed call — daily notes, sector coverage, marked levels and fund flows — from one accountable, SEBI-registered desk.</p>
+    </div>
+    <div class="feat-grid">
+      {DESK.map((c) => (
+        <article class="fcard">
+          <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#ri-${c.icon}`} /></svg></span>
+          <h3>{c.title}</h3>
+          <p>{c.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= EXPLORE OUR RESEARCH TYPES ================= -->
+  <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Explore Our Research Types</h2>
+      <p class="sec-lead">Whether you trade intraday, invest for the long term or build wealth through SIPs — there's a dedicated research stream for you. Each is produced by specialist analysts and published on a fixed schedule.</p>
+    </div>
+    <div class="approaches">
+      {TYPES.map((t) => (
+        <a class="appr" href={t.href}>
+          <div class="appr-main">
+            <p class="idx">{t.kicker}</p>
+            <div class="appr-tt">
+              <h4>{t.title}</h4>
+              <p>{t.body}</p>
+              <div class="rtags">
+                {t.tags.map((tag) => <span class="rtag">{tag}</span>)}
+              </div>
+            </div>
+            <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div style="display:flex"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+  </section>
+
+  <!-- ================= WHY SHRIRAM RESEARCH ================= -->
+  <section class="section stack sec-tint" id="sec-why" data-section="why" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Why Shriram Financial Services Research?</h2>
+      <p class="sec-lead">We are not a news aggregator or an algorithm-driven screener. We are a team of SEBI-registered analysts producing original, accountable research — across three disciplines, under one roof, every trading day.</p>
+    </div>
+    <div class="feat-grid">
+      {WHY.map((c) => (
+        <article class="fcard">
+          <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#ri-${c.icon}`} /></svg></span>
+          <h3>{c.title}</h3>
+          <p>{c.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= GET FULL ACCESS — dark band ================= -->
+  <section class="section stack sec-light" id="sec-access" data-section="access" style="gap:0;align-items:center;justify-content:center">
+    <div class="access-band">
+      <span class="access-ic" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      </span>
+      <h2>Access Full Research Reports</h2>
+      <p>Report titles and overviews are public. To read the complete analysis, download PDFs and receive daily alerts, log in or open your free demat account.</p>
+      <div class="access-cta">
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account — Free</a>
+        <a class="btn-outline" href="#">Existing Client Login</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MARKET ALERTS & COMMENTARY ================= -->
+  <section class="section stack sec-tint" id="sec-alerts" data-section="alerts" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Market Alerts &amp; Commentary</h2>
+      <p class="sec-lead">Stay on top of every call and every session — pushed to your device the moment it publishes, and walked through step by step.</p>
+    </div>
+    <div class="row-2">
+      {ALERTS.map((a) => (
+        <div class="card">
+          <div class="al-head">
+            <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#ri-${a.icon}`} /></svg></span>
+            <h3 class="card-h">{a.title}</h3>
+          </div>
+          <p class="card-p">{a.body}</p>
+          <div class="how">
+            <h4>{a.howTitle}</h4>
+            <p class="how-lead">{a.howLead}</p>
+            <ol class="asteps">
+              {a.steps.map((s, i) => (
+                <li class="astep"><span class="anum">{i + 1}</span><span class="atx">{s}</span></li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- feature CTA bar — dark focus band (parity with the site's dark bands) -->
+    <div class="get-access">
+      <h3>To Get Access To This Feature Now</h3>
+      <div class="ga-cta">
+        <a class="btn-gold" href="#">Login Now</a>
+        <a class="btn-outline" href="/open-demat-account/">Open Demat Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FREQUENTLY ASKED QUESTIONS ================= -->
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">General Questions</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated research-led plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Research-Led Investing, In Your Hands</h3>
+        <p class="ct-sub">Open your demat account in minutes and unlock every technical note, fundamental report and fund review.</p>
+      </div>
+      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Research Centre — page-local components only. Every value binds to a
+     design token; shared hero/section/card/.approaches/FAQ/CTA come from
+     global.css. The genuinely-new blocks are the icon feature grid (reused by
+     the desk + why sections), the dark access band, and the alerts columns. */
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* The FAQ sits on --sec-light, so stroke the accordion AND the side card
+     together (background-dependent rule — same as research/technical/). */
+  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
+  .faq-side { border: 1px solid var(--color-border-card); }
+
+  /* ===== Icon feature grid (DESK + WHY) ===== */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; width: 100%; }
+  .fcard {
+    background: var(--color-surface-card); border: 1px solid var(--color-border-card);
+    border-radius: 24px; padding: var(--container-pad);
+    display: flex; flex-direction: column; gap: 16px;
+    transition: border-color 0.22s ease;
+  }
+  .fcard:hover { border-color: var(--color-sage-450); }
+  /* icon tile — 48px container (8px grid), warm gold tint + olive brand icon */
+  .fic { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--color-gold-100); color: var(--color-text-heading-dark); display: inline-flex; align-items: center; justify-content: center; }
+  .fic svg { width: 24px; height: 24px; display: block; }
+  .fcard h3 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
+  .fcard p { font-weight: 400; font-size: 16px; color: var(--color-text-muted); }
+
+  /* ===== Research-type tag chips (inside the shared .appr cards) ===== */
+  .rtags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .rtag {
+    padding: 4px 12px; border-radius: 999px; font-weight: 500; font-size: 12px;
+    color: var(--color-text-on-dark-lead); border: 1px solid var(--color-olive-700);
+  }
+
+  /* ===== Access band (Get Full Access) — centred dark focus band. The
+     wireframe's saturated blue is remapped to the site's olive focus palette so
+     the page stays inside one token set. Solid hex only. ===== */
+  .access-band {
+    width: 100%; border-radius: 24px; padding: 64px var(--container-pad);
+    background: radial-gradient(125% 210% at 0% -8%, var(--color-olive-600) 0%, var(--color-olive-800) 50%, var(--color-charcoal-850) 100%);
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px;
+  }
+  .access-ic { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--color-olive-800); color: var(--color-gold-400); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .access-band h2 { font-weight: 500; font-size: 40px; color: var(--color-white); }
+  .access-band p { font-weight: 400; font-size: 16px; color: var(--color-text-on-dark-lead); max-width: 640px; }
+  .access-cta { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 24px; }
+  .access-cta .btn-gold { width: auto; min-width: var(--cta-w); padding: 8px 24px; }
+
+  /* white-outline button on the dark bands (matches the fill so it reads as an
+     outline). Auto width to fit the longer label. */
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 40px; padding: 8px 24px; border-radius: 4px;
+    background: transparent; border: 1px solid var(--color-white); color: var(--color-white);
+    font-weight: 500; font-size: 12px; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease;
+  }
+  .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
+
+  /* ===== Market alerts / commentary columns ===== */
+  .row-2 .card { display: flex; flex-direction: column; gap: 16px; }
+  .al-head { display: flex; align-items: center; gap: 16px; }
+  /* nested "how to check" block — a hairline-bordered panel inside the card */
+  .how {
+    margin-top: 8px; padding: 24px; border-radius: 16px;
+    background: var(--color-surface-section-tint); display: flex; flex-direction: column; gap: 8px;
+  }
+  .how h4 { font-weight: 500; font-size: 16px; color: var(--color-text-primary); }
+  .how-lead { font-weight: 400; font-size: 14px; color: var(--color-text-muted); }
+  .asteps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .astep { display: flex; align-items: flex-start; gap: 16px; }
+  .anum {
+    flex: none; width: 24px; height: 24px; border-radius: 999px;
+    background: var(--color-text-heading-dark); color: var(--color-white);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 12px;
+  }
+  .astep .atx { font-weight: 400; font-size: 14px; color: var(--color-text-tertiary); }
+
+  /* ===== feature CTA bar — dark focus band, row layout ===== */
+  .get-access {
+    width: 100%; border-radius: 24px; padding: 40px var(--container-pad);
+    background: radial-gradient(125% 210% at 100% -8%, var(--color-olive-600) 0%, var(--color-olive-800) 50%, var(--color-charcoal-850) 100%);
+    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+  }
+  .get-access h3 { font-weight: 500; font-size: 28px; color: var(--color-white); }
+  .ga-cta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .ga-cta .btn-gold { width: auto; min-width: var(--cta-w); padding: 8px 24px; }
+
+  /* ===== responsive ===== */
+  @media (max-width: 1024px) {
+    .feat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .approaches { flex-wrap: wrap; }
+    .approaches .appr { flex: 1 1 calc(50% - 12px); }
+  }
+  @media (max-width: 820px) {
+    .approaches .appr { flex: 1 1 100%; }
+  }
+  @media (max-width: 768px) {
+    .access-band { padding: 48px 24px; }
+    .access-band h2 { font-size: clamp(24px, 6.4vw, 40px); }
+    .get-access h3 { font-size: clamp(22px, 5.6vw, 28px); }
+    .access-cta, .ga-cta { width: 100%; }
+    .access-cta .btn-gold, .access-cta .btn-outline,
+    .ga-cta .btn-gold, .ga-cta .btn-outline { width: 100%; flex: 1 1 100%; }
+    .fcard p { font-size: 14px; }
+  }
+  @media (max-width: 640px) {
+    .feat-grid { grid-template-columns: 1fr; }
+  }
+</style>

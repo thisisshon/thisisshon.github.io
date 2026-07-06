@@ -26,9 +26,12 @@ export interface SEO {
 
 export const SITE_NAME = 'Shriram Financial Services';
 
-/** "About Us — Shriram Financial Services" (skips suffix if already present). */
+/** Normalises to one sitewide convention: "About Us | Shriram Financial Services". */
 export function fullTitle(title: string): string {
-  return title.includes(SITE_NAME) ? title : `${title} — ${SITE_NAME}`;
+  // Strip any brand suffix a page may still carry (either separator), then
+  // append the canonical `| SITE_NAME` so every <title> is consistent.
+  const bare = title.replace(new RegExp(`\\s*[—|]\\s*${SITE_NAME}\\s*$`), '').trim();
+  return `${bare} | ${SITE_NAME}`;
 }
 
 /* ------------------------------------------------------------------ */
