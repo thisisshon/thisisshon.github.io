@@ -1,6 +1,6 @@
 ---
 /**
- * Sitemap — /sitemap/
+ * Sitemap — /site-map/
  * A public, human-facing directory of the whole site (distinct from the
  * machine-readable /sitemap-index.xml that @astrojs/sitemap emits at build).
  *
@@ -87,15 +87,15 @@ const legal: SmGroup = {
 const groups: SmGroup[] = [company, ...navGroups, legal];
 
 const seo = {
-  title: 'Sitemap',
+  title: 'Sitemap - All Pages',
   description:
-    'Browse every section of the Shriram Financial Services site in one place — products, research, calculators, support and legal disclosures.',
-  path: '/sitemap/',
+    'Browse the full site structure of Shriram Financial Services, covering all products, research tools, calculators and about pages.',
+  path: '/site-map/',
   jsonLd: [
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Sitemap', path: '/sitemap/' },
+        { name: 'Sitemap', path: '/site-map/' },
       ],
       'https://uat.shriramsecurities.com'
     ),
