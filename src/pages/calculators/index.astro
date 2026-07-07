@@ -92,7 +92,6 @@ const CALCS = calculators;
   .calc-hero h1 {
     font-weight: 500;
     font-size: 40px;
-    line-height: 1.5;
     color: var(--color-white);
     max-width: 780px;
   }
@@ -103,7 +102,6 @@ const CALCS = calculators;
     margin-top: 16px;
     font-weight: 400;
     font-size: 18px;
-    line-height: 1.5;
     color: var(--color-sage-100);
     max-width: 600px;
   }
@@ -146,22 +144,22 @@ const CALCS = calculators;
     color: inherit;
     transition: border-color 0.22s ease;
   }
-  /* minimal hover: crisp olive border + arrow nudge (no shadow / lift) */
+  @media (min-width: 1024px) and (hover: hover) {
+    /* minimal hover: crisp olive border + arrow nudge (no shadow / lift) */
   a.calc-card:hover {
     border-color: var(--color-olive-950);
+  }
   }
   .cc-title {
     font-weight: 500;
     font-size: 20px;
     color: var(--color-text-primary);
-    line-height: 1.3;
   }
   .cc-desc {
     flex: 1 1 auto;
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
   .cc-cta {
     display: inline-flex;
@@ -180,8 +178,10 @@ const CALCS = calculators;
     width: 16px;
     height: 16px;
   }
-  a.calc-card:hover .cc-cta .arr {
+  @media (min-width: 1024px) and (hover: hover) {
+    a.calc-card:hover .cc-cta .arr {
     transform: translateX(5px);
+  }
   }
 
   /* demat CTA tile (fills the 6th grid cell) */

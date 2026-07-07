@@ -1018,7 +1018,7 @@ const seo = {
                 without the complexity.
               </p>
             </div>
-            <!-- QR card — cream QR directly on the dark card -->
+            <!-- QR card — cream QR directly on the dark card (desktop) -->
             <div class="antara-box-4">
               <div class="antara-box-5">
                 <img
@@ -1028,6 +1028,24 @@ const seo = {
                   style="filter:invert(1) sepia(0.30) brightness(1.05);"
                 />
                 <p class="antara-text-2">Download Now on Android or iOS</p>
+              </div>
+              <!-- app-store buttons (mweb only — a QR is pointless on a phone) -->
+              <div class="antara-stores">
+                <a class="store-btn" href="#" aria-label="Get it on Google Play">
+                  <svg class="store-ico" viewBox="0 0 512 512" fill="none" aria-hidden="true">
+                    <path fill="#34A853" d="M50 24c-6 3-10 9-10 17v430c0 8 4 14 10 17l250-232z"/>
+                    <path fill="#EA4335" d="M50 24l250 232 76-70z"/>
+                    <path fill="#4285F4" d="M50 488l250-232 76 70z"/>
+                    <path fill="#FBBC04" d="M376 186 300 256l76 70 88-52c14-8 14-36 0-44z"/>
+                  </svg>
+                  <span class="store-txt"><small>GET IT ON</small><strong>Google Play</strong></span>
+                </a>
+                <a class="store-btn" href="#" aria-label="Download on the App Store">
+                  <svg class="store-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="#111" d="M17.05 12.04c-.03-2.6 2.13-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.88 2.65 3.22 2.6 1.29-.05 1.78-.83 3.34-.83 1.56 0 2 .83 3.37.81 1.39-.03 2.27-1.27 3.12-2.53.98-1.45 1.39-2.85 1.41-2.92-.03-.01-2.71-1.04-2.74-4.13M14.62 4.33c.71-.86 1.19-2.06 1.06-3.25-1.02.04-2.26.68-2.99 1.54-.66.76-1.23 1.98-1.08 3.15 1.14.09 2.3-.58 3.01-1.44"/>
+                  </svg>
+                  <span class="store-txt"><small>Download on the</small><strong>App Store</strong></span>
+                </a>
               </div>
             </div>
           </div>
@@ -1340,7 +1358,6 @@ const seo = {
   }
   .hero-title {
     font-size: clamp(32px, 5vw, 40px); /* fork's #main h1 override, folded in — parity */
-    line-height: 1.5;
     font-weight: 400;
   }
   .hero-label {
@@ -1349,7 +1366,6 @@ const seo = {
   .hero-text {
     margin-top: 20px;
     font-size: 16px;
-    line-height: 1.5;
   }
   .hero-box-4 {
     margin-top: 20px;
@@ -1395,7 +1411,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .hero-link:hover {
       background-color: #1a2010; /* --color-olive-950 (#1b2010 absorbs #1a2010, Tier-1) */
     }
@@ -1424,7 +1440,6 @@ const seo = {
   }
   .hero-title-2 {
     font-size: 32px;
-    line-height: 1.5;
     font-weight: 500;
     color: #4f583b; /* --color-olive-600 */
   }
@@ -1491,7 +1506,6 @@ const seo = {
   }
   .hero-label-7 {
     font-size: 10px;
-    line-height: 1.5;
     font-weight: 500;
     color: #8a8a8a; /* --color-gray-450 */
   }
@@ -1502,7 +1516,6 @@ const seo = {
   }
   .hero-label-8 {
     font-size: 14px;
-    line-height: 1.5;
     font-weight: 500;
     color: #333; /* --color-charcoal-700 (fork n900 = #333) */
   }
@@ -1512,7 +1525,6 @@ const seo = {
     border-style: none;
     background-color: transparent;
     font-size: 14px;
-    line-height: 1.5;
     font-weight: 500;
     color: #333; /* fork n900 */
     outline-style: none;
@@ -1523,7 +1535,6 @@ const seo = {
   }
   .hero-text-2 {
     font-size: 12px;
-    line-height: 1.5;
     font-weight: 500;
     color: #333; /* fork n900 */
   }
@@ -1543,7 +1554,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .hero-link-2:hover {
       background-color: #d4982a; /* --color-gold-600 */
     }
@@ -1556,7 +1567,7 @@ const seo = {
   .hero-link-3 {
     color: #2f7ef4; /* --color-blue-500 */
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .hero-link-3:hover {
       text-decoration-line: underline;
     }
@@ -1627,7 +1638,6 @@ const seo = {
   }
   .why-title {
     font-size: 24px;
-    line-height: 1.5;
     font-weight: 400;
   }
   .why-label {
@@ -1637,7 +1647,6 @@ const seo = {
   .why-text {
     margin-top: 16px;
     font-size: 16px;
-    line-height: 1.5;
     color: var(--color-white);
   }
   .why-box-8 {
@@ -1760,12 +1769,10 @@ const seo = {
   }
   .why-subtitle {
     font-size: 24px;
-    line-height: 1.5;
     font-weight: 500;
   }
   .why-text-2 {
     font-size: 16px;
-    line-height: 1.5;
     font-weight: 400;
   }
   .why-list {
@@ -1775,7 +1782,6 @@ const seo = {
     gap: 16px;
     padding-inline-start: 21px; /* off-grid — parity (Tier-2) */
     font-size: 14px;
-    line-height: 1.5;
   }
   /* mweb: "Why Shriram" flattens to a plain vertical card stack — the scroll-pin,
      the horizontal-clip rail math, the frosted-glass card blur and the progressive-
@@ -1797,19 +1803,17 @@ const seo = {
       margin-inline: 0;
       padding-inline: 0;
       overflow: visible;
-      gap: 16px;
+      gap: 24px; /* +8px breathing room between the stacked cards */
     }
     .why-box-10 {
-      height: auto;
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
-      background-color: #363a2c; /* solid olive-dark (gradient stop) — normal card, no frost */
+      height: auto; /* frosted glass (backdrop-filter blur + grain) retained from base */
+      padding-block: 32px; /* Figma mweb card padding (desktop 88px untouched) */
     }
-    .why-box-10::before {
-      display: none; /* drop the frosted-glass grain texture */
+    .why-list {
+      display: none; /* mweb cards are heading + subtitle only (Figma 1102:9647) */
     }
     .differ-fade {
-      display: none; /* drop the progressive-blur edge bands */
+      display: none; /* drop the progressive-blur edge bands (scroll-reveal only) */
     }
   }
 
@@ -1865,7 +1869,6 @@ const seo = {
   }
   .advisory-text-2 {
     font-size: 16px;
-    line-height: 1.5;
     color: #4f583b; /* --color-olive-600 */
   }
   .advisory-box-7 {
@@ -1915,7 +1918,6 @@ const seo = {
     margin-top: 8px;
     max-width: 36rem; /* fork --container-xl */
     font-size: 14px;
-    line-height: 1.5;
     color: #666; /* --color-gray-650 (home muted) */
   }
   .advisory-link-2 {
@@ -1938,9 +1940,34 @@ const seo = {
     transition: background-color 0.15s, transform 0.15s;
     display: inline-flex;
   }
-  .advisory-link-2:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .advisory-link-2:hover {
     background-color: #d4982a; /* --color-gold-600 (fork --color-brand-hover) */
     transform: translateY(-1px);
+  }
+  }
+  /* ── mweb (≤1023px) — Strategic Advisory becomes a 2×2 grid of VERTICAL cards
+     (icon-top → title → copy), per Figma 1102:9682. Desktop (≥1024px) keeps its
+     horizontal icon-left cards untouched. Card text already matches Figma (16px
+     bold uppercase #2e3914 / 16px #4f583b), so only the layout changes here. ── */
+  @media (max-width: 1023px) {
+    .advisory-box-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px 16px;
+    }
+    .advisory-box-3 {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 48px 24px;
+    }
+    .advisory-img {
+      height: 72px;
+      width: 72px;
+    }
+    .advisory-box-5 {
+      gap: 16px;
+    }
   }
 
   /* ---- PRODUCTS (dark reveal grid) ---- */
@@ -1969,7 +1996,7 @@ const seo = {
     font-weight: 600;
     color: #fdf4dc; /* --color-cream-450 (fork --color-brand-light) */
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .product-link:hover {
       color: var(--color-white);
     }
@@ -1977,7 +2004,7 @@ const seo = {
   .product-box-4 {
     margin-top: 40px;
     display: grid;
-    grid-template-columns: 1fr; /* phones: 1 col (2 at ≥640, 4 at ≥1280) — avoids ~80px cramped cards */
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* mweb: 2-col grid (4 at ≥1280) */
     gap: 16px;
   }
   /* Scroll reveal — the section header + each card fade/rise in as the grid
@@ -2024,8 +2051,10 @@ const seo = {
     margin-top: 40px;
     transition: margin-top var(--pc-dur) var(--pc-ease);
   }
-  .product-link-2:hover .product-copy {
-    margin-top: 32px; /* 8px tighter to the icon on hover */
+  @media (min-width: 1024px) and (hover: hover) {
+    .product-link-2:hover .product-copy {
+      margin-top: 32px; /* 8px tighter to the icon on hover */
+    }
   }
   .product-subtitle {
     color: var(--color-white);
@@ -2033,7 +2062,7 @@ const seo = {
   .product-text-2 {
     color: #ffffff80; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark card) */
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .product-link-2:hover .product-text-2 {
       color: #ffffffb3; /* Tier-2: rule-5 (alpha) — parity-preserved */
     }
@@ -2057,12 +2086,10 @@ const seo = {
     padding: 32px;
     background-color: #2e3914; /* --color-olive-900 (revealed base) */
   }
-  .product-link-2:hover {
-    --pc-delay: 0.1s;
-    background-color: #2e3914; /* --color-olive-900 */
-  }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .product-link-2:hover {
+      --pc-delay: 0.1s;
+      background-color: #2e3914; /* --color-olive-900 */
       z-index: 10;
     }
   }
@@ -2075,8 +2102,10 @@ const seo = {
     clip-path: circle(150% at calc(100% - 60px) 60px);
     transition: clip-path var(--pc-dur) var(--pc-ease);
   }
-  .product-link-2:hover::before {
-    clip-path: circle(0% at calc(100% - 60px) 60px);
+  @media (min-width: 1024px) and (hover: hover) {
+    .product-link-2:hover::before {
+      clip-path: circle(0% at calc(100% - 60px) 60px);
+    }
   }
   /* icon scales from its left edge — grows rightward, not from centre */
   .product-img {
@@ -2092,22 +2121,22 @@ const seo = {
     stroke: currentColor;
     transition: stroke-width var(--pc-dur) var(--pc-ease);
   }
-  .product-link-2:hover .product-img {
-    transform: scale(1.2); /* 40px → 48px */
-    color: var(--color-white);
-  }
-  .product-link-2:hover .product-img [stroke] {
-    stroke-width: 3; /* 2.5 + 0.5 on hover */
+  @media (min-width: 1024px) and (hover: hover) {
+    .product-link-2:hover .product-img {
+      transform: scale(1.2); /* 40px → 48px */
+      color: var(--color-white);
+    }
+    .product-link-2:hover .product-img [stroke] {
+      stroke-width: 3; /* 2.5 + 0.5 on hover */
+    }
   }
   .product-subtitle {
     font-size: 16px;
     font-weight: 700;
-    line-height: 1.5;
   }
   .product-text-2 {
     margin-top: 8px;
     font-size: 14px;
-    line-height: 1.5;
   }
   /* View More: in flow but collapsed (max-height:0) at rest. On hover it grows
      into place — max-height + margin-top + opacity all animate together, so the
@@ -2125,11 +2154,13 @@ const seo = {
     transition: opacity var(--pc-dur) var(--pc-ease), transform var(--pc-dur) var(--pc-ease),
       max-height var(--pc-dur) var(--pc-ease), margin-top var(--pc-dur) var(--pc-ease);
   }
-  .product-link-2:hover .product-label {
-    margin-top: 40px;
-    max-height: 24px;
-    opacity: 1;
-    transform: translateY(0);
+  @media (min-width: 1024px) and (hover: hover) {
+    .product-link-2:hover .product-label {
+      margin-top: 40px;
+      max-height: 24px;
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   .product-card-circle {
     position: absolute;
@@ -2148,9 +2179,11 @@ const seo = {
     transform: scale(0.375); /* 24px at rest → 64px on hover */
     transition: opacity var(--pc-dur) var(--pc-ease), transform var(--pc-dur) var(--pc-ease);
   }
-  .product-link-2:hover .product-card-circle {
-    opacity: 1;
-    transform: scale(1);
+  @media (min-width: 1024px) and (hover: hover) {
+    .product-link-2:hover .product-card-circle {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
   /* arrow points right (→) while hidden, then rotates up to aim at the
      top-right corner (↗) as it reveals */
@@ -2162,8 +2195,10 @@ const seo = {
     transform: rotate(45deg);
     transition: transform var(--pc-dur) var(--pc-ease);
   }
-  .product-link-2:hover .product-card-circle svg {
-    transform: rotate(0deg);
+  @media (min-width: 1024px) and (hover: hover) {
+    .product-link-2:hover .product-card-circle svg {
+      transform: rotate(0deg);
+    }
   }
   /* Figma trigger: Mouse enter · 100ms delay — hover-IN only (0s at rest) */
   .product-link-2::before,
@@ -2180,6 +2215,72 @@ const seo = {
     .product-card-circle svg,
     .product-label {
       transition: none;
+    }
+  }
+  /* mweb: static 2-col cards. The card sizes to content instead of the fixed
+     284px hover-expansion height, its padding tightens to fit two columns, and
+     "View More" shows by default. Placed after the base rules so it wins on
+     mobile; desktop (≥1024) keeps the hover behaviour untouched. */
+  @media (max-width: 1023px) {
+    .product-link-2 {
+      height: auto;
+      padding: 16px; /* was 32px — proportional reduction so two columns fit */
+    }
+    .product-label {
+      margin-top: 16px;
+      max-height: 24px;
+      opacity: 1;
+      transform: none;
+    }
+    /* Dark grey card container: 16px sides / 24px top+bottom internal padding. */
+    .product-box-2 {
+      padding: 24px 16px;
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      /* Remove the hover animation entirely on mweb — hold every layer at its
+       resting value even while :hover matches (it does in a desktop browser at
+       mobile width, which is why the animation still fired). No animation, no
+       state change; the card is fully static. */
+    .product-link-2:hover::before {
+      clip-path: circle(150% at calc(100% - 60px) 60px);
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-card-circle {
+      opacity: 0;
+      transform: scale(0.375);
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-card-circle svg {
+      transform: rotate(45deg);
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-img {
+      transform: none;
+      color: #d7d7cd;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-img [stroke] {
+      stroke-width: 2.5;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-copy {
+      margin-top: 40px;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-label {
+      margin-top: 16px;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-text-2 {
+      color: #ffffff80; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark card) */
+    }
     }
   }
 
@@ -2207,7 +2308,6 @@ const seo = {
   }
   .steps-text {
     font-size: 18px;
-    line-height: 1.5;
     color: #4f583b; /* --color-olive-600 */
     letter-spacing: 0;
   }
@@ -2226,7 +2326,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .steps-link:hover {
       background-color: #d4982a; /* --color-gold-600 (fork --color-brand-hover) */
     }
@@ -2296,7 +2396,6 @@ const seo = {
   }
   .steps-text-2 {
     font-size: 20px;
-    line-height: 1.5;
     font-weight: 500;
     color: #2e3914; /* --color-olive-900 */
   }
@@ -2304,7 +2403,6 @@ const seo = {
     margin-inline: auto;
     max-width: 234px; /* page-local literal */
     font-size: 14px;
-    line-height: 1.5;
     color: #4f583b; /* --color-olive-600 */
   }
 
@@ -2341,7 +2439,6 @@ const seo = {
     margin-top: 20px;
     max-width: 730px;
     font-size: 16px;
-    line-height: 1.5;
     color: #ffffffd9; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark gradient) */
   }
   .antara-box-4 {
@@ -2406,6 +2503,46 @@ const seo = {
     letter-spacing: 0.08em;
     color: #fff6; /* Tier-2: rule-5 (alpha) — parity-preserved (#ffffff66) */
     text-transform: uppercase;
+  }
+  /* App-store buttons — hidden by default (desktop shows the QR card); the mweb
+     block below reveals them and hides the QR. */
+  .antara-stores {
+    display: none;
+    width: 100%;
+    gap: 16px;
+  }
+  .store-btn {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 56px;
+    padding-inline: 12px;
+    border-radius: 10px;
+    background-color: var(--color-white);
+    color: #111; /* dark ink on white badge */
+    text-decoration: none;
+  }
+  .store-ico {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .store-txt {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .store-txt small {
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .store-txt strong {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   /* ---- FAQ (native <details> — mechanism kept verbatim) ---- */
@@ -2486,7 +2623,6 @@ const seo = {
   }
   .faq-text {
     font-size: 14px;
-    line-height: 1.5;
     color: #666; /* --color-gray-650 (home muted) */
   }
   .faq-box-8 {
@@ -2518,7 +2654,6 @@ const seo = {
   .faq-text-2 {
     margin-top: 12px;
     font-size: 14px;
-    line-height: 1.5;
     color: #fffc; /* Tier-2: rule-5 (alpha) — parity-preserved (#ffffffcc over olive) */
   }
   .faq-link {
@@ -2537,7 +2672,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (hover: hover) {
+  @media (min-width: 1024px) and (hover: hover) {
     .faq-link:hover {
       background-color: #d4982a; /* --color-gold-600 */
     }
@@ -2747,6 +2882,225 @@ const seo = {
     }
     .steps-box-5 {
       margin-top: 48px;
+    }
+  }
+
+  /* mweb: uniform 16px page gutter on every first-level section container. Placed
+     last so it overrides the ≥640 (32px) and clamp() gutters at ≤1023px only —
+     desktop (≥1024) keeps its existing clamp()/32px gutters untouched. */
+  @media (max-width: 1023px) {
+    .hero-box-2,
+    .advisory-box,
+    .steps-box {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    /* Dark sections (Why / Products / Antara) are FULL-BLEED on mweb — their sides
+       stick to the screen edge (Figma dark containers at x=0, w=517). The inset
+       moves inside to the content wrappers below. */
+    .why-box-2,
+    .el-sec-3 {
+      padding-inline: 0;
+    }
+    .product-box-2 {
+      padding-inline: 24px;
+    }
+    .why-box-6 {
+      padding-inline: 24px;
+    }
+
+    /* Products — mweb list (Figma 1108:10671): heading, then a single-column stack
+       of horizontal cards (olive icon-box → title/desc → arrow), then "View All"
+       centred at the bottom. All desktop (≥1024) rules are untouched. */
+    .product-box-2 {
+      display: flex;
+      flex-direction: column;
+    }
+    .product-box-3 {
+      display: contents; /* dissolve so its heading + link can reorder around the grid */
+    }
+    .product-box-3 > div {
+      order: 1;
+    }
+    .product-box-4 {
+      order: 2;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .product-link {
+      order: 3;
+      align-self: center;
+      margin-top: 24px;
+    }
+    .product-link-2 {
+      height: auto;
+      padding: 24px;
+      background-color: #2b2c2b; /* charcoal card fill (Figma) */
+    }
+    .product-link-2::before {
+      display: none; /* drop the desktop hover-reveal overlay */
+    }
+    .product-box-6 {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px;
+      height: auto;
+      padding-right: 48px; /* clear the arrow on the right */
+    }
+    .product-img {
+      width: 24px;
+      height: 24px;
+      box-sizing: content-box;
+      padding: 16px;
+      background-color: #363a2c; /* --color-olive-800 icon box */
+      border-radius: 8px;
+      transform: none;
+      color: #d7d7cd;
+    }
+    .product-copy {
+      margin-top: 0;
+    }
+    .product-label {
+      display: none; /* no "View More" on mweb */
+    }
+    .product-card-circle {
+      opacity: 1;
+      z-index: 20;
+      width: 32px;
+      height: 32px;
+      top: 50%;
+      right: 24px;
+      background-color: transparent; /* plain arrow, no gold badge */
+      transform: translateY(-50%);
+    }
+    .product-card-circle svg {
+      width: 32px;
+      height: 32px;
+      color: var(--color-white);
+      stroke: var(--color-white);
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      /* neutralise the desktop hover choreography on touch so a tap doesn't animate */
+    .product-link-2:hover .product-img {
+      transform: none;
+      color: #d7d7cd;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-img [stroke] {
+      stroke-width: 2.5;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-copy {
+      margin-top: 0;
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-card-circle {
+      transform: translateY(-50%);
+    }
+    }
+    @media (min-width: 1024px) and (hover: hover) {
+      .product-link-2:hover .product-card-circle svg {
+      transform: rotate(45deg);
+    }
+    }
+
+    /* How Soon Can I Start? — mweb vertical process timeline: circular icon markers
+       down the left joined by a dashed spine, content on the right. The desktop
+       (≥1024) horizontal 5-step row is untouched. */
+    .steps-box-7 {
+      display: flex;
+      flex-direction: column;
+      row-gap: 0;
+      column-gap: 0;
+    }
+    .steps-box-8 {
+      position: relative;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 16px;
+      text-align: left;
+      padding-bottom: 40px;
+    }
+    .steps-box-8:last-child {
+      padding-bottom: 0;
+    }
+    /* dashed spine segment: from this marker's centre to the next marker's centre,
+       behind the (opaque) markers so it reads as a line joining them */
+    .steps-box-8:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 23px; /* centre of the 48px marker (−1px for the 2px line) */
+      top: 24px;
+      bottom: -24px;
+      width: 2px;
+      background-image: repeating-linear-gradient(180deg, #ebdec6 0 7px, transparent 7px 14px);
+      z-index: 0;
+    }
+    .steps-box-9 {
+      width: 48px;
+      height: 48px;
+      padding-inline: 0;
+      border-radius: 50%; /* circular marker (desktop pill untouched) */
+    }
+    .steps-box-10 {
+      flex: 1;
+      gap: 8px;
+      padding-top: 8px; /* nudge the title toward the marker's centre */
+    }
+    .steps-text-3 {
+      margin-inline: 0; /* was auto-centred for the horizontal layout */
+      max-width: none;
+    }
+
+    /* Antara (mweb) — swap the QR card for app-store buttons (Figma 1111:11828). */
+    .antara-box-5 {
+      display: none;
+    }
+    .antara-stores {
+      display: flex;
+    }
+
+    /* Products (mweb) — the updated Figma uses a small 16px arrow (was 32px). */
+    .product-card-circle,
+    .product-card-circle svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── mweb type + spacing to match Figma 1102:9582 exactly ── */
+    /* Section headings are 32px on mweb (Why / Advisory / Products / Antara)… */
+    .why-title {
+      font-size: 32px;
+    }
+    /* …except "How Soon Can I Start?" which is 24px. */
+    .steps-box-3 .why-title {
+      font-size: 24px;
+    }
+    /* Hero trust badges 12px (Figma 1111:11447). */
+    .hero-label-2 {
+      font-size: 12px;
+    }
+    /* Demat card heading 20px, one line (Figma 1111:11463). */
+    .hero-title-2 {
+      font-size: 20px;
+    }
+    /* Why-Shriram card titles 20px (Figma 1111:11538). */
+    .why-subtitle {
+      font-size: 20px;
+    }
+    /* Hero: 24px side gutter, 120px above the H1 and 120px of video between the
+       Explore button and the Demat card, 40px below (Figma 1111:11438/11439). */
+    .hero-box-2 {
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-top: 120px;
+      padding-bottom: 40px;
+      gap: 120px;
     }
   }
 </style>

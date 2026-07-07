@@ -381,13 +381,13 @@ const seo = {
              padding:40px 32px 36px; display:flex; flex-direction:column; gap:16px; }
   .mvv-card::before{ content:""; position:absolute; left:0; right:0; top:0; height:4px;
                      background:linear-gradient(90deg, var(--color-gold-400), var(--color-gold-500)); }
-  .mvv-ghost{ position:absolute; right:16px; top:8px; z-index:0; font-weight:700; font-size:104px; line-height:1;
+  .mvv-ghost{ position:absolute; right:16px; top:8px; z-index:0; font-weight:700; font-size:104px;
               color:#f5f3ed; /* page-local — Tier-2 candidate */ pointer-events:none; user-select:none; }
   .mvv-card .mvv-num,.mvv-card h3,.mvv-card .mvv-rule,.mvv-card p{ position:relative; z-index:1; }
   .mvv-num{ font-weight:700; font-size:14px; letter-spacing:2px; color:var(--color-gold-500); }
-  .mvv-card h3{ font-weight:600; font-size:24px; color:var(--color-text-heading-dark); line-height:1.3; }
+  .mvv-card h3{ font-weight:600; font-size:24px; color:var(--color-text-heading-dark);}
   .mvv-rule{ width:36px; height:2px; background:var(--color-gold-400); border-radius:2px; }
-  .mvv-card p{ font-weight:400; font-size:16px; color:var(--color-text-tertiary); line-height:1.6; }
+  .mvv-card p{ font-weight:400; font-size:16px; color:var(--color-text-tertiary);}
 
   /* ---------- parent groups ---------- */
   .grp{ display:flex; gap:32px; align-items:center; justify-content:space-between; }
@@ -431,7 +431,7 @@ const seo = {
   /* ---------- leadership ---------- */
   .team-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
   .team-card{ display:flex; flex-direction:column; gap:16px; }
-  .team-name{ font-weight:500; font-size:20px; color:var(--color-text-primary); line-height:1.4; }
+  .team-name{ font-weight:500; font-size:20px; color:var(--color-text-primary);}
   .team-role{ font-weight:600; font-size:14px; color:var(--color-olive-900); margin-top:-8px; }
   .team-li{ display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px; color:var(--color-link); }
   .team-li svg{ width:16px; height:16px; }
@@ -441,7 +441,7 @@ const seo = {
   .office-banner{ background:var(--color-olive-950); border-radius:24px; padding:var(--container-pad);
                   display:flex; flex-direction:column; gap:8px; }
   .office-label{ font-weight:600; font-size:14px; letter-spacing:1px; text-transform:uppercase; color:var(--color-gold-400); }
-  .office-banner h3{ font-weight:500; font-size:24px; color:var(--color-white); line-height:1.4; }
+  .office-banner h3{ font-weight:500; font-size:24px; color:var(--color-white);}
   .office-banner address{ font-weight:400; font-size:16px; color:var(--color-sage-200); line-height:1.5; }
   .banner-actions{ display:flex; flex-wrap:wrap; gap:20px; margin-top:8px; }
   .banner-actions a{ display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px; color:var(--color-white); }
@@ -459,8 +459,12 @@ const seo = {
   .cta-box.dark .ct-sub{ color:var(--color-sage-200); }
   .cta-actions{ display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
   .cta-actions .btn-gold,.cta-actions .btn-ghost{ transition:filter .2s ease, background .2s ease, border-color .2s ease; }
-  .cta-actions .btn-gold:hover{ filter:brightness(.96); }
-  .cta-actions .btn-ghost:hover{ background:var(--color-charcoal-650); border-color:var(--color-white); }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-gold:hover { filter:brightness(.96); }
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-ghost:hover { background:var(--color-charcoal-650); border-color:var(--color-white); }
+  }
 
   /* ---------- responsive ---------- */
   /* hero stacks: content over the 2×2 stat grid (2-column hero needs room) */

@@ -272,7 +272,6 @@ const seo = {
     font-weight: 500;
     font-size: clamp(22px, 2vw, 26px);
     color: var(--color-olive-600);
-    line-height: 1.4;
   }
   .hf-body {
     display: flex;
@@ -307,7 +306,6 @@ const seo = {
     font-weight: 400;
     font-size: 12px;
     color: var(--color-charcoal-700);
-    line-height: 1.5;
   }
 
   /* ---------- "Everything you need" — 3-col tokenised benefit cards ---------- */
@@ -345,13 +343,11 @@ const seo = {
     font-weight: 500;
     font-size: 20px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .kb-card p {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
 
   /* ---------- "Why customers choose us" — 2-col left-accent cards ---------- */
@@ -374,13 +370,11 @@ const seo = {
     font-weight: 500;
     font-size: 20px;
     color: var(--color-text-heading-dark);
-    line-height: 1.5;
   }
   .kb-reason p {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
 
   /* ---------- final CTA (dark, shared .cta-box shell) ---------- */
@@ -402,12 +396,16 @@ const seo = {
     gap: 16px;
     justify-content: center;
   }
-  .cta-actions .btn-gold:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-gold:hover {
     filter: brightness(0.96);
   }
-  .cta-actions .btn-ghost:hover {
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-ghost:hover {
     background: var(--color-charcoal-650);
     border-color: var(--color-white);
+  }
   }
 
   /* ---------- responsive (hero two-column stacking is canonical @980px) ---------- */

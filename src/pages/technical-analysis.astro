@@ -352,14 +352,18 @@ const seo = {
   .rcard-author { font-weight: 400; font-size: 12px; color: var(--color-text-muted); }
   .rcard-link { display: inline-flex; align-items: center; gap: 8px; flex: none; font-weight: 500; font-size: 12px; color: var(--color-link); }
   .rcard-link svg { width: 16px; height: 16px; }
-  .rcard-link:hover { text-decoration: underline; }
+  @media (min-width: 1024px) and (hover: hover) {
+    .rcard-link:hover { text-decoration: underline; }
+  }
 
   /* unlock bar at card foot (gated cards) — shared light-blue info tint */
   .rcard-action { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: var(--color-surface-info-tint); border-top: 1px solid var(--color-border-hairline); color: var(--color-link); font-weight: 600; font-size: 14px; }
   .rcard-action svg { width: 16px; height: 16px; flex: none; }
   /* nudge the trailing arrow on hover (matches the site's .appr / .pcard language) */
   .rcard-action svg:last-child { transition: transform 0.25s ease; }
-  .rcard-action:hover svg:last-child { transform: translateX(4px); }
+  @media (min-width: 1024px) and (hover: hover) {
+    .rcard-action:hover svg:last-child { transform: translateX(4px); }
+  }
 
   /* ===== Unlock band — dark focus band (parity with the site's .rpt pattern);
      the wireframe's saturated blue is remapped to the olive focus palette so

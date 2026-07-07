@@ -98,7 +98,12 @@ off against each other:
 7. **The hero is standardised across pages.** Same gradient, `min-height`, `.hero-inner` padding
    (`56px 0`), H1/lead font sizes and the two-column `gap:56px`. Only the text content changes.
    H1 and lead cap at `--hero-text-w` (600px); the two-column aside is always `--hero-aside-w`.
-   Defined once in `global.css`.
+   Defined once in `global.css`. **Two sanctioned variants:** the `/calculators/` hub `.calc-hero`,
+   and `.hero.hero-compact` on the **calculator detail pages** — it drops the tall band
+   (`min-height:0`) and the auto-margin centring so the hero *hugs* its breadcrumb + H1 + lead
+   (no CTA) on a small explicit padding (desktop `40 / 24 / 40`, mobile `32 / 16 / 32` —
+   above-breadcrumb / breadcrumb→H1 / below-lead), deliberately shorter than the product hero.
+   Documented in `/design-system/proposed/`.
 
 8. **Every form field uses the shared input-field component.** There is **one** form field for
    the whole site — `.hf-field` (with `.hf-row`/`.hf-unit`/`.hf-field-in`/`.hf-err`), canonical
@@ -185,7 +190,7 @@ docs/                   legacy-style-audit.md, porting-guide.md, and the build s
 
 ## 📄 Pages
 
-**43 pages total.** URLs are **flat/top-level** — product and calculator detail pages live directly at `src/pages/<slug>.astro` (root), NOT nested under `products/`/`calculators/`. The `products/` and `calculators/` folders keep only their **hub** `index.astro`. Detail pages are **template-driven** (`equity.astro` is the reference for product pages). Every FAQ block reads exactly **General Questions** (rule 13). Every `<title>` is normalised by `fullTitle()` to `<Page Title> | Shriram Financial Services` — page `seo.title` values carry **no** brand suffix. All heroes use the shared `.hero` except `/calculators/` (documented `.calc-hero` variant).
+**43 pages total.** URLs are **flat/top-level** — product and calculator detail pages live directly at `src/pages/<slug>.astro` (root), NOT nested under `products/`/`calculators/`. The `products/` and `calculators/` folders keep only their **hub** `index.astro`. Detail pages are **template-driven** (`equity.astro` is the reference for product pages). Every FAQ block reads exactly **General Questions** (rule 13). Every `<title>` is normalised by `fullTitle()` to `<Page Title> | Shriram Financial Services` — page `seo.title` values carry **no** brand suffix. All heroes use the shared `.hero` except the `/calculators/` hub (documented `.calc-hero` variant) and the calculator **detail** pages (the `.hero.hero-compact` hug variant — see rule 7).
 
 **Core & company**
 | URL | Source | Page |

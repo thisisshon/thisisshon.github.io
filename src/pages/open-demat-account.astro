@@ -305,7 +305,6 @@ const seo = {
     font-weight: 500;
     font-size: clamp(26px, 2.4vw, 32px); /* page-local — Tier-2 candidate (26px off-scale min) */
     color: var(--color-olive-600);
-    line-height: 1.4;
   }
   .hf-meta {
     display: flex;
@@ -353,7 +352,6 @@ const seo = {
     font-weight: 500;
     font-size: 12px;
     color: var(--color-charcoal-700);
-    line-height: 1.5;
   }
   .hf-actions {
     display: flex;
@@ -383,7 +381,6 @@ const seo = {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-tertiary);
-    line-height: 1.5;
   }
 
   /* ---------- "Why open with Shriram?" — 3-col bordered benefit grid ---------- */
@@ -413,13 +410,11 @@ const seo = {
     font-weight: 500;
     font-size: 20px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .fcell p {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
 
   /* ---------- "How to open" — header (copy + rocket) over an icon timeline ---------- */
@@ -513,13 +508,11 @@ const seo = {
     font-weight: 500;
     font-size: 20px;
     color: var(--color-text-heading-dark);
-    line-height: 1.5;
   }
   .flow-tx p {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-text-secondary);
-    line-height: 1.5;
     max-width: 234px; /* page-local — Tier-2 candidate (off-grid caption cap) */
   }
 
@@ -552,12 +545,16 @@ const seo = {
   .cta-actions .btn-ghost {
     transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  .cta-actions .btn-gold:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-gold:hover {
     filter: brightness(0.96);
   }
-  .cta-actions .btn-ghost:hover {
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-ghost:hover {
     background: var(--color-charcoal-650);
     border-color: var(--color-white);
+  }
   }
 
   /* ---------- responsive (two-column hero stacking is canonical in global.css @980px) ---------- */

@@ -323,8 +323,10 @@ const seo = {
   .orbit-row:first-child {
     border-top: 0;
   }
-  .orbit-row:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .orbit-row:hover {
     background: #576142; /* quiet surface shift — page-local, Tier-2 candidate */
+  }
   }
   .orbit-stage {
     display: flex;
@@ -445,13 +447,11 @@ const seo = {
     font-weight: 500;
     font-size: 32px;
     color: var(--color-white);
-    line-height: 1.5;
   }
   .gateway-tx p {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-sage-100); /* #c9cac7 */
-    line-height: 1.5;
   }
 
   @media (max-width: 900px) {

@@ -175,9 +175,11 @@ const seo = {
     border-radius: var(--radius-md); /* 8px — small tile */
     transition: background 0.25s ease, border-color 0.25s ease;
   }
-  .sm-link:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .sm-link:hover {
     background: var(--color-cream-300);
     border-color: var(--color-tan-400);
+  }
   }
   .sm-link .lb {
     font-weight: 500;
@@ -193,10 +195,12 @@ const seo = {
     transform: translateX(-6px);
     transition: opacity 0.25s ease, transform 0.25s ease;
   }
-  .sm-link:hover .arr,
+  @media (min-width: 1024px) and (hover: hover) {
+    .sm-link:hover .arr,
   .sm-link:focus-visible .arr {
     opacity: 1;
     transform: translateX(0);
+  }
   }
   .sm-link .arr svg {
     display: block;

@@ -252,7 +252,9 @@ const seo = {
     display: flex; flex-direction: column; gap: 16px;
     transition: border-color 0.22s ease;
   }
-  .fcard:hover { border-color: var(--color-sage-450); }
+  @media (min-width: 1024px) and (hover: hover) {
+    .fcard:hover { border-color: var(--color-sage-450); }
+  }
   /* icon tile — 48px container (8px grid), warm gold tint + olive brand icon */
   .fic { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--color-gold-100); color: var(--color-text-heading-dark); display: inline-flex; align-items: center; justify-content: center; }
   .fic svg { width: 24px; height: 24px; display: block; }

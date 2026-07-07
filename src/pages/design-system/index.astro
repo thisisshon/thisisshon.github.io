@@ -128,18 +128,22 @@ const seo = {
       border-color 0.25s ease,
       transform 0.25s ease;
   }
-  .ds-card:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .ds-card:hover {
     transform: translateY(-4px);
     border-color: var(--color-tan-400);
     background: var(--color-cream-300);
+  }
   }
   .ds-card--primary {
     background: var(--color-surface-dark-card);
     border-color: var(--color-surface-dark-card);
   }
-  .ds-card--primary:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .ds-card--primary:hover {
     background: var(--color-olive-925);
     border-color: var(--color-olive-700);
+  }
   }
   .ds-card-tag {
     font-weight: 500;

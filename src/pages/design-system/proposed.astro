@@ -691,6 +691,10 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
         <p>Icons are real <code>&lt;svg&gt;</code>s — never text glyphs — sized <b>16 / 20 / 24 / 32px</b> only, chosen from context.</p>
       </div>
       <div class="rule">
+        <h3>Hero — standard &amp; calculator variant</h3>
+        <p>Every page uses the shared <code>.hero</code>: one radial-gradient band, <code>min-height: clamp(440px, 29vw, 552px)</code>, breadcrumb + content vertically centred by auto-margins. <b>Calculator detail pages</b> use the <code>.hero.hero-compact</code> variant — it drops the tall band (<code>min-height: 0</code>) and the auto-margin centring so the band <b>hugs</b> its breadcrumb + H1 + lead (no CTA) on a small explicit padding, deliberately shorter than the product hero. Padding (above breadcrumb · breadcrumb→H1 · below lead): desktop <b>40 / 24 / 40</b>, mobile <b>32 / 16 / 32</b>. One modifier class, applied to all five calculators.</p>
+      </div>
+      <div class="rule">
         <h3>Heading alignment</h3>
         <p>The hero H1, every <code>.sec-title</code> and every <code>.sub-title</code> (with their leads) are <b>left-aligned</b> — never centred, no <code>max-width</code> cap on the lead. The only centred text is the promotional bands (<code>.cta-box</code> and dark CTA / access bands). Reference: <code>products/equity.astro</code>.</p>
       </div>
@@ -993,7 +997,6 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   .weight-spec {
     font-size: 40px;
     color: var(--color-text-heading-dark);
-    line-height: 1 !important;
     margin-bottom: 8px;
   }
   .weight-cell code {

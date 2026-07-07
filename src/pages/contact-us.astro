@@ -347,7 +347,6 @@ const seo = {
      links reset to `normal` by default, so restore 1.5 on them explicitly (page-scoped). */
   .ct-pill, .tab, .hf-field-in input, .hf-field-in select, .bs-field select, .doc-search input,
   .bc-meta a, .bc-map, .directions, .doc-dl, .doc-chip, .btn-gold, .btn-dark, .btn-ghost {
-    line-height: 1.5;
   }
 
   /* scroll-reveal (progressive enhancement: only hides when JS is on).
@@ -388,9 +387,11 @@ const seo = {
     font-size: 14px;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  .ct-pill:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .ct-pill:hover {
     background: #43443e; /* page-local — Tier-2 candidate */
     border-color: var(--color-sage-700); /* #6d6e6a (Tier-1: absorbed by sage-700) */
+  }
   }
   .ct-pill svg {
     width: 16px;
@@ -419,13 +420,11 @@ const seo = {
     font-weight: 500;
     font-size: clamp(22px, 2.1vw, 26px);
     color: var(--color-olive-600); /* #4f583b */
-    line-height: 1.5;
   }
   .hf-head p {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-sage-700); /* #6b6f5e */
-    line-height: 1.5;
   }
   .hf-body {
     display: flex;
@@ -442,7 +441,6 @@ const seo = {
     font-weight: 400;
     font-size: 12px;
     color: var(--color-sage-700); /* #6b6f5e */
-    line-height: 1.5;
   }
   /* success state */
   .hf-success {
@@ -478,13 +476,11 @@ const seo = {
     font-weight: 600;
     font-size: 20px;
     color: var(--color-olive-900); /* #2e3914 */
-    line-height: 1.5;
   }
   .hf-success p {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-sage-700); /* #6b6f5e */
-    line-height: 1.5;
   }
 
   /* ---------- tab bar: sticky, pinned to the very top (top:0) on a layer BELOW the nav.
@@ -537,8 +533,10 @@ const seo = {
     visibility: hidden;
     pointer-events: none;
   }
-  .tab:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .tab:hover {
     color: var(--color-text-heading-dark);
+  }
   }
   .tab[aria-selected='true'] {
     color: var(--color-text-heading-dark);
@@ -603,13 +601,11 @@ const seo = {
     font-weight: 500;
     font-size: 18px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .chan .val {
     font-weight: 600;
     font-size: 18px;
     color: var(--color-text-heading-dark);
-    line-height: 1.5;
     overflow-wrap: anywhere;
   }
   .chan .val a {
@@ -619,7 +615,6 @@ const seo = {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-text-muted);
-    line-height: 1.5;
     margin-top: auto;
   }
 
@@ -656,13 +651,11 @@ const seo = {
     font-weight: 500;
     font-size: 18px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .office-tx p {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-tertiary);
-    line-height: 1.5;
   }
 
   /* ---------- Branch Locator ---------- */
@@ -696,7 +689,6 @@ const seo = {
     font-weight: 500;
     font-size: 16px;
     color: var(--color-text-primary);
-    line-height: 1.5;
     cursor: pointer;
   }
   .bs-field::after {
@@ -776,13 +768,11 @@ const seo = {
     font-weight: 600;
     font-size: 18px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .bc-addr {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-text-tertiary);
-    line-height: 1.5;
     flex: 1 0 auto;
   }
   .bc-meta {
@@ -800,8 +790,10 @@ const seo = {
     overflow-wrap: anywhere;
     transition: color 0.2s ease;
   }
-  .bc-meta a:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .bc-meta a:hover {
     color: var(--color-text-heading-dark);
+  }
   }
   .bc-meta svg {
     width: 16px;
@@ -833,9 +825,11 @@ const seo = {
     white-space: nowrap;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  .bc-map:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .bc-map:hover {
     background: var(--color-surface-section-tint);
     border-color: var(--color-sage-100); /* #c9c8c0 (Tier-1: absorbed by sage-100) */
+  }
   }
   .bc-map svg {
     width: 16px;
@@ -857,9 +851,11 @@ const seo = {
     white-space: nowrap;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  .directions:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .directions:hover {
     background: var(--color-surface-section-tint);
     border-color: var(--color-sage-100); /* #c9c8c0 (Tier-1: absorbed by sage-100) */
+  }
   }
   .directions svg {
     width: 16px;
@@ -877,7 +873,6 @@ const seo = {
     background: var(--color-olive-950);
   }
   .cta-box h3, .cta-box .ct-sub {
-    line-height: 1.5;
   } /* page override: 1.5 leading per design rule */
   .cta-box.dark .ct-tt {
     color: var(--color-white);
@@ -897,12 +892,16 @@ const seo = {
   .cta-actions .btn-gold, .cta-actions .btn-ghost {
     transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  .cta-actions .btn-gold:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-gold:hover {
     filter: brightness(0.96);
   }
-  .cta-actions .btn-ghost:hover {
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-ghost:hover {
     background: var(--color-charcoal-650); /* #383838 */
     border-color: var(--color-white);
+  }
   }
 
   /* .sr-only lived in the legacy shared styles.css but is NOT in the new

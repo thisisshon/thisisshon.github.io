@@ -537,7 +537,6 @@ const seo = {
     font-weight: 500;
     font-size: 18px;
     color: var(--color-text-tertiary);
-    line-height: 1.5;
     border-bottom: 2px solid transparent;
     transition: color 0.2s ease, border-color 0.2s ease;
   }
@@ -558,8 +557,10 @@ const seo = {
     color: var(--color-text-muted);
     font-weight: 400;
   }
-  .port-tab:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .port-tab:hover {
     color: var(--color-text-heading-dark);
+  }
   }
   .port-tab.is-active {
     color: var(--color-text-heading-dark);
@@ -637,7 +638,6 @@ const seo = {
     font-weight: 500;
     font-size: 16px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .elig-benefits {
     flex: 1 1 0;
@@ -650,7 +650,6 @@ const seo = {
     font-weight: 500;
     font-size: 24px;
     color: var(--color-white);
-    line-height: 1.5;
   }
   .pb-list {
     list-style: none;
@@ -670,7 +669,6 @@ const seo = {
     font-weight: 400;
     font-size: 16px;
     color: #f8f4e8; /* page-local off-white on dark — Tier-2 candidate (cream-350) */
-    line-height: 1.5;
   }
   .pb-ck {
     width: 20px;
@@ -695,7 +693,6 @@ const seo = {
     font-weight: 700;
     font-size: 16px;
     color: #f8f4e8; /* page-local off-white on dark — Tier-2 candidate (cream-350) */
-    line-height: 1.5;
   }
   .elig-trust .dot {
     width: 4px;
@@ -754,7 +751,6 @@ const seo = {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .ec-sep {
     height: 1px;
@@ -774,7 +770,6 @@ const seo = {
     font-weight: 600;
     font-size: 16px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
   .ec-status .ico {
     width: 24px;
@@ -864,7 +859,6 @@ const seo = {
     font-weight: 400;
     font-size: 12px;
     color: var(--color-sage-700); /* #6b6f5e */
-    line-height: 1.5;
     text-align: center;
     max-width: 640px;
   }
@@ -906,13 +900,11 @@ const seo = {
     font-weight: 600;
     font-size: 20px;
     color: var(--color-text-heading-dark); /* #2e3914 */
-    line-height: 1.5;
   }
   .hf-success p {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-sage-700); /* #6b6f5e */
-    line-height: 1.5;
   }
 
   /* ---------- centered standalone section CTA ---------- */
@@ -944,12 +936,16 @@ const seo = {
   .cta-actions .btn-ghost {
     transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  .cta-actions .btn-gold:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-gold:hover {
     filter: brightness(0.96);
   }
-  .cta-actions .btn-ghost:hover {
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-ghost:hover {
     background: #383838; /* page-local ghost-hover — Tier-2 candidate (charcoal-650) */
     border-color: var(--color-white);
+  }
   }
 
   /* ---------- responsive ---------- */

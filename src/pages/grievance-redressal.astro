@@ -179,7 +179,6 @@ const ESCALATIONS = [
   .btn-dark,
   .policy-card .btn-gold,
   .esc-meta a {
-    line-height: 1.5;
   }
 
   /* ---------- hero contact pills (mirrors the Contact page hero) ---------- */
@@ -205,9 +204,11 @@ const ESCALATIONS = [
     font-size: 14px;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  .ct-pill:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .ct-pill:hover {
     background: #42443e; /* page-local — Tier-2 */
     border-color: var(--color-sage-700); /* #6d6e6a (Tier-1: absorbed by sage-700) */
+  }
   }
   .ct-pill svg {
     width: 16px;
@@ -223,7 +224,6 @@ const ESCALATIONS = [
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-tertiary);
-    line-height: 1.5;
   }
 
   .policy-card {
@@ -261,13 +261,11 @@ const ESCALATIONS = [
     font-weight: 500;
     font-size: 18px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .policy-tx p {
     font-weight: 400;
     font-size: 14px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
   .policy-card .btn-gold {
     flex: none;
@@ -318,13 +316,11 @@ const ESCALATIONS = [
     font-weight: 500;
     font-size: 20px;
     color: var(--color-text-primary);
-    line-height: 1.5;
   }
   .esc-person {
     font-weight: 400;
     font-size: 16px;
     color: var(--color-text-muted);
-    line-height: 1.5;
   }
   .esc-meta {
     display: flex;
@@ -342,14 +338,15 @@ const ESCALATIONS = [
     font-weight: 500;
     font-size: 14px;
     color: var(--color-text-secondary);
-    line-height: 1.5;
     overflow-wrap: anywhere;
   }
   .esc-meta a {
     transition: color 0.2s ease;
   }
-  .esc-meta a:hover {
+  @media (min-width: 1024px) and (hover: hover) {
+    .esc-meta a:hover {
     color: var(--color-text-heading-dark);
+  }
   }
   .esc-meta svg {
     width: 16px;
