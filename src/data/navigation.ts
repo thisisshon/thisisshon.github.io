@@ -246,7 +246,7 @@ export const footerColumns: FooterColumn[] = [
       { label: 'Open Demat Account', href: '/open-demat-account/' },
       { label: 'Explore Antara', href: '#' },
       { label: 'Karnataka Bank Customers', href: '/karnataka-bank-customers/' },
-      { label: 'Site Map', href: '/sitemap/' },
+      { label: 'Site Map', href: '/site-map/' },
     ],
   },
 ];

@@ -58,9 +58,9 @@ const FAQS = [
 const seo = {
   // Legacy <title> carried a duplicated site-name suffix — dropped (BaseLayout
   // appends the site name once).
-  title: 'Online Stock Trading & Wealth Management',
+  title: 'Stock Trading & Demat Account',
   description:
-    "Trade stocks, invest in mutual funds, and manage wealth with India's SEBI-registered advisor-led platform. Zero delivery brokerage. Open a free Demat account today.",
+    'Trade stocks, mutual funds & IPOs with Shriram Financial Services - a SEBI-registered, advisor-led platform. Open a demat account today.',
   path: '/',
   jsonLd: [
     organizationSchema(Astro.site!.href),
@@ -1325,6 +1325,7 @@ const seo = {
     position: relative;
     z-index: 10;
     display: flex;
+    flex-direction: column; /* mweb: text block stacks above the Demat card (row ≥1024) */
     align-items: flex-start;
     gap: 32px;
     padding-block: 56px;
@@ -1400,9 +1401,10 @@ const seo = {
     }
   }
   .hero-box-7 {
-    display: none;
+    display: flex; /* mweb: card is visible and left-aligned under the text (right-aligned ≥1024) */
     flex: 1;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    width: 100%;
   }
   .hero-box-8 {
     width: 100%;
@@ -1774,6 +1776,41 @@ const seo = {
     padding-inline-start: 21px; /* off-grid — parity (Tier-2) */
     font-size: 14px;
     line-height: 1.5;
+  }
+  /* mweb: "Why Shriram" flattens to a plain vertical card stack — the scroll-pin,
+     the horizontal-clip rail math, the frosted-glass card blur and the progressive-
+     blur edge bands are all desktop-only affordances of the pinned reveal. Below the
+     1024px parallax threshold we drop them and list the cards as normal solid cards.
+     JS is guarded to match (see the page <script>). */
+  @media (max-width: 1023px) {
+    #differ-pin-wrap {
+      height: auto !important; /* override inline 280vh — no tall scroll track */
+    }
+    .why-box {
+      position: static;
+      height: auto;
+      display: block;
+    }
+    .why-box-9 {
+      height: auto;
+      width: 100%;
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+      gap: 16px;
+    }
+    .why-box-10 {
+      height: auto;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background-color: #363a2c; /* solid olive-dark (gradient stop) — normal card, no frost */
+    }
+    .why-box-10::before {
+      display: none; /* drop the frosted-glass grain texture */
+    }
+    .differ-fade {
+      display: none; /* drop the progressive-blur edge bands */
+    }
   }
 
   /* ---- STRATEGIC ADVISORY ---- */
@@ -2567,6 +2604,7 @@ const seo = {
     }
     .hero-box-2 {
       min-height: max(560px, 100vh - 80px);
+      flex-direction: row;
       align-items: center;
       gap: 48px;
       padding-block: 0;
@@ -2576,7 +2614,7 @@ const seo = {
       flex-shrink: 0;
     }
     .hero-box-7 {
-      display: flex;
+      justify-content: flex-end;
       padding-right: 4%;
     }
     .hero-text {
@@ -2803,6 +2841,13 @@ const seo = {
     m = document.getElementById('differ-collage') as HTMLElement | null;
   if (f && i) {
     const e = () => {
+      /* mweb: no pin/parallax — reset the rail + collage and bail (CSS lists the
+         cards as a static vertical stack below 1024px). */
+      if (window.innerWidth < 1024) {
+        i.scrollTop = 0;
+        if (m) m.style.transform = '';
+        return;
+      }
       const tRect = f.getBoundingClientRect(),
         o = f.offsetHeight - window.innerHeight;
       if (o <= 0) return;
