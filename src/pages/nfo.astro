@@ -98,7 +98,9 @@ const TAX_ROWS = [
   { k: 'ELSS NFO', st: '3-year mandatory lock-in', lt: 'Post 3 years = Long-term', rate: '12.5% (above ₹1.25 lakh)' },
 ];
 
-// Got Questions? - FAQ list, verbatim from the doc. Rendered under "General Questions".
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is an NFO in mutual funds?',
@@ -123,22 +125,6 @@ const FAQS = [
   {
     q: 'What happens after the NFO subscription window closes?',
     a: 'For open-ended funds, the fund reopens for continuous purchase/redemption at the prevailing NAV after allotment. For close-ended funds, units are listed on stock exchanges, and direct AMC transactions are not possible until maturity.',
-  },
-  {
-    q: 'What happens to my investment if an NFO does not garner sufficient subscriptions?',
-    a: 'SEBI mandates that a mutual fund scheme must collect a minimum corpus (typically ₹20 crore for open-ended equity schemes) during the NFO period. If the minimum threshold is not met, the NFO may be cancelled and subscription amounts refunded to investors.',
-  },
-  {
-    q: 'How do I track my NFO allotment?',
-    a: "After the subscription window closes, allotment usually happens within 5 business days. You can check your Consolidated Account Statement (CAS) from NSDL/CDSL, your Shriram Financial Services account , or the AMC's investor portal.",
-  },
-  {
-    q: 'Are NFOs risky?',
-    a: 'All market-linked investments carry risk. NFOs carry the additional risk of no performance history. Equity NFOs are subject to market volatility. Conduct thorough due diligence — assess the AMC, fund manager, investment objective, and theme before investing.',
-  },
-  {
-    q: 'How do I choose the right NFO?',
-    a: 'Evaluate the scheme objective, category, benchmark, fund house, fund manager, asset allocation, costs, risks and whether the NFO adds meaningful value compared with existing mutual fund options.',
   },
 ];
 

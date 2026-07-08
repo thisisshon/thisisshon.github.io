@@ -14,7 +14,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General Questions - doc content verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is currency trading in India?',
@@ -26,7 +28,7 @@ const FAQS = [
   },
   {
     q: 'Which currency pairs can be traded in India?',
-    a: 'USDINR, EURINR, GBPINR, JPYINR, and select cross-currency pairs are available for trading.',
+    a: 'USD/INR, EUR/INR, GBP/INR, JPY/INR, and select cross-currency pairs are available for trading.',
   },
   {
     q: 'How much money is required to start currency trading?',
@@ -34,27 +36,11 @@ const FAQS = [
   },
   {
     q: 'What is the most traded currency pair in India?',
-    a: 'USDINR is the most actively traded currency pair in India.',
+    a: 'USD/INR is the most actively traded currency pair in India.',
   },
   {
     q: 'What are currency futures?',
     a: 'Currency futures are contracts to buy or sell a currency pair at a predetermined price on a future date.',
-  },
-  {
-    q: 'What are currency options?',
-    a: 'Currency options provide the right, but not the obligation, to buy or sell a currency contract at a specific price.',
-  },
-  {
-    q: 'Can beginners start currency trading?',
-    a: 'Yes. Beginners can start by understanding market fundamentals and following proper risk management practices.',
-  },
-  {
-    q: 'How are currency trading profits taxed?',
-    a: 'Currency trading profits are generally taxed according to applicable income tax regulations.',
-  },
-  {
-    q: 'Why do traders participate in currency markets?',
-    a: 'Traders participate for portfolio diversification, hedging, and opportunities arising from currency price movements.',
   },
 ];
 
@@ -71,17 +57,9 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Currency' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Currency Trading in India: Trade USDINR, EURINR, GBPINR &amp; JPYINR On NSE and BSE</h1>
-      <p class="lead">Shriram Financial Services offers SEBI‑regulated access to currency derivatives on NSE/BSE. Trade major currency pairs — USDINR, EURINR, GBPINR, and JPYINR — with transparent pricing, low margins, and trusted settlement.</p>
+      <h1>Currency Trading in India</h1>
+      <p class="lead">Shriram Financial Services offers SEBI‑regulated access to currency derivatives on NSE/BSE. Trade major currency pairs — USD/INR, EUR/INR, GBP/INR, and JPY/INR — with transparent pricing, low margins, and trusted settlement.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+ years of expertise</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Real-Time Market Insights</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -129,7 +107,7 @@ const seo = {
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Currency Pairs Available for Trading in India</h2>
       <p class="sec-lead">Currency trading in India is currently permitted in selected currency pairs approved by regulators. These contracts are available on recognised exchanges and provide exposure to both domestic and international currency movements.</p>
-      <p class="sec-lead">The most actively traded currency pair in India is USDINR, which reflects the exchange rate between the US Dollar and the Indian Rupee.</p>
+      <p class="sec-lead">The most actively traded currency pair in India is USD/INR, which reflects the exchange rate between the US Dollar and the Indian Rupee.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -137,22 +115,22 @@ const seo = {
       </div>
       <div class="row-2" data-reveal-row>
         <div class="card">
-          <h4 class="card-h">USDINR</h4>
-          <p class="card-p">USDINR is the most liquid and widely traded currency pair in India. It is influenced by factors such as interest rates, inflation, crude oil prices, RBI policies, and US economic data.</p>
+          <h4 class="card-h">USD/INR</h4>
+          <p class="card-p">USD/INR is the most liquid and widely traded currency pair in India. It is influenced by factors such as interest rates, inflation, crude oil prices, RBI policies, and US economic data.</p>
         </div>
         <div class="card">
-          <h4 class="card-h">EURINR</h4>
-          <p class="card-p">EURINR tracks the exchange rate between the Euro and the Indian Rupee. It is influenced by economic developments in the Eurozone and India.</p>
+          <h4 class="card-h">EUR/INR</h4>
+          <p class="card-p">EUR/INR tracks the exchange rate between the Euro and the Indian Rupee. It is influenced by economic developments in the Eurozone and India.</p>
         </div>
       </div>
       <div class="row-2" data-reveal-row>
         <div class="card">
-          <h4 class="card-h">GBPINR</h4>
-          <p class="card-p">GBPINR reflects the value of the British Pound against the Indian Rupee and is often impacted by UK economic data and global market sentiment.</p>
+          <h4 class="card-h">GBP/INR</h4>
+          <p class="card-p">GBP/INR reflects the value of the British Pound against the Indian Rupee and is often impacted by UK economic data and global market sentiment.</p>
         </div>
         <div class="card">
-          <h4 class="card-h">JPYINR</h4>
-          <p class="card-p">JPYINR represents the Japanese Yen against the Indian Rupee and is often considered sensitive to global risk sentiment.</p>
+          <h4 class="card-h">JPY/INR</h4>
+          <p class="card-p">JPY/INR represents the Japanese Yen against the Indian Rupee and is often considered sensitive to global risk sentiment.</p>
         </div>
       </div>
     </div>
@@ -171,7 +149,7 @@ const seo = {
       <div class="cell tb"><p class="k">Maximum loss (buyer)</p></div><div class="cell tb"><p class="v">Theoretically unlimited if the market moves against you</p></div><div class="cell tb"><p class="v">Capped at the premium paid</p></div>
       <div class="cell tb"><p class="k">Leverage</p></div><div class="cell tb"><p class="v">High — small margin controls a full lot</p></div><div class="cell tb"><p class="v">Premium cost is small relative to lot value</p></div>
       <div class="cell tb"><p class="k">Typical use</p></div><div class="cell tb"><p class="v">Directional trades, hedging known exposure</p></div><div class="cell tb"><p class="v">Defined-risk speculation, hedging with optionality</p></div>
-      <div class="cell tb"><p class="k">Expiry cycle</p></div><div class="cell tb"><p class="v">Monthly contracts, several months listed at once</p></div><div class="cell tb"><p class="v">Monthly expiry, generally on USDINR, EURINR, GBPINR, JPYINR</p></div>
+      <div class="cell tb"><p class="k">Expiry cycle</p></div><div class="cell tb"><p class="v">Monthly contracts, several months listed at once</p></div><div class="cell tb"><p class="v">Monthly expiry, generally on USD/INR, EUR/INR, GBP/INR, JPY/INR</p></div>
       <div class="cell tb"><p class="k">Obligation</p></div><div class="cell tb"><p class="v">Buyer and seller both obligated to settle</p></div><div class="cell tb"><p class="v">Buyer has a right, not an obligation; seller is obligated</p></div>
     </div></div>
     <div class="stack" style="gap:16px">
@@ -232,7 +210,7 @@ const seo = {
         </div>
         <div class="vstep">
           <div class="vnum">4</div>
-          <div class="vbody"><h4>Choose a Currency Pair</h4><p>Select a currency pair such as USDINR, EURINR, GBPINR, or JPYINR. Beginners often start with USDINR due to its high liquidity and trading volume.</p></div>
+          <div class="vbody"><h4>Choose a Currency Pair</h4><p>Select a currency pair such as USD/INR, EUR/INR, GBP/INR, or JPY/INR. Beginners often start with USD/INR due to its high liquidity and trading volume.</p></div>
         </div>
         <div class="vstep">
           <div class="vnum">5</div>
@@ -265,7 +243,7 @@ const seo = {
       <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Relative Strength Index (RSI)</h4>
-          <p class="card-p">The Relative Strength Index (RSI) is a popular momentum indicator that helps identify overbought and oversold market conditions. It can assist traders in spotting potential entry and exit opportunities, particularly during short-term price movements in currency pairs such as USDINR.</p>
+          <p class="card-p">The Relative Strength Index (RSI) is a popular momentum indicator that helps identify overbought and oversold market conditions. It can assist traders in spotting potential entry and exit opportunities, particularly during short-term price movements in currency pairs such as USD/INR.</p>
         </div>
         <div class="card">
           <h4 class="card-h">Moving Average Convergence Divergence (MACD)</h4>

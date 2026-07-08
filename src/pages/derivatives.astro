@@ -40,7 +40,9 @@ const RISKS = [
   { h: 'Regulatory Risk', p: 'SEBI periodically updates margin requirements, position limits, and contract specs, which can directly impact your existing positions and strategies.' },
 ];
 
-// Got Questions? - FAQ list, doc content verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is derivatives trading in India?',
@@ -65,10 +67,6 @@ const FAQS = [
   {
     q: 'Do I need a Demat account to trade derivatives?',
     a: 'Yes, a trading account linked with a Demat account is mandatory. This ensures compliance with SEBI regulations and smooth settlement of trades.',
-  },
-  {
-    q: 'What are trading hours for derivatives in NSE?',
-    a: 'F&O contracts trade from 9:15 AM to 3:30 PM IST, Monday to Friday. Commodity derivatives may have extended evening sessions.',
   },
 ];
 
@@ -102,14 +100,6 @@ const seo = {
       <h1>Derivatives Trading in India — Futures &amp; Options Made Simple</h1>
       <p class="lead">Access real-time market data, advanced charts, Option Chain insights, and powerful trading tools to navigate the derivatives market with ease.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Trading Futures &amp; Options</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+years of Legacy</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -174,7 +164,7 @@ const seo = {
       <h2 class="sec-title">Advantages of Derivatives</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Discover the key advantages of derivatives, which can be valuable financial instruments for traders and investors looking to manage risk, enhance portfolio efficiency, and capitalise on market opportunities.</p>
     </div>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       {ADVANTAGES.map((c) => (
         <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
       ))}
@@ -187,7 +177,7 @@ const seo = {
       <h2 class="sec-title">Disadvantages of Derivatives</h2>
       <p class="sec-lead">Derivatives trading comes with certain risks that every trader should understand. Being aware of these limitations can help you make informed decisions and manage your positions more effectively.</p>
     </div>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       {DISADVANTAGES.map((c) => (
         <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
       ))}

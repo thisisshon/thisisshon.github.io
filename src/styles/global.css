@@ -609,6 +609,29 @@
   .cat h4 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
   .cat p { font-weight: 400; font-size: 16px; color: var(--color-text-muted); }
 
+  /* 3-column variant: `.cat-grid cat-grid-3`. For card counts that are a multiple
+     of 3 (3 / 6 / 9), where the 4-wide default leaves a ragged, part-empty last row
+     and strands a divider mid-row. Unlike the base - whose borders are hardcoded to
+     an 8-card grid (:nth-child(4n) / :nth-child(n+5)) - these derive the last column
+     and last ROW from position, so the grid closes cleanly at any multiple of 3. */
+  .cat-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .cat-grid-3 .cat { border-right: 1px solid var(--color-border-card); border-bottom: 1px solid var(--color-border-card); }
+  .cat-grid-3 .cat:nth-child(3n) { border-right: 0; }
+  .cat-grid-3 .cat:nth-last-child(-n + 3) { border-bottom: 0; }
+
+  /* Clickable cell - `<a class="cat cat-link">`. Reuses Card Hover Animation 1
+     from .appr (colour shift + arrow nudge, no lift/shadow), retuned for the light
+     card surface: .appr's hover pair is dark-on-dark and means nothing here, so it
+     borrows .pcard's light hover token instead. Same 0.25s ease, same pointer gate. */
+  .cat-link { text-decoration: none; transition: background 0.25s ease; }
+  .cat-link .cat-go { display: flex; gap: 8px; align-items: center; color: var(--color-gold-400); font-weight: 600; font-size: 16px; }
+  .cat-link .cat-go span:last-child { display: inline-flex; transition: transform 0.25s ease; }
+  .cat-link .cat-go svg { display: block; width: 16px; height: 16px; }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cat-link:hover { background: var(--color-cream-300); }
+    .cat-link:hover .cat-go span:last-child { transform: translateX(8px); }
+  }
+
   /* ===== steps ===== */
   .steps { background: var(--color-surface-card); border: 1px solid var(--color-border-card); border-radius: 24px; overflow: hidden; display: flex; align-items: stretch; }
   .step { flex: 1 0 0; min-width: 0; padding: var(--container-pad); display: flex; flex-direction: column; gap: 16px; }
@@ -636,11 +659,19 @@
   .check-card .ch-title { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
   .check-list { display: flex; flex-direction: column; gap: 24px; }
   .check-row { display: flex; gap: 16px; align-items: flex-start; }
-  /* Icon column matches legacy .ck box for pixel parity (styles.css:212 -
-     12px wide, flex:none, no top margin). The legacy ✓ glyph is swapped for a
-     real check <svg> (rule 4); sized 16px but its viewBox underfills so the
-     rendered mark ≈ the old glyph, and the 12px box keeps the row layout exact. */
-  .check-row .ck { color: var(--color-success); width: 12px; flex: none;}
+  /* Icon column: a 16px box (rule 4) that is exactly one line tall, so the check
+     optically centres on the FIRST line of .tx while the row stays flex-start
+     (multi-line text still wraps under itself, not around the icon).
+     `1.5em` tracks the global line-height:1.5 - the mobile 14px step below only
+     has to restate font-size and the box follows.
+     Supersedes the legacy 12px .ck box (styles.css:212), which was 4px narrower
+     than the 16px svg it held - the mark overflowed its column and squeezed the
+     declared 16px gap down to ~12px. */
+  .check-row .ck {
+    color: var(--color-success); flex: none;
+    width: 16px; height: 1.5em;
+    display: flex; align-items: center; justify-content: center;
+  }
   .check-row .ck svg { display: block; width: 16px; height: 16px; }
   .check-row .tx { flex: 1 0 0; min-width: 0; font-weight: 400; font-size: 16px; color: var(--color-text-tertiary); }
   .check-sep { height: 1px; background: var(--color-border-hairline); width: 100%; }
@@ -1144,6 +1175,12 @@
   .cat-grid .cat { border-right: 1px solid var(--color-border-card); border-bottom: 1px solid var(--color-border-card); }
   .cat-grid .cat:nth-child(2n) { border-right: 0; }
   .cat-grid .cat:nth-child(7), .cat-grid .cat:nth-child(8) { border-bottom: 0; }
+  /* .cat-grid-3 reflows to the same 2-up: undo the 3-col last-column/last-row rules
+     (equal specificity, so source order decides) and recompute them for 2 columns. */
+  .cat-grid-3 .cat:nth-child(3n) { border-right: 1px solid var(--color-border-card); }
+  .cat-grid-3 .cat:nth-child(2n) { border-right: 0; }
+  .cat-grid-3 .cat:nth-last-child(-n + 3) { border-bottom: 1px solid var(--color-border-card); }
+  .cat-grid-3 .cat:nth-last-child(-n + 2) { border-bottom: 0; }
   .pcard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .risks { flex-wrap: wrap; }
   .risk { flex: 1 1 calc(50% - 12px); }
@@ -1287,6 +1324,8 @@
 
   .sec-lead, .sub-lead, .card-p, .cat p, .step p, .pgroup-head p,
   .check-row .tx, .appr p, .risk p, .cell p { font-size: 14px; }
+  /* Keep the .ck box one line tall against the 14px .tx (its height is 1.5em). */
+  .check-row .ck { font-size: 14px; }
   .cell { padding: 12px 8px; }
   /* 4-col comparison tables: floor the width so they scroll inside .t-scroll
      on phones (~130px/col) instead of cramming values to 4-6 wrapped lines */
@@ -1330,6 +1369,9 @@
   .cat-grid { grid-template-columns: 1fr; }
   .cat { border-right: 0 !important; border-bottom: 1px solid var(--color-border-card) !important; }
   .cat:nth-child(8) { border-bottom: 0 !important; }
+  /* 1-up: the base only clears card 8's bottom border, so a 6-card grid would
+     double up against the container's own border. Close on the real last card. */
+  .cat-grid-3 .cat:last-child { border-bottom: 0 !important; }
   .pcard-grid { grid-template-columns: 1fr; }
   .risk { flex: 1 1 100%; }
   .faq-q { gap: 20px; }

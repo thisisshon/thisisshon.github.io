@@ -11,6 +11,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is an NPS Calculator?',
@@ -35,30 +38,6 @@ const FAQS = [
   {
     q: 'How much corpus can I withdraw as lump sum?',
     a: 'The lump sum amount depends on exit rules, corpus size and subscriber category. Check the latest PFRDA rules before exit.',
-  },
-  {
-    q: 'Is NPS annuity income taxable?',
-    a: 'Yes. Monthly pension from annuity is generally taxed as income in the year of receipt.',
-  },
-  {
-    q: 'Can I change my asset allocation later?',
-    a: 'Yes, NPS allows changes to pension fund and asset allocation within applicable limits.',
-  },
-  {
-    q: 'What happens if I switch jobs?',
-    a: 'Even if you switch jobs, your PRAN remains the same. NPS is portable across jobs, cities and sectors.',
-  },
-  {
-    q: 'How is NPS different from EPF?',
-    a: "Employees' Provident Fund (EPF) is mainly salary-linked and focused on fixed-income savings. National Pension System (NPS) is market-linked and designed to help you build a retirement pension.",
-  },
-  {
-    q: 'Can I increase my contribution later?',
-    a: 'Yes. You can increase your NPS contribution based on your income and retirement goal.',
-  },
-  {
-    q: 'How much should I invest for ₹50,000 pension?',
-    a: 'It depends on your age, tenure, expected return, annuity percentage and annuity rate. Use the NPS calculator to estimate it.',
   },
 ];
 
@@ -431,7 +410,7 @@ const seo = {
   </section>
 
   <!-- ===== General Questions ===== -->
-  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">Got Questions?</h2>
@@ -451,7 +430,7 @@ const seo = {
   </section>
 
   <!-- ===== Related Calculators ===== -->
-  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+  <section class="section stack sec-light" id="sec-explore" data-section="explore" style="gap:40px">
     <h2 class="sec-title">Related Calculators</h2>
     <div class="explore-grid" data-reveal-row>
       <a class="xcard" href="/sip-calculator/">

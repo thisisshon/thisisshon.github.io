@@ -9,7 +9,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema } from '../lib/seo';
 
-// General Questions - doc content verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What are equity stocks?',
@@ -34,42 +36,6 @@ const FAQS = [
   {
     q: 'What are large-cap, mid-cap, and small-cap stocks?',
     a: 'Large-cap stocks belong to the top 100 companies by market capitalisation, mid-cap stocks rank between 101 and 250, while small-cap stocks are smaller companies with higher growth potential and higher risk.',
-  },
-  {
-    q: 'What are blue-chip stocks?',
-    a: 'Blue-chip stocks are shares of well-established companies with strong financial performance, stable earnings, and a long track record of growth.',
-  },
-  {
-    q: 'How are profits from equity stocks taxed?',
-    a: 'Short-Term Capital Gains (STCG) and Long-Term Capital Gains (LTCG) on equity investments are taxed as per prevailing tax regulations. Tax treatment depends on the holding period and gains earned.',
-  },
-  {
-    q: 'Is equity investing better than mutual funds?',
-    a: 'Both have advantages. Equity investing offers direct ownership and potentially higher returns, while mutual funds provide professional management and diversification, making them suitable for beginners.',
-  },
-  {
-    q: 'What are dividends in stocks?',
-    a: "Dividends are a portion of a company's profits distributed to shareholders. Not all companies pay dividends, but dividend-paying stocks can provide an additional income stream.",
-  },
-  {
-    q: 'What are the risks of investing in equity stocks?',
-    a: 'Equity investments are subject to market risk, price volatility, company-specific risks, and investor behaviour risks. Diversification and long-term investing can help manage these risks.',
-  },
-  {
-    q: 'Can NRIs invest in Indian equity stocks?',
-    a: 'Yes. NRIs can invest in Indian stocks through eligible Demat and Trading Accounts linked to NRE or NRO bank accounts, subject to applicable regulations.',
-  },
-  {
-    q: 'How do I choose the right stocks to invest in?',
-    a: "Investors should evaluate a company's financial performance, business model, growth potential, valuation, management quality, and industry outlook before investing.",
-  },
-  {
-    q: 'Can I lose money in the stock market?',
-    a: 'Yes. Stock prices can move up or down depending on market conditions and company performance. Investing with a long-term perspective and proper research can help reduce risks.',
-  },
-  {
-    q: 'Why invest in equity stocks through Shriram Financial Services?',
-    a: 'Shriram Financial Services offers a seamless investing experience with expert-backed research, market insights, dedicated support, and access to a trusted SEBI-registered stockbroking platform.',
   },
 ];
 
@@ -98,16 +64,9 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Equity Investing and trading Made Simpler, Smart, and Secure</h1>
-      <p class="lead">Own a part of India's leading companies and grow your wealth over time. Invest in equity stocks in India with Shriram Financial Services, a SEBI-registered broker trusted by clients for 25+ years. Access research, live market insights, and a seamless investing experience.</p>
+      <h1>Equity Investing &amp; Trading Made Simpler, Smart, and Secure</h1>
+      <p class="lead">Own a part of India's leading companies and grow wealth over time. Invest in equity stocks with Shriram Financial Services, a SEBI-registered broker trusted by clients for 25+ years.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat" style="left:0"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered</span></div>
-          <div class="feat" style="left:165px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
-          <div class="feat" style="left:312.73px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -380,7 +339,7 @@ const seo = {
         <h3>Open Your Demat Account in Minutes</h3>
         <p class="ct-sub">100% digital, paperless, and SEBI-compliant. Start investing in equities with expert advisory from day one.</p>
       </div>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Get Started →</a><a class="btn-ghost" href="/contact-us/">Talk to an RM →</a></div>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Get Started →</a></div>
     </div>
   </section>
 </BaseLayout>

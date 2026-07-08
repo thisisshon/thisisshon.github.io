@@ -10,7 +10,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General-Questions FAQ - compliance doc content verbatim, same order.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a SIP Calculator?',
@@ -35,30 +37,6 @@ const FAQS = [
   {
     q: 'How does Step-Up SIP affect returns?',
     a: 'Step-Up SIP increases your investment amount periodically. This may help create a larger corpus over time.',
-  },
-  {
-    q: 'Does the SIP Calculator account for inflation?',
-    a: 'The standard SIP Calculator shows nominal returns. You should separately consider inflation to estimate real purchasing power.',
-  },
-  {
-    q: 'Can I start SIP without a demat account?',
-    a: 'Yes. Mutual funds can often be held in non-demat folio form through mutual fund platforms, AMCs, or distributors.',
-  },
-  {
-    q: 'What happens if I miss a SIP instalment?',
-    a: 'Usually, one missed SIP does not automatically cancel the investment. However, repeated failures may lead to SIP cancellation depending on mandate and platform rules.',
-  },
-  {
-    q: 'How is SIP different from RD?',
-    a: 'SIP invests in mutual funds and is market-linked. RD is a bank deposit product with fixed interest.',
-  },
-  {
-    q: 'What is NAV in SIP?',
-    a: 'NAV stands for Net Asset Value. It is the per-unit value of a mutual fund scheme.',
-  },
-  {
-    q: 'How many SIPs can I run simultaneously?',
-    a: 'You can run multiple SIPs across different mutual fund schemes, depending on your goals, risk profile, and cash flow.',
   },
 ];
 

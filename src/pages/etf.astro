@@ -12,7 +12,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General Questions - doc "Got Questions?" list, verbatim, same order.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is an ETF in simple terms?',
@@ -37,22 +39,6 @@ const FAQS = [
   {
     q: 'Do I need a demat account to invest in ETFs?',
     a: 'Yes, a demat and trading account is mandatory since ETF units are held and traded like shares.',
-  },
-  {
-    q: 'Which is the best ETF for beginners in India?',
-    a: "A broad-market Nifty 50 ETF is typically the simplest starting point, offering diversified, low-cost exposure to India's largest companies.",
-  },
-  {
-    q: 'Can NRIs invest in ETFs in India?',
-    a: 'Yes, NRIs can invest in Indian ETFs through an NRO or NRE-linked trading and demat account, subject to FEMA and RBI guidelines.',
-  },
-  {
-    q: 'Are ETFs better than mutual funds?',
-    a: 'Neither is universally better — ETFs typically offer lower costs and real-time trading, while mutual funds offer SIP automation and guaranteed NAV execution without needing a demat account.',
-  },
-  {
-    q: 'Can ETF units be sold anytime?',
-    a: 'Yes, ETF units can be bought or sold any time the exchange is open, at the prevailing live market price, subject to available liquidity.',
   },
 ];
 

@@ -10,6 +10,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is an SWP calculator?',
@@ -34,30 +37,6 @@ const FAQS = [
   {
     q: 'How is SWP different from dividend plans?',
     a: 'SWP redeems units to pay you. Dividend or IDCW payouts depend on distributable surplus and are not assured.',
-  },
-  {
-    q: 'Can I do SWP from ELSS?',
-    a: 'Yes, you can. But only after the ELSS lock-in period for the relevant units is complete.',
-  },
-  {
-    q: 'What if my corpus runs out?',
-    a: 'Withdrawals may stop once the corpus is exhausted. Therefore, it is recommended to use the sustainability indicator before starting.',
-  },
-  {
-    q: 'Is SWP better than FD?',
-    a: 'SWP offers flexibility and growth potential. FD offers fixed returns. The better choice depends on your individual risk, tax and liquidity needs.',
-  },
-  {
-    q: 'How is SWP taxed?',
-    a: 'Each withdrawal is a redemption. Tax applies to the gain portion based on fund type and holding period.',
-  },
-  {
-    q: 'Can I pause SWP?',
-    a: 'In some cases, yes. Whether you can pause an SWP depends on the AMC and the investment platform. If pausing is not available, you may need to cancel the existing SWP and start a new one later.',
-  },
-  {
-    q: 'What is an ideal withdrawal rate?',
-    a: 'There is no single ideal withdrawal rate. It depends on factors such as your investment amount, expected returns, financial goals, and how long you want your money to last. A lower withdrawal rate is generally more sustainable.',
   },
 ];
 
@@ -409,7 +388,7 @@ const seo = {
   </section>
 
   <!-- ===== General Questions ===== -->
-  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">Got Questions?</h2>
@@ -429,7 +408,7 @@ const seo = {
   </section>
 
   <!-- ===== Related Calculators ===== -->
-  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+  <section class="section stack sec-light" id="sec-explore" data-section="explore" style="gap:40px">
     <h2 class="sec-title">Related Calculators</h2>
     <div class="explore-grid" data-reveal-row>
       <a class="xcard" href="/sip-calculator/">
@@ -457,7 +436,7 @@ const seo = {
   </section>
 
   <!-- ===== Final CTA ===== -->
-  <section class="section stack sec-light" id="sec-final" data-section="final" style="gap:56px;justify-content:center">
+  <section class="section stack sec-tint" id="sec-final" data-section="final" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Start Your SWP in Under 5 Minutes with Shriram Financial Services</h2>
     </div>

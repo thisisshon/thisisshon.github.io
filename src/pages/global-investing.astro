@@ -69,7 +69,9 @@ const RISKS = [
   },
 ];
 
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'How can I invest in US stocks from India?',
@@ -94,10 +96,6 @@ const FAQS = [
   {
     q: 'How are gains from US stocks taxed in India?',
     a: 'Foreign shares are treated as unlisted assets for Indian tax purposes. Gains held for more than 24 months are taxed as long-term capital gains; shorter holdings are taxed as short-term gains at your slab rate. Dividends are taxable in India, and US withholding tax paid can generally be claimed as foreign tax credit under the India–US treaty.',
-  },
-  {
-    q: 'Why should I invest globally when Indian markets are growing?',
-    a: 'Global investing adds diversification beyond the Indian economy, gives you exposure to USD-denominated assets and world-leading companies not listed in India, and can reduce concentration risk. It complements, rather than replaces, a domestic portfolio.',
   },
 ];
 
@@ -131,14 +129,6 @@ const seo = {
       <h1>Invest in <span class="g">US Stocks &amp; ETFs</span> from India</h1>
       <p class="lead">Diversify beyond home. Own the world's leading companies through the RBI's LRS route - with fractional investing, USD assets and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;RBI LRS route</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Fractional investing</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;USD diversification</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -286,7 +276,7 @@ const seo = {
   </section>
 
   <!-- ===== General Questions ===== -->
-  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">Got Questions?</h2>
@@ -306,7 +296,7 @@ const seo = {
   </section>
 
   <!-- ===== Final CTA ===== -->
-  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Investing Globally Within Minutes</h3>

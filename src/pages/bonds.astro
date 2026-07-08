@@ -186,7 +186,9 @@ const WARNINGS = [
   },
 ];
 
-// Got Questions? (FAQs) - verbatim, same order.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a bond?',
@@ -211,22 +213,6 @@ const FAQS = [
   {
     q: 'How can I invest in bonds in India?',
     a: 'You can invest in bonds through the secondary market, approved investing platforms, brokers, and demat-linked channels. You may also invest indirectly through debt mutual funds and Bond ETFs.',
-  },
-  {
-    q: 'What should I check before buying a bond?',
-    a: 'Review the issuer, credit rating, coupon, YTM, maturity, liquidity, payout frequency, tax treatment, and any special terms such as callable or puttable features.',
-  },
-  {
-    q: 'Do bond prices change after purchase?',
-    a: 'Yes. Bond prices can move based on interest rates, credit developments, inflation expectations, and market liquidity.',
-  },
-  {
-    q: 'Can I sell a bond before maturity?',
-    a: 'Yes, if it is a listed bond on NSE/BSE. However, liquidity can be thin for some bonds, and you may get a price above or below face value depending on prevailing interest rates.',
-  },
-  {
-    q: 'Are bonds suitable for portfolio diversification?',
-    a: 'Bonds can play a role in diversification by adding debt exposure to a portfolio. The suitability of a bond investment depends on your goals, risk appetite, investment horizon, and the specific bond selected.',
   },
 ];
 
@@ -289,7 +275,7 @@ const seo = {
       <h2 class="sec-title">Types of Bonds in India</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">The Indian bond market offers multiple fixed income instruments for different investment needs, risk profiles, and time horizons. Here are a few:</p>
     </div>
-    <div class="bond-cards" data-reveal-row>
+    <div class="bond-cards cols-2" data-reveal-row>
       {TYPES.map((c) => (
         <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
       ))}
@@ -419,6 +405,13 @@ const seo = {
     flex-direction: column;
     gap: 12px;
   }
+  /* Two-column variant - `.bond-cards cols-2` (Types of Bonds). Only the desktop
+     template differs; tablet already reflows to 2-up. Note the mobile reset below:
+     this selector (0,2,0) outranks the bare `.bond-cards` (0,1,0) in the 560px
+     query, so without it the grid would refuse to stack. */
+  .bond-cards.cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   /* Key-terms glossary - a definition list inside a shared .card. */
   .gloss {
@@ -435,6 +428,9 @@ const seo = {
   }
   .gloss > div:first-child {
     padding-top: 0;
+    /* The row separator is a border-top on every row; the first row has no row
+       above it, so its border would paint a stray hairline across the card. */
+    border-top: 0;
   }
   .gloss > div:last-child {
     padding-bottom: 0;
@@ -463,7 +459,8 @@ const seo = {
     }
   }
   @media (max-width: 560px) {
-    .bond-cards {
+    .bond-cards,
+    .bond-cards.cols-2 {
       grid-template-columns: 1fr;
     }
   }

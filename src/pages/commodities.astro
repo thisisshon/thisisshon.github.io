@@ -11,7 +11,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// General Questions - doc content verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is commodity trading in India?',
@@ -36,22 +38,6 @@ const FAQS = [
   {
     q: 'Can beginners trade commodities?',
     a: 'Yes. Beginners can start with liquid commodities such as gold and silver while learning market fundamentals and using proper risk-management techniques.',
-  },
-  {
-    q: 'What are commodity trading hours in India?',
-    a: 'Commodity trading hours vary by exchange and commodity category. MCX offers extended trading sessions for many commodities, including evening trading hours.',
-  },
-  {
-    q: 'How are profits from commodity trading taxed?',
-    a: 'Commodity trading profits are generally treated as business income under Indian tax regulations and are taxed according to the applicable income tax slab rates.',
-  },
-  {
-    q: 'What is margin in commodity trading?',
-    a: 'Margin is the amount of money traders must deposit to open and maintain a commodity trading position. It acts as collateral and allows traders to control larger positions with a smaller capital outlay.',
-  },
-  {
-    q: 'Which commodity is best for beginners?',
-    a: 'Gold is often considered one of the best commodities for beginners because of its high liquidity, widespread market participation, and availability of research, however it is up to the willingness of the users.',
   },
 ];
 
@@ -85,15 +71,6 @@ const seo = {
       <h1>Trade Commodities with Confidence — Gold, Silver, Crude &amp; More</h1>
       <p class="lead">Trade India's top commodities like gold, silver, crude oil, and other products on trusted MCX exchanges — diversify your portfolio, hedge inflation, and capture market opportunities.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+ years of expertise</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Real-time MCX dashboard</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;MCX approved</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -142,7 +119,7 @@ const seo = {
       <h2 class="sec-title">Why Should You Invest in Commodity?</h2>
       <p class="sec-lead">Investors choose commodities for diversification, inflation hedge, global exposure, leverage opportunities, and volatility benefits. Learn the key benefits of adding commodities to your investment portfolio.</p>
     </div>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       <div class="cat"><h4>Portfolio Diversification</h4><p>Low correlation with other asset classes helps reduce overall portfolio risk and volatility.</p></div>
       <div class="cat"><h4>Inflation Hedge</h4><p>Commodity prices tend to rise during inflation, protecting your purchasing power.</p></div>
       <div class="cat"><h4>Global Exposure</h4><p>Gain exposure to worldwide demand across industries and benefit from global market trends.</p></div>
@@ -159,7 +136,7 @@ const seo = {
       <h2 class="sec-title">Advantages of Commodity Trading</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading offers a range of benefits, providing traders and investors with opportunities to participate in diverse market segments through a regulated and transparent trading environment.</p>
     </div>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       <div class="cat"><h4>High Liquidity</h4><p>High trading volumes in major commodities ensure easy entry and exit.</p></div>
       <div class="cat"><h4>Transparent Pricing</h4><p>Prices are determined by global demand and supply, ensuring fairness and transparency.</p></div>
       <div class="cat"><h4>Standardised Contracts</h4><p>Exchange-traded contracts are uniform, reducing complexity in execution.</p></div>
@@ -176,7 +153,7 @@ const seo = {
       <h2 class="sec-title">Disadvantages of Commodity Trading</h2>
       <p class="sec-lead">While commodity trading offers numerous opportunities, it also carries certain risks that traders should understand before participating in the market.</p>
     </div>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       <div class="cat"><h4>Price Volatility</h4><p>Commodity prices can fluctuate significantly due to changes in global demand and supply, geopolitical events, weather conditions, and economic developments.</p></div>
       <div class="cat"><h4>Leverage Risk</h4><p>Commodity trading often involves margin-based trading, where a small price movement can result in substantial gains or losses.</p></div>
       <div class="cat"><h4>Market Complexity</h4><p>Commodity markets are influenced by multiple factors, including international events, inventory levels, currency movements, and government policies, making them challenging for inexperienced traders.</p></div>
@@ -263,7 +240,7 @@ const seo = {
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">SEBI Rules &amp; Regulations for Commodity Trading in India</h2>
     </div>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       <div class="cat"><h4>SEBI Regulation</h4><p>Commodity trading is regulated by SEBI, ensuring fair, transparent, and safe market practices.</p></div>
       <div class="cat"><h4>KYC &amp; PAN Mandatory</h4><p>Every trader must complete KYC verification and provide a valid PAN card before opening an account.</p></div>
       <div class="cat"><h4>Position Limits</h4><p>SEBI restricts the number of contracts a trader can hold to prevent excessive speculation and maintain market stability.</p></div>

@@ -9,8 +9,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
+import { calcHref } from '../data/calculators';
 
-// General Questions - doc "Got Questions?" list verbatim, same order (first item open).
+// The three mutual-fund-relevant calculators. Blurbs are this page's own copy;
+// hrefs resolve through the calculators data layer so the links cannot rot.
+const CALC_TOOLS = [
+  { slug: 'sip', title: 'SIP Calculator', desc: 'Estimate monthly SIP returns over time at varying rates.' },
+  { slug: 'lumpsum', title: 'Lump Sum Calculator', desc: 'Project lump sum growth with CAGR assumptions.' },
+  { slug: 'swp', title: 'SWP Calculator', desc: 'Plan monthly withdrawals without depleting the corpus.' },
+];
+
+// SEBI's six Riskometer bands, in order. Scheme examples are indicative, not advice.
+const RISK_BANDS = [
+  { h: 'Low', p: 'Principal at low risk. Typically overnight and liquid funds.' },
+  { h: 'Low to Moderate', p: 'Principal at low to moderate risk. Typically ultra-short duration and money-market funds.' },
+  { h: 'Moderate', p: 'Principal at moderate risk. Typically short-duration and conservative hybrid funds.' },
+  { h: 'Moderately High', p: 'Principal at moderately high risk. Typically balanced-advantage and large-cap funds.' },
+  { h: 'High', p: 'Principal at high risk. Typically mid-cap and multi-cap equity funds.' },
+  { h: 'Very High', p: 'Principal at very high risk. Typically small-cap, sectoral and thematic funds.' },
+];
+
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a mutual fund, and how does it work?',
@@ -36,26 +57,6 @@ const FAQS = [
     q: 'What is ELSS, and how does it help in tax saving?',
     a: 'ELSS (Equity-Linked Savings Scheme) is a category of equity mutual fund that qualifies for a deduction of up to ₹1.5 lakh per year under Section 80C of the Income Tax Act. It has a mandatory lock-in period of 3 years, the shortest among all 80C instruments, and invests predominantly in equities, offering the dual benefit of tax savings and potential long-term capital appreciation.',
   },
-  {
-    q: 'What is the SEBI Riskometer?',
-    a: 'The SEBI Riskometer is a mandatory risk-rating tool displayed on all mutual fund scheme documents. It classifies the risk level of each fund into various categories — from Low to Very High — based on the nature of the underlying portfolio. It is updated monthly by fund houses based on portfolio changes and helps investors make risk-appropriate fund selections.',
-  },
-  {
-    q: 'What are LTCG and STCG on mutual funds?',
-    a: 'LTCG (Long-Term Capital Gains) applies to equity fund units held for more than 1 year, taxed at 12.5% on gains exceeding ₹1.25 lakh per financial year. STCG (Short-Term Capital Gains) applies to equity units held for less than 1 year, taxed at 20%. For debt funds, capital gains are added to your income and taxed per your applicable slab. Tax rules are subject to revision with each Union Budget.',
-  },
-  {
-    q: 'Can I withdraw from a mutual fund at any time?',
-    a: 'For open-ended mutual fund schemes, you can redeem your units on any business day at the prevailing NAV. However, certain funds have exit loads (a small percentage charge) if redeemed before a specified period, typically ranging from 1 to 3 years for equity funds. ELSS funds have a mandatory 3-year lock-in. Close-ended funds allow redemption only at maturity.',
-  },
-  {
-    q: 'What is an NFO in mutual funds, and should I invest in it?',
-    a: "An NFO, or New Fund Offer, is the initial subscription period during which a mutual fund house offers units of a new scheme to investors, usually at a fixed price, before the fund reopens for regular purchase and sale. Investing in an NFO gives you early entry into a new investment theme or strategy, but since the fund has no prior performance history, evaluate the fund manager's track record, the scheme's investment objective, and how it fits your overall portfolio before investing.",
-  },
-  {
-    q: 'What does "Switch" mean in mutual funds, and when should I use it?',
-    a: 'A “Switch” lets you move your investment from one mutual fund scheme to another within the same fund house without withdrawing your money first. For example, between a regular and direct plan, or between equity and debt options. Use a switch to rebalance your portfolio, shift between plan types, or realign your investments as your financial goals and market conditions change.',
-  },
 ];
 
 const seo = {
@@ -74,14 +75,6 @@ const seo = {
       <h1>Mutual Funds: A Smarter Way to Build <span class="g">Long-Term Wealth</span></h1>
       <p class="lead">Whether you are starting your first SIP, planning for retirement, building wealth, or seeking tax-efficient investment options, Shriram Financial Services offers a wide range of mutual fund solutions through a trusted investment experience.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start SIP</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Pan India Presence</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+ years of trust</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -156,10 +149,17 @@ const seo = {
       <h2 class="sec-title">Mutual Fund Calculators and Tools</h2>
       <p class="sec-lead">Sound investment decisions begin with precise planning. Our free mutual fund calculator tools enable you to model scenarios, set realistic return expectations, and determine the right investment amount for your goals — before you invest a single rupee.</p>
     </div>
-    <div class="cat-grid" data-reveal-row style="grid-template-columns:repeat(3,1fr)">
-      <div class="cat"><h4>SIP Calculator</h4><p>Estimate monthly SIP returns over time at varying rates.</p></div>
-      <div class="cat"><h4>Lump Sum Calculator</h4><p>Project lump sum growth with CAGR assumptions.</p></div>
-      <div class="cat"><h4>SWP Calculator</h4><p>Plan monthly withdrawals without depleting the corpus.</p></div>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
+      {CALC_TOOLS.map((c) => (
+        <a class="cat cat-link" href={calcHref(c.slug)}>
+          <h4>{c.title}</h4>
+          <p>{c.desc}</p>
+          <div class="cat-go">
+            <span>Open&nbsp;</span>
+            <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
+      ))}
     </div>
   </section>
 
@@ -169,6 +169,12 @@ const seo = {
       <h2 class="sec-title">Mutual Fund Risks &amp; Riskometer</h2>
       <p class="sec-lead">Every investment carries risk, and mutual funds are no exception. However, informed investors know that risk is not something to avoid; it is something to understand, measure, and manage. SEBI mandates all mutual fund schemes in India to carry a Riskometer — a standardised visual rating that classifies each fund's risk level across six categories.</p>
     </div>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
+      {RISK_BANDS.map((r) => (
+        <div class="cat"><h4>{r.h}</h4><p>{r.p}</p></div>
+      ))}
+    </div>
+    <p class="sec-lead">Every scheme discloses its Riskometer in the scheme document and reviews it monthly. Check the band before you invest, and match it to your own horizon and tolerance rather than to past returns.</p>
   </section>
 
   <!-- ===== Tax Benefits of Mutual Funds ===== -->

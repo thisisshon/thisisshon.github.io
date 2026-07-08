@@ -10,7 +10,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General-Questions FAQ - compliance doc content verbatim, same order.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a lumpsum calculator?',
@@ -35,22 +37,6 @@ const FAQS = [
   {
     q: 'Can I invest lumpsum in ELSS?',
     a: 'Yes. ELSS allows one-time lumpsum investment.',
-  },
-  {
-    q: 'How is lumpsum return calculated?',
-    a: 'Lumpsum investment is calculated using compound growth: A = P × (1 + r/100)^n.',
-  },
-  {
-    q: 'Does the lumpsum calculator include inflation?',
-    a: 'Yes, switch on the inflation option to see the estimated real value of your investment.',
-  },
-  {
-    q: 'When is the best time to invest lumpsum?',
-    a: 'The best time to invest in lumpsum is when you have surplus money, a suitable fund and a long-term plan.',
-  },
-  {
-    q: 'Do I need a demat account?',
-    a: 'Not necessarily. Many mutual funds can be bought (under the distribution mode) online without a demat account.',
   },
 ];
 

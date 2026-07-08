@@ -11,7 +11,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// General Questions - doc content verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a Fixed Deposit (FD)?',
@@ -36,34 +38,6 @@ const FAQS = [
   {
     q: 'What is a cumulative vs non-cumulative FD?',
     a: 'In a Cumulative FD, interest is compounded and paid at maturity — ideal for wealth creation. In a Non-Cumulative FD, interest is paid at regular intervals (monthly, quarterly, half-yearly, or yearly) — ideal for regular income needs.',
-  },
-  {
-    q: 'Can senior citizens get a higher FD rate at Shriram Finance?',
-    a: 'Yes. Senior citizens (aged 60 and above) receive an additional 0.50%* p.a. over the standard FD rate. Women depositors also receive an additional 0.05%* p.a.',
-  },
-  {
-    q: 'Can I get a loan against my Shriram Finance FD?',
-    a: 'Yes. Shriram Finance offers an overdraft or loan facility against your FD. This means you can access funds without breaking your FD — your FD continues to earn interest while you repay the loan amount.',
-  },
-  {
-    q: 'What is the tenure range for Shriram Finance FD?',
-    a: 'For regular depositors: 12 to 60 months (1 to 5 years). For NRI depositors: 12 to 36 months.',
-  },
-  {
-    q: 'How is TDS deducted on FD interest?',
-    a: 'If your total FD interest in a financial year exceeds ₹40,000 (₹50,000 for senior citizens), TDS is deducted at 10% if PAN is provided. Without PAN, TDS is 20%. Submit Form 15G or 15H if your income is below the taxable limit to avoid TDS.',
-  },
-  {
-    q: 'Can I open a Shriram Finance FD online?',
-    a: 'Yes. The entire process is 100% digital — visit shriramfinance.in or use the Shriram One App. Complete Aadhaar-based e-KYC and make payment via Net Banking, UPI, or NEFT/RTGS. Your FD is booked instantly and the receipt is delivered digitally.',
-  },
-  {
-    q: 'Does Shriram Finance offer auto-renewal?',
-    a: 'Yes. You can opt for auto-renewal at the time of booking. Your FD will automatically renew at the prevailing rate on the maturity date. You can also choose auto-refund if you prefer the maturity amount credited to your bank account.',
-  },
-  {
-    q: 'What is a Tax-Saving FD?',
-    a: 'A Tax-Saving FD has a mandatory 5-year lock-in period and qualifies for deduction under Section 80C of the Income Tax Act — up to ₹1.5 lakh per financial year. Premature withdrawal is not allowed. The interest earned is still taxable at your income tax slab rate.',
   },
 ];
 
@@ -97,14 +71,6 @@ const seo = {
       <h1>Fixed Deposit in India - Earn Up to 7.80%* p.a. with Shriram Unnati <span class="g">Fixed Deposit</span></h1>
       <p class="lead">Enjoy the stability of guaranteed returns, flexible tenures (12 to 60 months), and a 100% digital investment experience. Choose Fixed Deposits designed to help you achieve your financial goals.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open FD</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;RBI Registered NBFC</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;CRISIL Rated FAAA/Stable</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;ICRA Rated MAA+</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Trusted by millions</span></div>
-        </div>
-      </div>
     </div>
   </section>
 

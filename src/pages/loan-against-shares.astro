@@ -11,7 +11,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// General Questions - doc content verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a Loan Against Shares (LAS)?',
@@ -36,30 +38,6 @@ const FAQS = [
   {
     q: 'What happens if the value of my pledged shares falls?',
     a: 'If the value of pledged shares declines significantly, the lender may issue a margin call asking you to pledge additional securities or repay a portion of the outstanding loan to maintain the required margin.',
-  },
-  {
-    q: 'How do I respond to a margin call?',
-    a: 'You can typically respond by pledging additional eligible shares, making a partial repayment, or replacing existing pledged securities with approved alternatives, subject to lender policies.',
-  },
-  {
-    q: 'How is interest charged on a Loan Against Shares?',
-    a: 'Interest is generally charged only on the utilised loan amount and for the period the funds remain outstanding, as per the applicable terms and conditions.',
-  },
-  {
-    q: 'Does pledging shares trigger capital gains tax?',
-    a: 'No. Pledging shares as collateral does not constitute a sale and therefore does not trigger capital gains tax. Tax implications may arise only if the shares are sold.',
-  },
-  {
-    q: 'Can I prepay or foreclose my Loan Against Shares?',
-    a: 'Yes. Most lenders allow partial or full repayment of the outstanding amount before the end of the tenure, subject to applicable terms and conditions.',
-  },
-  {
-    q: 'How long does it take to get a Loan Against Shares approved?',
-    a: 'Once all required documents are submitted and the pledge process is completed, approval and activation are typically completed within a short turnaround time, subject to verification and lender processes.',
-  },
-  {
-    q: 'What documents are required to apply for a Loan Against Shares?',
-    a: 'Applicants generally need KYC documents, PAN, Aadhaar, bank account details, and a valid Demat account holding eligible securities. Additional documents may be required based on the applicant profile.',
   },
 ];
 
@@ -97,13 +75,6 @@ const seo = {
         <div class="cell tb"><p class="v">From  12% p.a.</p></div><div class="cell tb"><p class="v">Up to 50%</p></div><div class="cell tb"><p class="v">12-24 hrs</p></div><div class="cell tb"><p class="v">800 +</p></div><div class="cell tb"><p class="v">Zero charges</p></div>
       </div></div>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Apply Now</a><a class="btn-ghost" href="/open-demat-account/">Check Eligibility</a><a class="btn-ghost" href="/contact-us/">Talk to an Expert</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+ years of legacy</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;RBI regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
-        </div>
-      </div>
     </div>
   </section>
 

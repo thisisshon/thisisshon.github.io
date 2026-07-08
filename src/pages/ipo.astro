@@ -137,7 +137,9 @@ const TAX_ROWS = [
   { k: 'Investor Tip', stcg: 'Short holding periods attract higher tax — factor this into listing-day exit decisions', ltcg: 'Planning your exit beyond 12 months and within the ₹1.25 lakh threshold can meaningfully improve post-tax returns' },
 ];
 
-// General Questions - doc "Got Questions?" verbatim, same order (first item open).
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is an IPO in simple terms?',
@@ -162,22 +164,6 @@ const FAQS = [
   {
     q: 'How many days does IPO allotment take?',
     a: "Under SEBI's revised timelines, the T+6 framework is the current standard — allotment and listing occur within six working days of the IPO close date. This includes allotment finalisation, ASBA unblocking, and share credit to your Demat account.",
-  },
-  {
-    q: 'What is the difference between a Demat account and a trading account for IPO applications?',
-    a: 'A Demat account is required to hold shares in electronic form. A trading account is required to buy and sell shares on the exchange. For IPO applications, a Demat account is mandatory. A trading account is not required to apply for an IPO, but is needed to sell your allotted shares after listing.',
-  },
-  {
-    q: 'Is it possible to apply for an IPO without a broker?',
-    a: "Yes. You can apply through your bank's net banking portal if the bank is a self-certified syndicate bank (SCSB) registered with SEBI, using the ASBA facility directly.",
-  },
-  {
-    q: 'What happens if the IPO is oversubscribed?',
-    a: 'In the retail category, a lottery is conducted; in HNI, allotment is proportional; in QIB, allotment is managed by the book runner. Unallotted amounts are unblocked and returned to your bank account automatically.',
-  },
-  {
-    q: 'Are IPO listing gains taxable?',
-    a: 'Yes. Gains from selling IPO shares — whether on listing day or later — are subject to capital gains tax. STCG at 20% applies if sold within 12 months; LTCG at 12.5% applies beyond 12 months on gains exceeding ₹1.25 lakh in a financial year.',
   },
 ];
 

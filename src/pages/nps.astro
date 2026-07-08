@@ -64,7 +64,9 @@ const EXIT = [
   },
 ];
 
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is the National Pension System (NPS)?',
@@ -89,10 +91,6 @@ const FAQS = [
   {
     q: 'What returns can I expect from NPS?',
     a: 'NPS returns are market-linked and not guaranteed - they depend on your asset mix and the performance of your chosen pension fund managers. Historically, the equity and debt schemes have delivered competitive long-term returns, and the low cost structure helps compounding over time.',
-  },
-  {
-    q: 'What happens to my NPS corpus at retirement?',
-    a: 'On reaching 60, you can withdraw up to 60% of the corpus as a tax-free lump sum, while at least 40% must be used to purchase an annuity that pays you a regular pension for life. Partial and early-exit rules apply if you need to access funds sooner.',
   },
 ];
 
@@ -126,14 +124,6 @@ const seo = {
       <h1>Build a Retirement Corpus With the <span class="g">National Pension System</span></h1>
       <p class="lead">A voluntary, market-linked retirement scheme regulated by PFRDA - with an exclusive extra tax benefit, low costs and the flexibility to shape your own asset mix.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Investing</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;PFRDA-regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Extra ₹50k tax benefit</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Low cost</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Market-linked growth</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -251,7 +241,7 @@ const seo = {
   </section>
 
   <!-- ===== General Questions ===== -->
-  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">Got Questions?</h2>
@@ -271,7 +261,7 @@ const seo = {
   </section>
 
   <!-- ===== Final CTA ===== -->
-  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Building Your Retirement Corpus</h3>

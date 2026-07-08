@@ -11,7 +11,9 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General-Questions FAQ - compliance doc content verbatim, same order.
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a fixed deposit calculator?',
@@ -36,46 +38,6 @@ const FAQS = [
   {
     q: 'Can an FD be broken before maturity?',
     a: 'Yes, an FD can be broken before maturity, but  few issuers may charge a penalty or offer a lower effective rate.',
-  },
-  {
-    q: 'What is a tax-saver FD?',
-    a: 'A tax-saver FD has a 5-year lock-in and may provide deduction benefits under Section 80C, subject to rules.',
-  },
-  {
-    q: 'Is FD safe?',
-    a: 'FDs are considered low-risk, but users should check the issuer’s strength and deposit insurance limits.',
-  },
-  {
-    q: 'What is DICGC insurance?',
-    a: 'DICGC (Deposit Insurance and Credit Guarantee Corporation) insurance protects eligible bank deposits up to the prescribed limit per depositor per bank.',
-  },
-  {
-    q: 'How does the calculator handle senior citizen rates?',
-    a: 'Users can select Senior Citizen and apply the additional rate offered by the institution.',
-  },
-  {
-    q: 'What is the minimum amount to open an FD?',
-    a: 'Minimum amounts vary by issuers or platform. Many banks and NBFC allow FDs from small starting amounts i.e Rs. 1000.',
-  },
-  {
-    q: 'Is FD better than RD?',
-    a: 'FD suits lump sum investing. RD, on the other hand, suits regular monthly saving.',
-  },
-  {
-    q: 'Can I take a loan against my FD?',
-    a: 'Many banks allow loans against FDs. Please note that the limit and interest rate vary by bank.',
-  },
-  {
-    q: 'What is FD laddering?',
-    a: 'FD laddering means splitting money across FDs with different maturity dates for liquidity and rate flexibility.',
-  },
-  {
-    q: 'What is the difference between NRE and NRO FD?',
-    a: 'NRE (Non-Resident External) FDs are for overseas income. NRO (Non-Resident Ordinary) FDs are for income earned in India by NRIs.',
-  },
-  {
-    q: 'Is NRE FD interest taxable in India?',
-    a: 'NRE FD interest is generally tax-free in India, subject to eligibility and current rules.',
   },
 ];
 

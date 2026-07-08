@@ -57,7 +57,9 @@ const RISKS = [
   { h: 'Repayment Discipline', p: 'Timely repayment helps maintain your loan account and prevents additional charges or enforcement of security, where applicable.' },
 ];
 
-// Got Questions? - FAQ list, doc verbatim, same order. Rendered under "General Questions".
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
 const FAQS = [
   {
     q: 'What is a Loan Against Mutual Fund (LAMF)?',
@@ -82,22 +84,6 @@ const FAQS = [
   {
     q: 'Are there any pre-payment charges on LAMF?',
     a: 'Yes. A 3% per annum (over and above the Regular ROI) pre-closure charge applies if the loan is fully repaid within the first 3 months, but after 3 months there are no foreclosure charges.',
-  },
-  {
-    q: 'What happens if the NAV of my pledged funds drops sharply?',
-    a: "If a significant NAV decline causes the portfolio's effective LTV to exceed the permissible limit, we will issue an early alert and, if unresolved, a formal margin call. You will be required to pledge additional eligible units, make a partial repayment, or bring the LTV back within limits. In the event of non-compliance, the lender has the right to redeem pledged units to recover dues.",
-  },
-  {
-    q: 'Can I pledge mutual funds from multiple AMCs?',
-    a: "Yes. You can select and pledge eligible schemes across multiple AMCs in a single LAMF application, provided all schemes are on Shriram Financial Services' approved fund list.",
-  },
-  {
-    q: 'Do I need a Demat account to avail LAMF?',
-    a: 'Yes. If you are pledging listed shares as collateral, they must be held in a demat account. You can use your existing demat account to pledge the securities and avail LAMF.',
-  },
-  {
-    q: 'How is interest calculated on LAMF?',
-    a: 'Interest on LAMF is calculated only on the drawn amount from your overdraft limit — not on the full sanctioned limit. If your limit is ₹5 Lakh, for example, but you draw only ₹2 Lakh, interest accrues only on ₹2 Lakh.',
   },
 ];
 
