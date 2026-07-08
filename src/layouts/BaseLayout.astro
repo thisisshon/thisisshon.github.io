@@ -42,7 +42,9 @@ const title = fullTitle(seo.title);
     <title>{title}</title>
     <meta name="description" content={seo.description} />
     <link rel="canonical" href={canonical} />
-    {seo.noindex && <meta name="robots" content="noindex, nofollow" />}
+    {/* Site-wide noindex — the site is not ready to be indexed yet. Remove this
+        line (and restore `seo.noindex` gating below) before launch. */}
+    <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#1d1d1d" />
 
     <!-- Open Graph -->
