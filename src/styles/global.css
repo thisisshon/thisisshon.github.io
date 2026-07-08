@@ -1409,11 +1409,26 @@
    the row enters view (same fade-up as [data-reveal]; the BaseLayout Reveal script
    adds .is-visible to the row). Children stagger by column via nth-child. Add the
    attribute to any row/grid container to opt it in. */
-.js-reveal [data-reveal-row] > * { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s var(--ease-reveal); will-change: opacity, transform; }
-.js-reveal [data-reveal-row] > *:nth-child(2) { transition-delay: 80ms; }
-.js-reveal [data-reveal-row] > *:nth-child(3) { transition-delay: 160ms; }
-.js-reveal [data-reveal-row] > *:nth-child(4) { transition-delay: 240ms; }
-.js-reveal [data-reveal-row] > *:nth-child(n + 5) { transition-delay: 320ms; }
+/* NOTE - this rule is UNLAYERED, so it beats every component `transition` declared
+   in @layer components, and an element has only one `transition`. Written as the
+   shorthand it silently clobbered the hover transition on the card components that
+   sit inside a reveal row (.appr, .pcard, .cat-link), so their "Card Hover
+   Animation 1" colour shift snapped instead of easing. Longhand lists let the
+   reveal own opacity/transform while the components' colour properties keep their
+   own 0.25s ease. Keep the four lists in the same order. */
+.js-reveal [data-reveal-row] > * {
+  opacity: 0; transform: translateY(18px); will-change: opacity, transform;
+  transition-property: opacity, transform, background-color, border-color;
+  transition-duration: 0.6s, 0.6s, 0.25s, 0.25s;
+  transition-timing-function: ease, var(--ease-reveal), ease, ease;
+  transition-delay: 0s, 0s, 0s, 0s;
+}
+/* The column stagger must delay the REVEAL properties only - a single shared delay
+   would also postpone a card's hover colour shift by up to 320ms. */
+.js-reveal [data-reveal-row] > *:nth-child(2) { transition-delay: 80ms, 80ms, 0s, 0s; }
+.js-reveal [data-reveal-row] > *:nth-child(3) { transition-delay: 160ms, 160ms, 0s, 0s; }
+.js-reveal [data-reveal-row] > *:nth-child(4) { transition-delay: 240ms, 240ms, 0s, 0s; }
+.js-reveal [data-reveal-row] > *:nth-child(n + 5) { transition-delay: 320ms, 320ms, 0s, 0s; }
 .js-reveal [data-reveal-row].is-visible > * { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js-reveal [data-reveal-row] > * { opacity: 1 !important; transform: none !important; transition: none !important; }
