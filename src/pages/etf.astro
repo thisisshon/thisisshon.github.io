@@ -1,50 +1,58 @@
 ---
 /**
  * ETF - /etf/
- * Product long-form page. Built from the V4 wireframe (Figma node 995:6857),
- * rendered entirely through the shared design system: standardised .hero,
- * alternating sec-light / sec-tint sections, .product-page_table, .row-2 / .card,
- * check-cards and FaqAccordion. Two content patterns unique to this page -
- * the numbered process flow and the icon "types" grid -
- * live in the scoped <style> block and bind to tokens only (rule 2 + rule 9).
- *
- * Nested route → BaseLayout / component imports at ../../ depth.
+ * Product long-form page. Body content is the compliance-approved
+ * "ETF Page Content - Shriram Financial Services V3" document, rendered
+ * word-for-word through the shared design system (standardised .hero,
+ * alternating sec-light / sec-tint sections, .product-page_table, .steps,
+ * .cat-grid, .bullets, check-cards and FaqAccordion).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// FAQs - ETF investing. First three are the wireframe questions; the rest add
-// the depth every product page carries (for the FAQPage JSON-LD + SEO).
+// General Questions - doc "Got Questions?" list, verbatim, same order.
 const FAQS = [
   {
     q: 'What is an ETF in simple terms?',
-    a: 'An ETF is a fund that holds a basket of securities and trades on the exchange just like a regular share, throughout market hours. Buying one unit gives you diversified exposure to everything the fund holds - an index, gold, or a sector - in a single trade.',
+    a: 'An ETF, also known as an Exchange-Traded Fund, is an investment fund designed to mirror an index that pools investor money into a basket of securities such as stocks, gold, or bonds, and trades on the stock exchange (NSE/BSE) in real time throughout market hours, just like a regular share.',
+  },
+  {
+    q: 'How do I buy an ETF on Shriram Financial Services?',
+    a: 'Open a demat account, search for ETF on the app or web platform, place a buy order at market or limit price, and units are credited on T+1.',
   },
   {
     q: 'Is an ETF safe to invest in?',
-    a: 'ETFs are SEBI-regulated, transparent and hold a diversified basket, which generally makes a broad index ETF lower-risk than a single stock. That said, an ETF is a market-linked product - its value moves with the underlying assets and returns are never guaranteed.',
+    a: 'ETFs carry standard market risk tied to their underlying assets, but they are transparent, regulated by SEBI, and generally considered lower-risk than picking individual stocks due to built-in diversification.',
   },
   {
     q: 'Can I do a SIP in ETFs?',
-    a: "Yes - but unlike a mutual fund SIP it isn't an automatic bank auto-debit. You, or a scheduled-order tool, place a recurring manual buy order each interval from your trading account.",
+    a: "Yes, through manual or scheduled recurring orders placed via your broker, since ETFs don't have a native auto-debit mandate like mutual funds.",
   },
   {
-    q: 'Do I need a demat account to buy ETFs?',
-    a: 'Yes. ETF units are held in electronic form, so a demat and trading account is required. Mutual funds, by contrast, can be held without a demat account.',
+    q: 'What is the minimum investment in an ETF?',
+    a: 'The minimum is the price of one ETF unit, which can range from a few hundred to a few thousand rupees depending on the specific ETF.',
   },
   {
-    q: 'How are ETFs taxed in India?',
-    a: 'Taxation depends on the underlying asset. Equity ETFs follow equity rules - STCG at 20% under 12 months and LTCG at 12.5% above ₹1.25 lakh. Gold and other non-equity ETFs are taxed differently, and debt ETFs bought on or after 1 April 2023 are taxed at your income-tax slab rate regardless of holding period.',
+    q: 'Do I need a demat account to invest in ETFs?',
+    a: 'Yes, a demat and trading account is mandatory since ETF units are held and traded like shares.',
   },
   {
-    q: 'What is the expense ratio of an ETF?',
-    a: 'Most passive Indian ETFs charge roughly 0.05%–0.50% a year, far lower than the 0.50%–2.25% typical of an actively managed equity mutual fund - a meaningful difference over a long horizon once compounding is factored in.',
+    q: 'Which is the best ETF for beginners in India?',
+    a: "A broad-market Nifty 50 ETF is typically the simplest starting point, offering diversified, low-cost exposure to India's largest companies.",
   },
   {
-    q: 'What is the minimum amount to invest in an ETF?',
-    a: 'As little as the price of a single unit - often a few hundred rupees - plus applicable charges. There is no fixed minimum beyond one unit.',
+    q: 'Can NRIs invest in ETFs in India?',
+    a: 'Yes, NRIs can invest in Indian ETFs through an NRO or NRE-linked trading and demat account, subject to FEMA and RBI guidelines.',
+  },
+  {
+    q: 'Are ETFs better than mutual funds?',
+    a: 'Neither is universally better — ETFs typically offer lower costs and real-time trading, while mutual funds offer SIP automation and guaranteed NAV execution without needing a demat account.',
+  },
+  {
+    q: 'Can ETF units be sold anytime?',
+    a: 'Yes, ETF units can be bought or sold any time the exchange is open, at the prevailing live market price, subject to available liquidity.',
   },
 ];
 
@@ -62,288 +70,342 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'ETFs' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Invest in <span class="g">Exchange Traded Funds</span> in India</h1>
-      <p class="lead">An ETF is a basket of securities that trades on NSE/BSE like a stock - combining mutual-fund diversification with stock-like liquidity. Invest in 100+ ETFs across equity, gold, debt, sectoral and international categories with a SEBI-registered broker backed by 40+ years of trust.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;100+ ETFs</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Low expense ratio</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Live exchange pricing</span></div>
-        </div>
-      </div>
+      <h1>ETF in India — Trade Smarter, Invest Wiser</h1>
+      <p class="lead">Invest in ETFs across equity, gold, debt, and thematic categories, with live prices, zero account-opening charges, and expert support from Shriram Financial Services. Whether you are just starting or scaling a portfolio, your ETF journey begins here.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Investing</a></div>
     </div>
   </section>
 
-  <!-- ================= WHAT IS AN ETF ================= -->
-  <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
+  <!-- ================= EXCHANGE-TRADED FUNDS: DIVERSIFIED INVESTING ================= -->
+  <section class="section stack sec-light" id="sec-intro" data-section="intro" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is an ETF? - Meaning &amp; Definition</h2>
-      <p class="sec-lead">An ETF is a basket of securities that trades on NSE/BSE like a stock - pooling investor money into a fund that mirrors an index, with units traded live on the exchange. Unlike a mutual fund, which is priced once daily, an ETF trades like a stock all day.</p>
+      <h2 class="sec-title">Exchange-Traded Funds: Diversified Investing Made Flexible</h2>
+      <p class="sec-lead">Trade Exchange Traded Funds with Shriram Financial Services and get mutual fund–style diversification with the flexibility of buying and selling in real time. Choose from a curated range of equity, debt, and gold ETFs, each tradeable in real time at prices that track their underlying index closely. For investors who want diversification without the overhead of active fund selection, our ETF shelf stays transparent, liquid, and easy to enter or exit - backed by advisory support to help you pick the right ETFs for your portfolio.</p>
     </div>
-    <div class="row-2" data-reveal-row>
-      <div class="card">
-        <h4 class="card-h">Traded like a stock</h4>
-        <p class="card-p">Units are listed on the exchange and bought or sold at live market price throughout the trading day, settling into your demat account.</p>
-      </div>
-      <div class="card">
-        <h4 class="card-h">Mostly passive, low-cost</h4>
-        <p class="card-p">Most ETFs are passively managed to track an index, which keeps ongoing costs low. A demat account is needed to hold the units.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= HOW ETFs WORK ================= -->
-  <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How ETFs Work - Creation &amp; Redemption Mechanism</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Behind the scenes, an Authorised Participant keeps an ETF's market price anchored to the value of the securities it holds.</p>
+      <h3 class="sub-title">Key terms every ETF Investor should know:</h3>
+      <ul class="bullets">
+        <li><strong>NAV (Net Asset Value):</strong> the per-unit value of the fund's underlying assets, calculated once at the end of each trading day.</li>
+        <li><strong>iNAV (Indicative NAV):</strong> a real-time estimate of an ETF's fair value, published throughout the trading session, so the market price doesn't drift too far from the underlying assets.</li>
+      </ul>
+      <p class="sub-lead">Note: ETFs have an NAV, but unlike regular mutual funds, ETF transactions are executed at the market price rather than the NAV.</p>
     </div>
-    <ol class="flow" data-reveal-row>
-      <li class="flow-step"><span class="flow-num">1</span><p class="flow-tx">Authorised Participant (AP) assembles the underlying securities basket.</p></li>
-      <li class="flow-step"><span class="flow-num">2</span><p class="flow-tx">Fund house issues ETF units to the AP in exchange for the basket (&ldquo;creation&rdquo;).</p></li>
-      <li class="flow-step"><span class="flow-num">3</span><p class="flow-tx">Units are listed and traded on NSE/BSE like any other share.</p></li>
-      <li class="flow-step"><span class="flow-num">4</span><p class="flow-tx">Investors buy and sell freely at the live market price.</p></li>
-      <li class="flow-step"><span class="flow-num">5</span><p class="flow-tx">An iNAV published intraday keeps the price anchored to fair value.</p></li>
-      <li class="flow-step"><span class="flow-num">6</span><p class="flow-tx">The AP redeems units for the underlying basket, balancing supply and demand.</p></li>
-    </ol>
   </section>
 
-  <!-- ================= TYPES OF ETFs ================= -->
+  <!-- ================= HOW EXCHANGE-TRADED FUNDS WORK ================= -->
+  <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How Exchange-Traded Funds Work?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">An ETF maintains price efficiency and liquidity through a sophisticated 5-step creation and redemption mechanism involving Authorised Participants (APs), the AMC, and the stock exchange. This process prevents the ETF's market price from drifting far from the real value of its underlying assets.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Here is how the process works, step by step:</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Authorised Participant (AP) Assembles the Basket</h4><p>The AP, typically a large financial institution or market maker, purchases a pre-defined basket of securities that exactly mirrors the ETF's target index (for example, all 50 stocks of the Nifty 50 in their exact index weights).</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Units Are Created with the AMC</h4><p>The AP delivers this security basket to the Asset Management Company (AMC), which in turn issues a block of new ETF units, known as a Creation Unit, to the AP.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>ETF Units Are Listed on the Exchange</h4><p>These newly issued ETF units are listed on NSE and BSE, where retail and institutional investors can buy and sell them throughout market hours at live, exchange-quoted prices.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Investors Buy and Sell on Exchange</h4><p>An investor with a demat account purchases ETF units on the exchange through the broker (Shriram Financial Services) at the prevailing market price.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Redemption When Required</h4><p>When the AP wishes to exit, it accumulates a sufficient block of ETF units, returns them to the AMC, and gets back the underlying basket of securities. This mechanism keeps the ETF's market price aligned with its iNAV — the real-time estimated value of the underlying portfolio.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TYPES OF ETFs AVAILABLE IN INDIA ================= -->
   <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Types of ETFs Available in India</h2>
-      <p class="sec-lead">From broad equity indices to gold, bonds, sectors and global markets - a category for almost every goal and risk appetite.</p>
+      <h2 class="sec-title">What are the Types of ETFs Available in India?</h2>
+      <p class="sec-lead">India's Exchange-Traded Fund market has evolved substantially since the country's first ETF. Today, investors can access seven distinct categories of ETFs on NSE and BSE, spanning asset classes, geographies, and investment strategies. Here is a definitive overview of every type of ETF available in India:</p>
     </div>
-    <div class="etf-types" data-reveal-row>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-        <h4>Equity ETF</h4><p>Nifty / Sensex</p>
-      </div>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.7"></circle><path d="M12 8v8M10 10.5a1.8 1.8 0 0 1 3.5.6c0 1.2-1.5 1.6-1.5 1.6M12 8V6.5M12 17.5V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></span>
-        <h4>Gold / Silver</h4><p>Physical bullion</p>
-      </div>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v14H7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"></path><path d="M14 3v4h4M10 13h5M10 16.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-        <h4>Debt / Bond</h4><p>G-secs, T-bills</p>
-      </div>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 9l8-5 8 5M5 9v9M12 9v9M19 9v9M3 21h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-        <h4>Sectoral</h4><p>Banking, IT</p>
-      </div>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"></circle><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9S14.5 18.5 12 21c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span>
-        <h4>International</h4><p>Nasdaq 100</p>
-      </div>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 4v6M6 14v6M12 4v3M12 11v9M18 4v9M18 17v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path><circle cx="6" cy="12" r="2" stroke="currentColor" stroke-width="1.7"></circle><circle cx="12" cy="9" r="2" stroke="currentColor" stroke-width="1.7"></circle><circle cx="18" cy="15" r="2" stroke="currentColor" stroke-width="1.7"></circle></svg></span>
-        <h4>Smart beta</h4><p>Factor-based</p>
-      </div>
-      <div class="etf-type">
-        <span class="ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-        <h4>Index ETF</h4><p>Passive replication</p>
-      </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Equity ETF</h4><p>Tracks a stock market index such as the Nifty 50 or Sensex, giving you exposure to a diversified basket of large, liquid companies in a single trade.</p></div>
+      <div class="cat"><h4>Gold &amp; Silver ETF</h4><p>Commodity-based ETFs backed by physical gold or silver held in secure vaults, letting you invest in precious metals without the storage, purity, or making-charge concerns of physical bullion.</p></div>
+      <div class="cat"><h4>Debt/Bond ETF</h4><p>Invests in government securities, treasury bills, or corporate bonds, offering relatively stable, income-oriented exposure to fixed income markets.</p></div>
+      <div class="cat"><h4>Sectoral/Thematic ETF</h4><p>Focused ETFs that provide exposure to specific sectors or investment themes such as banking, technology, infrastructure, or manufacturing.</p></div>
+      <div class="cat"><h4>International ETF</h4><p>Tracks a foreign index (e.g., Nasdaq 100 or S&amp;P 500), giving Indian investors a route to global diversification through a domestic demat account.</p></div>
+      <div class="cat"><h4>Smart Beta ETF</h4><p>Follows rule-based strategies (such as low-volatility, momentum, or quality factors) that combine passive investing with factor-based portfolio construction, rather than simple market-cap weighting, aiming to improve risk-adjusted returns.</p></div>
+      <div class="cat"><h4>Index ETF</h4><p>A broad term for any ETF that passively replicates a market index, the most common and lowest-cost category of ETF in India.</p></div>
     </div>
+    <p class="sec-lead">Different ETF categories may suit different investment goals, making it important to evaluate investment objectives, risk tolerance, and time horizon before investing.</p>
   </section>
 
-  <!-- ================= ETF vs MUTUAL FUND ================= -->
+  <!-- ================= KEY DIFFERENCES BETWEEN ETFs AND MUTUAL FUNDS ================= -->
   <section class="section stack sec-tint" id="sec-vs" data-section="vs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF vs Mutual Fund - Key Differences</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Both pool your money into a diversified basket - the difference is how they trade, what they cost and how you hold them.</p>
+      <h2 class="sec-title">Key Differences Between ETFs and Mutual Funds</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Choosing between an Exchange-Traded Fund and a mutual fund depends on how much flexibility you want in your trading, your investment horizon, and your focus on minimizing costs. While both options offer diversified portfolios managed by professional AMCs, their operational setups result in different fee structures and liquidity profiles.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Here's a side-by-side comparison:</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>ETF</p></div><div class="cell th"><p>Mutual Fund</p></div>
-      <div class="cell tb"><p class="k">Trading Hours</p></div><div class="cell tb"><p class="v">Real-time, all day</p></div><div class="cell tb"><p class="v">End-of-day NAV</p></div>
-      <div class="cell tb"><p class="k">Expense Ratio</p></div><div class="cell tb"><p class="v">0.05%–0.50%</p></div><div class="cell tb"><p class="v">0.50%–2.25%</p></div>
-      <div class="cell tb"><p class="k">Demat Needed</p></div><div class="cell tb"><p class="v">Yes</p></div><div class="cell tb"><p class="v">No</p></div>
-      <div class="cell tb"><p class="k">SIP</p></div><div class="cell tb"><p class="v">Manual / scheduled order</p></div><div class="cell tb"><p class="v">Auto-debit</p></div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Parameters</p></div><div class="cell th"><p>ETF</p></div><div class="cell th"><p>Mutual Fund</p></div>
+      <div class="cell tb"><p class="k">Trading Hours</p></div><div class="cell tb"><p class="v">Real-time, throughout market hours (9:15 am–3:30 pm)</p></div><div class="cell tb"><p class="v">24x7</p></div>
+      <div class="cell tb"><p class="k">Expense Ratio/Brokerage</p></div><div class="cell tb"><p class="v">Typically 0.05%–0.50% (passive)</p></div><div class="cell tb"><p class="v">Typically 0.50%–2.25% (active funds)</p></div>
+      <div class="cell tb"><p class="k">SIP Availability</p></div><div class="cell tb"><p class="v">Yes, available</p></div><div class="cell tb"><p class="v">Yes Available</p></div>
+      <div class="cell tb"><p class="k">Demat Account Needed</p></div><div class="cell tb"><p class="v">Yes, mandatory</p></div><div class="cell tb"><p class="v">Optional</p></div>
+      <div class="cell tb"><p class="k">Taxation</p></div><div class="cell tb"><p class="v">Same capital gains rules as equities/debt by category</p></div><div class="cell tb"><p class="v">Same capital gains rules by category</p></div>
+      <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">Depends on trading volume on the exchange</p></div><div class="cell tb"><p class="v">Guaranteed at NAV via the AMC</p></div>
+      <div class="cell tb"><p class="k">Transparency</p></div><div class="cell tb"><p class="v">Holdings visible  post settlement.(users can view unsettled/T1 Quantity as well)</p></div><div class="cell tb"><p class="v">Holdings  is visible post settlement</p></div>
+      <div class="cell tb"><p class="k">Stock price /NAV Frequency</p></div><div class="cell tb"><p class="v">Real time streaming during market hours</p></div><div class="cell tb"><p class="v">Calculated once, end-of-day</p></div>
     </div></div>
+    <div class="stack" style="gap:16px">
+      <h3 class="sub-title">When to Choose an ETF:</h3>
+      <ul class="bullets">
+        <li>You have a demat account and want a smart investment.</li>
+        <li>You want intraday pricing or tactical entry/exit flexibility.</li>
+        <li>You are building a large passive portfolio where the expense ratio matters at scale.</li>
+      </ul>
+    </div>
+    <div class="stack" style="gap:16px">
+      <h3 class="sub-title">When to Choose a Mutual Fund:</h3>
+      <ul class="bullets">
+        <li>You want a fully automated SIP without manual intervention.</li>
+        <li>You do not have a demat account.</li>
+        <li>You prefer guaranteed NAV execution without bid-ask spread risk.</li>
+      </ul>
+    </div>
   </section>
 
-  <!-- ================= HOW TO INVEST ================= -->
+  <!-- ================= HOW TO INVEST IN ETFs ================= -->
   <section class="section stack sec-light" id="sec-invest" data-section="invest" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
-      <h2 class="sec-title">How to Invest in ETFs with Shriram</h2>
-      <p class="sec-lead">Six steps from account opening to your first ETF trade - and tracking it thereafter.</p>
+      <h2 class="sec-title">How to Invest in Exchange-Traded Funds?</h2>
+      <p class="sec-lead">Buying an ETF in India requires a demat account and a trading account with a SEBI-registered broker. Shriram Financial Services makes the entire process fully digital, via the Antara app, and completes onboarding in a few minutes.</p>
+      <p class="sec-lead">Here is how to invest in ETFs with Shriram Financial Services:</p>
     </div>
-    <ol class="flow" data-reveal-row style="width:100%">
-      <li class="flow-step"><span class="flow-num">1</span><p class="flow-tx">Open a demat account with PAN, Aadhaar and bank details.</p></li>
-      <li class="flow-step"><span class="flow-num">2</span><p class="flow-tx">Activate your linked trading account.</p></li>
-      <li class="flow-step"><span class="flow-num">3</span><p class="flow-tx">Search the ETF ticker on the trading platform.</p></li>
-      <li class="flow-step"><span class="flow-num">4</span><p class="flow-tx">Place a buy order - at market or a limit price.</p></li>
-      <li class="flow-step"><span class="flow-num">5</span><p class="flow-tx">Units are credited to your demat account on T+1.</p></li>
-      <li class="flow-step"><span class="flow-num">6</span><p class="flow-tx">Track your holdings and NAV via the app.</p></li>
-    </ol>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Open a demat account via Antara</h4><p>Visit the Shriram Financial Services website or download the Antara app. Complete your KYC using PAN, Aadhaar, and bank details — the process typically takes only a few minutes.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Activate your trading account</h4><p>Complete the online verification process to link your bank account and activate your real-time exchange trading access. Add investment capital to your account instantly using UPI or Net Banking,</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Search for the ETF ticker on NSE/BSE</h4><p>Search for your preferred ETF by name or ticker symbol (e.g., 'NIFTYBEES' for the Nippon Nifty 50 ETF on NSE).</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Place a buy order</h4><p>Choose a market order (executes at the current price) or a limit order (executes only at your specified price), and enter the quantity.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Units are credited T+1</h4><p>Once your order is executed, ETF units are credited to your demat account on a T+1 settlement basis, in line with exchange rules.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">6</div>
+        <div class="st-body"><h4>Track your holdings via the app</h4><p>Monitor live prices, NAV, and portfolio performance anytime through the Antara Mobile app.</p></div>
+      </div>
+    </div>
+    <p class="sec-lead" style="width:100%">For regular investors, Shriram Financial Services supports a manual ETF SIP mechanism (predefined ETF basket), enabling you to schedule recurring purchases aligned with your investment cadence.</p>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Buying ETFs</a>
   </section>
 
-  <!-- ================= ETF SIP ================= -->
+  <!-- ================= SIP IN ETFs ================= -->
   <section class="section stack sec-tint" id="sec-sip" data-section="sip" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF SIP - Can You Do a Systematic Investment in an ETF?</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Yes - but unlike a mutual fund SIP, it isn't an auto-debit. You, or a scheduled-order tool, place a recurring manual order each interval.</p>
+      <h2 class="sec-title">Can you do a Systematic Investment Plan (SIP) in ETFs?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Yes, you can do a SIP in Exchange-Traded Funds, but it works differently from a mutual fund SIP. In a mutual fund SIP, your bank account is debited automatically via NACH mandate, and units are allotted at end-of-day NAV. In an ETF SIP, you initiate the purchase manually (or via a broker-facilitated trigger) during market hours, at live exchange prices.</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>ETF SIP</p></div><div class="cell th"><p>MF SIP</p></div>
-      <div class="cell tb"><p class="k">Minimum Investment</p></div><div class="cell tb"><p class="v">Price of 1 unit</p></div><div class="cell tb"><p class="v">₹100–500</p></div>
-      <div class="cell tb"><p class="k">Demat</p></div><div class="cell tb"><p class="v">Required</p></div><div class="cell tb"><p class="v">Not required</p></div>
-      <div class="cell tb"><p class="k">Execution</p></div><div class="cell tb"><p class="v">Manual / scheduled order</p></div><div class="cell tb"><p class="v">Automatic bank auto-debit</p></div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Parameters</p></div><div class="cell th"><p>ETF SIP</p></div><div class="cell th"><p>Mutual Fund SIP</p></div>
+      <div class="cell tb"><p class="k">Execution Method</p></div><div class="cell tb"><p class="v">Manual trigger or broker-facilitated mandate creation &amp; order execution during market hours.</p></div><div class="cell tb"><p class="v">Fully automated via NACH bank mandate</p></div>
+      <div class="cell tb"><p class="k">Pricing</p></div><div class="cell tb"><p class="v">Live exchange price at the time of execution</p></div><div class="cell tb"><p class="v">End-of-day NAV (fixed price)</p></div>
+      <div class="cell tb"><p class="k">Demat Account Needed</p></div><div class="cell tb"><p class="v">Required</p></div><div class="cell tb"><p class="v">Not required / Optional</p></div>
+      <div class="cell tb"><p class="k">Minimum Amount</p></div><div class="cell tb"><p class="v">1 unit of ETF (price varies by ETF)</p></div><div class="cell tb"><p class="v">As low as ₹100–500</p></div>
+      <div class="cell tb"><p class="k">Flexibility</p></div><div class="cell tb"><p class="v">Can skip, modify, or stop any month easily</p></div><div class="cell tb"><p class="v">Pause/stop via the Purse+ app</p></div>
+      <div class="cell tb"><p class="k">Brokerage</p></div><div class="cell tb"><p class="v">Standard brokerage per trade applies</p></div><div class="cell tb"><p class="v">No brokerage; expense ratio embedded in NAV</p></div>
+      <div class="cell tb"><p class="k">Rupee Cost Averaging</p></div><div class="cell tb"><p class="v">Applies — buy at different prices each cycle</p></div><div class="cell tb"><p class="v">Applies — buy at different NAVs each cycle</p></div>
     </div></div>
   </section>
 
-  <!-- ================= CHARGES & EXPENSE RATIO ================= -->
+  <!-- ================= ETF CHARGES AND EXPENSE RATIO ================= -->
   <section class="section stack sec-light" id="sec-charges" data-section="charges" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF Charges &amp; Expense Ratio - What You Actually Pay</h2>
-      <p class="sec-lead">A handful of small, transparent costs - most of them a fraction of what an actively managed fund charges.</p>
+      <h2 class="sec-title">ETF Charges and Expense Ratio</h2>
+      <p class="sec-lead">Exchange-Traded Funds are popular largely because of their low total cost of ownership compared to actively managed mutual funds. Here's a breakdown of what you actually pay when investing in an ETF:</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Cost</p></div><div class="cell th"><p>Description</p></div><div class="cell th"><p>Range</p></div>
-      <div class="cell tb"><p class="k">Expense Ratio</p></div><div class="cell tb"><p class="v">Annual fund-house fee</p></div><div class="cell tb"><p class="v">0.05%–0.50%</p></div>
-      <div class="cell tb"><p class="k">STT</p></div><div class="cell tb"><p class="v">Sell-side exchange tax</p></div><div class="cell tb"><p class="v">0.001%</p></div>
-      <div class="cell tb"><p class="k">Impact Cost</p></div><div class="cell tb"><p class="v">Bid-ask spread slippage</p></div><div class="cell tb"><p class="v">Varies</p></div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="min-width:760px">
+      <div class="cell th"><p>Cost Component</p></div><div class="cell th"><p>What It Is</p></div><div class="cell th"><p>Typical Rate (India 2025)</p></div><div class="cell th"><p>Who It Goes To</p></div>
+      <div class="cell tb"><p class="k">Brokerage</p></div><div class="cell tb"><p class="v">Broker's fee for executing your buy/sell order on exchange</p></div><div class="cell tb"><p class="v">₹0–₹20 per order or 0.01%–0.05% (flat-fees)</p></div><div class="cell tb"><p class="v">Stockbroker</p></div>
+      <div class="cell tb"><p class="k">Securities Transaction Tax (STT)</p></div><div class="cell tb"><p class="v">Government tax on equity ETF transactions</p></div><div class="cell tb"><p class="v">0.1% on delivery buy; 0.025% on intraday sell</p></div><div class="cell tb"><p class="v">Government</p></div>
+      <div class="cell tb"><p class="k">GST on Brokerage</p></div><div class="cell tb"><p class="v">18% GST applied to the brokerage amount</p></div><div class="cell tb"><p class="v">18% of brokerage charged</p></div><div class="cell tb"><p class="v">Government</p></div>
+      <div class="cell tb"><p class="k">Depository Participant (DP) Charges</p></div><div class="cell tb"><p class="v">Charge for debiting ETF units from your demat on sale</p></div><div class="cell tb"><p class="v">₹12–₹25 per scrip per day of sell (varies by DP)</p></div><div class="cell tb"><p class="v">CDSL / NSDL via broker</p></div>
+      <div class="cell tb"><p class="k">Impact Cost/Bid-Ask Spread</p></div><div class="cell tb"><p class="v">Implicit cost due to gap between buy and sell price on exchange</p></div><div class="cell tb"><p class="v">0.01%–0.30% depending on ETF liquidity</p></div><div class="cell tb"><p class="v">Market</p></div>
     </div></div>
-    <p class="sec-lead">Put together, the total cost of owning a passive Nifty 50 ETF can work out to roughly 0.10%–0.30% a year, compared to 1%–2.25% for an actively managed equity mutual fund - a meaningful difference over a long horizon once compounding is factored in.</p>
+    <p class="sec-lead">Put together, the total cost of owning a passive Nifty 50 ETF can work out to roughly 0.10%–0.30% a year, compared to 1%–2.25% for an actively managed equity mutual fund — a meaningful difference over a long investment horizon once compounding is factored in.</p>
   </section>
 
-  <!-- ================= TAXATION ================= -->
+  <!-- ================= HOW ARE ETF GAINS TAXED IN INDIA ================= -->
   <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF Taxation - LTCG, STCG &amp; How to File</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">ETF taxation in India depends on the underlying asset class:</p>
+      <h2 class="sec-title">How are ETF Gains Taxed in India?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">ETF taxation in India depends on the type of ETF and how long you hold it. Equity ETFs may qualify for equity taxation, while Gold and Debt ETFs are taxed differently. Since tax rules can vary by product and may change over time, investors should check the latest tax provisions before investing or redeeming. Here's how each major ETF category is taxed:</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>ETF Type</p></div><div class="cell th"><p>Treatment</p></div><div class="cell th"><p>Rate</p></div>
-      <div class="cell tb"><p class="k">Equity ETF</p></div><div class="cell tb"><p class="v">STCG &lt; 12mo / LTCG ≥ 12mo</p></div><div class="cell tb"><p class="v">20% / 12.5% above ₹1.25L</p></div>
-      <div class="cell tb"><p class="k">Gold ETF</p></div><div class="cell tb"><p class="v">LTCG after 24mo</p></div><div class="cell tb"><p class="v">12.5%</p></div>
-      <div class="cell tb"><p class="k">Debt ETF</p></div><div class="cell tb"><p class="v">Taxed any holding period (post-2023)</p></div><div class="cell tb"><p class="v">Slab rate</p></div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="min-width:760px">
+      <div class="cell th"><p>ETF Type</p></div><div class="cell th"><p>Tax Treatment</p></div><div class="cell th"><p>Rate</p></div><div class="cell th"><p>Holding Period</p></div>
+      <div class="cell tb"><p class="k">Equity ETF</p></div><div class="cell tb"><p class="v">STCG if held under 12 months; LTCG if held 12+ months</p></div><div class="cell tb"><p class="v">STCG: 20% | LTCG: 12.5% above ₹1.25L/year</p></div><div class="cell tb"><p class="v">LTCG threshold: 12 months</p></div>
+      <div class="cell tb"><p class="k">Gold ETF</p></div><div class="cell tb"><p class="v">LTCG applies after 24 months; STCG before that</p></div><div class="cell tb"><p class="v">LTCG: 12.5% (no indexation) | STCG: Income slab rate</p></div><div class="cell tb"><p class="v">LTCG threshold: 24 months</p></div>
+      <div class="cell tb"><p class="k">Silver ETF</p></div><div class="cell tb"><p class="v">Same treatment as Gold ETF</p></div><div class="cell tb"><p class="v">LTCG: 12.5% after 24 months | STCG: Slab rate</p></div><div class="cell tb"><p class="v">LTCG threshold: 24 months</p></div>
+      <div class="cell tb"><p class="k">Debt / Bond ETF</p></div><div class="cell tb"><p class="v">All gains added to total income (post-Apr 2023)</p></div><div class="cell tb"><p class="v">Income slab rate — regardless of holding period</p></div><div class="cell tb"><p class="v">No LTCG benefit post-Apr 2023</p></div>
+      <div class="cell tb"><p class="k">International ETF</p></div><div class="cell tb"><p class="v">Treated as debt funds for tax (post-Apr 2023 Finance Act)</p></div><div class="cell tb"><p class="v">Income slab rate — regardless of holding period</p></div><div class="cell tb"><p class="v">No LTCG benefit post-Apr 2023</p></div>
     </div></div>
-    <div class="card">
-      <p class="card-p" style="font-style:italic"><strong>Important:</strong> the Finance Act 2023 removed indexation for debt mutual funds and ETFs bought on or after 1 April 2023 - gains are taxed at your income slab regardless of holding period.</p>
-      <p class="card-p" style="margin-top:16px">Capital gains from ETF sales must be reported under &ldquo;Capital Gains&rdquo; in your ITR, with equity and non-equity gains disclosed separately. Keep records of purchase price, sale price and holding period for each transaction.</p>
-    </div>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Note: Tax rates cited are for FY 2025-26 as per Budget 2024. Rates are subject to change. Consult a SEBI-registered tax advisor for personalised guidance.</p>
+    <a class="btn-gold" href="/contact-us/" style="align-self:flex-start">Speak to our Advisor/RM</a>
   </section>
 
-  <!-- ================= TOP ETFs ================= -->
+  <!-- ================= TOP ETFs TO CONSIDER ================= -->
   <section class="section stack sec-light" id="sec-top" data-section="top" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Top ETFs to Consider - Nifty 50, Gold, Banking &amp; More</h2>
-      <p class="sec-lead">Rather than a definitive ranking, here's a curated look at category-leading ETFs worth considering, based on AUM, cost and trading liquidity:</p>
+      <h2 class="sec-title">Top ETFs to Consider — Nifty 50, Gold, Banking &amp; More</h2>
+      <p class="sec-lead">Selecting the right Exchange-Traded Fund requires evaluating more than just past returns. The key parameters are the size of assets under management (AUM) (larger AUM means stronger market activity and smaller bid-ask spreads), better liquidity, expense ratio (lower is better), tracking error (closer to zero is better), and alignment with your investment objective.</p>
+      <p class="sec-lead">Rather than a definitive ranking, here's a curated look at category-leading ETFs worth considering, based on AUM, cost, and trading liquidity:</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Category</p></div><div class="cell th"><p>Example</p></div><div class="cell th"><p>AUM / ER</p></div>
-      <div class="cell tb"><p class="k">Nifty 50 ETF</p></div><div class="cell tb"><p class="v">Tracks Nifty 50</p></div><div class="cell tb"><p class="v">High AUM, low ER</p></div>
-      <div class="cell tb"><p class="k">Gold ETF</p></div><div class="cell tb"><p class="v">Tracks gold price</p></div><div class="cell tb"><p class="v">High AUM, low ER</p></div>
-      <div class="cell tb"><p class="k">Banking ETF</p></div><div class="cell tb"><p class="v">Tracks Bank Nifty</p></div><div class="cell tb"><p class="v">Mod. AUM, low ER</p></div>
-      <div class="cell tb"><p class="k">IT ETF</p></div><div class="cell tb"><p class="v">Tracks Nifty IT</p></div><div class="cell tb"><p class="v">Mod. AUM, low ER</p></div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Category</p></div><div class="cell th"><p>Example ETF</p></div><div class="cell th"><p>AUM / Expense Ratio</p></div>
+      <div class="cell tb"><p class="k">Nifty 50 ETF</p></div><div class="cell tb"><p class="v">Tracks the Nifty 50 index</p></div><div class="cell tb"><p class="v">High AUM · Low expense ratio</p></div>
+      <div class="cell tb"><p class="k">Gold ETF</p></div><div class="cell tb"><p class="v">Tracks domestic gold prices</p></div><div class="cell tb"><p class="v">High AUM · Low expense ratio</p></div>
+      <div class="cell tb"><p class="k">Banking ETF</p></div><div class="cell tb"><p class="v">Tracks the Bank Nifty / banking index</p></div><div class="cell tb"><p class="v">Moderate AUM · Low expense ratio</p></div>
+      <div class="cell tb"><p class="k">IT ETF</p></div><div class="cell tb"><p class="v">Tracks the Nifty IT index</p></div><div class="cell tb"><p class="v">Moderate AUM · Low expense ratio</p></div>
     </div></div>
-    <p class="sec-lead">When comparing ETFs within the same category, prioritise lower tracking error, higher AUM for liquidity and a tighter bid-ask spread over chasing the highest recent return.</p>
+    <p class="sec-lead">Before investing in any ETF, we recommend reviewing the scheme's factsheet for current AUM, tracking error, and portfolio composition.</p>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:flex-start">Invest in ETFs</a>
   </section>
 
-  <!-- ================= PORTFOLIO CONSTRUCTION ================= -->
+  <!-- ================= HOW TO BUILD AN ETF PORTFOLIO ================= -->
   <section class="section stack sec-tint" id="sec-portfolio" data-section="portfolio" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
-      <h2 class="sec-title">ETF Portfolio Construction - How to Build a Passive Portfolio</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs are versatile building blocks for a low-cost, diversified portfolio. Two model approaches, from simple to more advanced:</p>
+      <h2 class="sec-title">How to Build an ETF Portfolio?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Building an ETF portfolio in India involves the following steps:</p>
     </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Define your goal and horizon</h4><p>Are you building a retirement corpus (15+ years), saving for a child's education (10 years), or creating an emergency buffer (3–5 years)? Your goal sets your equity, debt, and gold split.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Choose your asset allocation</h4><p>Use the model approaches, shared below, as a starting point. Adjust based on your risk tolerance — higher equity for longer horizons, more debt/gold for shorter timelines.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Select ETFs within each category</h4><p>For each allocation bucket, choose the highest AUM, lowest expense ratio ETF available.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Invest regularly and review annually</h4><p>Set up scheduled recurring orders for your monthly SIP amount. Review allocations once a year or after major life events, not in response to market movements.</p></div>
+      </div>
+    </div>
+    <p class="sec-lead" style="color:var(--color-text-secondary);width:100%">ETFs are versatile building blocks for a low-cost, diversified portfolio. Here are two model approaches, from simple to more advanced:</p>
     <div class="row-2" data-reveal-row style="width:100%">
       <div class="card">
-        <h4 class="card-h">Beginner: 3-ETF portfolio</h4>
-        <div class="stack" style="gap:12px">
-          <p class="card-p"><strong>Nifty 50 ETF (60%)</strong> - core equity exposure</p>
-          <p class="card-p"><strong>Gold ETF (20%)</strong> - inflation hedge</p>
-          <p class="card-p"><strong>Debt ETF (20%)</strong> - stability and income</p>
-        </div>
+        <h4 class="card-h">Beginner: The 3-ETF Portfolio</h4>
+        <ul class="bullets">
+          <li><strong>Nifty 50 ETF (60%):</strong> Core equity exposure to India's largest companies</li>
+          <li><strong>Gold ETF (20%):</strong> A hedge against inflation and equity market volatility</li>
+          <li><strong>Debt ETF (20%):</strong> Stability and income, reducing overall portfolio risk</li>
+        </ul>
       </div>
       <div class="card">
-        <h4 class="card-h">Advanced: core-satellite</h4>
-        <div class="stack" style="gap:12px">
-          <p class="card-p"><strong>Core</strong> - Nifty 50 ETF (40%)</p>
-          <p class="card-p"><strong>Satellite</strong> - Midcap ETF (20%)</p>
-          <p class="card-p"><strong>Satellite</strong> - International ETF (20%)</p>
-          <p class="card-p"><strong>Satellite</strong> - Gold ETF (20%)</p>
-        </div>
+        <h4 class="card-h">Advanced: Core-Satellite Strategy</h4>
+        <ul class="bullets">
+          <li><strong>Core — Nifty 50 ETF (40%):</strong> Stable, broad-market foundation of the portfolio</li>
+          <li><strong>Satellite — Midcap ETF (20%):</strong> Higher growth potential from mid-sized companies</li>
+          <li><strong>Satellite — International ETF (20%):</strong> Geographic diversification beyond Indian markets</li>
+          <li><strong>Satellite — Gold ETF (20%):</strong> A tactical hedge and portfolio stabiliser</li>
+        </ul>
       </div>
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Your ideal mix depends on age, goals and risk appetite - younger investors with a longer horizon can typically afford a higher equity allocation, while those nearing a goal may tilt toward debt and gold for stability.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary);width:100%">Regardless of which model you start with, the core principle of ETF portfolio construction is consistency over complexity: choose low-cost, high-AUM ETFs, invest regularly via a disciplined SIP cadence, and review allocations annually (or after major life events) rather than reacting to short-term market movements.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary);width:100%">Note: The ETF portfolio strategies shared above are for informational purposes only, intended to help investors understand different approaches to portfolio building, and do not assure any specific outcome. Investors should evaluate their financial goals, risk appetite, and investment horizon before making any investment decision.</p>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Build Your Portfolio</a>
   </section>
 
-  <!-- ================= RISKS ================= -->
+  <!-- ================= RISKS OF INVESTING IN ETFs ================= -->
   <section class="section stack sec-light" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Risks of Investing in ETFs - What to Watch Out For</h2>
-      <p class="sec-lead">ETFs are generally a lower-cost, transparent way to invest, but like any market-linked product they carry risks worth understanding:</p>
+      <h2 class="sec-title">Risks of Investing in ETFs</h2>
+      <p class="sec-lead">ETFs are among the most transparent and well-regulated investment products in India, but like any market-linked instrument, they carry risks that every investor must understand before committing capital. The good news - most ETF-specific risks are manageable with informed fund selection and disciplined investing behaviour.</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Risk</p></div><div class="cell th"><p>Description</p></div><div class="cell th"><p>Mitigation</p></div>
-      <div class="cell tb"><p class="k">Tracking Error</p></div><div class="cell tb"><p class="v">Return may deviate from the index due to fees and rebalancing lag</p></div><div class="cell tb"><p class="v">Choose ETFs with low historical tracking error</p></div>
-      <div class="cell tb"><p class="k">Liquidity Risk</p></div><div class="cell tb"><p class="v">Thinly traded ETFs may have wide bid-ask spreads</p></div><div class="cell tb"><p class="v">Prefer ETFs with higher volume and AUM</p></div>
-      <div class="cell tb"><p class="k">Market Risk</p></div><div class="cell tb"><p class="v">Value moves with the underlying asset class</p></div><div class="cell tb"><p class="v">Diversify across asset classes, stay long-term</p></div>
-      <div class="cell tb"><p class="k">Low AUM Risk</p></div><div class="cell tb"><p class="v">Very small ETFs may face closure or poor price discovery</p></div><div class="cell tb"><p class="v">Check AUM before investing in niche ETFs</p></div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:760px">
+      <div class="cell th"><p>Risk Type</p></div><div class="cell th"><p>What It Means</p></div><div class="cell th"><p>How to Manage It</p></div>
+      <div class="cell tb"><p class="k">Market Risk</p></div><div class="cell tb"><p class="v">ETF prices fall when the underlying index or asset class declines — unavoidable in any equity or commodity investment</p></div><div class="cell tb"><p class="v">Invest with a long time horizon (5+ years for equity ETFs); use SIP to average costs</p></div>
+      <div class="cell tb"><p class="k">Tracking Error</p></div><div class="cell tb"><p class="v">The ETF's return may deviate from its benchmark index return due to cash holdings, replication methodology, or expense drag</p></div><div class="cell tb"><p class="v">Choose ETFs with consistently low tracking error (below 0.10% for index ETFs); review factsheets</p></div>
+      <div class="cell tb"><p class="k">Liquidity Risk</p></div><div class="cell tb"><p class="v">Low-volume ETFs may have wide bid-ask spreads, making it expensive to buy or sell at fair value</p></div><div class="cell tb"><p class="v">Prefer ETFs with high AUM (above ₹500 Cr) and active daily trading volumes on NSE/BSE</p></div>
+      <div class="cell tb"><p class="k">Impact Cost</p></div><div class="cell tb"><p class="v">Large orders in illiquid ETFs can move the price against you, increasing your effective cost</p></div><div class="cell tb"><p class="v">Use limit orders instead of market orders; avoid thinly traded sectoral ETFs for large ticket sizes</p></div>
+      <div class="cell tb"><p class="k">Low AUM Risk</p></div><div class="cell tb"><p class="v">ETFs with very small AUM may be wound up by the AMC, forcing premature redemption</p></div><div class="cell tb"><p class="v">Avoid ETFs with AUM below ₹100 Cr; check the AMC's ETF track record and commitment</p></div>
+      <div class="cell tb"><p class="k">Delisting Risk</p></div><div class="cell tb"><p class="v">Close-ended ETFs or ETFs with insufficient investor interest may be delisted from the exchange</p></div><div class="cell tb"><p class="v">Invest primarily in open-ended, SEBI-compliant ETFs with diversified investor bases</p></div>
+      <div class="cell tb"><p class="k">Currency Risk</p></div><div class="cell tb"><p class="v">International ETFs carry USD/INR exchange rate risk — rupee depreciation can amplify or reduce returns</p></div><div class="cell tb"><p class="v">Size international ETF allocation appropriately (10–20% of total portfolio)</p></div>
     </div></div>
-    <p class="sec-lead" style="font-style:italic">Investments in securities markets are subject to market risk. Please read all scheme-related and exchange documents carefully before investing.</p>
+    <p class="sec-lead" style="font-style:italic">Regulatory Note: Mutual fund ETFs in India are regulated by SEBI. Past performance of any ETF does not guarantee future returns. Please read the Scheme Information Document (SID) and Key Information Memorandum (KIM) before investing.</p>
   </section>
 
-  <!-- ================= WHO SHOULD INVEST ================= -->
+  <!-- ================= WHO SHOULD INVEST IN ETFs ================= -->
   <section class="section stack sec-tint" id="sec-who" data-section="who" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Who Should Invest in ETFs? - Suitability &amp; Investor Profiles</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs work well for almost every investor type because of their flexibility and low cost - but the right starting point depends on your goals, time horizon and comfort with active monitoring.</p>
+      <h2 class="sec-title">Who Should Invest in ETFs?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs are not a one-size-fits-all product, but their versatility means they can serve a surprisingly wide range of investor profiles — from a salaried professional starting their first investment to an HNI building a multi-crore passive portfolio. Here is how ETFs align with different investor types:</p>
     </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Profile</p></div><div class="cell th"><p>Typical Need</p></div><div class="cell th"><p>Suitable ETF</p></div>
-      <div class="cell tb"><p class="k">Beginner</p></div><div class="cell tb"><p class="v">New to markets, wants simplicity</p></div><div class="cell tb"><p class="v">Nifty 50 / broad index ETF</p></div>
-      <div class="cell tb"><p class="k">Salaried</p></div><div class="cell tb"><p class="v">Limited time, steady monthly surplus</p></div><div class="cell tb"><p class="v">Index ETF via scheduled orders</p></div>
-      <div class="cell tb"><p class="k">Active Trader</p></div><div class="cell tb"><p class="v">Comfortable with frequent trading</p></div><div class="cell tb"><p class="v">Sectoral / thematic ETFs</p></div>
-      <div class="cell tb"><p class="k">HNI</p></div><div class="cell tb"><p class="v">Larger corpus, diversification</p></div><div class="cell tb"><p class="v">Multi-asset ETF portfolio</p></div>
-      <div class="cell tb"><p class="k">NRI</p></div><div class="cell tb"><p class="v">India market exposure from abroad</p></div><div class="cell tb"><p class="v">Equity / index ETFs (FEMA/RBI norms)</p></div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="min-width:880px">
+      <div class="cell th"><p>Investor Profile</p></div><div class="cell th"><p>Who They Are</p></div><div class="cell th"><p>Best ETF Type</p></div><div class="cell th"><p>Why ETFs Work Here</p></div>
+      <div class="cell tb"><p class="k">Beginner Investor</p></div><div class="cell tb"><p class="v">First-time investors, students, young earners (22–30 years)</p></div><div class="cell tb"><p class="v">Nifty 50 ETF, Gold ETF</p></div><div class="cell tb"><p class="v">Low cost, simple to understand, no stock-picking needed; builds a disciplined investing habit</p></div>
+      <div class="cell tb"><p class="k">Salaried Professional</p></div><div class="cell tb"><p class="v">Mid-career earners seeking wealth creation alongside regular income</p></div><div class="cell tb"><p class="v">Nifty 50 ETF + Midcap ETF via SIP</p></div><div class="cell tb"><p class="v">Cost-efficient long-term compounding; aligns with monthly income cycle via manual ETF SIP</p></div>
+      <div class="cell tb"><p class="k">Active Trader</p></div><div class="cell tb"><p class="v">Investors who actively monitor markets and seek tactical opportunities</p></div><div class="cell tb"><p class="v">Sectoral ETF, Smart Beta ETF, Bank ETF</p></div><div class="cell tb"><p class="v">Intraday tradability, liquidity, and sector-level precision without stock-specific risk</p></div>
+      <div class="cell tb"><p class="k">HNI/Institutional Investor</p></div><div class="cell tb"><p class="v">High net-worth investors with large ticket sizes (₹25L+)</p></div><div class="cell tb"><p class="v">Index ETF basket, International ETF, Smart Beta</p></div><div class="cell tb"><p class="v">Tax-efficient portfolio construction; low cost at scale; core passive allocation for large portfolios</p></div>
+      <div class="cell tb"><p class="k">NRI Investor</p></div><div class="cell tb"><p class="v">Non-resident Indians seeking India market exposure</p></div><div class="cell tb"><p class="v">Nifty 50 ETF, Gold ETF (via NRO/NRE demat)</p></div><div class="cell tb"><p class="v">SEBI-regulated, exchange-traded; accessible via NRI demat; simpler than direct equity for NRIs</p></div>
+      <div class="cell tb"><p class="k">Retirement Planner</p></div><div class="cell tb"><p class="v">Investors 40–55 years, building retirement corpus</p></div><div class="cell tb"><p class="v">Debt ETF (Bharat Bond) + Gold ETF + Nifty 50</p></div><div class="cell tb"><p class="v">Asset allocation flexibility; low cost; ability to shift from equity to debt ETF as retirement nears</p></div>
     </div></div>
   </section>
 
-  <!-- ================= DOCUMENTS & ELIGIBILITY ================= -->
+  <!-- ================= DOCUMENTS & ELIGIBILITY CRITERIA ================= -->
   <section class="section stack sec-light" id="sec-docs" data-section="docs" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
-      <h2 class="sec-title">Documents &amp; Eligibility for Investing in ETFs</h2>
-      <p class="sec-lead">Any resident Indian adult (18+) with a valid PAN and Aadhaar can open a demat account. NRIs can also invest, subject to FEMA and RBI guidelines, using an NRO/NRE-linked trading account.</p>
+      <h2 class="sec-title">Documents &amp; Eligibility Criteria</h2>
+      <p class="sec-lead">To invest in ETFs in India, you need a demat account and a trading account with a SEBI-registered stockbroker. The documentation process is entirely digital on our platform and requires the following:</p>
     </div>
-    <div class="row-2" data-reveal-row style="width:100%">
-      <div class="card check-card">
-        <h4 class="ch-title">Documents Required</h4>
-        <div class="check-list">
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card - mandatory identity &amp; tax proof</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Aadhaar card - identity &amp; address verification</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Bank proof - linking your bank for settlements</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Passport-size photograph for the account application</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Signature for the application &amp; trading mandate</p></div>
-        </div>
-      </div>
-      <div class="card check-card">
-        <h4 class="ch-title">Eligibility Criteria</h4>
-        <div class="check-list">
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Resident Indian adult, 18 years or older</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Valid PAN and Aadhaar</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Active bank account in your name</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Completed KYC verification</p></div>
-          <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">NRIs eligible via NRO/NRE-linked account (FEMA/RBI)</p></div>
-        </div>
-      </div>
+    <div class="t-scroll" style="width:100%"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Document</p></div><div class="cell th"><p>Purpose</p></div><div class="cell th"><p>Accepted Formats</p></div>
+      <div class="cell tb"><p class="k">PAN Card</p></div><div class="cell tb"><p class="v">Mandatory identity &amp; tax proof</p></div><div class="cell tb"><p class="v">Physical card or e-PAN PDF</p></div>
+      <div class="cell tb"><p class="k">Aadhaar Card</p></div><div class="cell tb"><p class="v">Identity &amp; address verification (e-KYC)</p></div><div class="cell tb"><p class="v">Aadhaar card or e-Aadhaar</p></div>
+      <div class="cell tb"><p class="k">Bank Proof</p></div><div class="cell tb"><p class="v">Linking your bank account for settlements</p></div><div class="cell tb"><p class="v">Cancelled cheque or bank statement</p></div>
+    </div></div>
+    <div class="stack" style="gap:16px;width:100%">
+      <h3 class="sub-title">Eligibility:</h3>
+      <ul class="bullets">
+        <li><strong>Indian Residents:</strong> Any Indian resident above 18 years of age with a valid PAN and Aadhaar is eligible to open a demat account and invest in ETFs.</li>
+        <li><strong>NRIs:</strong> They can invest via NRO or NRE demat accounts under FEMA guidelines.</li>
+        <li><strong>Minors:</strong> They can invest through a guardian-operated account.</li>
+      </ul>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Invest in ETF</a>
   </section>
 
-  <!-- ================= FAQ ================= -->
+  <!-- ================= FAQ (Got Questions?) ================= -->
   <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
@@ -362,88 +424,4 @@ const seo = {
       </div>
     </div>
   </section>
-
-  <!-- ================= FINAL CTA ================= -->
-  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
-    <div class="cta-box">
-      <div class="ct-tt">
-        <h3>Start Investing in ETFs Today</h3>
-        <p class="ct-sub">Open your demat account in minutes and buy your first ETF - with zero paperwork.</p>
-      </div>
-      <a class="btn-gold" href="/open-demat-account/">Open A Demat Account</a>
-    </div>
-  </section>
 </BaseLayout>
-
-<style>
-  /* ===== etf - page-specific only. All values bind to tokens (rule 2 + rule 9). ===== */
-
-  /* Numbered process flow - vertical, one bordered card, hairline-separated
-     rows (the wireframe's 6-step "creation/redemption" and "how to invest"
-     lists). A sequence, so it is a semantic <ol>; markers are the gold-badge
-     .flow-num, not list bullets. */
-  .flow {
-    list-style: none;
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-border-card);
-    border-radius: 24px;
-    overflow: hidden;
-  }
-  .flow-step {
-    display: flex;
-    gap: 24px;
-    align-items: center;
-    padding: 24px;
-    border-top: 1px solid var(--color-border-hairline);
-  }
-  .flow-step:first-child { border-top: 0; }
-  .flow-num {
-    flex: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-olive-900);
-    color: var(--color-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 16px;
-  }
-  .flow-tx { flex: 1 0 0; min-width: 0; font-weight: 400; font-size: 16px; color: var(--color-text-secondary); }
-
-  /* Types-of-ETF icon cards - individually bordered so a 7th card wraps
-     cleanly (no dangling shared-hairline edge). Icon box follows the 8px grid. */
-  .etf-types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
-  .etf-type {
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-border-card);
-    border-radius: 24px;
-    padding: var(--container-pad);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  .etf-type .ic {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background: var(--color-surface-section-tint);
-    color: var(--color-olive-900);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .etf-type .ic svg { display: block; width: 24px; height: 24px; }
-  .etf-type h4 { font-weight: 500; font-size: 18px; color: var(--color-text-primary); }
-  .etf-type p { font-weight: 400; font-size: 14px; color: var(--color-text-tertiary); }
-
-  @media (max-width: 900px) {
-    .etf-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 600px) {
-    .etf-types { grid-template-columns: 1fr; }
-    .flow-step { align-items: flex-start; }
-  }
-</style>

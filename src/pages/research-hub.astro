@@ -1,113 +1,99 @@
 ---
 /**
- * Research Centre - /research-hub/  (V4 "Research Landing Page")
+ * Research Centre - /research-hub/
  *
- * The research hub, built to the Figma V4 wireframe (node 991-6700) but rendered
- * entirely in the shared design system: the standardised olive hero (rule 7),
- * shared section / card / .approaches research cards / FAQ / CTA components, and
- * page-local styles ONLY for the genuinely-new blocks - the icon feature grid
- * (reused across two sections), the dark "access" band, and the alerts columns.
- * Every value binds to a token (rule 9); the grids are data-driven so the same
- * templates scale to thousands of instances - the scale North Star.
- *
- * Nested route → imports at ../../ depth (sibling of research/technical.astro).
+ * Body content is the compliance-approved "Research Hub - Webpage Content" doc,
+ * implemented word-for-word in the shared design system: the standardised olive
+ * hero (rule 7), shared section / card / .appr research cards / FAQ / CTA
+ * components, plus the page-local blocks (icon feature grid, dark access band,
+ * alerts columns). Every value binds to a token (rule 9).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// "All-In-One Research Desk" - six capability cards (wireframe, verbatim). Each
-// `icon` maps to an inline <svg> in the ICON map below (rule 4: real SVGs only).
+// SECTION 3 - "All-In-One Research Desk", six capability cards (doc verbatim).
 const DESK = [
-  { icon: 'calendar', title: 'Daily & weekly notes', body: 'Short, dated reads on where the market stands - published every trading day, not just when something breaks.' },
-  { icon: 'bars', title: 'Stock & sector coverage', body: 'Coverage that follows a company across quarters, not just the day it reports its results.' },
-  { icon: 'candles', title: 'Technical levels, marked', body: 'Support, resistance and the level that would change our mind - set out before the session, not after.' },
-  { icon: 'search', title: 'Fundamental deep-dives', body: 'Margins, debt and management commentary, read against what the business actually said on its concall.' },
-  { icon: 'clock', title: 'Mutual fund flow tracking', body: 'Where SIP money, NFOs and category flows are moving each month, across equity, debt and hybrid.' },
-  { icon: 'shield', title: 'One desk, three disciplines', body: 'Technical, fundamental and mutual fund research from a single SEBI-registered desk - not three vendors.' },
+  { icon: 'calendar', title: 'Daily & weekly notes', body: 'A pre-market note is ready before the opening bell every trading day — so by the time the market opens, you already know the levels to watch and the trades worth considering.' },
+  { icon: 'bars', title: 'Stock & sector coverage', body: 'From banking and IT to pharma and commodities, our analysts track key sectors quarterly and flag changes in outlook before they show up in price.' },
+  { icon: 'candles', title: 'Technical levels, marked', body: 'Support, resistance, and targets are not approximate — they are charted, quantified, and updated so you know exactly what to watch before placing a trade.' },
+  { icon: 'search', title: 'Fundamental deep dives', body: 'Margins, debt trends, and what management is actually saying — our analysts read through the filings so you understand why a stock is where it is, not just what price it is trading at.' },
+  { icon: 'clock', title: 'Mutual fund flow tracking', body: 'Where SIP money, NFOs, and category flows are heading each month — because the direction of managed money often leads where price goes next.' },
+  { icon: 'shield', title: 'One desk, three disciplines', body: 'Technical, fundamental, and mutual fund research sit inside a single platform. You do not need three subscriptions or three logins to build a complete picture.' },
 ];
 
-// The three research streams - rendered as the shared dark .appr cards (the
-// design-system "research approach cards"), linked to their landing pages.
+// SECTION 4 - "Explore Our Research Types", three research streams (doc verbatim).
 const TYPES = [
   {
-    kicker: 'Stream 01', title: 'Technical Research', href: '/technical-analysis/',
-    body: 'Chart-based calls on indices and stocks - with clear entry levels, price targets and stop-losses. Published daily for intraday ideas and weekly for positional trades.',
-    tags: ['Intraday Calls', 'Positional Ideas', 'Index Outlook', 'F&O Levels'],
+    kicker: 'Technical Research', title: 'Charts, Levels & Trade Setups', href: '/technical-analysis/',
+    body: 'Our technical analysts read market structure, not headlines. Each report identifies high-probability trade setups using price action, volume patterns, and momentum — with defined entry levels, targets, and stop losses. Published daily for indices and high-volume stocks.',
+    tags: ['Intraday calls', 'Swing trades', 'Index outlook', 'Option levels', 'Daily & weekly'],
   },
   {
-    kicker: 'Stream 02', title: 'Fundamental Research', href: '/fundamental-analysis/',
-    body: 'In-depth company analysis covering quarterly performance, management commentary, valuation and multi-quarter growth outlook - including sector reports and initiating-coverage notes.',
-    tags: ['Company Reports', 'Earnings Reviews', 'Sector Coverage', 'Initiating Coverage'],
+    kicker: 'Fundamental Research', title: 'Business Analysis & Stock Ideas', href: '/fundamental-analysis/',
+    body: 'Our fundamental team looks past the quarterly noise to assess what a business is genuinely worth. Reports cover earnings quality, management track record, sector positioning, and valuation — giving you a long-term conviction, not just a short-term signal.',
+    tags: ['Stock ideas', 'Sector notes', 'Quarterly results', 'Company profiles', 'Target price'],
   },
   {
-    kicker: 'Stream 03', title: 'Mutual Fund Research', href: '/mutual-fund-analysis/',
-    body: 'Monthly fund rankings, SIP performance tracking and NFO reviews - across equity, debt and hybrid categories. Know which categories are attracting flows and which are losing them.',
-    tags: ['SIP Tracker', 'NFO Reviews', 'Category Flows', 'Fund Rankings'],
+    kicker: 'Mutual Fund Research', title: 'Scheme Analysis & Portfolio Guidance', href: '/mutual-fund-analysis/',
+    body: "Choosing a mutual fund should not depend on a distributor's incentive. Our analysts evaluate fund performance against peers and benchmarks, assess portfolio overlap, and track consistency of returns — so you invest in funds that suit your goal, not just the top-ranked list.",
+    tags: ['Fund reviews', 'Category comparisons', 'SIP recommendations', 'NFO analysis', 'Portfolio overlap'],
   },
 ];
 
-// "Why Shriram Research?" - five reasons, same feature-card template as DESK.
+// SECTION 5 - "Why Shriram Financial Services Research?", three cards (doc verbatim).
 const WHY = [
-  { icon: 'globe', title: 'Multi-asset coverage', body: 'Equity, commodities (MCX Gold, Silver, Crude) and mutual funds - all in one hub.' },
-  { icon: 'target', title: 'Actionable insights', body: 'Specific entry, target and stop-loss levels - not just analysis, but clear calls.' },
-  { icon: 'users', title: 'Institutional-grade research', body: 'The same depth of analysis the professionals rely on, brought to every client.' },
-  { icon: 'bolt', title: 'Published every market day', body: 'Daily EQ Trend and Commodity Trend delivered before market open. Never miss a setup or pivot level.' },
-  { icon: 'book', title: 'Full PDF reports with data tables', body: 'Pivot tables for all Nifty 50 stocks, commodity futures strategy and support/resistance levels - all in downloadable PDFs.' },
+  { icon: 'globe', title: 'Multi-Asset Coverage', body: 'Equity, derivatives, debt, and mutual funds — tracked across asset classes and sectors so you get a complete view, not a fragment of one.' },
+  { icon: 'target', title: 'Actionable Insights', body: 'Every note ends with a clear recommendation — buy, hold, reduce, or exit — and defines the price levels that trigger each. A view without a price is not useful to a trader. We do not publish those.' },
+  { icon: 'users', title: 'Institutional-Grade Research', body: 'The kind of research that fund houses and proprietary trading desks rely on — company-level analysis, sector positioning, valuation models — is now part of your Shriram Financial Services account.' },
 ];
 
-// Market alerts / commentary - two columns, each with a "how to check" walk-through.
+// SECTION 7 - "Market Alerts & Commentary", two columns each with a "how to"
+// walk-through (doc verbatim).
 const ALERTS = [
   {
     icon: 'bell', title: 'Market Alerts',
-    body: 'Research alerts let you know updates and research calls the instant they publish - just enable alerts in the Antara app.',
-    howTitle: 'How to Check Research Calls',
-    howLead: 'Never miss an analyst call. Choose how you want to receive research alerts - directly on the Antara App.',
+    body: 'By the time you read an analyst call an hour after it was published, the stock has usually already moved. Market Alerts push research calls to your phone the moment an analyst publishes — not a digest at the end of the day, but a live notification so you can look at the trade while it is still relevant. Alerts cover every research type — technical trade calls, fundamental buy and sell recommendations, and mutual fund updates. Turn them on once in the app settings.',
+    howTitle: 'How to Get Research',
     steps: [
-      'Download and complete onboarding in the Antara app.',
-      'Open the Antara app and go to the Home screen.',
-      'In the Home-screen top section, refer to the Research Call section.',
+      'Login to your account on the Antara application.',
+      'Navigate to Research section available in Dashboard.',
     ],
   },
   {
     icon: 'chat', title: 'Market Commentary',
-    body: 'Our analyst desk publishes market commentary three times every trading day - a pre-session outlook before the open, a mid-session pulse as trade develops, and an end-of-day wrap with sector and FII/DII data. Each update covers index moves, sector rotation and the levels that matter.',
+    body: 'A market view written at 8:30 am can look outdated by 11 am. Something breaks in the US session, a large FII block goes through, a sector starts rotating — the picture changes. Our analyst desk publishes commentary three times every trading day — before the market opens, mid-session as trade develops, and at the end of day. Each update covers index direction, sector rotation, key support and resistance levels, FII and DII activity, and what to watch going into the next session.',
     howTitle: 'How to Check Market Commentary',
-    howLead: 'Watch the market commentary regularly to make informed decisions.',
     steps: [
-      'Download and complete onboarding in the Antara app.',
-      'Open the Antara app and go to the Home screen.',
-      'In the Home-screen bottom section, refer to the Market News & Update Call section.',
+      'Login to your account on the Antara application.',
+      'Navigate to News & Updates section available in Dashboard.',
     ],
   },
 ];
 
-// Frequently Asked Questions - first item open (site convention).
+// SECTION 8 - Frequently Asked Questions (doc verbatim; first item open). The
+// rendered header stays "General Questions" (project rule 13).
 const FAQS = [
   {
     q: 'What is Shriram Research?',
-    a: 'Shriram Research is the in-house research division of Shriram Financial Services. We publish daily technical trend notes, fundamental stock analysis and monthly mutual fund reviews - all produced by SEBI-registered analysts across three disciplines, under one roof.',
+    a: 'Shriram Research is the equity and commodity research division of Shriram Financial Services. Our analysts — registered with SEBI — publish technical analysis, fundamental stock reports, and sector-level mutual fund insights every trading day. The research is produced by qualified professionals, not algorithmically generated, and covers buy/sell recommendations with defined price targets and stop-loss levels.',
   },
   {
     q: 'What types of research reports are available?',
-    a: 'Three streams: Technical Research (daily and weekly index, stock and commodity trend notes with entry, target and stop-loss), Fundamental Research (company deep-dives, earnings reviews and initiating coverage) and Mutual Fund Research (fund rankings, SIP tracking and NFO reviews).',
+    a: 'We publish three categories of research: Technical Research (daily trade setups, intraday and swing trading calls for indices and stocks), Fundamental Research (company analysis, quarterly result reviews, sector notes with long-term investment recommendations), and Mutual Fund Research (scheme comparisons, SIP guidance, NFO evaluations, and portfolio overlap analysis). Market commentary is also published three times daily.',
   },
   {
     q: 'Do I need to login to read the reports?',
-    a: 'Report titles and short overviews are open to everyone. Full reports - with detailed levels, PDFs and data tables - and daily alerts unlock when you log in to the Antara app or open a Shriram demat account.',
-  },
-  {
-    q: 'How do I open a demat account to access research?',
-    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account - once verified, every research PDF, pivot table and trade idea is unlocked in full.',
+    a: 'To download the complete report, read in-depth analysis, and enable real-time research alerts, you will need to log in to your Antara account. If you do not have an account, you can open a demat account — the process is digital and takes very less time.',
   },
   {
     q: 'Is the research free for clients?',
-    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library - every technical note, fundamental report, pivot table and fund review - at no extra charge.',
+    a: 'Yes. Research access is included as part of your Shriram Financial Services demat and trading account — there is no separate subscription fee. Once your account is active, you get full access to all published reports, market commentary, and research alerts through the Antara app and the website.',
   },
   {
     q: 'How often are reports published?',
-    a: 'Daily trend notes for indices and commodities go out before the market opens on every trading day. Weekly strategies, fundamental deep-dives and monthly fund reviews are published on a fixed schedule through the month.',
+    a: 'Technical research notes and market commentary are published every trading day. Fundamental research is published on an event-driven schedule — typically when quarterly results are announced, when a sector development warrants a view, or when an analyst changes recommendation on a covered stock. Mutual fund reviews are typically published monthly, with NFO analysis as and when new funds are launched.',
   },
 ];
 
@@ -133,43 +119,44 @@ const seo = {
       <g id="ri-globe"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5S14.5 18.1 12 20.5C9.5 18.1 8.2 15.1 8.2 12S9.5 5.9 12 3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
       <g id="ri-target"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g>
       <g id="ri-users"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 5.2A3.2 3.2 0 0 1 18 11m-.5 3.8c2.1.6 3.5 2.5 3.5 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
-      <g id="ri-bolt"><path d="M13 3 5 13h6l-1 8 8-10h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
-      <g id="ri-book"><path d="M6 4h9a3 3 0 0 1 3 3v13H8a2 2 0 0 0-2 2V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 20a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
       <g id="ri-bell"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 19a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
       <g id="ri-chat"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 4v-4H6a2 2 0 0 1-2-2V6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 9h8M8 12h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
     </defs>
   </svg>
 
-  <!-- ================= HERO (standardised, rule 7) ================= -->
+  <!-- ================= SECTION 1 - HERO BANNER (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Research Centre' }]} />
+    <Breadcrumb trail={[{ name: 'Research Hub' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Shriram Financial <span class="g">Research Hub</span></h1>
-      <p class="lead">Institutional-grade research, produced daily by SEBI-registered analysts. Access the full library by logging in or opening your demat account.</p>
+      <h1>Shriram Financial Services <span class="g">Research Hub</span></h1>
+      <p class="lead">Institutional-grade financial research — produced daily by certified analysts. Access the full reports by logging in or opening your demat account.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered analysts</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Published every trading day</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Technical · Fundamental · Funds</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;100+ Reports published monthly</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Daily Market commentary, every session</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI Registered Research Analysts</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ================= WHAT IS RESEARCH ================= -->
+  <!-- ================= SECTION 2 - WHAT IS RESEARCH & WHY DOES IT MATTER? ================= -->
   <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is Research &amp; Why Does It Matter?</h2>
-      <p class="sec-lead">Research is the systematic analysis of markets, securities and economic data to produce informed investment recommendations. Our analysts study price charts, company financials, industry trends and macro factors to turn that into actionable insight. Research-backed investing reduces emotional decisions and improves outcomes - the same quality of analysis institutional investors rely on, covering when to buy, when to hold and what price to target.</p>
+      <h2 class="sec-title">What is Research &amp; Why Does It Matter?</h2>
+      <p class="sec-lead">Ask most investors why they bought a particular stock and the honest answer usually involves a tip from someone, a headline they half-read, or a feeling that it was the right time. That works occasionally. It does not work reliably. What separates investors who build wealth over time from those who do not is usually access to better information — and more importantly, a method for using it.</p>
+      <p class="sec-lead">That is what research does. At Shriram Financial Services, our analysts go through price charts, company financials, sector data, and economic indicators every day — not to tell you what the market will do, because nobody knows that, but to tell you whether a security is worth owning at today’s price and what it should be worth in six or twelve months.</p>
+      <p class="sec-lead">Good research also gives you something harder to quantify — it keeps you out of bad situations. Panic selling on a rough day, buying a stock just because it has been going up, holding something that has stopped working because admitting a mistake feels worse than sitting on a loss — these are portfolio killers. Our reports are written to give you a clear view: buy here, target there, exit if this happens.</p>
+      <p class="sec-lead">Shriram Financial Services Research covers three disciplines — technical, fundamental, and mutual fund — published by dedicated analyst teams every trading day. You do not need to piece together analysis from three different sources. It is all in one place, inside your trading account.</p>
     </div>
   </section>
 
-  <!-- ================= ALL-IN-ONE RESEARCH DESK ================= -->
+  <!-- ================= SECTION 3 - ALL-IN-ONE RESEARCH DESK ================= -->
   <section class="section stack sec-tint" id="sec-desk" data-section="desk" style="gap:56px">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">All-In-One Research Desk</h2>
-      <p class="sec-lead">Everything you need to make an informed call - daily notes, sector coverage, marked levels and fund flows - from one accountable, SEBI-registered desk.</p>
+      <p class="sec-lead">Six reasons serious investors use our research every morning.</p>
     </div>
     <div class="feat-grid" data-reveal-row>
       {DESK.map((c) => (
@@ -182,11 +169,11 @@ const seo = {
     </div>
   </section>
 
-  <!-- ================= EXPLORE OUR RESEARCH TYPES ================= -->
+  <!-- ================= SECTION 4 - EXPLORE OUR RESEARCH TYPES ================= -->
   <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Explore Our Research Types</h2>
-      <p class="sec-lead">Whether you trade intraday, invest for the long term or build wealth through SIPs - there's a dedicated research stream for you. Each is produced by specialist analysts and published on a fixed schedule.</p>
+      <p class="sec-lead">Whether you trade intraday, invest for the long term, or build wealth steadily through SIPs — there is a dedicated research stream for you. Each type is produced by specialist analysts and published on a fixed schedule.</p>
     </div>
     <div class="approaches" data-reveal-row>
       {TYPES.map((t) => (
@@ -208,11 +195,12 @@ const seo = {
     <div style="display:flex"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
   </section>
 
-  <!-- ================= WHY SHRIRAM RESEARCH ================= -->
+  <!-- ================= SECTION 5 - WHY SHRIRAM FINANCIAL SERVICES RESEARCH? ================= -->
   <section class="section stack sec-tint" id="sec-why" data-section="why" style="gap:56px">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Why Shriram Financial Services Research?</h2>
-      <p class="sec-lead">We are not a news aggregator or an algorithm-driven screener. We are a team of SEBI-registered analysts producing original, accountable research - across three disciplines, under one roof, every trading day.</p>
+      <p class="sec-lead">Open any financial app in India right now and you will find market commentary — from analysts, influencers, news desks, and people on social media who started posting about stocks three months ago. Volume is not the problem. The problem is knowing which of it is worth reading before you place a trade.</p>
+      <p class="sec-lead">Our curated Research services are from our Research Analyst Team (SEBI Registration No- INH200008705) and Every call is attributed to a specific analyst, every report has a timestamp, and when the view changes — because markets change — we update the recommendation and explain what shifted. You can see the track record. That accountability is something anonymous tips and algorithmic screeners cannot offer.</p>
     </div>
     <div class="feat-grid" data-reveal-row>
       {WHY.map((c) => (
@@ -225,26 +213,26 @@ const seo = {
     </div>
   </section>
 
-  <!-- ================= GET FULL ACCESS - dark band ================= -->
+  <!-- ================= SECTION 6 - GET FULL ACCESS TO IN-DEPTH INSIGHTS - dark band ================= -->
   <section class="section stack sec-light" id="sec-access" data-section="access" style="gap:0;align-items:center;justify-content:center">
     <div class="access-band">
       <span class="access-ic" aria-hidden="true">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
       </span>
       <h2>Access Full Research Reports</h2>
-      <p>Report titles and overviews are public. To read the complete analysis, download PDFs and receive daily alerts, log in or open your free demat account.</p>
+      <p>Report titles and overviews are public. To read the complete analysis, download PDFs, and receive daily alerts, login or open your free demat account.</p>
       <div class="access-cta">
-        <a class="btn-gold" href="/open-demat-account/">Open Demat Account - Free</a>
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
         <a class="btn-outline" href="#">Existing Client Login</a>
       </div>
     </div>
   </section>
 
-  <!-- ================= MARKET ALERTS & COMMENTARY ================= -->
+  <!-- ================= SECTION 7 - MARKET ALERTS & COMMENTARY ================= -->
   <section class="section stack sec-tint" id="sec-alerts" data-section="alerts" style="gap:56px">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Market Alerts &amp; Commentary</h2>
-      <p class="sec-lead">Stay on top of every call and every session - pushed to your device the moment it publishes, and walked through step by step.</p>
+      <p class="sec-lead">Staying informed between full reports is as important as reading them. The research desk keeps you connected to live market developments through two channels — instant alerts for calls and a structured three-times-daily commentary feed.</p>
     </div>
     <div class="row-2" data-reveal-row>
       {ALERTS.map((a) => (
@@ -256,7 +244,6 @@ const seo = {
           <p class="card-p">{a.body}</p>
           <div class="how">
             <h4>{a.howTitle}</h4>
-            <p class="how-lead">{a.howLead}</p>
             <ol class="asteps">
               {a.steps.map((s, i) => (
                 <li class="astep"><span class="anum">{i + 1}</span><span class="atx">{s}</span></li>
@@ -267,9 +254,9 @@ const seo = {
       ))}
     </div>
 
-    <!-- feature CTA bar - dark focus band (parity with the site's dark bands) -->
+    <!-- feature CTA bar - dark focus band -->
     <div class="get-access">
-      <h3>To Get Access To This Feature Now</h3>
+      <h3>To get access to this feature now:</h3>
       <div class="ga-cta">
         <a class="btn-gold" href="#">Login Now</a>
         <a class="btn-outline" href="/open-demat-account/">Open Demat Account</a>
@@ -277,7 +264,7 @@ const seo = {
     </div>
   </section>
 
-  <!-- ================= FREQUENTLY ASKED QUESTIONS ================= -->
+  <!-- ================= SECTION 8 - FREQUENTLY ASKED QUESTIONS ================= -->
   <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
@@ -294,17 +281,6 @@ const seo = {
           <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ================= FINAL CTA ================= -->
-  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
-    <div class="cta-box">
-      <div class="ct-tt">
-        <h3>Research-Led Investing, In Your Hands</h3>
-        <p class="ct-sub">Open your demat account in minutes and unlock every technical note, fundamental report and fund review.</p>
-      </div>
-      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
     </div>
   </section>
 </BaseLayout>
@@ -383,7 +359,6 @@ const seo = {
     background: var(--color-surface-section-tint); display: flex; flex-direction: column; gap: 8px;
   }
   .how h4 { font-weight: 500; font-size: 16px; color: var(--color-text-primary); }
-  .how-lead { font-weight: 400; font-size: 14px; color: var(--color-text-muted); }
   .asteps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
   .astep { display: flex; align-items: flex-start; gap: 16px; }
   .anum {

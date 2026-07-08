@@ -42,16 +42,16 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Contact Us' }]} />
     <div class="hero-grid">
       <div class="hero-inner" data-enter>
-        <h1>How Can We <span class="g">Help You?</span></h1>
-        <p class="lead">Reach our support team across multiple channels. We're here Monday to Saturday, 9 AM – 6 PM IST.</p>
+        <h1>How can we <span class="g">help you?</span></h1>
+        <p class="lead">Reach our support team across multiple channels. We are here from Monday to Friday, 8:30am – 5:30pm, Saturday: 10 am to 1pm</p>
         <div class="hero-contacts">
-          <a class="ct-pill" href="tel:18001234567">
+          <a class="ct-pill" href="tel:08047185579">
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
-            1800 1234567 (Toll Free)
+            080-47185579 | 080-43676869 Extn.825/831
           </a>
-          <a class="ct-pill" href="mailto:support@shriramfs.in">
+          <a class="ct-pill" href="mailto:support@shriramfs.com">
             <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
-            support@shriramfs.in
+            support@shriramfs.com
           </a>
         </div>
       </div>
@@ -59,61 +59,79 @@ const seo = {
       <!-- schedule-a-call lead-capture card -->
       <form class="hero-form hero-aside reveal" aria-label="Schedule a call with us" onsubmit="return false;">
         <div class="hf-head">
-          <h2>Schedule a Call With Us</h2>
-          <p>Drop in your details and an Advisor will reach out shortly:</p>
+          <h2>Schedule a call with us</h2>
         </div>
         <div class="hf-body">
-          <div class="hf-row">
-            <div class="hf-unit">
-              <div class="hf-field">
-                <div class="hf-field-in">
-                  <label for="cf-mobile">Mobile Number</label>
-                  <input id="cf-mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="+91 00000 00000" aria-describedby="err-mobile" required />
-                </div>
-              </div>
-              <p class="hf-err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
-            </div>
-            <div class="hf-unit">
-              <div class="hf-field sel">
-                <div class="hf-field-in">
-                  <label for="cf-city">City</label>
-                  <select id="cf-city" name="city" aria-describedby="err-city" required>
-                    <option value="">Select city</option>
-                    <option>Bengaluru</option>
-                    <option>Chennai</option>
-                    <option>Coimbatore</option>
-                    <option>Hyderabad</option>
-                    <option>Kolkata</option>
-                    <option>Madurai</option>
-                    <option>Mumbai</option>
-                    <option>New Delhi</option>
-                    <option>Surat</option>
-                    <option>Trichy</option>
-                    <option>Vijayawada</option>
-                    <option>Visakhapatnam</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-              </div>
-              <p class="hf-err" id="err-city">Please select your city.</p>
-            </div>
-          </div>
           <div class="hf-unit">
             <div class="hf-field">
               <div class="hf-field-in">
-                <label for="cf-name">Full Name</label>
-                <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Your name" aria-describedby="err-name" required />
+                <label for="cf-name">Name</label>
+                <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Name" aria-describedby="err-name" required />
               </div>
             </div>
             <p class="hf-err" id="err-name">Please enter your name.</p>
           </div>
+          <div class="hf-unit">
+            <div class="hf-field">
+              <div class="hf-field-in">
+                <label for="cf-mobile">Mobile Number</label>
+                <input id="cf-mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="Mobile Number" aria-describedby="err-mobile" required />
+              </div>
+            </div>
+            <p class="hf-err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
+          </div>
+          <div class="hf-unit">
+            <div class="hf-field sel">
+              <div class="hf-field-in">
+                <label for="cf-city">City</label>
+                <select id="cf-city" name="city" aria-describedby="err-city" required>
+                  <option value="">City</option>
+                  <option>Bengaluru</option>
+                  <option>Chennai</option>
+                  <option>Coimbatore</option>
+                  <option>Hyderabad</option>
+                  <option>Kolkata</option>
+                  <option>Madurai</option>
+                  <option>Mumbai</option>
+                  <option>New Delhi</option>
+                  <option>Surat</option>
+                  <option>Trichy</option>
+                  <option>Vijayawada</option>
+                  <option>Visakhapatnam</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <p class="hf-err" id="err-city">Please select your city.</p>
+          </div>
+          <div class="hf-unit">
+            <div class="hf-field sel">
+              <div class="hf-field-in">
+                <label for="cf-purpose">Purpose</label>
+                <select id="cf-purpose" name="purpose" aria-describedby="err-purpose" required>
+                  <option value="">Purpose</option>
+                  <option>Product related</option>
+                  <option>Service related</option>
+                  <option>Demat account related</option>
+                  <option>Others</option>
+                </select>
+              </div>
+            </div>
+            <p class="hf-err" id="err-purpose">Please select a purpose.</p>
+          </div>
         </div>
-        <p class="hf-note">By continuing, you agree to be contacted via call, SMS or WhatsApp about your request.</p>
-        <button class="btn-gold" type="submit">Continue</button>
+        <button class="btn-gold" type="submit">Submit</button>
+        <div class="hf-otp" role="group" aria-label="OTP Verification">
+          <div class="hf-head">
+            <h2>OTP Verification</h2>
+            <p>We've sent a 6-digit verification code to your phone number. Please enter it below to submit your message.</p>
+          </div>
+          <button class="btn-gold" type="button" id="cf-verify">Verify &amp; Submit</button>
+        </div>
         <div class="hf-success" role="status" aria-live="polite">
           <span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
-          <h3>Request received</h3>
-          <p class="hf-msg">Thanks - an advisor will reach out to you shortly.</p>
+          <h3>Thanks for reaching out!</h3>
+          <p class="hf-msg">Your message has been successfully sent. Our team is on it, and we'll get back to you within 24 hours.</p>
         </div>
       </form>
     </div>
@@ -132,44 +150,47 @@ const seo = {
   <section class="section stack tabpanel sec-light" id="panel-care" role="tabpanel" aria-labelledby="tab-care"
            data-section="care" style="gap:40px" data-enter="2">
     <div class="stack reveal" style="gap:16px">
-      <h2 class="sub-title">Get in Touch</h2>
+      <h2 class="sub-title">Get in touch</h2>
       <p class="sub-lead">Choose the channel that works best for you.</p>
     </div>
     <div class="hours-bar reveal">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"></circle><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-      Support hours: Monday – Saturday, 9:00 AM to 6:00 PM IST. Closed on public holidays.
+      Support hours: Monday – Saturday, 8:30 AM to 5:30 PM IST. Closed on public holidays.
     </div>
     <div class="chan-grid reveal" data-reveal-row>
       <div class="chan">
         <span class="chan-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg></span>
-        <h3>Toll-free helpline</h3>
-        <span class="val"><a href="tel:18001234567">1800 123 4567</a></span>
-        <p>No charges from any network across India.</p>
+        <h3>Landline Number</h3>
+        <span class="val"><a href="tel:08047185579">080 - 4718 5579</a></span>
+        <p>Support hours: Monday to Friday:08:30 AM – 5:30 PM ,Saturday:10 am to 1pm  , Closed on Public Holiday.</p>
       </div>
       <div class="chan">
         <span class="chan-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg></span>
-        <h3>Alternate number</h3>
-        <span class="val"><a href="tel:08046600300">080 4660 0300</a></span>
-        <p>Direct line to our Bengaluru head office.</p>
-      </div>
-      <div class="chan">
-        <span class="chan-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.5-1.2A9 9 0 1 0 12 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5.6 0 1-.5 1-1l-1.6-1-1 .8c-1-.5-1.9-1.4-2.4-2.4l.8-1-1-1.6c-.5 0-1 .4-1 1Z" fill="currentColor"></path></svg></span>
-        <h3>WhatsApp chat</h3>
-        <span class="val"><a href="https://wa.me/919000000000" target="_blank" rel="noopener">+91 90000 00000</a></span>
-        <p>Message us for quick account help.</p>
+        <h3>Alternate Landline</h3>
+        <span class="val"><a href="tel:08043676869">080- 4367 6869 Extn. 825/831</a></span>
+        <p>Support hours: Monday to Friday:08:30 AM – 5:30 PM ,Saturday:10 am to 1pm,  Closed on Public Holiday.</p>
       </div>
       <div class="chan">
         <span class="chan-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg></span>
         <h3>Email support</h3>
-        <span class="val"><a href="mailto:support@shriramfs.in">support@shriramfs.in</a></span>
-        <p>We respond within 24 hours on business days.</p>
+        <span class="val"><a href="mailto:support@shriramfs.com">support@shriramfs.com</a></span>
+        <p>Response within 24 hours</p>
       </div>
     </div>
     <div class="office reveal">
       <span class="office-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V8l8-4 8 4v12" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M4 20h16M9 20v-5h6v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M9 11h.01M15 11h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
       <div class="office-tx">
         <h3>Head office</h3>
-        <p>No. 3/1, Residency Cross Rd, Bengaluru – 560025<br/>Mon–Sat, 9 AM – 6 PM</p>
+        <p>3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru-560 020<br/>Monday to Friday: 8:30 AM – 5:30 PM , Saturday:10 am to 1pm, Closed on Public Holiday.</p>
+      </div>
+    </div>
+    <div class="cta-box dark reveal">
+      <div class="ct-tt">
+        <h3>Open Demat account</h3>
+        <p class="ct-sub">In less than 5 minutes</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn-gold" href="/open-demat-account/">Open Demat account</a>
       </div>
     </div>
   </section>
@@ -178,36 +199,42 @@ const seo = {
   <section class="section stack tabpanel sec-light" id="panel-branch" role="tabpanel" aria-labelledby="tab-branch"
            data-section="branch" hidden style="gap:40px">
     <div class="stack reveal" style="gap:16px">
-      <h2 class="sub-title">Find a Branch Near You</h2>
-      <p class="sub-lead">Pick a state and branch - the map jumps to that office.</p>
+      <h2 class="sub-title">Find a branch near you</h2>
+      <p class="sub-lead">Search by state and city, or browse the list below.</p>
     </div>
     <div class="branch-search reveal">
       <div class="bs-field">
-        <label class="sr-only" for="bs-state">State</label>
-        <select id="bs-state" aria-label="State"></select>
+        <label class="sr-only" for="bs-state">Select State</label>
+        <select id="bs-state" aria-label="Select State"></select>
       </div>
       <div class="bs-field">
-        <label class="sr-only" for="bs-branch">Branch</label>
-        <select id="bs-branch" aria-label="Branch"></select>
+        <label class="sr-only" for="bs-branch">Select City</label>
+        <select id="bs-branch" aria-label="Select City"></select>
       </div>
     </div>
     <div class="map-wrap reveal" id="map-wrap">
-      <iframe id="branch-map" title="Map of all Shriram Financial Services branches across India" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+      <iframe id="branch-map" title="Map view – enter state and city to locate branches" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
         src="https://maps.google.com/maps?q=Shriram%20Financial%20Services%20Pvt%20Ltd%2C%20India&z=5&output=embed"></iframe>
     </div>
 
-    <div class="stack reveal" style="gap:16px">
-      <h2 class="sub-title">All Branches</h2>
-      <p class="sub-lead">Shriram Financial Services has 21 branches across India - select one above to locate it on the map.</p>
-    </div>
     <div class="branch-groups reveal" id="branch-groups"></div>
+
+    <div class="cta-box dark reveal">
+      <div class="ct-tt">
+        <h3>Open Demat account</h3>
+        <p class="ct-sub">In less than 5 minutes</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn-gold" href="/open-demat-account/">Open Demat account</a>
+      </div>
+    </div>
   </section>
 
   <!-- ================= PANEL: DOWNLOADS ================= -->
   <section class="section stack tabpanel sec-light" id="panel-downloads" role="tabpanel" aria-labelledby="tab-downloads"
            data-section="downloads" hidden style="gap:40px">
     <div class="stack reveal" style="gap:16px">
-      <h2 class="sub-title">Forms &amp; Documents</h2>
+      <h2 class="sub-title">Forms &amp; documents</h2>
       <p class="sub-lead">Download, fill, and submit at your nearest branch or via email.</p>
     </div>
 
@@ -317,18 +344,14 @@ const seo = {
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ================= FINAL CTA ================= -->
-  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
     <div class="cta-box dark reveal">
       <div class="ct-tt">
-        <h3>Ready to Invest with India's Trusted Partner?</h3>
-        <p class="ct-sub">Open a free Demat account in minutes - zero delivery brokerage, SEBI-registered research and a dedicated advisor all in one place.</p>
+        <h3>Open Demat account</h3>
+        <p class="ct-sub">In less than 5 minutes</p>
       </div>
       <div class="cta-actions">
-        <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
-        <a class="btn-ghost" href="#sec-hero">Talk to an Advisor</a>
+        <a class="btn-gold" href="/open-demat-account/">Open Demat account</a>
       </div>
     </div>
   </section>
@@ -442,6 +465,22 @@ const seo = {
     font-size: 12px;
     color: var(--color-sage-700); /* #6b6f5e */
   }
+  /* OTP verification step (between Submit and the thank-you state) */
+  .hf-otp {
+    display: none;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .hf-otp .btn-gold {
+    width: 100%;
+    height: 48px;
+  }
+  .hero-form.otp .hf-body, .hero-form.otp > .btn-gold {
+    display: none;
+  }
+  .hero-form.otp .hf-otp {
+    display: flex;
+  }
   /* success state */
   .hf-success {
     display: none;
@@ -452,7 +491,7 @@ const seo = {
     padding: 8px 0;
   }
   .hero-form.done .hf-body, .hero-form.done .hf-actions, .hero-form.done .btn-gold,
-  .hero-form.done .hf-note {
+  .hero-form.done .hf-note, .hero-form.done .hf-otp {
     display: none;
   }
   .hero-form.done .hf-success {
@@ -1260,9 +1299,10 @@ const seo = {
     var form = document.querySelector('.hero-form');
     if (form) {
       var fields = [
+        { id: 'cf-name', err: 'err-name', test: function (v) { return v.trim().length >= 2; } },
         { id: 'cf-mobile', err: 'err-mobile', test: function (v) { return v.replace(/\D/g, '').replace(/^91/, '').length === 10; } },
         { id: 'cf-city', err: 'err-city', test: function (v) { return !!v; } },
-        { id: 'cf-name', err: 'err-name', test: function (v) { return v.trim().length >= 2; } },
+        { id: 'cf-purpose', err: 'err-purpose', test: function (v) { return !!v; } },
       ];
       var check = function (f, showErr) {
         var input = document.getElementById(f.id),
@@ -1301,13 +1341,17 @@ const seo = {
           }
           return;
         }
-        var name = (document.getElementById('cf-name').value || '').trim().split(' ')[0];
-        var msg = form.querySelector('.hf-msg');
-        if (name && msg) {
-          msg.textContent = 'Thanks, ' + name + ' - an advisor will reach out to you shortly.';
-        }
-        form.classList.add('done');
+        /* step 1 -> OTP verification screen */
+        form.classList.add('otp');
       });
+      /* OTP verify -> thank-you screen */
+      var verifyBtn = document.getElementById('cf-verify');
+      if (verifyBtn) {
+        verifyBtn.addEventListener('click', function () {
+          form.classList.remove('otp');
+          form.classList.add('done');
+        });
+      }
     }
 
     /* ----- Downloads: file-type/size meta + search + category-chip filtering ----- */

@@ -5,195 +5,191 @@
  * components in global.css (hero, .section/.sec-title, .card, .product-page_table,
  * .risks, .steps, FaqAccordion, .cta-box). The only page-scoped CSS is a generic
  * responsive card grid (.bond-cards) and a glossary list (.gloss) - both token-bound.
- * Nested route → BaseLayout / component imports at ../../ depth.
+ * Content implemented verbatim from the compliance-approved doc (V3, July 06).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// Key terms glossary - term + plain-language definition.
+// Key terms to know - term + definition (verbatim).
 const TERMS = [
   {
     t: 'Face Value',
-    d: 'The principal amount of the bond - typically ₹1,000 per bond for Indian retail bonds - repaid to the investor at maturity.',
+    d: 'The principal amount of the bond, typically ₹1,000 per bond for Indian retail bonds, which is repaid to the investor at maturity.',
   },
   {
     t: 'Coupon Rate',
-    d: 'The annual interest rate the issuer pays, expressed as a percentage of face value. A 7% coupon on a ₹1,000 bond pays ₹70 a year.',
+    d: 'The annual interest rate the issuer pays, expressed as a percentage of the face value. A 7% coupon on a ₹1,000 bond pays ₹70 per year.',
   },
   {
     t: 'Maturity Date',
-    d: 'The date the bond expires and the issuer repays the principal. Bond tenures in India range from a few months to 40+ years (G-Secs).',
+    d: 'The date on which the bond expires and the issuer repays the principal. Bond tenures in India range from a few months to 40+ years (G-Secs).',
   },
   {
     t: 'Yield to Maturity (YTM)',
-    d: 'The total annualised return you earn if you hold the bond to maturity - accounting for coupons and any gap between purchase price and face value.',
+    d: 'The total annualised return you earn if you hold the bond to maturity, accounting for coupon payments and any difference between purchase price and face value.',
   },
   {
     t: 'Credit Rating',
-    d: "Assigned by agencies such as CRISIL, ICRA or CARE, it indicates the issuer's ability to repay. AAA is the highest (lowest risk); D denotes default.",
+    d: "Assigned by agencies such as CRISIL, ICRA, or CARE, it indicates the issuer's ability to repay. AAA is the highest (lowest risk); D denotes default.",
   },
 ];
 
-// Types of bonds available in the Indian market.
+// Types of bonds in India (verbatim).
 const TYPES = [
   {
     h: 'Government Bonds (G-Secs)',
-    p: 'Issued by the central government, these are considered among the lower-risk bond options in India because they carry sovereign backing.',
+    p: 'Issued by the central government, these are generally considered among the lower-risk bond options in India because they carry sovereign backing.',
   },
   {
     h: 'Treasury Bills (T-Bills)',
-    p: 'Short-term government securities issued at a discount and redeemed at face value. The return comes from the difference between purchase and redemption value.',
+    p: 'These are short-term government securities issued at a discount and redeemed at face value on maturity. Since they do not usually pay periodic coupon interest, the return comes from the difference between the purchase price and the redemption value.',
   },
   {
     h: 'Corporate Bonds',
-    p: 'Issued by companies to raise capital. They can vary widely in credit quality, coupon structure and tenure.',
+    p: 'These are issued by companies to raise capital. These can vary widely in credit quality, coupon structure, and tenure.',
   },
   {
     h: 'Non-Convertible Debentures (NCDs)',
-    p: 'Debt instruments issued by companies with a fixed maturity and interest pay-out structure. Assess issuer quality, rating and liquidity carefully.',
+    p: 'These are debt instruments issued by companies with a fixed maturity and interest payout structure. They should be assessed carefully for issuer quality, rating, and liquidity.',
   },
   {
-    h: 'Municipal Bonds',
-    p: 'Issued by urban local bodies to fund public infrastructure projects in cities and towns.',
-  },
-  {
-    h: 'PSU Bonds',
-    p: 'Issued by public sector undertakings to raise capital, often carrying quasi-government comfort.',
+    h: 'Municipal bonds and PSU bonds',
+    p: 'Municipal bonds are issued by urban local bodies for public infrastructure funding, while PSU bonds are issued by public sector undertakings.',
   },
   {
     h: 'State Development Loans (SDLs)',
-    p: 'Issued by state governments with slightly higher yields than central G-Secs and quasi-sovereign backing.',
+    p: 'Issued by state governments, these have slightly higher yields than central G-Secs, with quasi-sovereign backing.',
   },
   {
     h: 'Infrastructure Bonds (54EC)',
-    p: 'Issued by bodies such as NHAI and REC, these can help investors save tax on long-term capital gains from the sale of property.',
+    p: 'These are issued by organisations such as NHAI and REC and can help investors save tax on long-term capital gains from the sale of property.',
   },
   {
     h: 'Floating Rate Bonds',
-    p: "The coupon isn't fixed - it resets periodically against a benchmark rate. The RBI issues floating-rate savings bonds for retail investors.",
+    p: 'Bonds where the interest (coupon) rate is not fixed, but changes periodically based on a predetermined benchmark market rate. RBI issues floating rate savings bonds for retail investors.',
   },
   {
     h: 'Bond ETFs',
-    p: 'Exchange-traded funds that invest in a basket of bonds - a simple way to access the bond market without buying individual bonds.',
+    p: 'These are exchange-traded funds that invest in a basket of bonds. They offer a simple way to access the bond market without buying individual bonds.',
   },
   {
     h: 'Debt Mutual Funds',
-    p: 'Invest in debt instruments such as G-Secs, corporate bonds and T-Bills. They can suit investors seeking diversified fixed-income exposure.',
+    p: 'These invest in debt instruments such as government securities, corporate bonds and treasury bills. They can be suitable for investors looking for diversified fixed income exposure.',
   },
 ];
 
-// Risk factors table - risk / meaning / mitigation.
+// Risk factors table - risk / meaning / mitigation (verbatim).
 const RISK_ROWS = [
   {
     k: 'Interest Rate Risk',
-    m: 'Bond prices may fall when interest rates rise and rise when rates decline. Longer-duration bonds are more sensitive to rate changes.',
+    m: 'Bond prices may fall when interest rates rise and may increase when rates decline. Longer-duration bonds are generally more sensitive to interest rate changes.',
     x: 'Prefer shorter-duration bonds in rising-rate environments.',
   },
   {
     k: 'Credit or Default Risk',
-    m: 'The issuer may delay interest payments or fail to repay principal on time. Credit-rating agencies help assess creditworthiness.',
+    m: "The issuer may delay interest payments or fail to repay the principal on time. Credit rating agencies can help assess the issuer's creditworthiness.",
     x: 'Stick to AAA/AA-rated bonds; check CRISIL/ICRA ratings before investing.',
   },
   {
     k: 'Liquidity Risk',
     m: 'Some bonds may be difficult to buy or sell quickly at a fair market price.',
-    x: 'Invest via liquid bond mutual funds, or buy bonds you can hold to maturity.',
+    x: 'Invest via liquid bond mutual funds or buy bonds you are comfortable holding to maturity.',
   },
   {
     k: 'Inflation Risk',
     m: "Rising inflation can reduce the real value of a bond's returns over time.",
-    x: 'Consider inflation-indexed or floating-rate bonds to hedge inflation risk.',
+    x: 'Consider inflation-indexed bonds or floating rate bonds to hedge inflation risk.',
   },
 ];
 
-// How to evaluate a bond - four parameters.
+// How to evaluate a bond - four parameters (verbatim).
 const EVALUATE = [
   {
-    h: 'Credit Rating & Issuer Profile',
-    p: "Check the latest CRISIL/ICRA/CARE rating to gauge the issuer's business strength, debt-servicing ability, profitability and leverage. If the bond carries protective covenants, understand what those conditions mean for risk.",
+    h: 'Credit Rating and Issuer Profile',
+    p: "Check the latest CRISIL/ICRA/CARE rating to understand the issuer's business strength, debt servicing ability, profitability, leverage, and any recent developments that may affect repayment capacity. If the bond has protective terms such as covenants, investors should understand what those conditions mean and how they may influence risk.",
   },
   {
     h: 'Yield Metrics',
-    p: "The coupon rate alone doesn't show the full return. Look at current yield - the coupon against market price - and yield to maturity, the total return if held to maturity with all payments made.",
+    p: 'The coupon rate alone does not show the full return picture. Investors should look at current yield, which relates the annual coupon to the current market price, and yield to maturity (YTM), which captures the total return if the bond is held until maturity and all payments are made as scheduled.',
   },
   {
     h: 'Tenor or Maturity Period',
-    p: "A longer tenor carries a different risk-return profile than a short one. Align the bond's maturity with your cash-flow needs, rate outlook and overall asset allocation.",
+    p: "A bond with a longer tenor may offer a different risk-return profile than a shorter-term bond. Investors should align the bond's maturity with their cash flow needs, rate outlook, and overall asset allocation strategy.",
   },
   {
-    h: 'Callable & Puttable Features',
-    p: 'A callable bond lets the issuer repay early, which can affect returns if rates fall. A puttable bond lets you sell back to the issuer under set conditions, adding flexibility.',
+    h: 'Callable and Puttable Features',
+    p: 'A callable bond gives the issuer the right to repay the bond before maturity, which may affect return expectations if rates fall. A puttable bond gives the investor the right to sell the bond back to the issuer under specified conditions, which may add flexibility in some cases.',
   },
 ];
 
-// Six-step onboarding to invest via the secondary market.
+// Six-step process to invest via the secondary market (verbatim).
 const STEPS = [
-  { h: 'Download & Register on the App', p: "Download Shriram Financial Services' “Antara” app and register." },
+  { h: 'Download and Register on the app', p: 'Download Shriram Financial Services’ “Antara” app and get registered.' },
   { h: 'Complete KYC', p: 'Complete the eKYC formalities as per the instructions shared in the app.' },
-  { h: 'Activate Your Trading Account', p: 'Link your bank account and demat account.' },
-  { h: 'Browse Available Bonds', p: 'Explore Government Securities, listed corporate NCDs, SGBs and tax-free bonds by issuer, tenure and yield.' },
-  { h: 'Place a Buy Order', p: 'For listed bonds, place a market or limit order on the NSE/BSE.' },
-  { h: 'Track Coupons & Maturity', p: 'Monitor coupon credits to your bank account and upcoming maturity dates in the dashboard.' },
+  { h: 'Activate your trading account', p: 'Link your bank account and demat account.' },
+  { h: 'Browse available bonds on the platform', p: 'Explore Government Securities, listed corporate NCDs, SGBs, and tax-free bonds by issuer, tenure, and yield.' },
+  { h: 'Place a buy order', p: 'For listed bonds, place a market or limit order on NSE/BSE.' },
+  { h: 'Track coupon payments and maturity via the app', p: 'Monitor coupon credits to your bank account and upcoming maturity dates in the dashboard.' },
 ];
 
-// Bond investment strategies.
+// Bond investment strategies (verbatim).
 const STRATEGIES = [
   {
     h: 'Bond Laddering',
-    p: 'Invest in bonds with different maturity dates instead of one tenure. As bonds mature, proceeds can be reinvested - helping manage liquidity and interest-rate risk.',
+    p: 'Bond laddering involves investing in bonds with different maturity dates instead of putting all your money into one. As bonds mature over time, the proceeds can be reinvested, helping manage liquidity and interest rate risk.',
   },
   {
     h: 'Barbell Strategy',
-    p: 'Split investments between short- and long-term bonds, with limited allocation to medium-term. This balances liquidity from shorter holdings with return potential from longer ones.',
+    p: 'A barbell strategy splits investments between short-term and long-term bonds, with limited allocation to medium-term bonds. This can help balance liquidity from shorter-term holdings with return potential from longer-duration bonds.',
   },
   {
     h: 'Bullet Strategy',
-    p: 'Focus on bonds that mature around the same time. Useful when planning for a specific financial goal or cash requirement in the future.',
+    p: 'A bullet strategy focuses on investing in bonds that mature around the same time or within a narrow maturity range. It can be useful for investors planning for a specific financial goal or cash requirement in the future.',
   },
   {
-    h: 'Income & Total-Return',
-    p: 'An income-focused approach prioritises steady coupon payouts; a total-return approach weighs both interest income and price-appreciation opportunities.',
+    h: 'Income-focused and Total-return Strategy',
+    p: 'An income-focused strategy prioritises regular coupon payouts and relatively steady cash flows. A total-return strategy looks at both interest income and price appreciation opportunities based on market movements.',
   },
   {
     h: 'Duration Management',
-    p: "Adjust your portfolio's sensitivity to rate changes - shorter durations reduce volatility when rates rise, longer durations benefit more when rates fall.",
+    p: "Duration management helps investors adjust their portfolio's sensitivity to interest rate changes. Shorter-duration bonds may help reduce volatility in a rising-rate environment, while longer-duration bonds may benefit more when rates decline.",
   },
 ];
 
-// Risks and warning signs to watch in bond issuers.
+// Risks and warning signs in bonds (verbatim).
 const WARNINGS = [
   {
     h: 'Rating Downgrade',
-    p: "If an issuer's financial health weakens, agencies may cut its rating. A downgrade can dent confidence, reduce demand and push secondary-market prices down. Monitor announcements, results and rating updates.",
+    p: "If a company's financial health weakens, its bond rating may be revised downward by rating agencies. A downgrade can affect investor confidence, reduce demand for the bond, and lead to price declines in the secondary market. Monitoring issuer announcements, financial results, and rating updates is therefore important for ongoing bond review.",
   },
   {
-    h: 'Liquidity & Exit Risk',
-    p: 'In stressed markets, even bonds from known issuers can be hard to sell at the expected price. Thin secondary-market depth widens spreads, especially for lower-rated or less-traded bonds.',
+    h: 'Liquidity and Exit Risk',
+    p: 'In stressed market conditions, even bonds from known issuers may become difficult to sell at the expected price. Lower secondary market depth can widen spreads and reduce exit flexibility, especially in lower-rated or less frequently traded bonds.',
   },
   {
     h: 'High Coupon Rates',
-    p: "A very high coupon almost always signals higher credit risk. Don't chase yield without verifying the issuer's rating, financial health and repayment record - several high-yield NCDs have defaulted.",
+    p: "A very high coupon almost always signals higher credit risk. Do not chase yield without verifying the issuer's rating, financial health, and repayment track record. Several high-yield NCDs have defaulted in the past.",
   },
   {
     h: 'Capital Loss Risk',
-    p: 'If a bond is bought above face value, the actual return may be lower than the coupon rate. This is why yield to maturity is a better measure of return than the coupon alone.',
+    p: 'If a bond is bought above its face value, the actual return may be lower than the coupon rate. This is why Yield to Maturity (YTM) is a better measure of returns than the coupon alone.',
   },
   {
-    h: 'Promoter Background & Financials',
-    p: "For corporate NCDs, read the latest annual report and rating rationale. Verify debt-to-equity, interest coverage and cash flow - key signals of an issuer's ability to repay.",
+    h: 'Promoter background and financials',
+    p: "For corporate NCDs, read the issuer's latest annual report and credit rating rationale. Verify debt-to-equity, interest coverage, and cash flow; these are the key signals of a bond issuer's ability to repay.",
   },
   {
-    h: 'Warning Signs to Watch',
-    p: 'A sudden jump in borrowing, deteriorating cash flows, weak interest coverage, delayed disclosures, governance concerns or repeated refinancing pressure at the issuer level.',
+    h: 'Warning Signs to Watch in Bond Issuers',
+    p: 'Investors should also watch for signs such as a sudden increase in borrowing, deteriorating cash flows, weak interest coverage, delayed disclosures, governance concerns, or repeated refinancing pressure at the issuer level.',
   },
 ];
 
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// Got Questions? (FAQs) - verbatim, same order.
 const FAQS = [
   {
-    q: 'What is a bond in India?',
+    q: 'What is a bond?',
     a: 'A bond is a debt instrument through which you lend money to a government body or company for a fixed period. In return, the issuer may pay periodic interest and repay the principal on maturity.',
   },
   {
@@ -202,11 +198,11 @@ const FAQS = [
   },
   {
     q: 'What is the difference between coupon rate and yield to maturity?',
-    a: "The coupon rate is the fixed interest rate on the bond's face value. Yield to maturity, or YTM, is a broader return measure that considers the bond's market price, coupon payments and redemption value if held till maturity.",
+    a: "The coupon rate is the fixed interest rate on the bond's face value. Yield to maturity, or YTM, is a broader return measure that considers the bond's market price, coupon payments, and redemption value if held till maturity.",
   },
   {
     q: 'What are the main types of bonds in India?',
-    a: 'Common bond categories in India include government bonds, treasury bills, sovereign gold bonds, corporate bonds, PSU bonds, municipal bonds and NCDs. Investors can also access debt exposure through Bond ETFs and debt mutual funds.',
+    a: 'Common bond categories in India include government bonds, treasury bills, sovereign gold bonds, corporate bonds, PSU bonds, municipal bonds, and NCDs. Investors can also access debt exposure through Bond ETFs and debt mutual funds.',
   },
   {
     q: 'Are government bonds safer than corporate bonds?',
@@ -214,23 +210,23 @@ const FAQS = [
   },
   {
     q: 'How can I invest in bonds in India?',
-    a: 'You can invest in bonds in India through the primary market, the secondary market, approved investing platforms, brokers and demat-linked channels. You may also invest indirectly through debt mutual funds and Bond ETFs.',
+    a: 'You can invest in bonds through the secondary market, approved investing platforms, brokers, and demat-linked channels. You may also invest indirectly through debt mutual funds and Bond ETFs.',
   },
   {
     q: 'What should I check before buying a bond?',
-    a: 'Review the issuer, credit rating, coupon, YTM, maturity, liquidity, payout frequency, tax treatment and any special terms such as callable or puttable features.',
+    a: 'Review the issuer, credit rating, coupon, YTM, maturity, liquidity, payout frequency, tax treatment, and any special terms such as callable or puttable features.',
   },
   {
     q: 'Do bond prices change after purchase?',
-    a: 'Yes. Bond prices can move based on interest rates, credit developments, inflation expectations and market liquidity.',
+    a: 'Yes. Bond prices can move based on interest rates, credit developments, inflation expectations, and market liquidity.',
   },
   {
     q: 'Can I sell a bond before maturity?',
-    a: 'Yes, if it is a listed bond on the NSE/BSE. However, liquidity can be thin for some bonds, and you may get a price above or below face value depending on prevailing interest rates.',
+    a: 'Yes, if it is a listed bond on NSE/BSE. However, liquidity can be thin for some bonds, and you may get a price above or below face value depending on prevailing interest rates.',
   },
   {
     q: 'Are bonds suitable for portfolio diversification?',
-    a: 'Bonds can play a role in diversification by adding debt exposure to a portfolio. The suitability of a bond investment depends on your goals, risk appetite, investment horizon and the specific bond selected.',
+    a: 'Bonds can play a role in diversification by adding debt exposure to a portfolio. The suitability of a bond investment depends on your goals, risk appetite, investment horizon, and the specific bond selected.',
   },
 ];
 
@@ -261,30 +257,21 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Bonds' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Your Guide to <span class="g">Bond Investments</span> in India</h1>
+      <h1>Grow Your Wealth Steadily with <span class="g">Bonds</span></h1>
       <p class="lead">Understand bond types, returns, risks and investment strategies to make informed fixed-income decisions.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;G-Secs to NCDs</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Fixed-income focus</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Trade on NSE &amp; BSE</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- ===== What Is a Bond? ===== -->
+  <!-- ===== Bonds: Balance Growth with Stability ===== -->
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is a Bond?</h2>
-      <p class="sec-lead">A bond is a fixed-income investment where you lend money to an issuer - a government, public sector entity, municipal authority or company - in exchange for regular interest payments and repayment of the invested amount at maturity. In simple terms, when you invest in a bond you are lending money to the issuer, rather than buying ownership as you do in equities.</p>
+      <h2 class="sec-title">Bonds: Balance Growth with Stability</h2>
+      <p class="sec-lead">Bonds offer a disciplined way to diversify your portfolio while earning predictable income across different investment options. Shriram Financial Services gives you access to explore government securities, PSU and corporate bonds, and tax-free instruments, each with transparent yield and rating information laid out before you commit. It is fixed income investing built for people who already know what they want and simply need a faster, cleaner way to get there.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Key Terms to Know</h3>
-        <p class="sub-lead">The core vocabulary every bond investor should be comfortable with before they begin.</p>
+        <h3 class="sub-title">Key terms to know:</h3>
       </div>
       <div class="card">
         <dl class="gloss">
@@ -300,7 +287,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Types of Bonds in India</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">The Indian bond market offers multiple fixed-income instruments for different needs, risk profiles and time horizons. Here are a few.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The Indian bond market offers multiple fixed income instruments for different investment needs, risk profiles, and time horizons. Here are a few:</p>
     </div>
     <div class="bond-cards" data-reveal-row>
       {TYPES.map((c) => (
@@ -314,10 +301,10 @@ const seo = {
   <section class="section stack sec-light" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Risk Factors in Bonds</h2>
-      <p class="sec-lead">As with any investment, bonds involve risks. Understanding these is important for anyone investing in bonds in India.</p>
+      <p class="sec-lead">As with any investment option, bonds also involve risks. Understanding these is important for anyone investing in bonds in India.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Risk Factor</p></div><div class="cell th"><p>What It Means</p></div><div class="cell th"><p>Mitigation Approach</p></div>
+      <div class="cell th"><p>Risk Factors</p></div><div class="cell th"><p>What It Means</p></div><div class="cell th"><p>Mitigation Approach</p></div>
       {RISK_ROWS.map((r) => (
         <>
           <div class="cell tb"><p class="k">{r.k}</p></div>
@@ -328,11 +315,11 @@ const seo = {
     </div></div>
   </section>
 
-  <!-- ===== How to Evaluate a Bond ===== -->
+  <!-- ===== How to Evaluate a Bond? ===== -->
   <section class="section stack sec-tint" id="sec-evaluate" data-section="evaluate" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How to Evaluate a Bond</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Before investing, look beyond the coupon rate. These four parameters help you judge a bond on its merits.</p>
+      <h2 class="sec-title">How to Evaluate a Bond?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Before investing, it is important to evaluate a bond beyond its coupon rate. Here are four parameters to evaluate a bond:</p>
     </div>
     <div class="risks" data-reveal-row>
       {EVALUATE.map((e) => (
@@ -341,11 +328,11 @@ const seo = {
     </div>
   </section>
 
-  <!-- ===== How to Invest in Bonds ===== -->
+  <!-- ===== How to Invest in Bonds in India? ===== -->
   <section class="section stack sec-light" id="sec-invest" data-section="invest" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How to Invest in Bonds in India</h2>
-      <p class="sec-lead">Bond investment in the secondary market through Shriram Financial Services takes just a few steps.</p>
+      <h2 class="sec-title">How to Invest in Bonds in India?</h2>
+      <p class="sec-lead">Investment in bonds in the secondary market through Shriram Financial Services can be completed in a few steps, which are:</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
       <div class="steps" data-reveal-row>
@@ -372,7 +359,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-strategies" data-section="strategies" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Bond Investment Strategies</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">A bond portfolio works best when it is aligned with your investment horizon, cash-flow needs and interest-rate outlook. Instead of buying bonds at random, use structured strategies to manage risk and improve efficiency.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">A bond portfolio works best when it is aligned with your investment horizon, cash flow needs, and interest-rate outlook. Instead of buying bonds randomly, investors can use structured bond investment strategies, such as the ones listed below, to manage risk and improve portfolio efficiency.</p>
     </div>
     <div class="bond-cards" data-reveal-row>
       {STRATEGIES.map((s) => (
@@ -381,21 +368,20 @@ const seo = {
     </div>
   </section>
 
-  <!-- ===== Risks & Warning Signs ===== -->
+  <!-- ===== What are the Risks and Warning Signs in Bonds? ===== -->
   <section class="section stack sec-light" id="sec-warnings" data-section="warnings" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Risks &amp; Warning Signs in Bonds</h2>
-      <p class="sec-lead">Even established issuers carry risk. These are the signals worth watching when you review any bond.</p>
+      <h2 class="sec-title">What are the Risks and Warning Signs in Bonds?</h2>
     </div>
     <div class="bond-cards" data-reveal-row>
       {WARNINGS.map((w) => (
         <div class="card"><h4 class="card-h">{w.h}</h4><p class="card-p">{w.p}</p></div>
       ))}
     </div>
-    <p class="sec-lead">The right approach is to treat bonds as instruments that still require research, diversification and periodic monitoring. A bond portfolio should be built with attention to credit quality, duration, liquidity and suitability for your financial goals.</p>
+    <p class="sec-lead">The right approach is to treat bonds as instruments that still require research, diversification, and periodic monitoring. A bond portfolio should be built with attention to credit quality, duration, liquidity, and suitability for your financial goals.</p>
   </section>
 
-  <!-- ===== General Questions ===== -->
+  <!-- ===== Got Questions? (General Questions) ===== -->
   <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
@@ -412,17 +398,6 @@ const seo = {
           <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== Final CTA ===== -->
-  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
-    <div class="cta-box">
-      <div class="ct-tt">
-        <h3>Start Building Your Fixed-Income Portfolio</h3>
-        <p class="ct-sub">Open your Demat account in minutes and invest in bonds with zero paperwork.</p>
-      </div>
-      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
     </div>
   </section>
 </BaseLayout>

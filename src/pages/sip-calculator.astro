@@ -9,32 +9,56 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
-import { otherCalculators, calcHref } from '../data/calculators';
 
-// "Explore More" rail - the four other calculators, from the shared dataset.
-const MORE = otherCalculators('sip');
-
-// General-Questions FAQ - legacy content verbatim, same order.
+// General-Questions FAQ - compliance doc content verbatim, same order.
 const FAQS = [
   {
-    q: 'What is a SIP and how is it different from a lumpsum investment?',
-    a: 'A Systematic Investment Plan (SIP) lets you invest a fixed amount at regular intervals - usually monthly - rather than committing a large sum all at once. This spreads your entry points across market cycles, averages out your purchase cost over time (rupee-cost averaging) and makes investing more affordable and disciplined. A lumpsum, by contrast, is a single one-time investment.',
+    q: 'What is a SIP Calculator?',
+    a: 'A SIP Calculator is an online tool that estimates the future value of your monthly SIP investment based on amount, duration, and expected return.',
   },
   {
-    q: 'How accurate are the results from this SIP calculator?',
-    a: 'The calculator applies the standard SIP future-value formula precisely to the inputs you provide. However, the expected rate of return is an assumption - real market returns fluctuate year to year. Treat the output as a well-grounded estimate for planning purposes rather than a guaranteed outcome.',
+    q: 'Is the SIP Calculator result guaranteed?',
+    a: 'No. SIP Calculator results are estimates. Actual returns depend on market performance and mutual fund scheme performance.',
   },
   {
-    q: 'Can I change or stop my SIP amount later?',
-    a: 'Yes. SIPs are flexible - you can increase, decrease, pause or stop your contributions at any time, and many investors use a step-up SIP to raise their instalment each year as their income grows. There is typically no penalty for modifying or stopping a SIP.',
+    q: 'What is the minimum SIP amount in India?',
+    a: 'Many mutual funds allow SIPs from ₹500 per month, while some initiatives allow smaller SIP amounts such as ₹250.',
   },
   {
-    q: 'What is a realistic rate of return to assume?',
-    a: 'For equity-oriented funds, investors often use a long-term assumption in the range of 10–12% per annum, while debt-oriented funds are usually modelled lower. The right figure depends on your fund choice and risk appetite - it is wise to run the calculator with both an optimistic and a conservative rate to understand the range of possible outcomes.',
+    q: 'Can I use this calculator for ELSS SIP?',
+    a: 'Yes. You can use the calculator to estimate ELSS SIP returns. However, keep in mind that ELSS has a 3-year lock-in period.',
   },
   {
-    q: 'Is there a minimum amount required to start a SIP?',
-    a: 'Many funds let you start a SIP with as little as ₹500 per month, making it accessible to almost every investor. You can always increase your contribution as your savings capacity grows.',
+    q: 'What return rate should I assume?',
+    a: 'Use a realistic return assumption based on the fund category. Equity funds may have higher return potential but also higher volatility.',
+  },
+  {
+    q: 'How does Step-Up SIP affect returns?',
+    a: 'Step-Up SIP increases your investment amount periodically. This may help create a larger corpus over time.',
+  },
+  {
+    q: 'Does the SIP Calculator account for inflation?',
+    a: 'The standard SIP Calculator shows nominal returns. You should separately consider inflation to estimate real purchasing power.',
+  },
+  {
+    q: 'Can I start SIP without a demat account?',
+    a: 'Yes. Mutual funds can often be held in non-demat folio form through mutual fund platforms, AMCs, or distributors.',
+  },
+  {
+    q: 'What happens if I miss a SIP instalment?',
+    a: 'Usually, one missed SIP does not automatically cancel the investment. However, repeated failures may lead to SIP cancellation depending on mandate and platform rules.',
+  },
+  {
+    q: 'How is SIP different from RD?',
+    a: 'SIP invests in mutual funds and is market-linked. RD is a bank deposit product with fixed interest.',
+  },
+  {
+    q: 'What is NAV in SIP?',
+    a: 'NAV stands for Net Asset Value. It is the per-unit value of a mutual fund scheme.',
+  },
+  {
+    q: 'How many SIPs can I run simultaneously?',
+    a: 'You can run multiple SIPs across different mutual fund schemes, depending on your goals, risk profile, and cash flow.',
   },
 ];
 
@@ -52,8 +76,16 @@ const seo = {
   <section class="hero hero-compact" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'SIP Calculator' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Plan Smarter With The <span class="g">SIP Calculator</span></h1>
-      <p class="lead">Estimate your future wealth instantly by adjusting your monthly SIP amount, duration, and return rate.</p>
+      <h1>SIP Calculator – Estimate Your <span class="g">Mutual Fund Returns Instantly</span></h1>
+      <p class="lead">A SIP Calculator estimates the maturity value of your monthly mutual fund investments using compound interest.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start SIP Now</a><a class="btn-ghost" href="/mutual-funds/">Invest in Mutual Funds</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Trusted by Trader Across India</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered platform</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;AMFI-compliant mutual fund investing</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -152,56 +184,308 @@ const seo = {
     <p class="sr-only" id="sr-summary" aria-live="polite"></p>
   </section>
 
-  <!-- ===== What Is A SIP Calculator ===== -->
-  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
-    <h2 class="sec-title">What Is A SIP Calculator?</h2>
-    <p class="sec-lead">A SIP calculator is a free online tool that estimates the maturity value of your Systematic Investment Plan. By entering your monthly contribution, the length of time you plan to stay invested and an expected annual rate of return, it projects how much wealth you could accumulate. It removes the guesswork from financial planning, giving you an instant, data-backed picture of your investment journey so you can set realistic goals and invest with confidence.</p>
-  </section>
-
-  <!-- ===== How A SIP Calculator Helps You ===== -->
-  <section class="section stack sec-light" id="sec-help" data-section="help" style="gap:24px">
-    <h2 class="sec-title">How A SIP Calculator Helps You</h2>
-    <p class="sec-lead">Planning your investments by hand is tedious and error-prone. A SIP calculator does the heavy lifting in seconds, so you can focus on the decisions that matter:</p>
-    <ul class="bullets">
-      <li>Instantly estimate the future value of your monthly investments without complex manual calculations.</li>
-      <li>Compare different scenarios by changing your contribution, duration or expected return to find what fits your goals.</li>
-      <li>Understand how much of your final corpus comes from invested capital versus estimated returns.</li>
-      <li>Set realistic, time-bound financial goals - be it a home, education, or retirement - and track progress toward them.</li>
-    </ul>
-  </section>
-
-  <!-- ===== How Does A SIP Calculator Work ===== -->
-  <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
-    <h2 class="sec-title">How Does A SIP Calculator Work?</h2>
-    <p class="sec-lead">The calculator uses the standard future-value formula for a series of regular investments: M = P × ({'{'}[1 + i]ⁿ − 1{'}'} ÷ i) × (1 + i), where P is your periodic investment, i is the periodic rate of return (your annual rate divided by the number of instalments per year) and n is the total number of instalments. It compounds each contribution over the remaining investment period and sums them to arrive at your projected maturity value. Because every instalment earns returns for a different length of time, the tool captures the true effect of compounding far more accurately than a simple multiplication ever could. When you add an annual step-up, each year's instalment is increased before the next year's compounding begins.</p>
-  </section>
-
-  <!-- ===== Advantages Of A SIP Calculator ===== -->
-  <section class="section stack sec-light" id="sec-adv" data-section="adv" style="gap:24px">
-    <h2 class="sec-title">Advantages Of A SIP Calculator</h2>
-    <p class="sec-lead">Whether you are a first-time investor or a seasoned one, a SIP calculator brings clarity and discipline to your planning:</p>
-    <ul class="bullets">
-      <li>Accurate, instant projections that account for compounding across the entire investment horizon.</li>
-      <li>Completely free to use, with no sign-up required and results delivered in real time.</li>
-      <li>Helps you decide a comfortable monthly amount that aligns with your income and goals.</li>
-      <li>Encourages consistent, disciplined investing by making the long-term payoff easy to visualise.</li>
-    </ul>
-  </section>
-
-  <!-- ===== Explore More ===== -->
-  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
-    <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid" data-reveal-row>
-      {
-        MORE.map((c) => (
-          <a class="xcard" href={calcHref(c.slug)}>
-            <span class="xc-title">{c.title}</span>
-            <span class="xc-desc">{c.desc}</span>
-            <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
-          </a>
-        ))
-      }
+  <!-- ===== What Is a SIP Calculator? ===== -->
+  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is a SIP Calculator?</h2>
+      <p class="sec-lead">A SIP Calculator is a simple online tool that helps you estimate how much your mutual fund investments could grow over time. It calculates based on your monthly investment amount, expected returns, and investment period.</p>
     </div>
+  </section>
+
+  <!-- ===== Benefits of using a SIP Calculator ===== -->
+  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Benefits of using a SIP Calculator</h2>
+    </div>
+    <ul class="bullets">
+      <li>Quick estimate: You can get an instant view of how much your SIP investment could grow over time based on your inputs.</li>
+      <li>No calculations: The calculator automatically does the math, saving you time and effort.</li>
+      <li>Compare options: Adjust the investment amount, duration, or expected return to compare different outcomes.</li>
+      <li>Plan goals: Estimate the SIP amount needed to work towards financial goals such as retirement, education, or wealth creation.</li>
+      <li>Free to use: Use can use the calculator anytime, as often as you need, without incurring any charges.</li>
+    </ul>
+    <p class="sec-lead">Note: A SIP Calculator provides only an estimate. Actual returns may vary based on market performance and fund performance.</p>
+  </section>
+
+  <!-- ===== How Does the SIP Calculator Work? ===== -->
+  <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Does the SIP Calculator Work?</h2>
+      <p class="sec-lead">A SIP Calculator estimates how your monthly investments can grow over time through compounding, based on your investment amount, duration, and expected returns.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">SIP Formula</h3>
+        <p class="sub-lead">FV = P × (((1+i)^n – 1) / i) × (1+i)</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="cell th"><p>Variable</p></div><div class="cell th"><p>Meaning</p></div>
+        <div class="cell tb"><p class="k">FV</p></div><div class="cell tb"><p class="v">Future value or estimated maturity amount</p></div>
+        <div class="cell tb"><p class="k">P</p></div><div class="cell tb"><p class="v">Monthly SIP amount</p></div>
+        <div class="cell tb"><p class="k">I</p></div><div class="cell tb"><p class="v">Monthly rate of return</p></div>
+        <div class="cell tb"><p class="k">N</p></div><div class="cell tb"><p class="v">Total number of SIP instalments</p></div>
+      </div></div>
+      <p class="sub-lead">For example, if you invest ₹5,000 per month for 10 years at an expected return of 12% p.a., your estimated maturity value may be around ₹11.6 lakh.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Step-by-step example</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="cell th"><p>Input</p></div><div class="cell th"><p>Value</p></div>
+        <div class="cell tb"><p class="k">Monthly SIP</p></div><div class="cell tb"><p class="v">₹5,000</p></div>
+        <div class="cell tb"><p class="k">Duration</p></div><div class="cell tb"><p class="v">10 years</p></div>
+        <div class="cell tb"><p class="k">Expected Return</p></div><div class="cell tb"><p class="v">12% p.a.</p></div>
+        <div class="cell tb"><p class="k">Total Invested</p></div><div class="cell tb"><p class="v">₹6,00,000</p></div>
+        <div class="cell tb"><p class="k">Estimated Returns</p></div><div class="cell tb"><p class="v">₹5,61,695</p></div>
+        <div class="cell tb"><p class="k">Estimated Total Value</p></div><div class="cell tb"><p class="v">₹11,61,695</p></div>
+      </div></div>
+      <p class="sub-lead">The calculator performs this calculation automatically, so you only need to enter your SIP amount, tenure, and expected return.</p>
+    </div>
+    <a class="btn-gold" href="#sec-calc" style="align-self:center">Try the Calculator Above</a>
+  </section>
+
+  <!-- ===== SIP Returns – Illustrative Scenarios ===== -->
+  <section class="section stack sec-light" id="sec-scenarios" data-section="scenarios" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">SIP Returns – Illustrative Scenarios</h2>
+      <p class="sec-lead">The table below shows sample SIP returns at an assumed annual return of 12% p.a. These figures are for illustration only and are not guaranteed.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t5 bordered" style="grid-template-columns:repeat(5,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Monthly SIP</p></div><div class="cell th"><p>Duration</p></div><div class="cell th"><p>Expected Return</p></div><div class="cell th"><p>Invested Amount</p></div><div class="cell th"><p>Estimated Maturity Value</p></div>
+      <div class="cell tb"><p class="k">₹500</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹30,000</p></div><div class="cell tb"><p class="v">₹41,243</p></div>
+      <div class="cell tb"><p class="k">₹1,000</p></div><div class="cell tb"><p class="v">10 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹1,20,000</p></div><div class="cell tb"><p class="v">₹2,32,339</p></div>
+      <div class="cell tb"><p class="k">₹5,000</p></div><div class="cell tb"><p class="v">15 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹9,00,000</p></div><div class="cell tb"><p class="v">₹25,22,880</p></div>
+      <div class="cell tb"><p class="k">₹10,000</p></div><div class="cell tb"><p class="v">20 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹24,00,000</p></div><div class="cell tb"><p class="v">₹99,91,479</p></div>
+      <div class="cell tb"><p class="k">₹25,000</p></div><div class="cell tb"><p class="v">25 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹75,00,000</p></div><div class="cell tb"><p class="v">₹4,74,40,877</p></div>
+    </div></div>
+    <p class="sec-lead">Disclaimer: These values are illustrative. Mutual fund returns are market-linked and not guaranteed.</p>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Your SIP</a>
+  </section>
+
+  <!-- ===== How to Use the SIP Calculator ===== -->
+  <section class="section stack sec-tint" id="sec-how-to-use" data-section="how-to-use" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Use the SIP Calculator</h2>
+      <p class="sec-lead">Follow these simple steps to estimate your SIP returns:</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Enter your monthly SIP amount</h4><p>Add the amount you plan to invest every month.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Choose your investment duration</h4><p>Select how long you want to continue your SIP.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Enter expected annual return</h4><p>Use a realistic return assumption based on the mutual fund category.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>View your estimated corpus</h4><p>The calculator shows your invested amount, estimated returns, and maturity value.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Compare different scenarios</h4><p>Increase or decrease the SIP amount, tenure, or return rate to plan better.</p></div>
+      </div>
+    </div>
+    <p class="sec-lead" style="width:100%">Pro Tip: Use conservative return assumptions when planning important goals. Kindly note that equity mutual funds can deliver higher long-term growth but also carry higher short-term volatility.</p>
+  </section>
+
+  <!-- ===== Step-Up SIP Calculator ===== -->
+  <section class="section stack sec-light" id="sec-stepup" data-section="stepup" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Step-Up SIP Calculator</h2>
+      <p class="sec-lead">A Step-Up SIP lets you increase your SIP amount every year. This can help align your investments with salary hikes, income growth, and rising financial goals.</p>
+      <p class="sec-lead">For example, compare a flat SIP of ₹5,000 per month with a SIP that increases by 10% every year.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t5 bordered" style="grid-template-columns:repeat(5,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>SIP Type</p></div><div class="cell th"><p>Duration</p></div><div class="cell th"><p>Expected Return</p></div><div class="cell th"><p>Total Invested</p></div><div class="cell th"><p>Estimated Value</p></div>
+      <div class="cell tb"><p class="k">Flat SIP</p></div><div class="cell tb"><p class="v">10 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹6,00,000</p></div><div class="cell tb"><p class="v">₹11,61,695</p></div>
+      <div class="cell tb"><p class="k">10% Step-Up SIP</p></div><div class="cell tb"><p class="v">10 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹9,56,245</p></div><div class="cell tb"><p class="v">₹16,87,163</p></div>
+    </div></div>
+    <p class="sec-lead">A Step-Up SIP can create a larger corpus because both your investment amount and compounding base increase over time.</p>
+    <a class="btn-gold" href="#sec-calc" style="align-self:center">Calculate Step-Up SIP</a>
+  </section>
+
+  <!-- ===== Benefits of Investing via SIP ===== -->
+  <section class="section stack sec-tint" id="sec-sip-benefits" data-section="sip-benefits" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Benefits of Investing via SIP</h2>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Rupee Cost Averaging</h4><p>SIPs invest a fixed amount regularly. You may buy more units when prices are low and fewer when prices are high. As a result, it helps reduce the impact of market fluctuations.</p></div>
+      <div class="cat"><h4>Power of Compounding</h4><p>Returns earned on your investments can generate additional returns over time. The earlier you start, the more time your money has to grow.</p></div>
+      <div class="cat"><h4>Disciplined Saving</h4><p>SIPs encourage regular investing through fixed monthly contributions. This helps build a consistent saving and investing habit.</p></div>
+      <div class="cat"><h4>Flexibility</h4><p>Most SIPs can be increased, reduced, paused, or stopped when needed. Thus, giving you the flexibility to invest according to your goals and budget.</p></div>
+      <div class="cat"><h4>Low Minimum Investment</h4><p>You can start a SIP with a small monthly amount, making mutual fund investing accessible even for first-time investors.</p></div>
+      <div class="cat"><h4>Diversification</h4><p>Mutual funds invest across multiple securities, helping spread risk and providing exposure to different asset classes and sectors.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== SIP vs Lumpsum – Key Differences ===== -->
+  <section class="section stack sec-light" id="sec-vs-lumpsum" data-section="vs-lumpsum" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">SIP vs Lumpsum – Key Differences</h2>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>SIP</p></div><div class="cell th"><p>Lumpsum</p></div>
+      <div class="cell tb"><p class="k">Investment mode</p></div><div class="cell tb"><p class="v">Monthly or periodic</p></div><div class="cell tb"><p class="v">One-time investment</p></div>
+      <div class="cell tb"><p class="k">Market timing</p></div><div class="cell tb"><p class="v">Less important</p></div><div class="cell tb"><p class="v">More important</p></div>
+      <div class="cell tb"><p class="k">Risk impact</p></div><div class="cell tb"><p class="v">Spread across time</p></div><div class="cell tb"><p class="v">Invested at one market level</p></div>
+      <div class="cell tb"><p class="k">Suitable for</p></div><div class="cell tb"><p class="v">Salaried or regular-income investors</p></div><div class="cell tb"><p class="v">Bonus, windfall, or surplus cash</p></div>
+      <div class="cell tb"><p class="k">Minimum amount</p></div><div class="cell tb"><p class="v">Often starts from small amounts</p></div><div class="cell tb"><p class="v">Usually higher than SIP</p></div>
+      <div class="cell tb"><p class="k">Best use case</p></div><div class="cell tb"><p class="v">Goal-based disciplined investing</p></div><div class="cell tb"><p class="v">Deploying idle capital</p></div>
+    </div></div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Which is better: SIP or lumpsum?</h3>
+        <p class="sub-lead">SIP may be better for investors who want to invest gradually and reduce the pressure of market timing. Lumpsum investing may suit investors who already have surplus funds and a long investment horizon. The better choice depends on your cash flow, risk appetite, and goal timeline.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Types of SIP in India ===== -->
+  <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Types of SIP in India</h2>
+    </div>
+    <div class="row-2">
+      <div class="card"><h4 class="card-h">Regular SIP</h4><p class="card-p">A Regular SIP allows you to invest a fixed amount on a fixed date. It is best for salaried investors who want a simple monthly investing habit. Best for: First-time investors and salaried professionals.</p></div>
+      <div class="card"><h4 class="card-h">Flexible SIP</h4><p class="card-p">A Flexible SIP allows you to change the SIP amount based on your income, expenses, or market conditions. Best for: Investors with variable income.</p></div>
+    </div>
+    <div class="row-2">
+      <div class="card"><h4 class="card-h">Step-Up SIP</h4><p class="card-p">A Step-Up SIP increases your monthly investment amount periodically, usually every year. Best for: Investors expecting income growth.</p></div>
+      <div class="card"><h4 class="card-h">Perpetual SIP</h4><p class="card-p">A Perpetual SIP continues without a fixed end date until the investor stops it. Best for: Long-term wealth creation.</p></div>
+    </div>
+    <div class="row-2">
+      <div class="card"><h4 class="card-h">Trigger SIP</h4><p class="card-p">A Trigger SIP invests when a specific market condition, NAV level, or event occurs. Best for: Experienced investors who understand market-linked triggers.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== How to Start a SIP ===== -->
+  <section class="section stack sec-light" id="sec-start" data-section="start" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Start a SIP</h2>
+      <p class="sec-lead">You can start a SIP online in a few simple steps.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Download the Purse+ Mobile App</h4><p>Install the Purse+ app on your smartphone and sign in or create your account.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Open a Demat Account</h4><p>Complete the KYC process by submitting the required documents to open your Demat account.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Visit the NFO Section</h4><p>From the app dashboard, navigate to the NFO section to view the available New Fund Offers.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Select an NFO</h4><p>Review the available NFOs and choose the one that matches your investment goals.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Complete Your Investment</h4><p>Select Buy for a one-time investment or SIP for regular investments, enter the investment amount, and complete the transaction securely.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Factors Affecting SIP Returns ===== -->
+  <section class="section stack sec-tint" id="sec-factors" data-section="factors" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Factors Affecting SIP Returns</h2>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Investment Amount</h4><p>A higher monthly SIP amount can help build a larger corpus, assuming the same duration and return rate.</p></div>
+      <div class="cat"><h4>Investment Duration</h4><p>Longer duration gives compounding more time to work. Even small SIPs can grow meaningfully over long periods.</p></div>
+      <div class="cat"><h4>Expected Rate of Return</h4><p>Returns vary by fund category. Equity funds, debt funds, and hybrid funds have different risk-return profiles.</p></div>
+      <div class="cat"><h4>Inflation</h4><p>Inflation reduces the purchasing power of your future corpus. Always consider real returns, not just nominal returns.</p></div>
+    </div>
+    <p class="sec-lead">Important: Past returns are not guaranteed. Mutual fund investments are subject to market risks.</p>
+  </section>
+
+  <!-- ===== Tax on SIP Investments – LTCG and STCG ===== -->
+  <section class="section stack sec-light" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Tax on SIP Investments – LTCG and STCG</h2>
+      <p class="sec-lead">SIP investments are taxed based on the type of mutual fund and the holding period of each SIP instalment. Each monthly SIP instalment has its own purchase date and holding period.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Fund Type</p></div><div class="cell th"><p>Holding Period</p></div><div class="cell th"><p>Tax Treatment</p></div>
+      <div class="cell tb"><p class="k">Equity-oriented mutual fund</p></div><div class="cell tb"><p class="v">Less than or equal to 12 months</p></div><div class="cell tb"><p class="v">20% STCG</p></div>
+      <div class="cell tb"><p class="k">Equity-oriented mutual fund</p></div><div class="cell tb"><p class="v">More than 12 months</p></div><div class="cell tb"><p class="v">12.5% LTCG above ₹1.25 lakh</p></div>
+      <div class="cell tb"><p class="k">Debt-oriented / specified mutual fund</p></div><div class="cell tb"><p class="v">As applicable under Section 50AA</p></div><div class="cell tb"><p class="v">Taxed as per slab rate in specified cases</p></div>
+      <div class="cell tb"><p class="k">ELSS</p></div><div class="cell tb"><p class="v">3-year lock-in</p></div><div class="cell tb"><p class="v">Equity fund taxation after lock-in</p></div>
+    </div></div>
+    <p class="sec-lead">Note: Tax rules may change. Please consult a qualified tax advisor before making investment or redemption decisions.</p>
+  </section>
+
+  <!-- ===== SIP for Different Financial Goals ===== -->
+  <section class="section stack sec-tint" id="sec-goals" data-section="goals" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">SIP for Different Financial Goals</h2>
+      <p class="sec-lead">SIP can be used to plan for different long-term and medium-term goals. The examples below use assumed returns and are only for illustration.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Retirement Planning</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t4 bordered">
+        <div class="cell th"><p>Target Amount</p></div><div class="cell th"><p>Duration</p></div><div class="cell th"><p>Expected Return</p></div><div class="cell th"><p>Estimated Monthly SIP</p></div>
+        <div class="cell tb"><p class="k">₹5 crore</p></div><div class="cell tb"><p class="v">25 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹26,349</p></div>
+      </div></div>
+      <p class="sub-lead">Best for: Long-term investors who want to build a retirement corpus.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Child Education</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t4 bordered">
+        <div class="cell th"><p>Target Amount</p></div><div class="cell th"><p>Duration</p></div><div class="cell th"><p>Expected Return</p></div><div class="cell th"><p>Estimated Monthly SIP</p></div>
+        <div class="cell tb"><p class="k">₹25 lakh</p></div><div class="cell tb"><p class="v">12 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹7,758</p></div>
+      </div></div>
+      <p class="sub-lead">Best for: Parents planning for higher education expenses.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Home Down Payment</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t4 bordered">
+        <div class="cell th"><p>Target Amount</p></div><div class="cell th"><p>Duration</p></div><div class="cell th"><p>Expected Return</p></div><div class="cell th"><p>Estimated Monthly SIP</p></div>
+        <div class="cell tb"><p class="k">₹15 lakh</p></div><div class="cell tb"><p class="v">7 years</p></div><div class="cell tb"><p class="v">10% p.a.</p></div><div class="cell tb"><p class="v">₹12,299</p></div>
+      </div></div>
+      <p class="sub-lead">Best for: Investors planning a house purchase.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Wealth Creation</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t4 bordered">
+        <div class="cell th"><p>Target Amount</p></div><div class="cell th"><p>Duration</p></div><div class="cell th"><p>Expected Return</p></div><div class="cell th"><p>Estimated Monthly SIP</p></div>
+        <div class="cell tb"><p class="k">₹1 crore</p></div><div class="cell tb"><p class="v">20 years</p></div><div class="cell tb"><p class="v">12% p.a.</p></div><div class="cell tb"><p class="v">₹10,009</p></div>
+      </div></div>
+      <p class="sub-lead">Best for: Investors focused on long-term capital growth.</p>
+    </div>
+    <a class="btn-gold" href="#sec-calc" style="align-self:center">Plan My Goal SIP</a>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -210,6 +494,7 @@ const seo = {
       <div class="faq-left">
         <h2 class="faq-title">General Questions</h2>
         <FaqAccordion faqs={FAQS} />
+        <a class="btn-gold" href="/contact-us/" style="align-self:flex-start;margin-top:24px">Still have questions? Chat with us</a>
       </div>
       <div class="faq-side">
         <div class="usr"><img src="/assets/user.svg" alt="" /></div>
@@ -222,6 +507,58 @@ const seo = {
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ===== Related Calculators ===== -->
+  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+    <h2 class="sec-title">Related Calculators</h2>
+    <div class="explore-grid" data-reveal-row>
+      <a class="xcard" href="/lumpsum-calculator/">
+        <span class="xc-title">Lumpsum Calculator</span>
+        <span class="xc-desc">Estimate returns on one-time mutual fund investments.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/swp-calculator/">
+        <span class="xc-title">SWP Calculator</span>
+        <span class="xc-desc">Plan systematic withdrawals from mutual funds.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/sip-calculator/">
+        <span class="xc-title">Step-Up SIP Calculator</span>
+        <span class="xc-desc">Calculate SIP returns with annual increments.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/nps-calculator/">
+        <span class="xc-title">NPS Calculator</span>
+        <span class="xc-desc">Estimate retirement corpus from NPS contributions.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/fd-calculator/">
+        <span class="xc-title">FD Calculator</span>
+        <span class="xc-desc">Calculate maturity value of fixed deposits.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== Start Your SIP Today ===== -->
+  <section class="section stack sec-light" id="sec-final" data-section="final" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Start Your SIP Today</h2>
+      <p class="sec-lead">Start investing towards your financial goals with a simple monthly SIP.</p>
+      <p class="sec-lead">With Shriram Financial Services, you can start your SIP online in under 5 minutes.</p>
+    </div>
+    <div class="card check-card" style="align-self:flex-start">
+      <div class="check-list">
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">SEBI-registered and AMFI-compliant</p></div>
+        <div class="check-sep"></div>
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">4,000+ mutual funds schemes available</p></div>
+        <div class="check-sep"></div>
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Secure investment tracking dashboard</p></div>
+      </div>
+    </div>
+    <p class="sec-lead">SEBI Registration Number: [Add SEBI Reg No.]</p>
+    <div class="cta" style="align-self:flex-start"><a class="btn-gold" href="/open-demat-account/">Start SIP Now</a><a class="btn-ghost" href="/contact-us/">Talk to an Expert</a></div>
   </section>
 </BaseLayout>
 

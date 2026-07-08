@@ -2,112 +2,73 @@
 /**
  * Equity Derivatives (F&O) - /derivatives/
  * Long-form F&O guide. Built entirely from shared design-system components in
- * global.css (hero, .section/.sec-title, .card, .cat-grid, .product-page_table,
- * .approaches, .risks, FaqAccordion, .cta-box). Frontmatter data arrays feed the
- * card/cat/table maps. Nested route → BaseLayout / component imports at ../../ depth.
+ * global.css (hero, .section/.sec-title, .card, .cat-grid, .steps, .product-page_table,
+ * .risks, FaqAccordion, .cta-box). Content is the compliance-approved doc, verbatim.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// The four instrument families traded in the F&O segment.
-const INSTRUMENTS = [
-  {
-    h: 'Index Futures',
-    p: 'A contract to buy or sell a stock index - such as the Nifty 50 or Bank Nifty - at a preset price on a future date. Cash-settled and widely used to take a view on the broad market or to hedge a portfolio.',
-  },
-  {
-    h: 'Stock Futures',
-    p: 'A futures contract on an individual stock from the exchange-approved F&O list. It lets you take a leveraged position on a single company without buying the underlying shares outright.',
-  },
-  {
-    h: 'Index Options',
-    p: 'Call and put options on an index. They carry the right - not the obligation - to buy or sell the index at the strike price, and are the most actively traded contracts on Indian exchanges.',
-  },
-  {
-    h: 'Stock Options',
-    p: 'Call and put options on individual F&O stocks. Useful for directional bets, income strategies and hedging a single-stock holding with a defined premium as the maximum cost for the buyer.',
-  },
+// Advantages of Derivatives - numbered list rendered as a cat-grid.
+const ADVANTAGES = [
+  { h: 'Hedge Portfolio Risk', p: 'You can use derivatives to hedge against market volatility and protect your portfolio from adverse price movements.' },
+  { h: 'Price Discovery', p: 'Derivatives reflect market expectations about future prices, helping in better forecasting and informed decision-making.' },
+  { h: 'Diversification', p: 'Derivatives help diversify your investments across asset classes and strategies, reducing overall portfolio risk.' },
+  { h: 'High Liquidity', p: 'Most derivative contracts are highly liquid, allowing quick entry and exit at competitive prices.' },
+  { h: 'Low Transaction Costs', p: 'Trading in derivatives often involves lower transaction costs compared to investing directly in the underlying assets.' },
+  { h: 'Access to Multiple Markets', p: 'Derivatives allow traders to gain exposure to a wide range of asset classes, including equities, indices, commodities, and currencies, through a single trading account.' },
 ];
 
-// Core F&O vocabulary - short glossary terms for the cat-grid.
-const TERMS = [
-  { h: 'Call Option', p: 'The right to buy the underlying at the strike price before or on expiry.' },
-  { h: 'Put Option', p: 'The right to sell the underlying at the strike price before or on expiry.' },
-  { h: 'Long', p: 'Buying a contract in expectation that its price will rise.' },
-  { h: 'Short', p: 'Selling (writing) a contract in expectation that its price will fall.' },
-  { h: 'In the Money (ITM)', p: 'An option with intrinsic value - profitable if exercised now.' },
-  { h: 'At the Money (ATM)', p: 'An option whose strike is roughly equal to the current spot price.' },
-  { h: 'Out of the Money (OTM)', p: 'An option with no intrinsic value - only time value remains.' },
-  { h: 'Lot Size', p: 'The fixed quantity of the underlying in one F&O contract, set by the exchange.' },
+// Disadvantages of Derivatives - numbered list rendered as a cat-grid.
+const DISADVANTAGES = [
+  { h: 'Leverage Your Capital', p: 'The same leverage that amplifies profits can multiply losses. A small adverse price move can wipe out your entire margin, and in Futures, losses can even exceed the initial margin deposited.' },
+  { h: 'Complex Instruments', p: 'Derivatives, especially multi-leg options strategies, require a solid understanding of pricing models, Greeks (Delta, Theta, Vega), and market dynamics. They are not suitable for beginners without adequate education.' },
+  { h: 'Counterparty Risk', p: 'While exchange-traded F&O in India is protected by the clearing corporation, OTC instruments like forwards and swaps carry counterparty default risk.' },
+  { h: 'Expiry Pressure', p: 'Derivatives contracts have expiry dates, forcing traders to make quick decisions, which may lead to losses.' },
+  { h: 'Margin Calls', p: 'If the market moves against your position, you may face margin calls requiring immediate additional funds. Failure to pay can lead to forced liquidation of your position.' },
+  { h: 'Overtrading Risk', p: 'The ease of trading and leverage available in F&O can lead to overtrading, which is a leading cause of losses for retail participants.' },
 ];
 
-// F&O trading strategies - approaches list (Explore cards).
-const STRATEGIES = [
-  {
-    h: 'Hedging',
-    p: 'Use futures or options to protect an existing portfolio against adverse moves - for example, buying index puts to cap downside on a basket of stocks during volatile markets.',
-  },
-  {
-    h: 'Speculation',
-    p: 'Take a directional view on price with the leverage that derivatives offer, aiming to profit from short-term moves in an index or stock while accepting higher risk.',
-  },
-  {
-    h: 'Arbitrage',
-    p: 'Exploit price differences between the cash and futures markets, or across related contracts, to lock in a near risk-free spread when pricing temporarily diverges.',
-  },
-];
-
-// Risks specific to leveraged derivatives trading.
+// What are the Risks in Derivative Trading? - six SEBI-disclosed risk categories.
 const RISKS = [
-  {
-    h: 'Leverage Risk',
-    p: 'Margin lets you control a large position with a small outlay, so gains and losses are both amplified. A modest adverse move can wipe out your margin quickly.',
-  },
-  {
-    h: 'Time Decay (Theta)',
-    p: "An option loses time value as expiry approaches. Buyers can be right on direction yet still lose money if the move is too slow.",
-  },
-  {
-    h: 'Margin Calls',
-    p: 'If the market moves against an open futures or short-option position, the exchange may demand additional margin, forcing you to add funds or square off at a loss.',
-  },
-  {
-    h: 'Unlimited Loss on Short Options',
-    p: 'Selling (writing) a naked option earns a fixed premium but exposes you to potentially unlimited losses if the underlying moves sharply against the position.',
-  },
+  { h: 'Market Risk', p: "Sudden price movements driven by economic data, RBI policy, or global events can rapidly erode your derivative position's value." },
+  { h: 'Leverage Risk', p: 'Leverage amplifies both profits and losses. A 1% adverse move in the underlying can result in a 10-20% loss on your margin.' },
+  { h: 'Liquidity Risk', p: 'Deep in-the-money(ITM) and out-of-the-money (OTM) options on individual stocks can have low liquidity, leading to wide bid-ask spreads and difficulty exiting at fair prices.' },
+  { h: 'Basic Risk', p: "A derivative hedge may not perfectly offset the underlying asset's movement, leaving a residual risk known as basis risk." },
+  { h: 'Expiry / Roll-Over Risk', p: 'Futures expire monthly. Maintaining a position beyond expiry requires rolling over, which can add costs - especially in contango markets.' },
+  { h: 'Regulatory Risk', p: 'SEBI periodically updates margin requirements, position limits, and contract specs, which can directly impact your existing positions and strategies.' },
 ];
 
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// Got Questions? - FAQ list, doc content verbatim, same order (first item open).
 const FAQS = [
   {
-    q: 'What are equity derivatives?',
-    a: 'Equity derivatives are financial contracts whose value is derived from an underlying equity asset - a stock or a stock index. The two main types traded in India are futures and options, together known as the F&O segment.',
+    q: 'What is derivatives trading in India?',
+    a: 'Derivatives trading means buying and selling contracts whose value is linked to assets like stocks, commodities, or indices. It allows traders to speculate or hedge without owning the asset directly.',
   },
   {
-    q: 'What is the difference between futures and options?',
-    a: 'A futures contract obligates both parties to buy or sell the underlying at a set price on the expiry date. An option gives the buyer the right, but not the obligation, to buy (call) or sell (put) at the strike price, in exchange for a premium paid upfront.',
+    q: 'Difference between futures and options?',
+    a: 'Futures are binding contracts to buy/sell at a fixed price on a future date. Options give the right, but not the obligation, to buy/sell. Futures carry unlimited risk, while options limit risk to the premium paid.',
   },
   {
-    q: 'What is a lot size in F&O?',
-    a: 'F&O contracts are traded in fixed quantities called lots. The exchange sets the lot size for each index and stock - you cannot trade a single share, only whole lots. Lot sizes are revised periodically to keep contract value within regulatory bands.',
+    q: 'What is the minimum margin required for F&O trading?',
+    a: 'Margins vary by contract and volatility. For example, Nifty futures may require around ₹1.8L. Check to find out the exact requirements before placing trades.',
   },
   {
-    q: 'When do F&O contracts expire in India?',
-    a: 'Index and stock F&O contracts follow a weekly and monthly expiry cycle set by the exchange. Monthly contracts expire on a designated day of the last week of the month, while some indices also offer weekly expiries. Positions are cash-settled or physically settled per exchange rules.',
+    q: 'Is derivatives trading risky for beginners?',
+    a: 'Yes, because leverage magnifies both profits and losses. Beginners should start small, learn strategies, and use risk‑management tools like stop‑loss orders.',
   },
   {
-    q: 'How is F&O income taxed in India?',
-    a: 'Income from futures and options is treated as non-speculative business income under the Income Tax Act, not as capital gains. It is added to your total income and taxed at your applicable slab rate, and losses can be set off and carried forward under business-income rules. Consult a tax adviser for your specific case.',
+    q: 'How are derivatives taxed in India?',
+    a: 'Profits from F&O trading are treated as business income. They are taxed according to your income slab, and audit requirements may apply if turnover crosses SEBI thresholds.',
   },
   {
-    q: 'Do I need a special account to trade derivatives?',
-    a: 'You trade F&O through your regular trading and Demat account once the derivatives segment is activated. Activation typically requires income proof, as exchanges and brokers apply suitability and margin requirements for leveraged products.',
+    q: 'Do I need a Demat account to trade derivatives?',
+    a: 'Yes, a trading account linked with a Demat account is mandatory. This ensures compliance with SEBI regulations and smooth settlement of trades.',
   },
   {
-    q: 'Is F&O trading riskier than buying shares?',
-    a: 'Yes. Derivatives are leveraged, so both profits and losses are magnified relative to the capital deployed. Options can expire worthless and short option positions carry potentially unlimited loss. F&O suits informed traders who understand margins, expiry and risk management.',
+    q: 'What are trading hours for derivatives in NSE?',
+    a: 'F&O contracts trade from 9:15 AM to 3:30 PM IST, Monday to Friday. Commodity derivatives may have extended evening sessions.',
   },
 ];
 
@@ -138,159 +99,199 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity Derivatives' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Trade Futures &amp; Options With <span class="g">Equity Derivatives</span></h1>
-      <p class="lead">Take leveraged positions, hedge your portfolio and trade the Nifty, Bank Nifty and F&amp;O stocks with low margins, live data and research-led guidance from Shriram.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <h1>Derivatives Trading in India — Futures &amp; Options Made Simple</h1>
+      <p class="lead">Access real-time market data, advanced charts, Option Chain insights, and powerful trading tools to navigate the derivatives market with ease.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Trading Futures &amp; Options</a></div>
       <div class="hero-feats">
         <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;NSE &amp; BSE</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Low margins</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
           <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+years of Legacy</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== What Are Derivatives ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
+  <!-- ===== Derivatives Trading: Expand Your Trading Opportunities ===== -->
+  <section class="section stack sec-light" id="sec-expand" data-section="expand" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Are Equity Derivatives?</h2>
-      <p class="sec-lead">A derivative is a contract whose value is derived from an underlying asset - in the equity market, that asset is a stock or a stock index. Rather than owning the shares, you trade a contract that tracks their price. In India these contracts trade in the Futures &amp; Options (F&amp;O) segment of the NSE and BSE, regulated by SEBI. Traders use them to speculate on price direction, to hedge existing holdings, and to profit from pricing differences across markets.</p>
+      <h2 class="sec-title">Derivatives Trading: Expand Your Trading Opportunities</h2>
+      <p class="sec-lead">Looking to Trade Beyond Stocks? Expand your market opportunities with derivatives trading. Whether you're aiming to hedge risk, leverage market movements, or diversify your trading strategy, futures and options can help you trade more strategically. With Shriram Financial Services, enjoy a seamless derivatives trading experience powered by advanced tools, real-time market insights, a secure trading platform and advisory support to sharpen your strategy.</p>
+      <p class="sec-lead">In India, derivatives are among the most actively traded market instruments, especially through Futures and Options (F&amp;O) contracts listed on stock exchanges.</p>
     </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Futures &amp; Options Explained</h3>
-        <p class="sub-lead">The two building blocks of the F&amp;O segment - one carries an obligation, the other carries a right.</p>
+    <div class="card">
+      <h4 class="card-h">Example</h4>
+      <p class="card-p">Suppose you believe a stock will rise in the coming weeks. Instead of purchasing the stock directly, you may choose a Futures or Options contract linked to that stock and potentially benefit from the anticipated price movement.</p>
+    </div>
+  </section>
+
+  <!-- ===== How does Derivative Trading Works? ===== -->
+  <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How does Derivative Trading Works?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Derivatives trading allows traders to take positions based on the expected price movement of an underlying asset, such as a stock or index.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Select an instrument</h4><p>Choose a stock or index F&amp;O to trade.</p></div>
       </div>
-      <div class="row-2" data-reveal-row>
-        <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">Futures</h4>
-          <p class="card-p">A futures contract obligates both the buyer and the seller to trade the underlying at an agreed price on a set expiry date. It moves point-for-point with the underlying, offers leverage through margin, and is used for directional views and hedging.</p>
-        </div>
-        <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">Options</h4>
-          <p class="card-p">An option gives the buyer the right - not the obligation - to buy (call) or sell (put) the underlying at a fixed strike price, in exchange for a premium. The buyer's risk is capped at the premium; the seller earns it but takes on larger risk.</p>
-        </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Set Contract terms</h4><p>Decide on expiry date, stock price, and a lot size</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Margin Deposit</h4><p>Pay a fraction of contract value as initial margin.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Exit or Settle</h4><p>Contract is settled in cash or via physical delivery</p></div>
       </div>
     </div>
   </section>
 
   <!-- ===== Types of Derivatives ===== -->
-  <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Types of Derivatives</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">The F&amp;O segment covers four instrument families - futures and options, each on an index or an individual stock.</p>
+      <p class="sec-lead">The Indian derivatives market offers four major types of derivative instruments. Each serves a different purpose and is suited to different market participants:</p>
     </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Instruments You Can Trade</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Index-based contracts track the broad market; single-stock contracts track one company.</p>
-      </div>
-      <div class="row-2" data-reveal-row>
-        {INSTRUMENTS.map((c) => (
-          <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
-        ))}
-      </div>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Key F&amp;O Terms</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">The essential vocabulary every derivatives trader should know before placing a trade.</p>
-      </div>
-      <div class="cat-grid" data-reveal-row>
-        {TERMS.map((t) => (
-          <div class="cat"><h4>{t.h}</h4><p>{t.p}</p></div>
-        ))}
-      </div>
-    </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
-  </section>
-
-  <!-- ===== How F&O Works ===== -->
-  <section class="section stack sec-light" id="sec-mechanics" data-section="mechanics" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How F&amp;O Works: Margins, Lot Sizes &amp; Expiry</h2>
-      <p class="sec-lead">Three mechanics define every derivatives trade - the margin you post, the lot you trade in, and the expiry that settles it.</p>
-    </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Mechanic</p></div><div class="cell th"><p>Futures</p></div><div class="cell th"><p>Options</p></div>
-      <div class="cell tb"><p class="k">Margin</p></div><div class="cell tb"><p class="v">SPAN + exposure margin posted upfront; marked-to-market daily</p></div><div class="cell tb"><p class="v">Buyers pay the full premium; sellers post SPAN + exposure margin</p></div>
-      <div class="cell tb"><p class="k">Lot Size</p></div><div class="cell tb"><p class="v">Exchange-set fixed lots; trade in whole lots only</p></div><div class="cell tb"><p class="v">Same exchange-set lots as the underlying futures</p></div>
-      <div class="cell tb"><p class="k">Expiry Cycle</p></div><div class="cell tb"><p class="v">Weekly / monthly expiry per exchange calendar</p></div><div class="cell tb"><p class="v">Weekly / monthly expiry; unexercised OTM options lapse</p></div>
-      <div class="cell tb"><p class="k">Settlement</p></div><div class="cell tb"><p class="v">Index cash-settled; stock futures physically settled</p></div><div class="cell tb"><p class="v">Index cash-settled; stock options physically settled if ITM</p></div>
-      <div class="cell tb"><p class="k">Obligation</p></div><div class="cell tb"><p class="v">Both parties obligated to settle</p></div><div class="cell tb"><p class="v">Buyer has the right; seller carries the obligation</p></div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="min-width:720px">
+      <div class="cell th"><p>Type</p></div><div class="cell th"><p>What It Is</p></div><div class="cell th"><p>Traded On</p></div><div class="cell th"><p>Who Uses It</p></div>
+      <div class="cell tb"><p class="k">Futures</p></div><div class="cell tb"><p class="v">A binding contract to buy or sell an asset at a predetermined price on a future date. Both buyer and seller are obligated to honour the contract.</p></div><div class="cell tb"><p class="v">Exchange (NSE/BSE)</p></div><div class="cell tb"><p class="v">Traders, hedgers</p></div>
+      <div class="cell tb"><p class="k">Options</p></div><div class="cell tb"><p class="v">The right — but not the obligation — to buy (Call) or sell (Put) an asset at a set price before or on expiry. The buyer pays a premium for this right.</p></div><div class="cell tb"><p class="v">Exchange (NSE/BSE)</p></div><div class="cell tb"><p class="v">Investors, hedgers, traders</p></div>
     </div></div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
-  <!-- ===== Costs & Taxes ===== -->
-  <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
+  <!-- ===== Advantages of Derivatives ===== -->
+  <section class="section stack sec-tint" id="sec-advantages" data-section="advantages" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade derivatives, and how your F&amp;O income is treated for tax - with no hidden costs.</p>
+      <h2 class="sec-title">Advantages of Derivatives</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Discover the key advantages of derivatives, which can be valuable financial instruments for traders and investors looking to manage risk, enhance portfolio efficiency, and capitalise on market opportunities.</p>
     </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Brokerage &amp; Charges</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">A clear breakdown of the charges that apply across the futures and options segments.</p>
-      </div>
-      <div class="t-scroll"><div class="product-page_table t3">
-        <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Futures</p></div><div class="cell th"><p>Options</p></div>
-        <div class="cell tb"><p class="k">Brokerage</p></div><div class="cell tb"><p class="v">Flat ₹20 per executed order</p></div><div class="cell tb"><p class="v">Flat ₹20 per executed order</p></div>
-        <div class="cell tb"><p class="k">STT</p></div><div class="cell tb"><p class="v">0.02% on the sell side</p></div><div class="cell tb"><p class="v">0.1% on premium (sell); on intrinsic value if exercised</p></div>
-        <div class="cell tb"><p class="k">GST</p></div><div class="cell tb"><p class="v">18% on brokerage + exchange charges</p></div><div class="cell tb"><p class="v">18% on brokerage + exchange charges</p></div>
-        <div class="cell tb"><p class="k">Exchange Charges</p></div><div class="cell tb"><p class="v">Levied on turnover per exchange schedule</p></div><div class="cell tb"><p class="v">Levied on premium turnover per exchange schedule</p></div>
-        <div class="cell tb"><p class="k">Stamp Duty</p></div><div class="cell tb"><p class="v">0.002% on the buy side</p></div><div class="cell tb"><p class="v">0.003% on the buy side</p></div>
-      </div></div>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">How F&amp;O Income Is Taxed</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Unlike delivery equity, derivatives are treated as business income - not capital gains.</p>
-      </div>
-      <div class="card">
-        <p class="card-p">Income from futures and options is classified as <strong>non-speculative business income</strong> under the Income Tax Act. It is added to your total income and taxed at your applicable slab rate - there is no separate LTCG/STCG treatment. Trading expenses can be deducted, and F&amp;O losses can be set off against other business income and carried forward for up to eight years, subject to timely return filing. Because turnover thresholds can trigger a tax audit, most active F&amp;O traders maintain proper books. This is general information - consult a qualified tax adviser for your situation.</p>
-      </div>
-    </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
-  </section>
-
-  <!-- ===== Trading Strategies ===== -->
-  <section class="section stack sec-light" id="sec-strategies" data-section="strategies" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Trading Strategies</h2>
-      <p class="sec-lead">Derivatives serve three broad purposes - protecting a portfolio, taking a view, and capturing pricing gaps. Match the strategy to your goal and risk appetite.</p>
-    </div>
-    <div class="approaches" data-reveal-row>
-      {STRATEGIES.map((s, i) => (
-        <a class="appr" href="#">
-          <div class="appr-main">
-            <p class="idx">Strategy 0{i + 1}</p>
-            <div class="appr-tt"><h4>{s.h}</h4><p>{s.p}</p></div>
-          </div>
-          <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
-        </a>
+    <div class="cat-grid" data-reveal-row>
+      {ADVANTAGES.map((c) => (
+        <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
       ))}
     </div>
   </section>
 
-  <!-- ===== Risks to Weigh ===== -->
+  <!-- ===== Disadvantages of Derivatives ===== -->
+  <section class="section stack sec-light" id="sec-disadvantages" data-section="disadvantages" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Disadvantages of Derivatives</h2>
+      <p class="sec-lead">Derivatives trading comes with certain risks that every trader should understand. Being aware of these limitations can help you make informed decisions and manage your positions more effectively.</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      {DISADVANTAGES.map((c) => (
+        <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== How to Start Trading Derivatives? ===== -->
+  <section class="section stack sec-tint" id="sec-start" data-section="start" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Start Trading Derivatives?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">A simple step by step journey to start trading Futures and Options.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Open a Trading &amp; Demat Account</h4><p>Complete your KYC digitally (PAN, Aadhaar, bank details) and select option to activate  F&amp;O trading segment.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Complete F&amp;O Activation</h4><p>Submit any of the income proof i.e., latest 6 months Bank statements, latest Salary slip, net worth certificate etc.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Fund Your Account</h4><p>Transfer funds via NEFT, RTGS, UPI, or Net Banking to your trading account.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Choose Your  contract</h4><p>Select Futures or Options — pick the underlying asset, expiry date, and strike price.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Set Order Parameters</h4><p>enter the lot size(Quantity), Price and execute the trade.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">6</div>
+        <div class="st-body"><h4>Monitor &amp; Manage</h4><p>Track positions in real time, set stop-loss orders, and adjust or exit as the market moves.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">7</div>
+        <div class="st-body"><h4>Expiry &amp; Settlement</h4><p>In-the-money(ITM) options are settled on expiry. Futures can be rolled over or cash-settled for index contracts.</p></div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== Futures Vs Options Comparisons ===== -->
+  <section class="section stack sec-light" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Futures Vs Options Comparisons</h2>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Futures</p></div><div class="cell th"><p>Options</p></div>
+      <div class="cell tb"><p class="k">Definition</p></div><div class="cell tb"><p class="v">Contract to buy/sell at future price</p></div><div class="cell tb"><p class="v">Right to buy/sell at future price</p></div>
+      <div class="cell tb"><p class="k">Obligation</p></div><div class="cell tb"><p class="v">Compulsory for both parties</p></div><div class="cell tb"><p class="v">Only compulsory for Seller</p></div>
+      <div class="cell tb"><p class="k">Max Loss</p></div><div class="cell tb"><p class="v">Unlimited</p></div><div class="cell tb"><p class="v">Limited to Premium (for Buyer)</p></div>
+      <div class="cell tb"><p class="k">Margin Required</p></div><div class="cell tb"><p class="v">High (Initial + Maintenance/ Exposure)</p></div><div class="cell tb"><p class="v">Low (Premium for Buyer)</p></div>
+      <div class="cell tb"><p class="k">Risk Level</p></div><div class="cell tb"><p class="v">Very High</p></div><div class="cell tb"><p class="v">Moderate to High</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== What are the Risks in Derivative Trading? ===== -->
   <section class="section stack sec-tint" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Risks to Weigh</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Leverage cuts both ways. Understand what can move against you before you commit margin to a derivatives position.</p>
+      <h2 class="sec-title">What are the Risks in Derivative Trading?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">SEBI mandates that all brokers disclose risks associated with F&amp;O trading. Every derivative trader should understand these six risk categories before committing capital:</p>
     </div>
     <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Derivatives are powerful but demanding instruments. Trade with a defined risk budget, use stop-losses, size positions to the margin you can afford to lose, and lean on research rather than tips.</p>
   </section>
 
-  <!-- ===== General Questions ===== -->
-  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+  <!-- ===== What Is Margin in Derivative Trading? ===== -->
+  <section class="section stack sec-light" id="sec-margin" data-section="margin" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is Margin in Derivative Trading?</h2>
+      <p class="sec-lead">Margin is the collateral you deposit with your broker to enter and maintain a Futures or Options short (sell) position. In India, margin requirements are set by SEBI and the exchanges (NSE/BSE), and are calculated using the SPAN (Standard Portfolio Analysis of Risk) system.</p>
+      <p class="sec-lead">Before placing an F&amp;O trade, it is essential to understand the types of margins involved.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Types of Margin in F&amp;O Trading</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr));min-width:640px">
+        <div class="cell th"><p>Type of Margin</p></div><div class="cell th"><p>What It Is</p></div>
+        <div class="cell tb"><p class="k">SPAN Margin</p></div><div class="cell tb"><p class="v">The minimum margin mandated by the exchange based on worst-case scenario analysis. Calculated using the SPAN system developed by the Chicago Mercantile Exchange (CME).</p></div>
+        <div class="cell tb"><p class="k">Exposure Margin</p></div><div class="cell tb"><p class="v">An additional margin levied by the exchange over and above SPAN margin to cushion against residual risks.</p></div>
+        <div class="cell tb"><p class="k">Total Margin</p></div><div class="cell tb"><p class="v">SPAN Margin + Exposure Margin = Total Initial Margin required to enter a position.</p></div>
+        <div class="cell tb"><p class="k">Mark-to-Market (MTM)</p></div><div class="cell tb"><p class="v">Daily settlement of profits and losses on Futures positions basis the last settlement price. Gains are credited and losses are debited from your account daily.</p></div>
+        <div class="cell tb"><p class="k">Margin Shortfall</p></div><div class="cell tb"><p class="v">If your account balance falls below the required margin (due to losses), a margin call is triggered. You must top up funds or your position may be squared off.</p></div>
+        <div class="cell tb"><p class="k">Peak Margin Rules</p></div><div class="cell tb"><p class="v">SEBI's peak margin reporting requires you to maintain sufficient margin throughout the trading day, not just at end of day.</p></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ===== Got Questions? (General Questions) ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">General Questions</h2>
@@ -310,7 +311,7 @@ const seo = {
   </section>
 
   <!-- ===== Final CTA ===== -->
-  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Trading Futures &amp; Options in Minutes</h3>

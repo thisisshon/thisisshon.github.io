@@ -2,109 +2,56 @@
 /**
  * Commodities - /commodities/
  * Long-form commodity-trading guide. Built entirely from the shared design-system
- * components in global.css (hero, .section/.sec-title, .card, .cat-grid,
- * .product-page_table, .approaches, .risks, FaqAccordion, .cta-box). The only
+ * components in global.css (hero, .section/.sec-title, .card, .cat-grid, .bullets,
+ * .product-page_table, .steps, .approaches, FaqAccordion, .cta-box). The only
  * page-scoped CSS is a generic responsive card grid (.comm-cards) - token-bound.
- * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// The four commodity groups traded on MCX and NCDEX.
-const GROUPS = [
-  {
-    h: 'Bullion',
-    p: 'Precious metals - gold and silver - traded on the MCX. Popular as an inflation hedge and a store of value, with contracts sized for both large and retail participants (Gold Mini, Silver Micro).',
-  },
-  {
-    h: 'Energy',
-    p: 'Crude oil and natural gas contracts on the MCX track global energy benchmarks. Highly liquid and sensitive to OPEC decisions, inventory data and geopolitical events.',
-  },
-  {
-    h: 'Base Metals',
-    p: 'Industrial metals such as copper, zinc, aluminium, lead and nickel trade on the MCX. Their prices move with global demand, LME benchmarks and the industrial cycle.',
-  },
-  {
-    h: 'Agricultural',
-    p: 'Farm commodities - cotton, guar seed, guar gum, cumin (jeera), soybean and more - trade mainly on the NCDEX, driven by monsoon, sowing, harvest and export demand.',
-  },
-];
-
-// A quick MCX/NCDEX contract reference - commodity / exchange / lot / typical margin.
-const CONTRACTS = [
-  { c: 'Gold (1 kg)', e: 'MCX', l: '1 kg', m: '≈ 6–8%' },
-  { c: 'Gold Mini', e: 'MCX', l: '100 g', m: '≈ 6–8%' },
-  { c: 'Silver', e: 'MCX', l: '30 kg', m: '≈ 8–10%' },
-  { c: 'Crude Oil', e: 'MCX', l: '100 barrels', m: '≈ 10–12%' },
-  { c: 'Natural Gas', e: 'MCX', l: '1,250 mmBtu', m: '≈ 12–15%' },
-  { c: 'Copper', e: 'MCX', l: '2,500 kg', m: '≈ 8–10%' },
-  { c: 'Cotton', e: 'MCX', l: '25 bales', m: '≈ 6–8%' },
-  { c: 'Guar Seed', e: 'NCDEX', l: '10 MT', m: '≈ 8–10%' },
-];
-
-// Trading strategies - approach cards.
-const STRATEGIES = [
-  {
-    h: 'Hedging',
-    p: 'Producers, jewellers and manufacturers take an offsetting futures position to lock in a price and protect against adverse moves in the physical market.',
-  },
-  {
-    h: 'Speculation',
-    p: 'Traders take a directional view on price using leverage, aiming to profit from expected moves. Higher return potential comes with higher risk.',
-  },
-];
-
-// Risk factors - risk cards.
-const RISKS = [
-  {
-    h: 'Price Volatility',
-    p: 'Commodity prices can swing sharply on supply shocks, weather, inventory data and demand surprises - often faster than equities.',
-  },
-  {
-    h: 'Leverage Risk',
-    p: 'Low margins amplify both gains and losses. A small adverse move can wipe out a large part of your margin, triggering margin calls.',
-  },
-  {
-    h: 'Global Factors',
-    p: 'Crude, bullion and base metals track global benchmarks - OPEC decisions, US inventory, the dollar and geopolitics all move Indian prices.',
-  },
-  {
-    h: 'Roll-Over & Storage',
-    p: 'Physically-settled contracts require you to square off or roll over before expiry, or take delivery - with associated warehouse and quality costs.',
-  },
-];
-
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// General Questions - doc content verbatim, same order (first item open).
 const FAQS = [
   {
     q: 'What is commodity trading in India?',
-    a: 'Commodity trading is the buying and selling of commodity futures and options - such as gold, silver, crude oil, copper and agricultural produce - on regulated exchanges. In India the main venues are the MCX for bullion, energy and metals, and the NCDEX for agricultural commodities, all overseen by SEBI.',
+    a: 'Commodity trading involves buying and selling contracts linked to commodities such as gold, silver, crude oil, natural gas, copper etc on recognised exchanges like MCX and NCDEX. Traders seek to benefit from price movements without necessarily taking physical delivery of the commodity.',
   },
   {
-    q: 'What is the difference between MCX and NCDEX?',
-    a: 'The MCX (Multi Commodity Exchange) is the leading exchange for bullion, energy and base metals such as gold, silver, crude oil and copper. The NCDEX (National Commodity & Derivatives Exchange) specialises in agricultural commodities like guar, cotton, soybean and cumin. Both are SEBI-regulated electronic exchanges.',
+    q: 'Is commodity trading legal in India?',
+    a: 'Yes. Commodity trading is completely legal in India when conducted through SEBI-regulated brokers and recognised exchanges such as MCX and NCDEX.',
   },
   {
-    q: 'Do I need a separate account to trade commodities?',
-    a: 'You trade commodities through a trading account with a SEBI-registered broker that is a member of the MCX/NCDEX. If you already have a Shriram trading account, commodity segment activation is a simple online step - no separate demat is needed as most contracts are cash-settled.',
+    q: 'How much money do I need to start commodity trading?',
+    a: 'The capital required depends on the commodity and contract size. Some commodity contracts may require margins starting from a few thousand rupees, while larger contracts may require higher margins.',
   },
   {
-    q: 'How does leverage work in commodity futures?',
-    a: 'Commodity futures are traded on margin - you deposit a fraction of the contract value (typically 6–15%) to take a position. This leverage magnifies both profits and losses, so a small price move can have a large effect on your margin.',
+    q: 'Which commodities are most commonly traded in India?',
+    a: 'Gold, silver, crude oil, natural gas, copper, zinc, aluminium and cotton commodities are among the most actively traded commodities in India.',
   },
   {
-    q: 'How is income from commodity trading taxed?',
-    a: 'Income from trading commodity derivatives on a recognised exchange is generally treated as non-speculative business income, not as capital gains. It is added to your total income and taxed at your applicable slab rate, and losses can be set off against other business income subject to the rules.',
+    q: 'What is the difference between commodity futures and options?',
+    a: 'A futures contract creates an obligation to buy or sell a commodity at a future date, while an options contract gives the buyer the right, but not the obligation, to buy or sell the commodity.',
   },
   {
-    q: 'What is Commodities Transaction Tax (CTT)?',
-    a: 'CTT is a small tax levied on the sell side of non-agricultural commodity derivative transactions (such as bullion, energy and metals). Agricultural commodities are exempt. It is charged automatically on eligible trades, similar to how STT applies to equities.',
+    q: 'Can beginners trade commodities?',
+    a: 'Yes. Beginners can start with liquid commodities such as gold and silver while learning market fundamentals and using proper risk-management techniques.',
   },
   {
-    q: 'Are commodities suitable for portfolio diversification?',
-    a: 'Commodities often move differently from equities and bonds, so a measured allocation - for example to gold - can help diversify a portfolio and hedge against inflation. Suitability depends on your goals, risk appetite and time horizon, and leverage should be used carefully.',
+    q: 'What are commodity trading hours in India?',
+    a: 'Commodity trading hours vary by exchange and commodity category. MCX offers extended trading sessions for many commodities, including evening trading hours.',
+  },
+  {
+    q: 'How are profits from commodity trading taxed?',
+    a: 'Commodity trading profits are generally treated as business income under Indian tax regulations and are taxed according to the applicable income tax slab rates.',
+  },
+  {
+    q: 'What is margin in commodity trading?',
+    a: 'Margin is the amount of money traders must deposit to open and maintain a commodity trading position. It acts as collateral and allows traders to control larger positions with a smaller capital outlay.',
+  },
+  {
+    q: 'Which commodity is best for beginners?',
+    a: 'Gold is often considered one of the best commodities for beginners because of its high liquidity, widespread market participation, and availability of research, however it is up to the willingness of the users.',
   },
 ];
 
@@ -135,186 +82,309 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Commodities' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Trade <span class="g">Commodities</span> on MCX &amp; NCDEX</h1>
-      <p class="lead">Buy and sell gold, silver, crude oil, base metals and agricultural futures with low margins, live market data and research-led guidance from Shriram.</p>
+      <h1>Trade Commodities with Confidence — Gold, Silver, Crude &amp; More</h1>
+      <p class="lead">Trade India's top commodities like gold, silver, crude oil, and other products on trusted MCX exchanges — diversify your portfolio, hedge inflation, and capture market opportunities.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;MCX &amp; NCDEX</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Low margins</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;25+ years of expertise</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Real-time MCX dashboard</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI regulated</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;MCX approved</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== What Is Commodity Trading ===== -->
+  <!-- ===== Commodities: A Smart Trading choice ===== -->
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is Commodity Trading?</h2>
-      <p class="sec-lead">Commodity trading is the buying and selling of raw materials - precious metals, energy, industrial metals and farm produce - through standardised futures and options contracts. Rather than holding the physical asset, you trade a contract whose value tracks the underlying commodity. In India these contracts trade electronically on two SEBI-regulated exchanges, giving investors a transparent, well-supervised marketplace to speculate on prices, hedge exposure or diversify a portfolio.</p>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Where Commodities Trade</h3>
-        <p class="sub-lead">Two major exchanges enable transparent, electronic trading across the commodity segment:</p>
-      </div>
-      <div class="row-2" data-reveal-row>
-        <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">Multi Commodity Exchange (MCX)</h4>
-          <p class="card-p">India's largest commodity exchange, where bullion, energy and base metals such as gold, silver, crude oil and copper trade with deep liquidity and transparent price discovery.</p>
-        </div>
-        <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">National Commodity &amp; Derivatives Exchange (NCDEX)</h4>
-          <p class="card-p">The leading exchange for agricultural commodities - guar, cotton, soybean, cumin and more - offering farmers, traders and investors a regulated venue for price discovery and hedging.</p>
-        </div>
-      </div>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Futures &amp; Options</h3>
-        <p class="sub-lead">Commodities are traded through two kinds of derivative contracts, each with its own risk profile.</p>
-      </div>
-      <div class="row-2" data-reveal-row>
-        <div class="card">
-          <h4 class="card-h">Commodity Futures</h4>
-          <p class="card-p">An agreement to buy or sell a fixed quantity of a commodity at a set price on a future date. Traded on margin, with a defined lot size and monthly expiry.</p>
-        </div>
-        <div class="card">
-          <h4 class="card-h">Commodity Options</h4>
-          <p class="card-p">Give the right - but not the obligation - to buy or sell the underlying futures at a strike price. Buyers pay a premium and cap their downside to that premium.</p>
-        </div>
-      </div>
+      <h2 class="sec-title">Commodities: A Smart Trading choice</h2>
+      <p class="sec-lead">Commodity trading lets you trade in assets like gold, silver, crude oil and more while benefiting from market price movements. It can also help hedge against inflation and market volatility. With Shriram Financial Services, you can trade commodities seamlessly using a secure platform, real-time market insights, advanced trading tools and advisory support to guide your positions.</p>
     </div>
   </section>
 
-  <!-- ===== Types of Commodities ===== -->
+  <!-- ===== Types of Commodity in India ===== -->
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Types of Commodities</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Commodities fall into four broad groups, each traded on its primary exchange and driven by its own set of price factors.</p>
+      <h2 class="sec-title">Types of Commodity in India</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">India's commodity markets span five major categories traded across MCX. Each segment has distinct exchanges, lot sizes, and price drivers. The main type of commodity is :</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Hard Commodities</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Hard commodities are natural resources such as metals and energy products that are mined or extracted from the earth, including gold, silver, copper, crude oil, and natural gas.</p>
+      </div>
+      <div class="comm-cards" data-reveal-row>
+        <div class="card">
+          <h4 class="card-h">Industrial Metals</h4>
+          <p class="card-p">Metals used in construction, manufacturing, engineering, and other industries.</p>
+          <p class="card-p">Examples: Copper, Aluminium, Zinc, Lead, Nickel</p>
+        </div>
+        <div class="card">
+          <h4 class="card-h">Precious Metals</h4>
+          <p class="card-p">Rare and highly valuable metals used as a store of value and in jewellery.</p>
+          <p class="card-p">Examples: Gold, Silver, Platinum, Palladium</p>
+        </div>
+        <div class="card">
+          <h4 class="card-h">Energy</h4>
+          <p class="card-p">Fuel and energy resources that power industries and economies.</p>
+          <p class="card-p">Examples: Crude Oil, Natural Gas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Why Should You Invest in Commodity? ===== -->
+  <section class="section stack sec-light" id="sec-why" data-section="why" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Why Should You Invest in Commodity?</h2>
+      <p class="sec-lead">Investors choose commodities for diversification, inflation hedge, global exposure, leverage opportunities, and volatility benefits. Learn the key benefits of adding commodities to your investment portfolio.</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Portfolio Diversification</h4><p>Low correlation with other asset classes helps reduce overall portfolio risk and volatility.</p></div>
+      <div class="cat"><h4>Inflation Hedge</h4><p>Commodity prices tend to rise during inflation, protecting your purchasing power.</p></div>
+      <div class="cat"><h4>Global Exposure</h4><p>Gain exposure to worldwide demand across industries and benefit from global market trends.</p></div>
+      <div class="cat"><h4>Trading Opportunities</h4><p>Frequent price fluctuations create opportunities to generate returns in the short term.</p></div>
+      <div class="cat"><h4>Leverage Efficiency</h4><p>Use margin to control larger positions with smaller capital, enhancing potential returns.</p></div>
+      <div class="cat"><h4>Risk Balancing</h4><p>Commodities can offset losses in other asset classes during uncertain market conditions.</p></div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Commodity Trading Account</a>
+  </section>
+
+  <!-- ===== Advantages of Commodity Trading ===== -->
+  <section class="section stack sec-tint" id="sec-advantages" data-section="advantages" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Advantages of Commodity Trading</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading offers a range of benefits, providing traders and investors with opportunities to participate in diverse market segments through a regulated and transparent trading environment.</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>High Liquidity</h4><p>High trading volumes in major commodities ensure easy entry and exit.</p></div>
+      <div class="cat"><h4>Transparent Pricing</h4><p>Prices are determined by global demand and supply, ensuring fairness and transparency.</p></div>
+      <div class="cat"><h4>Standardised Contracts</h4><p>Exchange-traded contracts are uniform, reducing complexity in execution.</p></div>
+      <div class="cat"><h4>Real Asset Backing</h4><p>Commodities are tangible assets with intrinsic value like gold, oil, and metals.</p></div>
+      <div class="cat"><h4>Wide Market Access</h4><p>Trade a wide range of commodities across reputable exchanges such as MCX.</p></div>
+      <div class="cat"><h4>Regulated Trading</h4><p>Trading on regulated exchanges ensures safety, compliance, and transparency.</p></div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Commodity Trading</a>
+  </section>
+
+  <!-- ===== Disadvantages of Commodity Trading ===== -->
+  <section class="section stack sec-light" id="sec-disadvantages" data-section="disadvantages" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Disadvantages of Commodity Trading</h2>
+      <p class="sec-lead">While commodity trading offers numerous opportunities, it also carries certain risks that traders should understand before participating in the market.</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Price Volatility</h4><p>Commodity prices can fluctuate significantly due to changes in global demand and supply, geopolitical events, weather conditions, and economic developments.</p></div>
+      <div class="cat"><h4>Leverage Risk</h4><p>Commodity trading often involves margin-based trading, where a small price movement can result in substantial gains or losses.</p></div>
+      <div class="cat"><h4>Market Complexity</h4><p>Commodity markets are influenced by multiple factors, including international events, inventory levels, currency movements, and government policies, making them challenging for inexperienced traders.</p></div>
+      <div class="cat"><h4>Margin Calls</h4><p>If the market moves against your position, you may be required to deposit additional funds to maintain the trade, failing which your position may be squared off.</p></div>
+      <div class="cat"><h4>Global Event Sensitivity</h4><p>Commodity prices can react sharply to geopolitical tensions, natural disasters, production disruptions, and policy changes across the world.</p></div>
+      <div class="cat"><h4>Limited Knowledge Risk</h4><p>Trading without a proper understanding of commodity markets, contract specifications, and risk management strategies can increase the likelihood of losses.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== How does Commodity Trading Works? ===== -->
+  <section class="section stack sec-tint" id="sec-how-works" data-section="how-works" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How does Commodity Trading Works?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading facilitates the exchange of physical goods such as metals and energy resources. It operates through structured platforms and mechanisms such as MCX, offering investment opportunities while managing market risks.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading in India happens through exchange-traded futures and options contracts. When you buy a crude oil futures contract on MCX, you agree to buy a fixed quantity (100 barrels) at a predetermined price on a specific expiry date. Most retail traders square off positions before expiry, settling in cash rather than taking physical delivery.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Multi Commodity Exchange (MCX)</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">MCX (Multi Commodity Exchange) is an electronic platform where traders and investors buy and sell commodity derivative contracts (such as futures and options), rather than the physical commodities themselves. It is primarily used for metals (gold, silver), energy (crude oil, natural gas). Trading runs from 9:00 AM to 11:55 PM IST, also 9:00am – 11:30pm (for 6 months) mirroring international market hours including the US trading session.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Commodity Futures Vs Options — Key Differences ===== -->
+  <section class="section stack sec-light" id="sec-futures-options" data-section="futures-options" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Commodity Futures Vs Options — Key Differences</h2>
+      <p class="sec-lead">Commodity derivatives are primarily traded through Futures and Options contracts. While both allow traders to participate in commodity price movements without owning the physical commodity, they work differently and serve different trading objectives.</p>
+      <p class="sec-lead">Understanding the difference between Commodity Futures and Commodity Options can help you choose the right instrument based on your trading style, risk appetite, and market outlook.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Commodity Futures</p></div><div class="cell th"><p>Commodity Options</p></div>
+      <div class="cell tb"><p class="k">Contract Nature</p></div><div class="cell tb"><p class="v">Obligation to buy or sell</p></div><div class="cell tb"><p class="v">Right, not obligation</p></div>
+      <div class="cell tb"><p class="k">Upfront Cost</p></div><div class="cell tb"><p class="v">Margin required</p></div><div class="cell tb"><p class="v">Premium paid</p></div>
+      <div class="cell tb"><p class="k">Risk for Buyer</p></div><div class="cell tb"><p class="v">Potentially unlimited</p></div><div class="cell tb"><p class="v">Limited to premium paid</p></div>
+      <div class="cell tb"><p class="k">Profit Potential</p></div><div class="cell tb"><p class="v">Unlimited</p></div><div class="cell tb"><p class="v">Significant but dependent on premium and time value</p></div>
+      <div class="cell tb"><p class="k">Leverage</p></div><div class="cell tb"><p class="v">High</p></div><div class="cell tb"><p class="v">Moderate to High</p></div>
+      <div class="cell tb"><p class="k">Time Decay</p></div><div class="cell tb"><p class="v">Not applicable</p></div><div class="cell tb"><p class="v">Option value declines as expiry approaches</p></div>
+      <div class="cell tb"><p class="k">Complexity</p></div><div class="cell tb"><p class="v">Relatively straightforward</p></div><div class="cell tb"><p class="v">Requires understanding of strike prices and premiums</p></div>
+      <div class="cell tb"><p class="k">Suitable For</p></div><div class="cell tb"><p class="v">Active traders and hedgers</p></div><div class="cell tb"><p class="v">Beginners, hedgers, and strategy traders</p></div>
+      <div class="cell tb"><p class="k">Settlement</p></div><div class="cell tb"><p class="v">Mandatory settlement at expiry</p></div><div class="cell tb"><p class="v">Exercise only if beneficial</p></div>
+      <div class="cell tb"><p class="k">Capital Requirement</p></div><div class="cell tb"><p class="v">Higher</p></div><div class="cell tb"><p class="v">Lower</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== How to Start Trading with Commodities? ===== -->
+  <section class="section stack sec-tint" id="sec-start" data-section="start" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Start Trading with Commodities?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">To start trading with commodities, follow these 5 easy steps to open your account, activate the commodity segment, and begin trading on regulated exchanges.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Open Account Online</h4><p>Fill in your basic details through “Open an account” link. No paperwork or branch visit required.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Complete KYC</h4><p>Upload PAN, Aadhaar, and a cancelled cheque. Video-based in-person verification (IPV) is done instantly.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Activate MCX</h4><p>Request commodity segment activation from your client dashboard.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Add Funds</h4><p>Transfer money via UPI, NEFT, or net banking.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Place First Trade</h4><p>Search for a commodity contract, check margin requirements, and place a buy or sell futures order.</p></div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+  </section>
+
+  <!-- ===== SEBI Rules & Regulations ===== -->
+  <section class="section stack sec-light" id="sec-sebi" data-section="sebi" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">SEBI Rules &amp; Regulations for Commodity Trading in India</h2>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>SEBI Regulation</h4><p>Commodity trading is regulated by SEBI, ensuring fair, transparent, and safe market practices.</p></div>
+      <div class="cat"><h4>KYC &amp; PAN Mandatory</h4><p>Every trader must complete KYC verification and provide a valid PAN card before opening an account.</p></div>
+      <div class="cat"><h4>Position Limits</h4><p>SEBI restricts the number of contracts a trader can hold to prevent excessive speculation and maintain market stability.</p></div>
+      <div class="cat"><h4>Margin Requirements</h4><p>Traders must maintain initial margins and mark-to-market (MTM) margins to manage risk and ensure smooth settlement.</p></div>
+      <div class="cat"><h4>Risk Disclosure</h4><p>Brokers are required to clearly inform investors about the risks involved in commodity trading before they begin.</p></div>
+      <div class="cat"><h4>Market Surveillance</h4><p>SEBI continuously monitors trading activity to detect manipulation, fraud, or unfair practices.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Taxation on Commodity Trading Profits ===== -->
+  <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Taxation on Commodity Trading Profits</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading profits are subject to specific tax regulations in India. Traders should understand how different commodity transactions are taxed to ensure net profits are added to your total annual income and taxed according to your applicable income tax slab rate (whether under the old or new tax regime). Profits from commodity trading in India are taxed as business income – not capital gains.</p>
+    </div>
+    <div class="row-2" data-reveal-row>
+      <div class="card">
+        <h4 class="card-h">Non-Agricultural Commodity Futures (MCX)</h4>
+        <ul class="bullets">
+          <li>Profits from MCX contracts (gold, silver, crude oil, copper, etc.) are treated as non-speculative business income.</li>
+          <li>Taxed at your applicable income tax slab rate.</li>
+          <li>Losses can be carried forward for up to 8 assessment years and offset against other business income.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="card-h">GST on Brokerage &amp; ITR Filing</h4>
+        <ul class="bullets">
+          <li>18% GST is levied on brokerage charged by SFS.</li>
+          <li>GST cannot be claimed as a trading loss but is deductible as a business expense.</li>
+          <li>Commodity traders should file ITR-3 and maintain a trade-wise P&amp;L statement.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Commodity Trading Strategy for Beginners ===== -->
+  <section class="section stack sec-light" id="sec-strategy" data-section="strategy" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Commodity Trading Strategy for Beginners</h2>
+      <p class="sec-lead">Getting started with commodity trading is easier when you have a clear strategy. These widely used approaches can help beginners understand market trends, manage risk, and trade with greater confidence.</p>
     </div>
     <div class="comm-cards" data-reveal-row>
-      {GROUPS.map((g) => (
-        <div class="card"><h4 class="card-h">{g.h}</h4><p class="card-p">{g.p}</p></div>
-      ))}
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Commonly Traded Commodities</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">A snapshot of the most actively traded contracts across the four groups.</p>
-      </div>
-      <div class="cat-grid" data-reveal-row>
-        <div class="cat"><h4>Gold</h4><p>The benchmark bullion contract - a classic inflation hedge and safe-haven asset.</p></div>
-        <div class="cat"><h4>Silver</h4><p>A precious and industrial metal, more volatile than gold with strong demand cycles.</p></div>
-        <div class="cat"><h4>Crude Oil</h4><p>Highly liquid energy contract tracking global benchmarks and inventory data.</p></div>
-        <div class="cat"><h4>Natural Gas</h4><p>An energy contract sensitive to weather, storage and seasonal demand.</p></div>
-        <div class="cat"><h4>Copper</h4><p>A base metal seen as a barometer of global industrial and economic health.</p></div>
-        <div class="cat"><h4>Zinc &amp; Aluminium</h4><p>Industrial base metals driven by construction, manufacturing and global demand.</p></div>
-        <div class="cat"><h4>Cotton</h4><p>An agri contract shaped by monsoon, sowing, harvest and textile export demand.</p></div>
-        <div class="cat"><h4>Guar Seed &amp; Gum</h4><p>NCDEX agri staples influenced by rainfall, acreage and oil-drilling demand.</p></div>
-      </div>
-    </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
-  </section>
-
-  <!-- ===== How Commodity Futures Work ===== -->
-  <section class="section stack sec-light" id="sec-mechanics" data-section="mechanics" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How Commodity Futures Work: Lot Sizes, Margins &amp; Expiry</h2>
-      <p class="sec-lead">Every futures contract is standardised - a fixed lot size, a margin requirement and a monthly expiry. You deposit only a fraction of the contract value as margin, which is what gives commodity trading its leverage. Positions must be squared off or rolled over before expiry, or settled as per the contract specification.</p>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Contract Specifications</h3>
-        <p class="sub-lead">An indicative reference of lot sizes and typical margins across popular contracts. Exact values are set by the exchange and vary with volatility.</p>
-      </div>
-      <div class="t-scroll"><div class="product-page_table t4 bordered">
-        <div class="cell th"><p>Commodity</p></div><div class="cell th"><p>Exchange</p></div><div class="cell th"><p>Lot Size</p></div><div class="cell th"><p>Typical Margin</p></div>
-        {CONTRACTS.map((c) => (
-          <>
-            <div class="cell tb"><p class="k">{c.c}</p></div>
-            <div class="cell tb"><p class="v">{c.e}</p></div>
-            <div class="cell tb"><p class="v">{c.l}</p></div>
-            <div class="cell tb"><p class="v">{c.m}</p></div>
-          </>
-        ))}
-      </div></div>
-    </div>
-  </section>
-
-  <!-- ===== Costs & Taxes ===== -->
-  <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade commodities, and how the income is treated for tax - transparently, with no hidden costs.</p>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Brokerage &amp; Charges</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">A clear breakdown of the charges that apply to commodity futures trades.</p>
-      </div>
-      <div class="t-scroll"><div class="product-page_table t3">
-        <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Rate</p></div><div class="cell th"><p>Applies To</p></div>
-        <div class="cell tb"><p class="k">Brokerage</p></div><div class="cell tb"><p class="v">Flat ₹20 per executed order</p></div><div class="cell tb"><p class="v">All commodity futures</p></div>
-        <div class="cell tb"><p class="k">CTT</p></div><div class="cell tb"><p class="v">0.01% on sell side</p></div><div class="cell tb"><p class="v">Non-agri (bullion, energy, metals)</p></div>
-        <div class="cell tb"><p class="k">GST</p></div><div class="cell tb"><p class="v">18% on brokerage &amp; charges</p></div><div class="cell tb"><p class="v">All trades</p></div>
-        <div class="cell tb"><p class="k">Exchange Transaction Charge</p></div><div class="cell tb"><p class="v">≈ 0.0026% of turnover</p></div><div class="cell tb"><p class="v">Varies by commodity</p></div>
-        <div class="cell tb"><p class="k">SEBI Turnover Fee</p></div><div class="cell tb"><p class="v">₹10 per crore of turnover</p></div><div class="cell tb"><p class="v">All trades</p></div>
-        <div class="cell tb"><p class="k">Stamp Duty</p></div><div class="cell tb"><p class="v">0.002% on buy side</p></div><div class="cell tb"><p class="v">All trades</p></div>
-      </div></div>
-    </div>
-    <div class="stack" style="gap:32px">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Tax on Commodity Trading</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">How gains from commodity derivatives are treated under Indian income-tax rules.</p>
+      <div class="card">
+        <h4 class="card-h">1. Trend Following</h4>
+        <ul class="bullets">
+          <li>Track the direction of a commodity's price using moving averages</li>
+          <li>Go long in an uptrend, short in a downtrend.</li>
+          <li>Works well on MCX gold and crude oil due to strong global macro influences.</li>
+        </ul>
       </div>
       <div class="card">
-        <p class="card-p">Income from trading commodity derivatives on a recognised exchange is generally treated as <strong>non-speculative business income</strong> - not as capital gains. It is added to your total income and taxed at your applicable slab rate, and business-related losses can be set off against other income subject to the prevailing rules. Because the treatment is business income, maintaining trade records and, where applicable, meeting audit requirements is important. This is general information, not tax advice - consult a qualified tax adviser for your situation.</p>
+        <h4 class="card-h">2. Intraday Scalping</h4>
+        <ul class="bullets">
+          <li>Place multiple trades within the same day to capture small price moves, though it may carry a higher level of risk.</li>
+          <li>Popular in MCX crude oil because of high liquidity and volatility.</li>
+          <li>Requires quick execution, strict stop-losses, and squaring off before market close</li>
+        </ul>
       </div>
-    </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
-  </section>
-
-  <!-- ===== Trading Strategies ===== -->
-  <section class="section stack sec-light" id="sec-strategies" data-section="strategies" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Trading Strategies</h2>
-      <p class="sec-lead">Traders use commodities for different reasons - to protect a physical position, to profit from a directional view, or to exploit price differences across markets. Match the approach to your goal, capital and risk appetite.</p>
-    </div>
-    <div class="approaches" data-reveal-row>
-      {STRATEGIES.map((s, i) => (
-        <a class="appr" href="#">
-          <div class="appr-main">
-            <p class="idx">Strategy 0{i + 1}</p>
-            <div class="appr-tt"><h4>{s.h}</h4><p>{s.p}</p></div>
-          </div>
-          <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
-        </a>
-      ))}
+      <div class="card">
+        <h4 class="card-h">3. Commodity Hedging</h4>
+        <ul class="bullets">
+          <li>Used by businesses and large investors to lock in prices and reduce risk.</li>
+          <li>Example: A jeweller holding gold inventory can short MCX gold futures to protect against falling prices.</li>
+          <li>Focused on risk management, not profit-seeking.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="card-h">4. RSI Divergence Trading</h4>
+        <ul class="bullets">
+          <li>A bearish RSI divergence on MCX silver or gold may signal a trend reversal.</li>
+          <li>Always confirm with trading volume before entering positions.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="card-h">5. Pivot Point Trading</h4>
+        <ul class="bullets">
+          <li>Calculate daily pivot points (classic or Camarilla) for MCX contracts.</li>
+          <li>Buy near support levels with stop-loss below; sell near resistance levels.</li>
+          <li>Widely used by professional traders for intraday range trading.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="card-h">6. Calendar Spread Trading</h4>
+        <ul class="bullets">
+          <li>Buy and sell two related contracts simultaneously (e.g., near-month vs far-month crude oil futures).</li>
+          <li>Profit from changes in the price spread between contracts.</li>
+          <li>Requires lower capital and carries less directional risk compared to outright positions.</li>
+        </ul>
+      </div>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Arbitrage</h3>
-        <p class="sub-lead">A lower-risk approach that seeks to profit from price differences of the same commodity.</p>
+        <h3 class="sub-title">Essential Rules for Risk Management</h3>
+        <p class="sub-lead">Effective risk management is essential for long-term success in commodity trading. Following these basic rules can help beginners protect their capital and trade more confidently.</p>
       </div>
-      <div class="card">
-        <p class="card-p">Arbitrage involves simultaneously buying and selling the same commodity across different markets, contracts or maturities to capture a price gap - for example, between a near-month and far-month futures contract, or between the spot and futures price. The positions largely offset each other, so the strategy targets small, relatively low-risk gains rather than directional bets, though execution speed and transaction costs matter.</p>
+      <div class="steps" data-reveal-row>
+        <div class="step">
+          <div class="num">1</div>
+          <div class="st-body"><h4>Always Use a Stop-Loss</h4><p>Set a stop-loss for every trade to limit potential losses and protect your trading capital from unexpected market movements.</p></div>
+        </div>
+        <div class="step-div"></div>
+        <div class="step">
+          <div class="num">2</div>
+          <div class="st-body"><h4>Avoid Overleveraging</h4><p>Trade within your financial capacity and avoid taking excessively large positions that can amplify losses.</p></div>
+        </div>
+        <div class="step-div"></div>
+        <div class="step">
+          <div class="num">3</div>
+          <div class="st-body"><h4>Diversify Your Trades</h4><p>Avoid concentrating all your capital in a single commodity. Diversification can help reduce overall portfolio risk.</p></div>
+        </div>
+        <div class="step-div"></div>
+        <div class="step">
+          <div class="num">4</div>
+          <div class="st-body"><h4>Risk Only What You Can Afford to Lose</h4><p>Allocate only a small portion of your trading capital to each trade and never invest money meant for essential expenses.</p></div>
+        </div>
+        <div class="step-div"></div>
+        <div class="step">
+          <div class="num">5</div>
+          <div class="st-body"><h4>Follow a Trading Plan</h4><p>Enter trades with predefined entry, target, and exit levels, and avoid making emotional decisions based on short-term market fluctuations.</p></div>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== Risks to Weigh ===== -->
-  <section class="section stack sec-tint" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Risks to Weigh</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Commodity trading offers real opportunity, but leverage and global sensitivity make it high-risk. Understand what can move against you before you commit capital.</p>
-    </div>
-    <div class="risks" data-reveal-row>
-      {RISKS.map((r) => (
-        <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
-      ))}
     </div>
   </section>
 
@@ -353,12 +423,13 @@ const seo = {
 <style>
   /* ===== commodities - page-specific only ===== */
 
-  /* Generic responsive card grid for the commodity-group card set (the shared
-     .row-2 is 2-up and .cat-grid's border math is tuned for 8 cells; this
-     handles the 4 group cards). Values are on the 8px grid. */
+  /* Generic responsive card grid for the multi-card sets (the shared .row-2 is
+     2-up and .cat-grid's border math is tuned for text cells; this handles the
+     3-up Hard-Commodities sub-group and 6-up strategy card sets). Values are on
+     the 8px grid. */
   .comm-cards {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
     align-items: stretch;
   }
@@ -366,6 +437,12 @@ const seo = {
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .comm-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 560px) {

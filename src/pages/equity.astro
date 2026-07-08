@@ -9,35 +9,67 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema } from '../lib/seo';
 
-// General Questions - legacy content verbatim, same order (first item open).
+// General Questions - doc content verbatim, same order (first item open).
 const FAQS = [
   {
-    q: 'What is a Demat Account?',
-    a: 'A Demat (dematerialised) account holds your shares and securities in electronic form, replacing physical certificates. It lets you buy, sell and hold equities, bonds, ETFs and mutual funds safely, with instant electronic settlement of trades.',
+    q: 'What are equity stocks?',
+    a: "Equity stocks are shares that represent ownership in a company. When you buy equity stocks, you become a shareholder and can benefit from the company's growth through share price appreciation and dividends.",
   },
   {
-    q: 'What are the benefits of a Demat Account?',
-    a: 'A Demat account removes the risks of physical certificates - theft, loss and forgery - and enables faster, paperless settlement. You get a single consolidated view of your holdings, easy access to corporate actions such as dividends and bonuses, and the ability to trade from anywhere.',
+    q: 'How do I start investing in stocks in India?',
+    a: 'To start investing, open a Demat and Trading Account, complete your KYC, add funds, research stocks, and place your first order through a SEBI-registered broker.',
   },
   {
-    q: 'What are the brokerage charges for options trading with Shriram Financial Services?',
-    a: 'Brokerage charges for options trading are structured to be competitive and straightforward. Shriram Financial Services charges a flat fee of ₹20 per executed order for options trading. To understand and calculate the total cost - including brokerage, taxes and other fees - use the Brokerage Calculator, which estimates the net profit or loss on your trades after all applicable charges.',
+    q: 'What is a Demat account and why is it required?',
+    a: 'A Demat account holds your shares electronically and is mandatory for buying and selling stocks on Indian stock exchanges.',
   },
   {
-    q: 'Are there any charges associated with the Demat Account?',
-    a: 'Typical charges include a one-time account opening fee (often waived), an annual maintenance charge (AMC) and per-transaction debit or dematerialisation charges. Shriram keeps these transparent, so you can review the full schedule before you open your account.',
+    q: 'What is the minimum amount required to invest in stocks?',
+    a: 'There is no fixed minimum investment amount. You can start with the price of a single share, making stock investing accessible even with a small budget.',
   },
   {
-    q: 'What is Intraday brokerage and Option brokerage?',
-    a: 'Intraday brokerage applies to positions bought and sold within the same trading day, while option brokerage applies to options contracts. Both are charged per executed order - you can estimate the exact cost of any trade with our Brokerage Calculator.',
+    q: 'What is the difference between NSE and BSE?',
+    a: "NSE (National Stock Exchange) is India's largest exchange by trading volume and operates the NIFTY 50 index. BSE (Bombay Stock Exchange) is Asia's oldest stock exchange and operates the SENSEX index.",
   },
   {
-    q: 'Can I have multiple Demat Accounts?',
-    a: 'Yes. You may hold more than one Demat account across different depository participants, but you cannot open two accounts with the same DP under the same PAN. Your PAN links all accounts for tax and regulatory purposes.',
+    q: 'What are large-cap, mid-cap, and small-cap stocks?',
+    a: 'Large-cap stocks belong to the top 100 companies by market capitalisation, mid-cap stocks rank between 101 and 250, while small-cap stocks are smaller companies with higher growth potential and higher risk.',
   },
   {
-    q: 'Is a Demat Account mandatory for applying for an IPO?',
-    a: 'Yes. To receive shares allotted in an IPO in electronic form you need a Demat account. You can apply via ASBA through your bank or broker, and any allotted shares are credited directly to your Demat account.',
+    q: 'What are blue-chip stocks?',
+    a: 'Blue-chip stocks are shares of well-established companies with strong financial performance, stable earnings, and a long track record of growth.',
+  },
+  {
+    q: 'How are profits from equity stocks taxed?',
+    a: 'Short-Term Capital Gains (STCG) and Long-Term Capital Gains (LTCG) on equity investments are taxed as per prevailing tax regulations. Tax treatment depends on the holding period and gains earned.',
+  },
+  {
+    q: 'Is equity investing better than mutual funds?',
+    a: 'Both have advantages. Equity investing offers direct ownership and potentially higher returns, while mutual funds provide professional management and diversification, making them suitable for beginners.',
+  },
+  {
+    q: 'What are dividends in stocks?',
+    a: "Dividends are a portion of a company's profits distributed to shareholders. Not all companies pay dividends, but dividend-paying stocks can provide an additional income stream.",
+  },
+  {
+    q: 'What are the risks of investing in equity stocks?',
+    a: 'Equity investments are subject to market risk, price volatility, company-specific risks, and investor behaviour risks. Diversification and long-term investing can help manage these risks.',
+  },
+  {
+    q: 'Can NRIs invest in Indian equity stocks?',
+    a: 'Yes. NRIs can invest in Indian stocks through eligible Demat and Trading Accounts linked to NRE or NRO bank accounts, subject to applicable regulations.',
+  },
+  {
+    q: 'How do I choose the right stocks to invest in?',
+    a: "Investors should evaluate a company's financial performance, business model, growth potential, valuation, management quality, and industry outlook before investing.",
+  },
+  {
+    q: 'Can I lose money in the stock market?',
+    a: 'Yes. Stock prices can move up or down depending on market conditions and company performance. Investing with a long-term perspective and proper research can help reduce risks.',
+  },
+  {
+    q: 'Why invest in equity stocks through Shriram Financial Services?',
+    a: 'Shriram Financial Services offers a seamless investing experience with expert-backed research, market insights, dedicated support, and access to a trusted SEBI-registered stockbroking platform.',
   },
 ];
 
@@ -66,15 +98,14 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Build Long-Term Wealth Through <span class="g">Equity Investing</span></h1>
-      <p class="lead">Buy and invest in equity stocks in India with live market data, deep research insights, stock analysis tools and expert-backed guidance from Shriram.</p>
+      <h1>Equity Investing and trading Made Simpler, Smart, and Secure</h1>
+      <p class="lead">Own a part of India's leading companies and grow your wealth over time. Invest in equity stocks in India with Shriram Financial Services, a SEBI-registered broker trusted by clients for 25+ years. Access research, live market insights, and a seamless investing experience.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
           <div class="feat" style="left:0"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered</span></div>
-          <div class="feat" style="left:165px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
-          <div class="feat" style="left:312.73px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Full-service</span></div>
-          <div class="feat" style="left:448.65px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Transparent</span></div>
+          <div class="feat" style="left:165px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;100% Digital</span></div>
+          <div class="feat" style="left:312.73px"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
         </div>
       </div>
     </div>
@@ -84,21 +115,22 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Are Equity Stocks?</h2>
-      <p class="sec-lead">Equity stocks, also known as shares, represent ownership in a company. When you purchase equity shares, you become a partial owner of that company and gain rights to a portion of its assets and earnings. In India, equity stocks trade on two major exchanges, with all activity regulated by the Securities and Exchange Board of India (SEBI) to protect investor interests.</p>
+      <p class="sec-lead">Equity stocks also known as equity shares, represent ownership in a company. When you buy equity shares in India, you become a shareholder and participate in the company's growth through potential capital appreciation and dividends.</p>
+      <p class="sec-lead">Equity shares are traded on National Stock Exchange (NSE) and the Bombay Stock Exchange (BSE) under Securities and Exchange Board of India regulation (SEBI).</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
         <h3 class="sub-title">Where Equity Stocks Trade</h3>
-        <p class="sub-lead">The market functions through two primary exchanges that enable transparent, electronic trading of shares:</p>
+        <p class="sub-lead">In India, this marketplace is mainly run through two exchanges — NSE and BSE. Both are regulated by SEBI (Securities and Exchange Board of India) to keep trading fair and transparent.</p>
       </div>
       <div class="row-2">
         <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">National Stock Exchange</h4>
-          <p class="card-p">India's largest exchange by trading volume, offering electronic trading across equities, derivatives and debt instruments with high liquidity and transparent price discovery.</p>
+          <h4 class="card-h">National Stock Exchange (NSE)</h4>
+          <p class="card-p">NSE, started in 1992, which is India's largest stock exchange by trading volume. It's known for its modern, technology-driven system where trades happen quickly and transparently. NSE runs the NIFTY 50 index, which shows how the top 50 companies in India are performing.</p>
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">Bombay Stock Exchange</h4>
-          <p class="card-p">Asia's oldest stock exchange, home to thousands of listed companies and the benchmark Sensex index, providing a deep and well-regulated marketplace for investors.</p>
+          <h4 class="card-h">Bombay Stock Exchange (BSE)</h4>
+          <p class="card-p">BSE, founded in 1875, is the Asia's oldest stock exchange. It lists over 5,000 companies, making it the exchange with the widest coverage. BSE runs the famous SENSEX index, which tracks the top 30 companies in India.</p>
         </div>
       </div>
     </div>
@@ -107,8 +139,8 @@ const seo = {
   <!-- ===== Types of Equity Stocks ===== -->
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Types of Equity Stocks</h2>
-      <p class="sec-lead">Stocks are grouped two ways - by the rights they carry, and by the size and style of the company behind them.</p>
+      <h2 class="sec-title">Types of Equity Shares</h2>
+      <p class="sec-lead">Stocks are grouped two ways — by the rights they carry, and by the size and style of the company behind them.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -118,11 +150,11 @@ const seo = {
       <div class="row-2">
         <div class="card">
           <h4 class="card-h">Common Equity Shares</h4>
-          <p class="card-p">The most widely traded shares. Investors receive voting rights and participate in the company's profits through dividends and price appreciation.</p>
+          <p class="card-p">These are mostly traded shares. Investors receive voting rights and a slice of profits via dividends and price appreciation. Includes stable Blue chip India stocks.</p>
         </div>
         <div class="card">
           <h4 class="card-h">Preferred Equity Shares</h4>
-          <p class="card-p">Preferred shareholders receive preference in dividend payments over common shareholders. These shares generally carry limited or no voting rights.</p>
+          <p class="card-p">Preferred shareholders receive priority in dividend payments, over common shareholders but limited voting rights and lower volatility.</p>
         </div>
       </div>
     </div>
@@ -132,14 +164,14 @@ const seo = {
         <p class="sub-lead">The main categories investors use to classify and compare stocks.</p>
       </div>
       <div class="cat-grid" data-reveal-row>
-        <div class="cat"><h4>Large Cap</h4><p>Top 100 companies by market capitalisation - stable and lower risk.</p></div>
-        <div class="cat"><h4>Mid Cap</h4><p>Companies ranked 101–250 - a balance of growth potential and stability.</p></div>
-        <div class="cat"><h4>Small Cap</h4><p>Companies ranked beyond 250 - higher growth potential with higher risk.</p></div>
-        <div class="cat"><h4>Growth Stocks</h4><p>Companies expected to grow earnings faster than the broader market.</p></div>
-        <div class="cat"><h4>Dividend Stocks</h4><p>Companies that share regular profits with shareholders as dividends.</p></div>
-        <div class="cat"><h4>Value Stocks</h4><p>Stocks trading below their intrinsic worth - potentially undervalued.</p></div>
-        <div class="cat"><h4>Blue Chip Stocks</h4><p>Well-established, financially sound market leaders with a strong record.</p></div>
-        <div class="cat"><h4>Cyclical Stocks</h4><p>Stocks whose performance moves in line with broader economic cycles.</p></div>
+        <div class="cat"><h4>Large-Cap</h4><p>Top 100 biggest companies. Highly stable, lower risk, ideal for long-term safety.</p></div>
+        <div class="cat"><h4>Mid-Cap</h4><p>Companies ranked 101–250. Balanced mix of growth and stability.</p></div>
+        <div class="cat"><h4>Small-Cap</h4><p>Companies ranked beyond 250. High growth potential but highly volatile.</p></div>
+        <div class="cat"><h4>Blue Chip</h4><p>Established, financially sound companies with a history of reliable performance.</p></div>
+        <div class="cat"><h4>Growth vs. Value</h4><p>Growth stocks reinvest profits to expand fast. Value stocks are bargain shares trading below their actual worth.</p></div>
+        <div class="cat"><h4>Dividend Stocks</h4><p>Reliable companies that pay regular cash rewards to shareholders.</p></div>
+        <div class="cat"><h4>Value Stocks</h4><p>Undervalued companies trading below intrinsic value. Suitable for patient investors.</p></div>
+        <div class="cat"><h4>Penny Stocks</h4><p>Low-priced, small company shares. High risk and high reward — for experienced traders only.</p></div>
       </div>
     </div>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
@@ -149,113 +181,106 @@ const seo = {
   <section class="section stack sec-light" id="sec-getting-started" data-section="getting-started" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
       <h2 class="sec-title">How to Start Investing</h2>
-      <p class="sec-lead">Four simple steps from sign-up to your first trade - plus exactly what you'll need to qualify.</p>
+      <p class="sec-lead">Get started in just four simple steps—from account setup to placing your first trade.</p>
     </div>
     <div class="steps" data-reveal-row>
       <div class="step">
         <div class="num">1</div>
-        <div class="st-body"><h4 style="white-space:nowrap">Open Demat &amp; Trading Account</h4><p>Open a Demat and trading account online with Shriram in minutes.</p></div>
+        <div class="st-body"><h4>Open Demat + Trading Account</h4><p>Register online with Shriram platform and link your existing Demat account or open a new one— quick and paperless.</p></div>
       </div>
       <div class="step-div"></div>
       <div class="step">
         <div class="num">2</div>
-        <div class="st-body"><h4>Complete PAN / KYC / Bank Linking</h4><p>Submit your PAN, complete KYC with Aadhaar and link your bank account.</p></div>
+        <div class="st-body"><h4>Complete PAN / KYC / Bank Linking</h4><p>Submit PAN, complete e-KYC via Aadhaar OTP, and link your bank account.</p></div>
       </div>
       <div class="step-div"></div>
       <div class="step">
         <div class="num">3</div>
-        <div class="st-body"><h4>Search and Analyse Stocks</h4><p>Use research tools, screeners and expert analysis to identify quality stocks.</p></div>
+        <div class="st-body"><h4>Search &amp; Analyse Stocks</h4><p>Use our research tools and SEBI-registered analyst insights.</p></div>
       </div>
       <div class="step-div"></div>
       <div class="step">
         <div class="num">4</div>
-        <div class="st-body"><h4>Buy, Hold, Sell &amp; Track</h4><p>Execute trades, build your portfolio and track holdings to grow your wealth.</p></div>
+        <div class="st-body"><h4>Buy, Hold, Sell &amp; Track</h4><p>Trade on NSE/BSE and monitor your portfolio in real time via the Antara app.</p></div>
       </div>
     </div>
     <div class="stack" style="gap:32px;width:100%">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Eligibility &amp; Documents</h3>
-        <p class="sub-lead">Everything you need to qualify and complete your account opening.</p>
+        <h3 class="sub-title">Who Can Invest in Equity Stocks in India?</h3>
+        <p class="sub-lead">To invest in equity stocks India, you just need to check the eligibility criteria and keep a few documents ready.</p>
       </div>
       <div class="row-2">
         <div class="card check-card">
           <h4 class="ch-title">Eligibility Criteria</h4>
           <div class="check-list">
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Indian resident (NRIs can invest through specific routes)</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Must be an Indian resident aged 18+.</p></div>
             <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Valid PAN card</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Minors can invest if a guardian opens the account. Guardian's PAN and signature are required.</p></div>
             <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Active bank account in your name</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">NRIs can invest via an RBI-approved broker with NRE/NRO bank accounts.</p></div>
             <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Completed KYC verification</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card is mandatory.</p></div>
             <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">18+ years of age (minors can invest through guardians)</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">KYC compliance required under SEBI rules.</p></div>
           </div>
         </div>
         <div class="card check-card">
           <h4 class="ch-title">Documents Required</h4>
           <div class="check-list">
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card (mandatory)</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card / Form 60 (for NRIs).</p></div>
             <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Aadhaar card for identity verification</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Address proof (Aadhaar, Passport, Driver's Licence, Utility Bill).</p></div>
             <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Address proof (Aadhaar, Passport, Utility Bill)</p></div>
-            <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Cancelled cheque or bank statement</p></div>
-            <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Passport-size photograph</p></div>
-            <div class="check-sep"></div>
-            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Valid mobile number and email ID</p></div>
+            <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Bank details (cancelled cheque or statement).</p></div>
           </div>
         </div>
       </div>
     </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== Costs & Taxes ===== -->
   <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade, and how your gains are taxed - with no hidden costs.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade, and how your gains are taxed — with no hidden costs.</p>
     </div>
 
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
         <h3 class="sub-title">Brokerage &amp; Charges</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">A clear breakdown of the charges that apply across delivery, intraday and F&amp;O segments.</p>
       </div>
-      <div class="t-scroll"><div class="product-page_table t4">
-        <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Delivery</p></div><div class="cell th"><p>Intraday</p></div><div class="cell th"><p>F&amp;O</p></div>
-        <div class="cell tb"><p class="k">Brokerage</p></div><div class="cell tb"><p class="v">0.03%</p></div><div class="cell tb"><p class="v">0.03%</p></div><div class="cell tb"><p class="v">0.03%</p></div>
-        <div class="cell tb"><p class="k">STT</p></div><div class="cell tb"><p class="v">0.1%</p></div><div class="cell tb"><p class="v">0.025%</p></div><div class="cell tb"><p class="v">0.02%</p></div>
-        <div class="cell tb"><p class="k">GST</p></div><div class="cell tb"><p class="v">18% on brokerage</p></div><div class="cell tb"><p class="v">18% on brokerage</p></div><div class="cell tb"><p class="v">18% on brokerage</p></div>
-        <div class="cell tb"><p class="k">DP Charges</p></div><div class="cell tb"><p class="v">₹15 per stock</p></div><div class="cell tb"><p class="v">N/A</p></div><div class="cell tb"><p class="v">N/A</p></div>
-        <div class="cell tb"><p class="k">Exchange Charges</p></div><div class="cell tb"><p class="v">0.00325%</p></div><div class="cell tb"><p class="v">0.00325%</p></div><div class="cell tb"><p class="v">0.002%</p></div>
+      <div class="t-scroll"><div class="product-page_table t3">
+        <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Delivery Equity</p></div><div class="cell th"><p>Intraday</p></div>
+        <div class="cell tb"><p class="k">Brokerage</p></div><div class="cell tb"><p class="v">₹0.50paise</p></div><div class="cell tb"><p class="v">0.05%</p></div>
+        <div class="cell tb"><p class="k">STT</p></div><div class="cell tb"><p class="v">0.1% on sell side</p></div><div class="cell tb"><p class="v">0.025% on buy &amp; sell side</p></div>
+        <div class="cell tb"><p class="k">GST</p></div><div class="cell tb"><p class="v">18% on brokerage + exchange charges</p></div><div class="cell tb"><p class="v">18% on brokerage + exchange charges</p></div>
+        <div class="cell tb"><p class="k">DP Charges</p></div><div class="cell tb"><p class="v">₹25 per  debit</p></div><div class="cell tb"><p class="v">N/A</p></div>
+        <div class="cell tb"><p class="k">Exchange Charges</p></div><div class="cell tb"><p class="v">0.00345% (NSE) / 0.00375% (BSE)</p></div><div class="cell tb"><p class="v">0.00345% (NSE) / 0.00375% (BSE)</p></div>
       </div></div>
     </div>
 
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Tax on Equity Stocks - LTCG &amp; STCG</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">How short-term and long-term capital gains are treated for equity investors.</p>
+        <h3 class="sub-title">Tax on Equity Stocks: LTCG &amp; STCG</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Understanding capital gains tax helps you plan your exit strategy and keep more of your returns.</p>
       </div>
       <div class="t-scroll"><div class="product-page_table t3">
-        <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Short-Term (STCG)</p></div><div class="cell th"><p>Long-Term (LTCG)</p></div>
+        <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Short Term (STCG)</p></div><div class="cell th"><p>Long Term (LTCG)</p></div>
         <div class="cell tb"><p class="k">Holding Period</p></div><div class="cell tb"><p class="v">Up to 12 months</p></div><div class="cell tb"><p class="v">More than 12 months</p></div>
-        <div class="cell tb"><p class="k">Tax Rate</p></div><div class="cell tb"><p class="v">20% flat</p></div><div class="cell tb"><p class="v">12.5%</p></div>
-        <div class="cell tb"><p class="k">Tax-Free Limit</p></div><div class="cell tb"><p class="v">Nil (taxed from ₹1)</p></div><div class="cell tb"><p class="v">Up to ₹1.25 lakh per year</p></div>
+        <div class="cell tb"><p class="k">Tax Rate</p></div><div class="cell tb"><p class="v">20% Flat</p></div><div class="cell tb"><p class="v">12.5%</p></div>
+        <div class="cell tb"><p class="k">Tax-Free Limit</p></div><div class="cell tb"><p class="v">Nil (taxed from ₹1)</p></div><div class="cell tb"><p class="v">Up to ₹1.25 Lakh per year</p></div>
         <div class="cell tb"><p class="k">Indexation Benefit</p></div><div class="cell tb"><p class="v">Not Applicable</p></div><div class="cell tb"><p class="v">Not Applicable</p></div>
-        <div class="cell tb"><p class="k">Applicable Section</p></div><div class="cell tb"><p class="v">Section 111A</p></div><div class="cell tb"><p class="v">Section 112A</p></div>
+        <div class="cell tb"><p class="k">Applicable Section</p></div><div class="cell tb"><p class="v">Section 70A</p></div><div class="cell tb"><p class="v">Section 70A</p></div>
       </div></div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== Analyse and Decide ===== -->
   <section class="section stack sec-light" id="sec-analyse" data-section="analyse" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Analyse and Decide</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">How to research a stock, choose a strategy, compare your options and weigh the risks.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">How to research a stock, choose a strategy, compare your options and weigh the risks?</p>
     </div>
 
     <div class="stack" style="gap:32px">
@@ -264,17 +289,17 @@ const seo = {
         <p class="sub-lead" style="color:var(--color-text-secondary)">Two complementary approaches, backed by data-driven insights and research-led ideas.</p>
       </div>
       <div class="approaches">
-        <a class="appr" href="#">
+        <a class="appr" href="/fundamental-analysis/">
           <div class="appr-main">
             <p class="idx">Approach 01</p>
-            <div class="appr-tt"><h4>Fundamental Research</h4><p>In-depth company analysis, financial modeling and valuation reports to assess a stock's true intrinsic worth.</p></div>
+            <div class="appr-tt"><h4>Fundamental Research</h4><p>In-depth company analysis, financial modelling, and valuation reports to help you pick stocks with strong long-term potential.</p></div>
           </div>
           <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
         </a>
-        <a class="appr" href="#">
+        <a class="appr" href="/technical-analysis/">
           <div class="appr-main">
             <p class="idx">Approach 02</p>
-            <div class="appr-tt"><h4>Technical Research</h4><p>Chart patterns, price action and technical indicators to time entries and exits with greater precision.</p></div>
+            <div class="appr-tt"><h4>Technical Research</h4><p>Chart patterns, price action, and technical indicators to identify optimal entry and exit points for your trades.</p></div>
           </div>
           <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
         </a>
@@ -283,49 +308,49 @@ const seo = {
 
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Top Trading Strategies</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Match your time, capital and risk appetite to the right approach.</p>
+        <h3 class="sub-title">Top Trading Strategies for Indian Investors</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Choose an investment strategy that aligns with your financial goals, time horizon, and risk appetite.</p>
       </div>
       <div class="t-scroll"><div class="product-page_table t4 bordered">
         <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>Intraday Trading</p></div><div class="cell th"><p>Swing Trading</p></div><div class="cell th"><p>Long-Term Investing</p></div>
-        <div class="cell tb"><p class="k">Holding Period</p></div><div class="cell tb"><p class="v">Same day (square-off before close)</p></div><div class="cell tb"><p class="v">2 days to a few weeks</p></div><div class="cell tb"><p class="v">1+ years (often 5–10+ years)</p></div>
-        <div class="cell tb"><p class="k">Time Commitment</p></div><div class="cell tb"><p class="v">High - active monitoring</p></div><div class="cell tb"><p class="v">Moderate - daily / weekly check</p></div><div class="cell tb"><p class="v">Low - periodic review</p></div>
-        <div class="cell tb"><p class="k">Capital Required</p></div><div class="cell tb"><p class="v">Lower entry, margin common</p></div><div class="cell tb"><p class="v">Moderate</p></div><div class="cell tb"><p class="v">Can start small via SIP (₹500+)</p></div>
-        <div class="cell tb"><p class="k">Risk Level</p></div><div class="cell tb"><p class="v">Very High</p></div><div class="cell tb"><p class="v">High</p></div><div class="cell tb"><p class="v">Moderate to Low</p></div>
+        <div class="cell tb"><p class="k">Investment Horizon</p></div><div class="cell tb"><p class="v">Same Day</p></div><div class="cell tb"><p class="v">Days to Weeks</p></div><div class="cell tb"><p class="v">Years</p></div>
+        <div class="cell tb"><p class="k">Time Commitment</p></div><div class="cell tb"><p class="v">High</p></div><div class="cell tb"><p class="v">Moderate</p></div><div class="cell tb"><p class="v">Low</p></div>
+        <div class="cell tb"><p class="k">Skill Level</p></div><div class="cell tb"><p class="v">Advanced</p></div><div class="cell tb"><p class="v">Intermediate</p></div><div class="cell tb"><p class="v">Beginner-Friendly</p></div>
+        <div class="cell tb"><p class="k">Risk Level</p></div><div class="cell tb"><p class="v">High</p></div><div class="cell tb"><p class="v">Moderate</p></div><div class="cell tb"><p class="v">Moderate to Low</p></div>
+        <div class="cell tb"><p class="k">Best Suited For</p></div><div class="cell tb"><p class="v">Active Traders</p></div><div class="cell tb"><p class="v">Trend-Based Traders</p></div><div class="cell tb"><p class="v">Long-Term Wealth Creation</p></div>
       </div></div>
     </div>
 
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Equity Stocks vs Mutual Funds</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Compare direct equity investing with mutual funds across the factors that matter most.</p>
+        <h3 class="sub-title">Equity Stocks Vs Mutual Funds – Know how?</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Both are great wealth-building tools — the right choice depends on your goals, expertise, and time horizon.</p>
       </div>
       <div class="t-scroll"><div class="product-page_table t3 bordered">
         <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Equity Stocks</p></div><div class="cell th"><p>Mutual Funds</p></div>
-        <div class="cell tb"><p class="k">Control</p></div><div class="cell tb"><p class="v">Direct ownership and control</p></div><div class="cell tb"><p class="v">Fund manager decides</p></div>
-        <div class="cell tb"><p class="k">Risk</p></div><div class="cell tb"><p class="v">Company-specific risk</p></div><div class="cell tb"><p class="v">Diversified risk</p></div>
-        <div class="cell tb"><p class="k">Return Potential</p></div><div class="cell tb"><p class="v">Potentially higher (unlimited upside)</p></div><div class="cell tb"><p class="v">Market-linked returns</p></div>
-        <div class="cell tb"><p class="k">Research Involvement</p></div><div class="cell tb"><p class="v">Active research needed</p></div><div class="cell tb"><p class="v">Professional management</p></div>
-        <div class="cell tb"><p class="k">Suitable For</p></div><div class="cell tb"><p class="v">Knowledgeable investors</p></div><div class="cell tb"><p class="v">All investor types</p></div>
-        <div class="cell tb"><p class="k">Cost</p></div><div class="cell tb"><p class="v">Brokerage per trade</p></div><div class="cell tb"><p class="v">Expense ratio annually</p></div>
-        <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">Real-time during market hours</p></div><div class="cell tb"><p class="v">End-of-day NAV</p></div>
-        <div class="cell tb"><p class="k">Management</p></div><div class="cell tb"><p class="v">Self-managed portfolio</p></div><div class="cell tb"><p class="v">Professionally managed</p></div>
+        <div class="cell tb"><p class="k">Control</p></div><div class="cell tb"><p class="v">Full control over stock selection</p></div><div class="cell tb"><p class="v">Fund manager decides</p></div>
+        <div class="cell tb"><p class="k">Returns</p></div><div class="cell tb"><p class="v">Potentially higher (and lower)</p></div><div class="cell tb"><p class="v">Moderate, diversified</p></div>
+        <div class="cell tb"><p class="k">Risk</p></div><div class="cell tb"><p class="v">Higher (concentrated positions)</p></div><div class="cell tb"><p class="v">Lower (diversified)</p></div>
+        <div class="cell tb"><p class="k">Minimum Investment</p></div><div class="cell tb"><p class="v">1 share (can be &lt; ₹10)</p></div><div class="cell tb"><p class="v">₹500 (SIP) / ₹100</p></div>
+        <div class="cell tb"><p class="k">Taxation</p></div><div class="cell tb"><p class="v">STCG 20% / LTCG 12.5%</p></div><div class="cell tb"><p class="v">Equity MF: same as equity</p></div>
+        <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">Instant (exchange hours)</p></div><div class="cell tb"><p class="v">T+1 to T+3 redemption</p></div>
+        <div class="cell tb"><p class="k">Transparency</p></div><div class="cell tb"><p class="v">Real-time price discovery</p></div><div class="cell tb"><p class="v">NAV declared daily</p></div>
+        <div class="cell tb"><p class="k">Expertise Required</p></div><div class="cell tb"><p class="v">Medium to High</p></div><div class="cell tb"><p class="v">Low (passive investing)</p></div>
       </div></div>
     </div>
 
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Risks to Weigh</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Understand what can move against you before you commit capital.</p>
+        <h3 class="sub-title">Understanding Investment Risks</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Every investment carries risk. Understanding these risks helps you invest with clarity and avoid common mistakes.</p>
       </div>
       <div class="risks">
-        <div class="risk"><h4>Market Risk</h4><p>Broad market movements can affect all stocks due to economic events, policy changes or global sentiment.</p></div>
-        <div class="risk"><h4>Volatility</h4><p>Prices can fluctuate significantly within short periods, testing investor discipline and patience.</p></div>
-        <div class="risk"><h4>Stock-Specific Risk</h4><p>Company-specific factors such as poor earnings or governance issues can impact a single stock sharply.</p></div>
-        <div class="risk"><h4>Behavioural Risk</h4><p>Emotional decisions driven by fear or greed can lead to poor timing and avoidable losses.</p></div>
+        <div class="risk"><h4>Market Risk</h4><p>Equity markets are influenced by economic conditions, interest rate movements, inflation, policy changes, and global events. These factors can impact overall market performance, regardless of an individual company's fundamentals.</p></div>
+        <div class="risk"><h4>Volatility Risk</h4><p>Stock prices may fluctuate significantly in the short term, leading to temporary gains or losses. While volatility is a natural part of equity investing, it may lead to temporary declines in portfolio value.</p></div>
+        <div class="risk"><h4>Company-Specific Risk</h4><p>Business challenges, management issues, or regulatory changes can affect the performance of individual stocks. Investing heavily in a single stock can increase exposure to company-specific risks.</p></div>
+        <div class="risk"><h4>Behavioural Risk</h4><p>Emotional decisions such as panic selling or chasing market trends can negatively impact long-term returns. Maintaining a disciplined investment approach is essential for wealth creation.</p></div>
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -352,10 +377,10 @@ const seo = {
   <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
     <div class="cta-box">
       <div class="ct-tt">
-        <h3>Open Your Demat Account Within Minutes</h3>
-        <p class="ct-sub">Start investing in stocks, mutual funds and more - with zero paperwork.</p>
+        <h3>Open Your Demat Account in Minutes</h3>
+        <p class="ct-sub">100% digital, paperless, and SEBI-compliant. Start investing in equities with expert advisory from day one.</p>
       </div>
-      <a class="btn-gold" href="#">Book A Discovery Call</a>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Get Started →</a><a class="btn-ghost" href="/contact-us/">Talk to an RM →</a></div>
     </div>
   </section>
 </BaseLayout>
