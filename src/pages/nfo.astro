@@ -1,10 +1,10 @@
 ---
 /**
- * NFO — /nfo/
+ * NFO - /nfo/
  * Long-form New Fund Offer guide. Built entirely from the shared design-system
  * components in global.css (hero, .section/.sec-title, .card, .product-page_table,
  * .risks, .steps, .cat-grid, .check-card, FaqAccordion, .cta-box). No page-scoped
- * CSS is needed — the card sets use the shared .row-2 and .cat-grid grids.
+ * CSS is needed - the card sets use the shared .row-2 and .cat-grid grids.
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -12,11 +12,11 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// NFO vs an existing fund — comparison rows.
+// NFO vs an existing fund - comparison rows.
 const COMPARE_ROWS = [
   {
     k: 'Track Record',
-    n: 'None yet — the scheme is brand new with no performance history to review.',
+    n: 'None yet - the scheme is brand new with no performance history to review.',
     e: 'An established record of returns across market cycles you can evaluate.',
   },
   {
@@ -41,46 +41,46 @@ const COMPARE_ROWS = [
   },
 ];
 
-// Types of NFOs — structure and mandate cards.
+// Types of NFOs - structure and mandate cards.
 const TYPES = [
   { h: 'Open-Ended NFO', p: 'After the offer closes the scheme reopens for continuous purchase and redemption at NAV, offering ongoing liquidity for investors.' },
   { h: 'Close-Ended NFO', p: 'Units are issued only during the NFO and the scheme has a fixed maturity. Units are listed on the exchange to provide an exit route before maturity.' },
   { h: 'ELSS (Tax-Saving)', p: 'An equity-linked savings scheme offering deductions under Section 80C, with a mandatory three-year lock-in on each investment.' },
-  { h: 'Thematic / Sectoral', p: 'A fund built around a specific theme or sector — such as manufacturing, energy or digital. Concentrated exposure means higher potential and higher risk.' },
+  { h: 'Thematic / Sectoral', p: 'A fund built around a specific theme or sector - such as manufacturing, energy or digital. Concentrated exposure means higher potential and higher risk.' },
   { h: 'Index Fund / ETF', p: 'A passive scheme that tracks a benchmark index. An NFO can be a low-cost way to enter a newly launched index or factor strategy.' },
   { h: 'Hybrid / Multi-Asset', p: 'Blends equity, debt and sometimes other assets in one scheme, aiming to balance growth potential with relative stability.' },
 ];
 
-// How to invest in an NFO — five-step flow.
+// How to invest in an NFO - five-step flow.
 const STEPS = [
-  { h: 'Open Demat & KYC', p: 'Open your account with Shriram and complete PAN and Aadhaar-based KYC — a one-time step.' },
+  { h: 'Open Demat & KYC', p: 'Open your account with Shriram and complete PAN and Aadhaar-based KYC - a one-time step.' },
   { h: 'Browse Live NFOs', p: 'Explore open New Fund Offers by category, AMC and mandate, and read each scheme’s SID and KIM.' },
   { h: 'Check the Mandate', p: 'Match the scheme’s objective, risk-o-meter and expense ratio against your goals and risk appetite.' },
   { h: 'Invest During the Window', p: 'Apply within the subscription period at the ₹10 offer price, via lump sum or by registering an SIP.' },
   { h: 'Track After Allotment', p: 'Units are allotted at ₹10 NAV once the NFO closes; monitor the daily NAV and your holdings in the dashboard.' },
 ];
 
-// What to check before investing — checklist rows.
+// What to check before investing - checklist rows.
 const CHECKS = [
-  'AMC pedigree — the fund house’s track record, size and processes',
+  'AMC pedigree - the fund house’s track record, size and processes',
   'Fund manager experience across market cycles',
   'Scheme mandate and how it fits your existing portfolio',
   'Total expense ratio (TER) versus comparable existing funds',
-  'Lock-in or maturity terms — three years for ELSS, fixed tenure for close-ended',
+  'Lock-in or maturity terms - three years for ELSS, fixed tenure for close-ended',
   'Benchmark index and the risk-o-meter rating',
 ];
 
-// Taxation rows — equity vs debt / hybrid treatment.
+// Taxation rows - equity vs debt / hybrid treatment.
 const TAX_ROWS = [
   {
     k: 'Short-Term Gains',
-    e: 'Held ≤ 12 months — taxed at 20% (Section 111A).',
-    d: 'Held ≤ 24 months — taxed at your income-tax slab rate.',
+    e: 'Held ≤ 12 months - taxed at 20% (Section 111A).',
+    d: 'Held ≤ 24 months - taxed at your income-tax slab rate.',
   },
   {
     k: 'Long-Term Gains',
-    e: 'Held > 12 months — 12.5%, with gains up to ₹1.25 lakh a year exempt.',
-    d: 'Held > 24 months — taxed at 12.5% without indexation.',
+    e: 'Held > 12 months - 12.5%, with gains up to ₹1.25 lakh a year exempt.',
+    d: 'Held > 24 months - taxed at 12.5% without indexation.',
   },
   {
     k: 'Classification',
@@ -97,7 +97,7 @@ const RISKS = [
   { h: 'Deployment Risk', p: 'A new scheme takes time to invest its corpus, so early returns can lag while cash is gradually put to work in the market.' },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is an NFO?',
@@ -105,7 +105,7 @@ const FAQS = [
   },
   {
     q: 'Is a ₹10 NFO cheaper than an existing fund?',
-    a: 'No. The ₹10 offer price is just a face value, not a measure of value. What matters is the quality of the portfolio the fund builds. An existing fund with a higher NAV is not more expensive — the NAV simply reflects the value of what it already holds.',
+    a: 'No. The ₹10 offer price is just a face value, not a measure of value. What matters is the quality of the portfolio the fund builds. An existing fund with a higher NAV is not more expensive - the NAV simply reflects the value of what it already holds.',
   },
   {
     q: 'What is the difference between an open-ended and a close-ended NFO?',
@@ -117,7 +117,7 @@ const FAQS = [
   },
   {
     q: 'Should I invest in an NFO or an existing fund?',
-    a: 'An existing fund lets you review its track record, current portfolio and fund size before investing, which reduces uncertainty. An NFO makes most sense when it offers a genuinely differentiated strategy — a new index, theme or asset mix — that is not already available in the market.',
+    a: 'An existing fund lets you review its track record, current portfolio and fund size before investing, which reduces uncertainty. An NFO makes most sense when it offers a genuinely differentiated strategy - a new index, theme or asset mix - that is not already available in the market.',
   },
   {
     q: 'What is the lock-in period for an NFO?',
@@ -157,7 +157,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'NFO' }]} />
     <div class="hero-inner" data-enter>
       <h1>Get In Early on a <span class="g">New Fund Offer</span></h1>
-      <p class="lead">Subscribe to newly launched mutual-fund schemes at their ₹10 offer price — with 0% commission, AMFI-registered access and research-led guidance from Shriram.</p>
+      <p class="lead">Subscribe to newly launched mutual-fund schemes at their ₹10 offer price - with 0% commission, AMFI-registered access and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -174,7 +174,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is an NFO?</h2>
-      <p class="sec-lead">A New Fund Offer, or NFO, is the launch of a brand-new mutual-fund scheme by an Asset Management Company (AMC). For a limited subscription window, investors can buy units of the scheme at a fixed offer price — typically ₹10 per unit, its face value — before it opens for regular transactions. Just as an IPO is a company’s first sale of shares, an NFO is a fund’s first sale of units. Once the offer closes, the AMC deploys the money it has collected into the securities defined by the scheme’s mandate, and the NAV begins to move with the market.</p>
+      <p class="sec-lead">A New Fund Offer, or NFO, is the launch of a brand-new mutual-fund scheme by an Asset Management Company (AMC). For a limited subscription window, investors can buy units of the scheme at a fixed offer price - typically ₹10 per unit, its face value - before it opens for regular transactions. Just as an IPO is a company’s first sale of shares, an NFO is a fund’s first sale of units. Once the offer closes, the AMC deploys the money it has collected into the securities defined by the scheme’s mandate, and the NAV begins to move with the market.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -184,7 +184,7 @@ const seo = {
       <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">A Face Value, Not a Discount</h4>
-          <p class="card-p">The ₹10 price is simply the starting NAV. It does not make the fund cheaper — the number of units you get is larger, but the value of what you own is the same.</p>
+          <p class="card-p">The ₹10 price is simply the starting NAV. It does not make the fund cheaper - the number of units you get is larger, but the value of what you own is the same.</p>
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Value Comes from the Portfolio</h4>
@@ -280,9 +280,9 @@ const seo = {
       <div class="card check-card">
         <h4 class="ch-title">Read the Scheme Documents</h4>
         <div class="check-list">
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Scheme Information Document (SID) — the full mandate and rules</p></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Scheme Information Document (SID) - the full mandate and rules</p></div>
           <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Key Information Memorandum (KIM) — the concise summary</p></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Key Information Memorandum (KIM) - the concise summary</p></div>
           <div class="check-sep"></div>
           <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">The risk-o-meter rating for the scheme</p></div>
           <div class="check-sep"></div>
@@ -299,7 +299,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-tax-risks" data-section="tax-risks" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Taxation &amp; Risks</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">How your gains are taxed depends on the scheme’s classification — and every NFO carries risks that come with backing something new.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">How your gains are taxed depends on the scheme’s classification - and every NFO carries risks that come with backing something new.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">

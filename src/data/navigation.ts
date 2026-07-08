@@ -1,5 +1,5 @@
 /**
- * Navigation — single source of truth.
+ * Navigation - single source of truth.
  *
  * Feeds four renderings from one data set (edit here → all four update):
  *  1. Header primary links        (src/components/site/Header.astro)
@@ -9,7 +9,7 @@
  *
  * In the legacy site the overlay markup was injected by app.js at runtime and
  * the mobile groups were cloned from it in the browser. Here everything is
- * server-rendered static HTML — same pixels, but every link is crawlable.
+ * server-rendered static HTML - same pixels, but every link is crawlable.
  */
 
 export interface NavLink {
@@ -266,7 +266,7 @@ export const footerCompliance: FooterComplianceBand[] = [
       },
       {
         strong: 'Attention Investors:',
-        text: ' Prevent unauthorised transactions in your Trading / Demat account. Update your mobile number and email id with your Stock Broker / Depository Participant. Receive information of your transactions directly from NSE, BSE, CDSL on your email and mobile. KYC is a one-time exercise while dealing in securities markets. Once KYC is done through a SEBI registered intermediary, you need not undergo the same process again when you approach another intermediary. No need to issue cheques by investors while subscribing to IPO — just write the bank account number and sign in the application form to authorise your bank to make payment in case of allotment. Investments in securities market are subject to market risks. Read all the related documents carefully before investing.',
+        text: ' Prevent unauthorised transactions in your Trading / Demat account. Update your mobile number and email id with your Stock Broker / Depository Participant. Receive information of your transactions directly from NSE, BSE, CDSL on your email and mobile. KYC is a one-time exercise while dealing in securities markets. Once KYC is done through a SEBI registered intermediary, you need not undergo the same process again when you approach another intermediary. No need to issue cheques by investors while subscribing to IPO - just write the bank account number and sign in the application form to authorise your bank to make payment in case of allotment. Investments in securities market are subject to market risks. Read all the related documents carefully before investing.',
       },
     ],
   },

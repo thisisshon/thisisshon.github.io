@@ -1,10 +1,10 @@
 ---
 /**
- * Commodities — /commodities/
+ * Commodities - /commodities/
  * Long-form commodity-trading guide. Built entirely from the shared design-system
  * components in global.css (hero, .section/.sec-title, .card, .cat-grid,
  * .product-page_table, .approaches, .risks, FaqAccordion, .cta-box). The only
- * page-scoped CSS is a generic responsive card grid (.comm-cards) — token-bound.
+ * page-scoped CSS is a generic responsive card grid (.comm-cards) - token-bound.
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -16,7 +16,7 @@ import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo'
 const GROUPS = [
   {
     h: 'Bullion',
-    p: 'Precious metals — gold and silver — traded on the MCX. Popular as an inflation hedge and a store of value, with contracts sized for both large and retail participants (Gold Mini, Silver Micro).',
+    p: 'Precious metals - gold and silver - traded on the MCX. Popular as an inflation hedge and a store of value, with contracts sized for both large and retail participants (Gold Mini, Silver Micro).',
   },
   {
     h: 'Energy',
@@ -28,11 +28,11 @@ const GROUPS = [
   },
   {
     h: 'Agricultural',
-    p: 'Farm commodities — cotton, guar seed, guar gum, cumin (jeera), soybean and more — trade mainly on the NCDEX, driven by monsoon, sowing, harvest and export demand.',
+    p: 'Farm commodities - cotton, guar seed, guar gum, cumin (jeera), soybean and more - trade mainly on the NCDEX, driven by monsoon, sowing, harvest and export demand.',
   },
 ];
 
-// A quick MCX/NCDEX contract reference — commodity / exchange / lot / typical margin.
+// A quick MCX/NCDEX contract reference - commodity / exchange / lot / typical margin.
 const CONTRACTS = [
   { c: 'Gold (1 kg)', e: 'MCX', l: '1 kg', m: '≈ 6–8%' },
   { c: 'Gold Mini', e: 'MCX', l: '100 g', m: '≈ 6–8%' },
@@ -44,7 +44,7 @@ const CONTRACTS = [
   { c: 'Guar Seed', e: 'NCDEX', l: '10 MT', m: '≈ 8–10%' },
 ];
 
-// Trading strategies — approach cards.
+// Trading strategies - approach cards.
 const STRATEGIES = [
   {
     h: 'Hedging',
@@ -56,11 +56,11 @@ const STRATEGIES = [
   },
 ];
 
-// Risk factors — risk cards.
+// Risk factors - risk cards.
 const RISKS = [
   {
     h: 'Price Volatility',
-    p: 'Commodity prices can swing sharply on supply shocks, weather, inventory data and demand surprises — often faster than equities.',
+    p: 'Commodity prices can swing sharply on supply shocks, weather, inventory data and demand surprises - often faster than equities.',
   },
   {
     h: 'Leverage Risk',
@@ -68,19 +68,19 @@ const RISKS = [
   },
   {
     h: 'Global Factors',
-    p: 'Crude, bullion and base metals track global benchmarks — OPEC decisions, US inventory, the dollar and geopolitics all move Indian prices.',
+    p: 'Crude, bullion and base metals track global benchmarks - OPEC decisions, US inventory, the dollar and geopolitics all move Indian prices.',
   },
   {
     h: 'Roll-Over & Storage',
-    p: 'Physically-settled contracts require you to square off or roll over before expiry, or take delivery — with associated warehouse and quality costs.',
+    p: 'Physically-settled contracts require you to square off or roll over before expiry, or take delivery - with associated warehouse and quality costs.',
   },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is commodity trading in India?',
-    a: 'Commodity trading is the buying and selling of commodity futures and options — such as gold, silver, crude oil, copper and agricultural produce — on regulated exchanges. In India the main venues are the MCX for bullion, energy and metals, and the NCDEX for agricultural commodities, all overseen by SEBI.',
+    a: 'Commodity trading is the buying and selling of commodity futures and options - such as gold, silver, crude oil, copper and agricultural produce - on regulated exchanges. In India the main venues are the MCX for bullion, energy and metals, and the NCDEX for agricultural commodities, all overseen by SEBI.',
   },
   {
     q: 'What is the difference between MCX and NCDEX?',
@@ -88,11 +88,11 @@ const FAQS = [
   },
   {
     q: 'Do I need a separate account to trade commodities?',
-    a: 'You trade commodities through a trading account with a SEBI-registered broker that is a member of the MCX/NCDEX. If you already have a Shriram trading account, commodity segment activation is a simple online step — no separate demat is needed as most contracts are cash-settled.',
+    a: 'You trade commodities through a trading account with a SEBI-registered broker that is a member of the MCX/NCDEX. If you already have a Shriram trading account, commodity segment activation is a simple online step - no separate demat is needed as most contracts are cash-settled.',
   },
   {
     q: 'How does leverage work in commodity futures?',
-    a: 'Commodity futures are traded on margin — you deposit a fraction of the contract value (typically 6–15%) to take a position. This leverage magnifies both profits and losses, so a small price move can have a large effect on your margin.',
+    a: 'Commodity futures are traded on margin - you deposit a fraction of the contract value (typically 6–15%) to take a position. This leverage magnifies both profits and losses, so a small price move can have a large effect on your margin.',
   },
   {
     q: 'How is income from commodity trading taxed?',
@@ -104,7 +104,7 @@ const FAQS = [
   },
   {
     q: 'Are commodities suitable for portfolio diversification?',
-    a: 'Commodities often move differently from equities and bonds, so a measured allocation — for example to gold — can help diversify a portfolio and hedge against inflation. Suitability depends on your goals, risk appetite and time horizon, and leverage should be used carefully.',
+    a: 'Commodities often move differently from equities and bonds, so a measured allocation - for example to gold - can help diversify a portfolio and hedge against inflation. Suitability depends on your goals, risk appetite and time horizon, and leverage should be used carefully.',
   },
 ];
 
@@ -153,7 +153,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Commodity Trading?</h2>
-      <p class="sec-lead">Commodity trading is the buying and selling of raw materials — precious metals, energy, industrial metals and farm produce — through standardised futures and options contracts. Rather than holding the physical asset, you trade a contract whose value tracks the underlying commodity. In India these contracts trade electronically on two SEBI-regulated exchanges, giving investors a transparent, well-supervised marketplace to speculate on prices, hedge exposure or diversify a portfolio.</p>
+      <p class="sec-lead">Commodity trading is the buying and selling of raw materials - precious metals, energy, industrial metals and farm produce - through standardised futures and options contracts. Rather than holding the physical asset, you trade a contract whose value tracks the underlying commodity. In India these contracts trade electronically on two SEBI-regulated exchanges, giving investors a transparent, well-supervised marketplace to speculate on prices, hedge exposure or diversify a portfolio.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -167,7 +167,7 @@ const seo = {
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">National Commodity &amp; Derivatives Exchange (NCDEX)</h4>
-          <p class="card-p">The leading exchange for agricultural commodities — guar, cotton, soybean, cumin and more — offering farmers, traders and investors a regulated venue for price discovery and hedging.</p>
+          <p class="card-p">The leading exchange for agricultural commodities - guar, cotton, soybean, cumin and more - offering farmers, traders and investors a regulated venue for price discovery and hedging.</p>
         </div>
       </div>
     </div>
@@ -183,7 +183,7 @@ const seo = {
         </div>
         <div class="card">
           <h4 class="card-h">Commodity Options</h4>
-          <p class="card-p">Give the right — but not the obligation — to buy or sell the underlying futures at a strike price. Buyers pay a premium and cap their downside to that premium.</p>
+          <p class="card-p">Give the right - but not the obligation - to buy or sell the underlying futures at a strike price. Buyers pay a premium and cap their downside to that premium.</p>
         </div>
       </div>
     </div>
@@ -206,7 +206,7 @@ const seo = {
         <p class="sub-lead" style="color:var(--color-text-secondary)">A snapshot of the most actively traded contracts across the four groups.</p>
       </div>
       <div class="cat-grid" data-reveal-row>
-        <div class="cat"><h4>Gold</h4><p>The benchmark bullion contract — a classic inflation hedge and safe-haven asset.</p></div>
+        <div class="cat"><h4>Gold</h4><p>The benchmark bullion contract - a classic inflation hedge and safe-haven asset.</p></div>
         <div class="cat"><h4>Silver</h4><p>A precious and industrial metal, more volatile than gold with strong demand cycles.</p></div>
         <div class="cat"><h4>Crude Oil</h4><p>Highly liquid energy contract tracking global benchmarks and inventory data.</p></div>
         <div class="cat"><h4>Natural Gas</h4><p>An energy contract sensitive to weather, storage and seasonal demand.</p></div>
@@ -223,7 +223,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-mechanics" data-section="mechanics" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">How Commodity Futures Work: Lot Sizes, Margins &amp; Expiry</h2>
-      <p class="sec-lead">Every futures contract is standardised — a fixed lot size, a margin requirement and a monthly expiry. You deposit only a fraction of the contract value as margin, which is what gives commodity trading its leverage. Positions must be squared off or rolled over before expiry, or settled as per the contract specification.</p>
+      <p class="sec-lead">Every futures contract is standardised - a fixed lot size, a margin requirement and a monthly expiry. You deposit only a fraction of the contract value as margin, which is what gives commodity trading its leverage. Positions must be squared off or rolled over before expiry, or settled as per the contract specification.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -248,7 +248,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade commodities, and how the income is treated for tax — transparently, with no hidden costs.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade commodities, and how the income is treated for tax - transparently, with no hidden costs.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -271,7 +271,7 @@ const seo = {
         <p class="sub-lead" style="color:var(--color-text-secondary)">How gains from commodity derivatives are treated under Indian income-tax rules.</p>
       </div>
       <div class="card">
-        <p class="card-p">Income from trading commodity derivatives on a recognised exchange is generally treated as <strong>non-speculative business income</strong> — not as capital gains. It is added to your total income and taxed at your applicable slab rate, and business-related losses can be set off against other income subject to the prevailing rules. Because the treatment is business income, maintaining trade records and, where applicable, meeting audit requirements is important. This is general information, not tax advice — consult a qualified tax adviser for your situation.</p>
+        <p class="card-p">Income from trading commodity derivatives on a recognised exchange is generally treated as <strong>non-speculative business income</strong> - not as capital gains. It is added to your total income and taxed at your applicable slab rate, and business-related losses can be set off against other income subject to the prevailing rules. Because the treatment is business income, maintaining trade records and, where applicable, meeting audit requirements is important. This is general information, not tax advice - consult a qualified tax adviser for your situation.</p>
       </div>
     </div>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
@@ -281,7 +281,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-strategies" data-section="strategies" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Trading Strategies</h2>
-      <p class="sec-lead">Traders use commodities for different reasons — to protect a physical position, to profit from a directional view, or to exploit price differences across markets. Match the approach to your goal, capital and risk appetite.</p>
+      <p class="sec-lead">Traders use commodities for different reasons - to protect a physical position, to profit from a directional view, or to exploit price differences across markets. Match the approach to your goal, capital and risk appetite.</p>
     </div>
     <div class="approaches" data-reveal-row>
       {STRATEGIES.map((s, i) => (
@@ -300,7 +300,7 @@ const seo = {
         <p class="sub-lead">A lower-risk approach that seeks to profit from price differences of the same commodity.</p>
       </div>
       <div class="card">
-        <p class="card-p">Arbitrage involves simultaneously buying and selling the same commodity across different markets, contracts or maturities to capture a price gap — for example, between a near-month and far-month futures contract, or between the spot and futures price. The positions largely offset each other, so the strategy targets small, relatively low-risk gains rather than directional bets, though execution speed and transaction costs matter.</p>
+        <p class="card-p">Arbitrage involves simultaneously buying and selling the same commodity across different markets, contracts or maturities to capture a price gap - for example, between a near-month and far-month futures contract, or between the spot and futures price. The positions largely offset each other, so the strategy targets small, relatively low-risk gains rather than directional bets, though execution speed and transaction costs matter.</p>
       </div>
     </div>
   </section>
@@ -343,7 +343,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Trading Commodities Within Minutes</h3>
-        <p class="ct-sub">Open your Demat account and activate the commodity segment — with zero paperwork.</p>
+        <p class="ct-sub">Open your Demat account and activate the commodity segment - with zero paperwork.</p>
       </div>
       <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
     </div>
@@ -351,7 +351,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== commodities — page-specific only ===== */
+  /* ===== commodities - page-specific only ===== */
 
   /* Generic responsive card grid for the commodity-group card set (the shared
      .row-2 is 2-up and .cat-grid's border math is tuned for 8 cells; this

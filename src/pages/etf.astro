@@ -1,11 +1,11 @@
 ---
 /**
- * ETF — /etf/
+ * ETF - /etf/
  * Product long-form page. Built from the V4 wireframe (Figma node 995:6857),
  * rendered entirely through the shared design system: standardised .hero,
  * alternating sec-light / sec-tint sections, .product-page_table, .row-2 / .card,
- * check-cards and FaqAccordion. Two content patterns unique to this page —
- * the numbered process flow and the icon "types" grid —
+ * check-cards and FaqAccordion. Two content patterns unique to this page -
+ * the numbered process flow and the icon "types" grid -
  * live in the scoped <style> block and bind to tokens only (rule 2 + rule 9).
  *
  * Nested route → BaseLayout / component imports at ../../ depth.
@@ -15,20 +15,20 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// FAQs — ETF investing. First three are the wireframe questions; the rest add
+// FAQs - ETF investing. First three are the wireframe questions; the rest add
 // the depth every product page carries (for the FAQPage JSON-LD + SEO).
 const FAQS = [
   {
     q: 'What is an ETF in simple terms?',
-    a: 'An ETF is a fund that holds a basket of securities and trades on the exchange just like a regular share, throughout market hours. Buying one unit gives you diversified exposure to everything the fund holds — an index, gold, or a sector — in a single trade.',
+    a: 'An ETF is a fund that holds a basket of securities and trades on the exchange just like a regular share, throughout market hours. Buying one unit gives you diversified exposure to everything the fund holds - an index, gold, or a sector - in a single trade.',
   },
   {
     q: 'Is an ETF safe to invest in?',
-    a: 'ETFs are SEBI-regulated, transparent and hold a diversified basket, which generally makes a broad index ETF lower-risk than a single stock. That said, an ETF is a market-linked product — its value moves with the underlying assets and returns are never guaranteed.',
+    a: 'ETFs are SEBI-regulated, transparent and hold a diversified basket, which generally makes a broad index ETF lower-risk than a single stock. That said, an ETF is a market-linked product - its value moves with the underlying assets and returns are never guaranteed.',
   },
   {
     q: 'Can I do a SIP in ETFs?',
-    a: "Yes — but unlike a mutual fund SIP it isn't an automatic bank auto-debit. You, or a scheduled-order tool, place a recurring manual buy order each interval from your trading account.",
+    a: "Yes - but unlike a mutual fund SIP it isn't an automatic bank auto-debit. You, or a scheduled-order tool, place a recurring manual buy order each interval from your trading account.",
   },
   {
     q: 'Do I need a demat account to buy ETFs?',
@@ -36,15 +36,15 @@ const FAQS = [
   },
   {
     q: 'How are ETFs taxed in India?',
-    a: 'Taxation depends on the underlying asset. Equity ETFs follow equity rules — STCG at 20% under 12 months and LTCG at 12.5% above ₹1.25 lakh. Gold and other non-equity ETFs are taxed differently, and debt ETFs bought on or after 1 April 2023 are taxed at your income-tax slab rate regardless of holding period.',
+    a: 'Taxation depends on the underlying asset. Equity ETFs follow equity rules - STCG at 20% under 12 months and LTCG at 12.5% above ₹1.25 lakh. Gold and other non-equity ETFs are taxed differently, and debt ETFs bought on or after 1 April 2023 are taxed at your income-tax slab rate regardless of holding period.',
   },
   {
     q: 'What is the expense ratio of an ETF?',
-    a: 'Most passive Indian ETFs charge roughly 0.05%–0.50% a year, far lower than the 0.50%–2.25% typical of an actively managed equity mutual fund — a meaningful difference over a long horizon once compounding is factored in.',
+    a: 'Most passive Indian ETFs charge roughly 0.05%–0.50% a year, far lower than the 0.50%–2.25% typical of an actively managed equity mutual fund - a meaningful difference over a long horizon once compounding is factored in.',
   },
   {
     q: 'What is the minimum amount to invest in an ETF?',
-    a: 'As little as the price of a single unit — often a few hundred rupees — plus applicable charges. There is no fixed minimum beyond one unit.',
+    a: 'As little as the price of a single unit - often a few hundred rupees - plus applicable charges. There is no fixed minimum beyond one unit.',
   },
 ];
 
@@ -63,7 +63,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'ETFs' }]} />
     <div class="hero-inner" data-enter>
       <h1>Invest in <span class="g">Exchange Traded Funds</span> in India</h1>
-      <p class="lead">An ETF is a basket of securities that trades on NSE/BSE like a stock — combining mutual-fund diversification with stock-like liquidity. Invest in 100+ ETFs across equity, gold, debt, sectoral and international categories with a SEBI-registered broker backed by 40+ years of trust.</p>
+      <p class="lead">An ETF is a basket of securities that trades on NSE/BSE like a stock - combining mutual-fund diversification with stock-like liquidity. Invest in 100+ ETFs across equity, gold, debt, sectoral and international categories with a SEBI-registered broker backed by 40+ years of trust.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -79,8 +79,8 @@ const seo = {
   <!-- ================= WHAT IS AN ETF ================= -->
   <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is an ETF? — Meaning &amp; Definition</h2>
-      <p class="sec-lead">An ETF is a basket of securities that trades on NSE/BSE like a stock — pooling investor money into a fund that mirrors an index, with units traded live on the exchange. Unlike a mutual fund, which is priced once daily, an ETF trades like a stock all day.</p>
+      <h2 class="sec-title">What Is an ETF? - Meaning &amp; Definition</h2>
+      <p class="sec-lead">An ETF is a basket of securities that trades on NSE/BSE like a stock - pooling investor money into a fund that mirrors an index, with units traded live on the exchange. Unlike a mutual fund, which is priced once daily, an ETF trades like a stock all day.</p>
     </div>
     <div class="row-2" data-reveal-row>
       <div class="card">
@@ -97,7 +97,7 @@ const seo = {
   <!-- ================= HOW ETFs WORK ================= -->
   <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How ETFs Work — Creation &amp; Redemption Mechanism</h2>
+      <h2 class="sec-title">How ETFs Work - Creation &amp; Redemption Mechanism</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Behind the scenes, an Authorised Participant keeps an ETF's market price anchored to the value of the securities it holds.</p>
     </div>
     <ol class="flow" data-reveal-row>
@@ -114,7 +114,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Types of ETFs Available in India</h2>
-      <p class="sec-lead">From broad equity indices to gold, bonds, sectors and global markets — a category for almost every goal and risk appetite.</p>
+      <p class="sec-lead">From broad equity indices to gold, bonds, sectors and global markets - a category for almost every goal and risk appetite.</p>
     </div>
     <div class="etf-types" data-reveal-row>
       <div class="etf-type">
@@ -151,8 +151,8 @@ const seo = {
   <!-- ================= ETF vs MUTUAL FUND ================= -->
   <section class="section stack sec-tint" id="sec-vs" data-section="vs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF vs Mutual Fund — Key Differences</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Both pool your money into a diversified basket — the difference is how they trade, what they cost and how you hold them.</p>
+      <h2 class="sec-title">ETF vs Mutual Fund - Key Differences</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Both pool your money into a diversified basket - the difference is how they trade, what they cost and how you hold them.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>ETF</p></div><div class="cell th"><p>Mutual Fund</p></div>
@@ -167,13 +167,13 @@ const seo = {
   <section class="section stack sec-light" id="sec-invest" data-section="invest" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
       <h2 class="sec-title">How to Invest in ETFs with Shriram</h2>
-      <p class="sec-lead">Six steps from account opening to your first ETF trade — and tracking it thereafter.</p>
+      <p class="sec-lead">Six steps from account opening to your first ETF trade - and tracking it thereafter.</p>
     </div>
     <ol class="flow" data-reveal-row style="width:100%">
       <li class="flow-step"><span class="flow-num">1</span><p class="flow-tx">Open a demat account with PAN, Aadhaar and bank details.</p></li>
       <li class="flow-step"><span class="flow-num">2</span><p class="flow-tx">Activate your linked trading account.</p></li>
       <li class="flow-step"><span class="flow-num">3</span><p class="flow-tx">Search the ETF ticker on the trading platform.</p></li>
-      <li class="flow-step"><span class="flow-num">4</span><p class="flow-tx">Place a buy order — at market or a limit price.</p></li>
+      <li class="flow-step"><span class="flow-num">4</span><p class="flow-tx">Place a buy order - at market or a limit price.</p></li>
       <li class="flow-step"><span class="flow-num">5</span><p class="flow-tx">Units are credited to your demat account on T+1.</p></li>
       <li class="flow-step"><span class="flow-num">6</span><p class="flow-tx">Track your holdings and NAV via the app.</p></li>
     </ol>
@@ -183,8 +183,8 @@ const seo = {
   <!-- ================= ETF SIP ================= -->
   <section class="section stack sec-tint" id="sec-sip" data-section="sip" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF SIP — Can You Do a Systematic Investment in an ETF?</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Yes — but unlike a mutual fund SIP, it isn't an auto-debit. You, or a scheduled-order tool, place a recurring manual order each interval.</p>
+      <h2 class="sec-title">ETF SIP - Can You Do a Systematic Investment in an ETF?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Yes - but unlike a mutual fund SIP, it isn't an auto-debit. You, or a scheduled-order tool, place a recurring manual order each interval.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>ETF SIP</p></div><div class="cell th"><p>MF SIP</p></div>
@@ -197,8 +197,8 @@ const seo = {
   <!-- ================= CHARGES & EXPENSE RATIO ================= -->
   <section class="section stack sec-light" id="sec-charges" data-section="charges" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF Charges &amp; Expense Ratio — What You Actually Pay</h2>
-      <p class="sec-lead">A handful of small, transparent costs — most of them a fraction of what an actively managed fund charges.</p>
+      <h2 class="sec-title">ETF Charges &amp; Expense Ratio - What You Actually Pay</h2>
+      <p class="sec-lead">A handful of small, transparent costs - most of them a fraction of what an actively managed fund charges.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Cost</p></div><div class="cell th"><p>Description</p></div><div class="cell th"><p>Range</p></div>
@@ -206,13 +206,13 @@ const seo = {
       <div class="cell tb"><p class="k">STT</p></div><div class="cell tb"><p class="v">Sell-side exchange tax</p></div><div class="cell tb"><p class="v">0.001%</p></div>
       <div class="cell tb"><p class="k">Impact Cost</p></div><div class="cell tb"><p class="v">Bid-ask spread slippage</p></div><div class="cell tb"><p class="v">Varies</p></div>
     </div></div>
-    <p class="sec-lead">Put together, the total cost of owning a passive Nifty 50 ETF can work out to roughly 0.10%–0.30% a year, compared to 1%–2.25% for an actively managed equity mutual fund — a meaningful difference over a long horizon once compounding is factored in.</p>
+    <p class="sec-lead">Put together, the total cost of owning a passive Nifty 50 ETF can work out to roughly 0.10%–0.30% a year, compared to 1%–2.25% for an actively managed equity mutual fund - a meaningful difference over a long horizon once compounding is factored in.</p>
   </section>
 
   <!-- ================= TAXATION ================= -->
   <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">ETF Taxation — LTCG, STCG &amp; How to File</h2>
+      <h2 class="sec-title">ETF Taxation - LTCG, STCG &amp; How to File</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">ETF taxation in India depends on the underlying asset class:</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
@@ -222,7 +222,7 @@ const seo = {
       <div class="cell tb"><p class="k">Debt ETF</p></div><div class="cell tb"><p class="v">Taxed any holding period (post-2023)</p></div><div class="cell tb"><p class="v">Slab rate</p></div>
     </div></div>
     <div class="card">
-      <p class="card-p" style="font-style:italic"><strong>Important:</strong> the Finance Act 2023 removed indexation for debt mutual funds and ETFs bought on or after 1 April 2023 — gains are taxed at your income slab regardless of holding period.</p>
+      <p class="card-p" style="font-style:italic"><strong>Important:</strong> the Finance Act 2023 removed indexation for debt mutual funds and ETFs bought on or after 1 April 2023 - gains are taxed at your income slab regardless of holding period.</p>
       <p class="card-p" style="margin-top:16px">Capital gains from ETF sales must be reported under &ldquo;Capital Gains&rdquo; in your ITR, with equity and non-equity gains disclosed separately. Keep records of purchase price, sale price and holding period for each transaction.</p>
     </div>
   </section>
@@ -230,7 +230,7 @@ const seo = {
   <!-- ================= TOP ETFs ================= -->
   <section class="section stack sec-light" id="sec-top" data-section="top" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Top ETFs to Consider — Nifty 50, Gold, Banking &amp; More</h2>
+      <h2 class="sec-title">Top ETFs to Consider - Nifty 50, Gold, Banking &amp; More</h2>
       <p class="sec-lead">Rather than a definitive ranking, here's a curated look at category-leading ETFs worth considering, based on AUM, cost and trading liquidity:</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
@@ -246,36 +246,36 @@ const seo = {
   <!-- ================= PORTFOLIO CONSTRUCTION ================= -->
   <section class="section stack sec-tint" id="sec-portfolio" data-section="portfolio" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
-      <h2 class="sec-title">ETF Portfolio Construction — How to Build a Passive Portfolio</h2>
+      <h2 class="sec-title">ETF Portfolio Construction - How to Build a Passive Portfolio</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs are versatile building blocks for a low-cost, diversified portfolio. Two model approaches, from simple to more advanced:</p>
     </div>
     <div class="row-2" data-reveal-row style="width:100%">
       <div class="card">
         <h4 class="card-h">Beginner: 3-ETF portfolio</h4>
         <div class="stack" style="gap:12px">
-          <p class="card-p"><strong>Nifty 50 ETF (60%)</strong> — core equity exposure</p>
-          <p class="card-p"><strong>Gold ETF (20%)</strong> — inflation hedge</p>
-          <p class="card-p"><strong>Debt ETF (20%)</strong> — stability and income</p>
+          <p class="card-p"><strong>Nifty 50 ETF (60%)</strong> - core equity exposure</p>
+          <p class="card-p"><strong>Gold ETF (20%)</strong> - inflation hedge</p>
+          <p class="card-p"><strong>Debt ETF (20%)</strong> - stability and income</p>
         </div>
       </div>
       <div class="card">
         <h4 class="card-h">Advanced: core-satellite</h4>
         <div class="stack" style="gap:12px">
-          <p class="card-p"><strong>Core</strong> — Nifty 50 ETF (40%)</p>
-          <p class="card-p"><strong>Satellite</strong> — Midcap ETF (20%)</p>
-          <p class="card-p"><strong>Satellite</strong> — International ETF (20%)</p>
-          <p class="card-p"><strong>Satellite</strong> — Gold ETF (20%)</p>
+          <p class="card-p"><strong>Core</strong> - Nifty 50 ETF (40%)</p>
+          <p class="card-p"><strong>Satellite</strong> - Midcap ETF (20%)</p>
+          <p class="card-p"><strong>Satellite</strong> - International ETF (20%)</p>
+          <p class="card-p"><strong>Satellite</strong> - Gold ETF (20%)</p>
         </div>
       </div>
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Your ideal mix depends on age, goals and risk appetite — younger investors with a longer horizon can typically afford a higher equity allocation, while those nearing a goal may tilt toward debt and gold for stability.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Your ideal mix depends on age, goals and risk appetite - younger investors with a longer horizon can typically afford a higher equity allocation, while those nearing a goal may tilt toward debt and gold for stability.</p>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Build Your Portfolio</a>
   </section>
 
   <!-- ================= RISKS ================= -->
   <section class="section stack sec-light" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Risks of Investing in ETFs — What to Watch Out For</h2>
+      <h2 class="sec-title">Risks of Investing in ETFs - What to Watch Out For</h2>
       <p class="sec-lead">ETFs are generally a lower-cost, transparent way to invest, but like any market-linked product they carry risks worth understanding:</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
@@ -291,8 +291,8 @@ const seo = {
   <!-- ================= WHO SHOULD INVEST ================= -->
   <section class="section stack sec-tint" id="sec-who" data-section="who" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Who Should Invest in ETFs? — Suitability &amp; Investor Profiles</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs work well for almost every investor type because of their flexibility and low cost — but the right starting point depends on your goals, time horizon and comfort with active monitoring.</p>
+      <h2 class="sec-title">Who Should Invest in ETFs? - Suitability &amp; Investor Profiles</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">ETFs work well for almost every investor type because of their flexibility and low cost - but the right starting point depends on your goals, time horizon and comfort with active monitoring.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Profile</p></div><div class="cell th"><p>Typical Need</p></div><div class="cell th"><p>Suitable ETF</p></div>
@@ -314,11 +314,11 @@ const seo = {
       <div class="card check-card">
         <h4 class="ch-title">Documents Required</h4>
         <div class="check-list">
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card — mandatory identity &amp; tax proof</p></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">PAN card - mandatory identity &amp; tax proof</p></div>
           <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Aadhaar card — identity &amp; address verification</p></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Aadhaar card - identity &amp; address verification</p></div>
           <div class="check-sep"></div>
-          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Bank proof — linking your bank for settlements</p></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Bank proof - linking your bank for settlements</p></div>
           <div class="check-sep"></div>
           <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Passport-size photograph for the account application</p></div>
           <div class="check-sep"></div>
@@ -368,7 +368,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Investing in ETFs Today</h3>
-        <p class="ct-sub">Open your demat account in minutes and buy your first ETF — with zero paperwork.</p>
+        <p class="ct-sub">Open your demat account in minutes and buy your first ETF - with zero paperwork.</p>
       </div>
       <a class="btn-gold" href="/open-demat-account/">Open A Demat Account</a>
     </div>
@@ -376,9 +376,9 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== etf — page-specific only. All values bind to tokens (rule 2 + rule 9). ===== */
+  /* ===== etf - page-specific only. All values bind to tokens (rule 2 + rule 9). ===== */
 
-  /* Numbered process flow — vertical, one bordered card, hairline-separated
+  /* Numbered process flow - vertical, one bordered card, hairline-separated
      rows (the wireframe's 6-step "creation/redemption" and "how to invest"
      lists). A sequence, so it is a semantic <ol>; markers are the gold-badge
      .flow-num, not list bullets. */
@@ -412,7 +412,7 @@ const seo = {
   }
   .flow-tx { flex: 1 0 0; min-width: 0; font-weight: 400; font-size: 16px; color: var(--color-text-secondary); }
 
-  /* Types-of-ETF icon cards — individually bordered so a 7th card wraps
+  /* Types-of-ETF icon cards - individually bordered so a 7th card wraps
      cleanly (no dangling shared-hairline edge). Icon box follows the 8px grid. */
   .etf-types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
   .etf-type {

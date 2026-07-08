@@ -1,11 +1,11 @@
 ---
 /**
- * Global Investing — /global-investing/
+ * Global Investing - /global-investing/
  * Long-form guide to investing globally from India via the RBI's LRS route.
  * Built entirely from the shared design-system components in global.css (hero,
  * .section/.sec-title, .card, .cat-grid, .product-page_table, .steps, .risks,
  * FaqAccordion, .cta-box). The only page-scoped CSS is a generic responsive
- * card grid (.gi-cards) — token-bound.
+ * card grid (.gi-cards) - token-bound.
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -25,15 +25,15 @@ const STEPS = [
   },
   {
     h: 'Buy US Stocks & ETFs',
-    p: 'Invest in US-listed stocks, ETFs and thematic baskets — including fractional shares — so you can own global brands with any budget.',
+    p: 'Invest in US-listed stocks, ETFs and thematic baskets - including fractional shares - so you can own global brands with any budget.',
   },
 ];
 
-// What you can invest in — card set.
+// What you can invest in - card set.
 const INVEST_IN = [
   {
     h: 'US Stocks',
-    p: 'Own shares in the world’s largest companies — technology, consumer, healthcare and finance leaders listed on the NYSE and NASDAQ.',
+    p: 'Own shares in the world’s largest companies - technology, consumer, healthcare and finance leaders listed on the NYSE and NASDAQ.',
   },
   {
     h: 'ETFs',
@@ -41,7 +41,7 @@ const INVEST_IN = [
   },
   {
     h: 'Fractional Shares',
-    p: 'Buy a slice of a high-priced stock for as little as a few dollars — no need to fund a full share to start investing.',
+    p: 'Buy a slice of a high-priced stock for as little as a few dollars - no need to fund a full share to start investing.',
   },
   {
     h: 'Thematic Baskets',
@@ -49,7 +49,7 @@ const INVEST_IN = [
   },
 ];
 
-// Risk factors — risk cards.
+// Risk factors - risk cards.
 const RISKS = [
   {
     h: 'Currency Risk',
@@ -65,11 +65,11 @@ const RISKS = [
   },
   {
     h: 'Market Risk',
-    p: 'US equities carry the same volatility, sector and company-specific risks as any stock market — prices can fall as well as rise.',
+    p: 'US equities carry the same volatility, sector and company-specific risks as any stock market - prices can fall as well as rise.',
   },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'How can I invest in US stocks from India?',
@@ -77,7 +77,7 @@ const FAQS = [
   },
   {
     q: 'What is the RBI Liberalised Remittance Scheme (LRS)?',
-    a: 'The LRS is an RBI framework that lets resident individuals remit up to USD 250,000 per financial year for permitted purposes — including the purchase of foreign shares and other investments. It is the legal route through which Indian residents invest overseas.',
+    a: 'The LRS is an RBI framework that lets resident individuals remit up to USD 250,000 per financial year for permitted purposes - including the purchase of foreign shares and other investments. It is the legal route through which Indian residents invest overseas.',
   },
   {
     q: 'How much can I invest abroad in a year?',
@@ -85,11 +85,11 @@ const FAQS = [
   },
   {
     q: 'What is TCS on foreign remittance?',
-    a: 'Tax Collected at Source (TCS) applies to remittances made under the LRS. For remittances for investment purposes, TCS is generally levied on the amount exceeding ₹10 lakh in a financial year. TCS is not an extra cost — it can be adjusted against your tax liability or claimed as a refund when you file your return.',
+    a: 'Tax Collected at Source (TCS) applies to remittances made under the LRS. For remittances for investment purposes, TCS is generally levied on the amount exceeding ₹10 lakh in a financial year. TCS is not an extra cost - it can be adjusted against your tax liability or claimed as a refund when you file your return.',
   },
   {
     q: 'Can I buy fractional shares of US companies?',
-    a: 'Yes. One of the advantages of investing in US markets is fractional investing — you can buy a fraction of a high-priced share for a small amount, which makes it possible to own global brands and build a diversified portfolio with any budget.',
+    a: 'Yes. One of the advantages of investing in US markets is fractional investing - you can buy a fraction of a high-priced share for a small amount, which makes it possible to own global brands and build a diversified portfolio with any budget.',
   },
   {
     q: 'How are gains from US stocks taxed in India?',
@@ -129,7 +129,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Global Investing' }]} />
     <div class="hero-inner" data-enter>
       <h1>Invest in <span class="g">US Stocks &amp; ETFs</span> from India</h1>
-      <p class="lead">Diversify beyond home. Own the world's leading companies through the RBI's LRS route — with fractional investing, USD assets and research-led guidance from Shriram.</p>
+      <p class="lead">Diversify beyond home. Own the world's leading companies through the RBI's LRS route - with fractional investing, USD assets and research-led guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -146,7 +146,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Why Invest Globally</h2>
-      <p class="sec-lead">Investing globally lets you look beyond the Indian economy and participate in the growth of the world's largest markets. It adds a layer of diversification, gives you exposure to USD-denominated assets, and lets you own world-leading brands that aren't listed in India. For Indian investors, global investing is a way to reduce concentration risk and complement a domestic portfolio — not replace it.</p>
+      <p class="sec-lead">Investing globally lets you look beyond the Indian economy and participate in the growth of the world's largest markets. It adds a layer of diversification, gives you exposure to USD-denominated assets, and lets you own world-leading brands that aren't listed in India. For Indian investors, global investing is a way to reduce concentration risk and complement a domestic portfolio - not replace it.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -170,7 +170,7 @@ const seo = {
         <p class="sub-lead">Own the world-leading companies behind products you use every day.</p>
       </div>
       <div class="card">
-        <p class="card-p">Many of the world's most influential companies — across technology, consumer, healthcare and finance — are listed only in the US. Global investing lets you own a stake in these market leaders directly, participating in their growth rather than watching from the sidelines.</p>
+        <p class="card-p">Many of the world's most influential companies - across technology, consumer, healthcare and finance - are listed only in the US. Global investing lets you own a stake in these market leaders directly, participating in their growth rather than watching from the sidelines.</p>
       </div>
     </div>
   </section>
@@ -219,7 +219,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Investing abroad carries a few extra costs beyond brokerage — remittance TCS, currency conversion and distinct tax treatment. Here's what to account for.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Investing abroad carries a few extra costs beyond brokerage - remittance TCS, currency conversion and distinct tax treatment. Here's what to account for.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -237,7 +237,7 @@ const seo = {
       </div></div>
     </div>
     <div class="card">
-      <p class="card-p">Foreign shares are treated as <strong>unlisted assets</strong> under Indian tax rules, so the 24-month long-term threshold applies rather than the 12-month rule for Indian listed equities. This is general information, not tax advice — consult a qualified tax adviser for your situation.</p>
+      <p class="card-p">Foreign shares are treated as <strong>unlisted assets</strong> under Indian tax rules, so the 24-month long-term threshold applies rather than the 12-month rule for Indian listed equities. This is general information, not tax advice - consult a qualified tax adviser for your situation.</p>
     </div>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
@@ -246,7 +246,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-invest-in" data-section="invest-in" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What You Can Invest In</h2>
-      <p class="sec-lead">Once your global investing account is funded, a wide universe of US-listed instruments opens up — from individual blue-chip stocks to diversified funds and ready-made thematic portfolios.</p>
+      <p class="sec-lead">Once your global investing account is funded, a wide universe of US-listed instruments opens up - from individual blue-chip stocks to diversified funds and ready-made thematic portfolios.</p>
     </div>
     <div class="gi-cards" data-reveal-row>
       {INVEST_IN.map((c) => (
@@ -262,7 +262,7 @@ const seo = {
         <div class="cat"><h4>Blue-Chip Stocks</h4><p>Own established US market leaders across technology and consumer sectors.</p></div>
         <div class="cat"><h4>Index ETFs</h4><p>Track a broad US index for instant, low-cost market diversification.</p></div>
         <div class="cat"><h4>Sector ETFs</h4><p>Target a specific sector such as technology, healthcare or energy.</p></div>
-        <div class="cat"><h4>Fractional Shares</h4><p>Start with a few dollars — no need to fund a whole high-priced share.</p></div>
+        <div class="cat"><h4>Fractional Shares</h4><p>Start with a few dollars - no need to fund a whole high-priced share.</p></div>
         <div class="cat"><h4>Thematic Baskets</h4><p>One-click portfolios built around themes like AI or clean energy.</p></div>
         <div class="cat"><h4>Dividend Stocks</h4><p>US companies that pay regular dividends in dollars to shareholders.</p></div>
         <div class="cat"><h4>Growth Stocks</h4><p>Fast-growing US companies expected to outpace the broader market.</p></div>
@@ -310,7 +310,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Investing Globally Within Minutes</h3>
-        <p class="ct-sub">Open your account and access US stocks, ETFs and fractional shares — with zero paperwork.</p>
+        <p class="ct-sub">Open your account and access US stocks, ETFs and fractional shares - with zero paperwork.</p>
       </div>
       <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
     </div>
@@ -318,7 +318,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== global-investing — page-specific only ===== */
+  /* ===== global-investing - page-specific only ===== */
 
   /* Generic responsive card grid for the "what you can invest in" card set (the
      shared .row-2 is 2-up and .cat-grid's border math is tuned for 8 cells; this

@@ -1,18 +1,18 @@
 ---
 /**
- * Homepage — /
+ * Homepage - /
  *
  * The ONLY page with the legacy `home.css` fork. This port dissolves the fork
  * into a scoped page <style> while preserving pixel parity:
  *   - Chrome (nav + mega-overlay) comes from BaseLayout (Header/MegaNav); the
  *     fork's `.ds-nav` / `.ds-mobile-menu` / `#nav-panel` markup + CSS + wiring
- *     scripts are dropped (byte-identical to shared — homepage-port-spec §1).
+ *     scripts are dropped (byte-identical to shared - homepage-port-spec §1).
  *   - Footer now uses the shared <Footer /> from BaseLayout (default footer="site"),
  *     unified with the rest of the site; the page-local divergent footer fork
  *     (markup + CSS + alpha-white flatten table) has been removed.
  *   - Body/section bg keeps the fork's #fffcf3 (--color-surface-page-home) on a
  *     `.home` wrapper; the global body bg is untouched.
- *   - "Inter" font references become var(--font-sans) (Outfit) — rule 3.
+ *   - "Inter" font references become var(--font-sans) (Outfit) - rule 3.
  *   - Tailwind preflight / @property / @theme token block / scrollbar-hiding are
  *     dropped (Astro+Tailwind v4 + global.css provide those).
  *   - The visually-distinctive features (hero video wash, pinned "Why Shriram"
@@ -20,9 +20,10 @@
  *     gradient / animation / scroll value EXACT.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HowSoon from '../components/sections/HowSoon.astro';
 import { organizationSchema, faqPageSchema } from '../lib/seo';
 
-// Homepage FAQ — verbatim from the 7 <details> below, same order. Drives the
+// Homepage FAQ - verbatim from the 7 <details> below, same order. Drives the
 // FAQPage JSON-LD; the visible markup stays the native <details> list.
 const FAQS = [
   {
@@ -56,7 +57,7 @@ const FAQS = [
 ];
 
 const seo = {
-  // Legacy <title> carried a duplicated site-name suffix — dropped (BaseLayout
+  // Legacy <title> carried a duplicated site-name suffix - dropped (BaseLayout
   // appends the site name once).
   title: 'Stock Trading & Demat Account',
   description:
@@ -86,7 +87,7 @@ const seo = {
       >
         <source src="/videos/9150545-hd_1920_1080_24fps.mp4" type="video/mp4" />
       </video>
-      <!-- Figma 863:6389 — cream gradient wash over the video (CSS, not an image) -->
+      <!-- Figma 863:6389 - cream gradient wash over the video (CSS, not an image) -->
       <div
         class="hero-box"
         aria-hidden="true"
@@ -143,7 +144,7 @@ const seo = {
             </div>
             <!-- Form fields (gap-[48px] from title block, gap-[24px] between fields) -->
             <div class="hero-box-12">
-              <!-- Mobile input (Figma 163:3230 — 48px, 18px flag circle, 10px label, 14px number) -->
+              <!-- Mobile input (Figma 163:3230 - 48px, 18px flag circle, 10px label, 14px number) -->
               <div class="hero-box-13">
                 <span class="hero-label-5">
                   <img src="/images/india-flag.png" alt="India" class="hero-img" />
@@ -185,7 +186,7 @@ const seo = {
     <!-- ================= WHY SHRIRAM (pinned scroll section) ================= -->
     <section class="el-sec-2" id="differ-pin-wrap" style="height:280vh">
       <div class="why-pin why-box">
-        <!-- Figma 163:3255 — block sits 32px from screen edges, not site-wrap width -->
+        <!-- Figma 163:3255 - block sits 32px from screen edges, not site-wrap width -->
         <div class="why-box-2">
           <div
             class="why-fill why-box-3"
@@ -214,7 +215,7 @@ const seo = {
                 </h2>
                 <p class="why-text">
                   Real advisors. Smart tech. Better returns. SEBI-registered research paired with
-                  dedicated relationship managers — so every financial decision you make is backed by
+                  dedicated relationship managers - so every financial decision you make is backed by
                   expertise.
                 </p>
               </div>
@@ -257,7 +258,7 @@ const seo = {
                           Get matched with a dedicated RM aligned to your goals and risk profile,
                           with portfolio reviews by call or in person.
                         </li><li>
-                          Receive personalised, human guidance at every milestone — never
+                          Receive personalised, human guidance at every milestone - never
                           algorithm-only recommendations.
                         </li>
                       </ul>
@@ -295,10 +296,10 @@ const seo = {
                       </div>
                       <ul class="why-list">
                         <li>
-                          Get instant entry and exit alerts and watchlist triggers — only when they
+                          Get instant entry and exit alerts and watchlist triggers - only when they
                           actually matter.
                         </li><li>
-                          Stay on top with smart rebalancing nudges and zero clutter — just the
+                          Stay on top with smart rebalancing nudges and zero clutter - just the
                           signals relevant to your portfolio.
                         </li>
                       </ul>
@@ -308,7 +309,7 @@ const seo = {
               </div>
             </div>
             <!-- Full-width progressive-blur bands over the whole panel (cards, collage,
-                 gradient) — blur ramps up toward the top / bottom edges of the section. -->
+                 gradient) - blur ramps up toward the top / bottom edges of the section. -->
             <div class="differ-fade differ-fade-top" aria-hidden="true">
               <div class="pb pb1"></div><div class="pb pb2"></div><div class="pb pb3"></div><div class="pb pb4"></div>
             </div>
@@ -328,7 +329,7 @@ const seo = {
           Strategic Advisory For Every Investor
         </h2>
         <p class="advisory-text">
-          First SIP or full portfolio rebalance — every move is backed by SEBI-registered research
+          First SIP or full portfolio rebalance - every move is backed by SEBI-registered research
           and a dedicated advisor who knows your goals.
         </p>
         <div class="advisory-box-2" data-reveal-row>
@@ -384,7 +385,7 @@ const seo = {
                 >
               </p>
               <p class="advisory-text-4">
-                Our specialists review your current savings and build a personalised wealth plan — in
+                Our specialists review your current savings and build a personalised wealth plan - in
                 a free 15-minute call.
               </p>
             </div>
@@ -404,7 +405,7 @@ const seo = {
           <div class="product-box-3">
             <div>
               <h2 class="why-title" style="font-family:var(--font-sans);color:var(--color-white)">
-                Trade, Invest or Borrow — <span class="why-label">All at One Place.</span>
+                Trade, Invest or Borrow - <span class="why-label">All at One Place.</span>
               </h2>
               <p class="product-text">
                 From expert advice to instant, one-tap investments, everything you need to manage your
@@ -776,7 +777,7 @@ const seo = {
                   Initial Public Offering (IPO)
                 </h3>
                 <p class="product-text-2">
-                  Stay updated and apply for IPO across NSE &amp; BSE—follow companies as they debut on
+                  Stay updated and apply for IPO across NSE &amp; BSE-follow companies as they debut on
                   the stock market.
                 </p>
                 </div><span class="product-label">View More</span>
@@ -901,101 +902,8 @@ const seo = {
       </div>
     </section>
 
-    <!-- ================= STEPS ================= -->
-    <section class="el-sec-2">
-      <div class="steps-box">
-        <!-- Top row: text left + rocket right -->
-        <div class="steps-box-2">
-          <!-- Left: heading + subtitle + CTA -->
-          <div class="steps-box-3">
-            <div class="hero-box-9">
-              <h2 class="why-title" style="font-family:var(--font-sans);color:var(--color-olive-900)">
-                How Soon Can I Start?
-              </h2>
-              <p class="steps-text" style="font-family:var(--font-sans)">
-                Within <strong>minutes</strong>. You can create a Trading Account swiftly in a
-                five-stage online process that can be completed on any of your devices.
-              </p>
-            </div>
-          </div>
-          <!-- Right: rocket illustration — flush to the right section edge -->
-          <div class="steps-box-4" style="margin-right: calc(-1 * clamp(1rem, 6vw, 8rem))">
-            <img
-              src="/images/how-soon-illustration.svg"
-              alt="Rocket launch illustration"
-              width="777"
-              height="340"
-              class="steps-img"
-            />
-          </div>
-        </div>
-        <!-- Steps row — Figma 185:3609: #FFF0D7 pills + dashed connector (#EBDEC6, 2px, 7-7) -->
-        <div class="steps-box-5">
-          <div
-            class="steps-box-6"
-            style="background-image:repeating-linear-gradient(90deg,#EBDEC6 0 7px,transparent 7px 14px);"
-          >
-          </div>
-          <div class="steps-box-7" data-reveal-row>
-            <div class="steps-box-8">
-              <div class="steps-box-9">
-                <img src="/images/step-icon-1.svg" alt="" class="steps-img-2" />
-              </div>
-              <div class="steps-box-10">
-                <p class="steps-text-2">Basic Information</p>
-                <p class="steps-text-3">
-                  Name, mobile number, PAN — takes under two minutes.
-                </p>
-              </div>
-            </div><div class="steps-box-8">
-              <div class="steps-box-9">
-                <img src="/images/step-icon-2.svg" alt="" class="steps-img-2" />
-              </div>
-              <div class="steps-box-10">
-                <p class="steps-text-2">Complete eKYC via Aadhaar</p>
-                <p class="steps-text-3">
-                  OTP-based verification — no physical forms or branch visits.
-                </p>
-              </div>
-            </div><div class="steps-box-8">
-              <div class="steps-box-9">
-                <img src="/images/step-icon-3.svg" alt="" class="steps-img-2" />
-              </div>
-              <div class="steps-box-10">
-                <p class="steps-text-2">Upload Documents</p>
-                <p class="steps-text-3">
-                  Bank proof and a live photograph from your phone's camera.
-                </p>
-              </div>
-            </div><div class="steps-box-8">
-              <div class="steps-box-9">
-                <img src="/images/step-icon-4.svg" alt="" class="steps-img-2" />
-              </div>
-              <div class="steps-box-10">
-                <p class="steps-text-2">Digital eSign</p>
-                <p class="steps-text-3">
-                  Aadhaar-based e-sign replaces physical signature on all forms.
-                </p>
-              </div>
-            </div><div class="steps-box-8">
-              <div class="steps-box-9">
-                <img src="/images/step-icon-5.svg" alt="" class="steps-img-2" />
-              </div>
-              <div class="steps-box-10">
-                <p class="steps-text-2">Account Activation</p>
-                <p class="steps-text-3">
-                  Credentials delivered to your registered email. Start investing.
-                </p>
-              </div>
-            </div>
-          </div>
-          <!-- Centered CTA below the timeline (Figma 1027:6508) -->
-          <div class="steps-cta-wrap">
-            <a href="/open-demat-account/" class="steps-link">Get Started</a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- ================= STEPS - shared HowSoon component ================= -->
+    <HowSoon />
 
     <!-- ================= ANTARA ================= -->
     <section class="el-sec-3">
@@ -1014,11 +922,11 @@ const seo = {
               </h2>
               <p class="antara-text">
                 Track stocks, execute trades, monitor your investments, and get real-time expert
-                alerts — all from one app. Built for Indian investors who want professional-grade tools
+                alerts - all from one app. Built for Indian investors who want professional-grade tools
                 without the complexity.
               </p>
             </div>
-            <!-- QR card — cream QR directly on the dark card (desktop) -->
+            <!-- QR card - cream QR directly on the dark card (desktop) -->
             <div class="antara-box-4">
               <div class="antara-box-5">
                 <img
@@ -1029,7 +937,7 @@ const seo = {
                 />
                 <p class="antara-text-2">Download Now on Android or iOS</p>
               </div>
-              <!-- app-store buttons (mweb only — a QR is pointless on a phone) -->
+              <!-- app-store buttons (mweb only - a QR is pointless on a phone) -->
               <div class="antara-stores">
                 <a class="store-btn" href="#" aria-label="Get it on Google Play">
                   <svg class="store-ico" viewBox="0 0 512 512" fill="none" aria-hidden="true">
@@ -1078,7 +986,7 @@ const seo = {
             <h2 class="why-title" style="font-family:var(--font-sans);color:var(--color-olive-900)">
               Got <span class="faq-label">Questions?</span>
             </h2>
-            <!-- Figma 185:3779 — separate #f8f4e8 bars, plus/minus icons, one open at a time -->
+            <!-- Figma 185:3779 - separate #f8f4e8 bars, plus/minus icons, one open at a time -->
             <div class="faq-box-2" id="faq-accord">
               <details class="group faq-box-3">
                 <summary class="faq-box-4">
@@ -1243,7 +1151,7 @@ const seo = {
           </div>
           <!-- Olive CTA card -->
           <div class="faq-box-8">
-            <!-- Figma 185:3782 — olive #4f583b card, person outline top-left, bottom-aligned text -->
+            <!-- Figma 185:3782 - olive #4f583b card, person outline top-left, bottom-aligned text -->
             <div class="faq-box-9">
               <img src="/images/advisor-avatar.png" alt="" width="140" height="140" class="faq-img" />
               <h3 class="faq-subtitle" style="font-family:var(--font-sans)">Still Have Questions?</h3>
@@ -1266,16 +1174,16 @@ const seo = {
 
 <style>
   /* =====================================================================
-     Homepage — page-local styles (the dissolved `home.css` fork).
+     Homepage - page-local styles (the dissolved `home.css` fork).
      Values reuse shared tokens where they map; homepage-unique literals are
      kept EXACT for pixel parity and flagged Tier-2 where they break a rule.
 
-     DROPPED from home.css (owned elsewhere — homepage-port-spec §1/§5/§6):
+     DROPPED from home.css (owned elsewhere - homepage-port-spec §1/§5/§6):
        Tailwind preflight/reset · all @property registrations (none were
-       load-bearing — every animated value is a plain transition/keyframe,
+       load-bearing - every animated value is a plain transition/keyframe,
        not an animated custom-prop) · the @layer theme token block ·
        html scrollbar-hiding · the site nav/overlay/mobile-menu CSS
-       (.ds-nav / .nps-* / #nav-panel — shared in global.css) · the dead
+       (.ds-nav / .nps-* / #nav-panel - shared in global.css) · the dead
        @keyframes heroSilver1/heroSilver2/rise (defined, never referenced) ·
        the fork's duplicate line-height 1.5 / font-family :root overrides
        (global.css already enforces both).
@@ -1286,7 +1194,7 @@ const seo = {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-left: max(0px, calc(clamp(1rem, 6vw, 8rem) - 2rem)); /* fork gutter — Tier-2: unify with --pad */
+    padding-left: max(0px, calc(clamp(1rem, 6vw, 8rem) - 2rem)); /* fork gutter - Tier-2: unify with --pad */
     padding-right: max(0px, calc(clamp(1rem, 6vw, 8rem) - 2rem));
   }
 
@@ -1310,7 +1218,7 @@ const seo = {
     }
   }
 
-  /* Page root — carries the fork's cream body bg (#fffcf3) so the homepage keeps
+  /* Page root - carries the fork's cream body bg (#fffcf3) so the homepage keeps
      its own surface without touching the global body background (Decision 3). */
   .home {
     background: var(--color-surface-page-home);
@@ -1357,7 +1265,7 @@ const seo = {
     width: 100%;
   }
   .hero-title {
-    font-size: clamp(32px, 5vw, 40px); /* fork's #main h1 override, folded in — parity */
+    font-size: clamp(32px, 5vw, 40px); /* fork's #main h1 override, folded in - parity */
     font-weight: 400;
   }
   .hero-label {
@@ -1385,7 +1293,7 @@ const seo = {
     font-weight: 500;
   }
   .hero-label-3 {
-    background-color: #2e391466; /* Tier-2: rule-5 (alpha) — parity-preserved (dot over cream) */
+    background-color: #2e391466; /* Tier-2: rule-5 (alpha) - parity-preserved (dot over cream) */
     border-radius: 50%;
     flex-shrink: 0;
     width: 4px;
@@ -1428,8 +1336,8 @@ const seo = {
     padding: 32px;
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
     backdrop-filter: blur(20px) saturate(1.6);
-    background: #ffffffd9; /* Tier-2: rule-5 (alpha) — parity-preserved (glass over video) */
-    border: 1px solid #ffffff80; /* Tier-2: rule-5 (alpha) — parity-preserved (glass border) */
+    background: #ffffffd9; /* Tier-2: rule-5 (alpha) - parity-preserved (glass over video) */
+    border: 1px solid #ffffff80; /* Tier-2: rule-5 (alpha) - parity-preserved (glass border) */
     border-radius: 24px;
     box-shadow: 0 8px 40px #00000014, inset 0 1px #fff9; /* translucency allowed (shadow) */
   }
@@ -1443,7 +1351,7 @@ const seo = {
     font-weight: 500;
     color: #4f583b; /* --color-olive-600 */
   }
-  /* Demat card copy toggles — mweb shows shorter wording (Figma 1119:13439);
+  /* Demat card copy toggles - mweb shows shorter wording (Figma 1119:13439);
      desktop keeps the original heading/badges unchanged. */
   .hero-dm-mweb {
     display: none;
@@ -1488,7 +1396,7 @@ const seo = {
     width: 18px;
     flex-shrink: 0;
     overflow: hidden;
-    border-radius: 999px; /* was 3.40282e38px — canonical pill radius, same render */
+    border-radius: 999px; /* was 3.40282e38px - canonical pill radius, same render */
   }
   .hero-img {
     height: 100%;
@@ -1578,10 +1486,10 @@ const seo = {
     }
   }
 
-  /* ---- Section shells (fork sets the #fffcf3 bg on these — the .home wrapper
+  /* ---- Section shells (fork sets the #fffcf3 bg on these - the .home wrapper
      also carries it, so alternating sections stay seamless) ---- */
   .el-sec-2 {
-    background-color: #fffcf3; /* --color-cream-100 (home body bg — ≠ site page bg) */
+    background-color: #fffcf3; /* --color-cream-100 (home body bg - ≠ site page bg) */
   }
   .el-sec-3 {
     background-color: #fffcf3; /* --color-cream-100 */
@@ -1614,7 +1522,7 @@ const seo = {
     left: 0;
     width: 100%;
     overflow: hidden;
-    opacity: 0.1; /* decorative dim — sanctioned opacity use */
+    opacity: 0.1; /* decorative dim - sanctioned opacity use */
   }
   .why-img {
     height: 130%;
@@ -1663,7 +1571,7 @@ const seo = {
     height: 410px;
     /* Widen the clip box 32px each side (pulled back by the negative margin) so
        the cards keep their width/position, but their gold box-shadow "flare"
-       renders into the padding and fades out BEFORE the overflow clip — without
+       renders into the padding and fades out BEFORE the overflow clip - without
        this the glow is cut flush at the rail edge as a hard vertical line.
        overflow stays hidden so the JS still drives the vertical card scroll
        (scrollTop); only the horizontal clip needed relieving. */
@@ -1680,7 +1588,7 @@ const seo = {
   }
   /* Full-width progressive-blur bands over the whole panel, top & bottom (rule-5
      sanctioned backdrop-filter). Each band stacks 4 layers of increasing blur, each
-     masked opaque AT the section edge and fading inward — the heaviest blur reaches
+     masked opaque AT the section edge and fading inward - the heaviest blur reaches
      only the thin edge strip, the lightest spans the band. Because every layer is
      opaque at the edge and only the LIGHTEST blur fades out over sharp content, the
      blur ramps up smoothly toward the edge with no sharp-through-blur halo. */
@@ -1707,7 +1615,7 @@ const seo = {
   .differ-fade-top .pb2 { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 22%, transparent 68%);  mask-image: linear-gradient(to bottom, #000 0%, #000 22%, transparent 68%); }
   .differ-fade-top .pb3 { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 44%);  mask-image: linear-gradient(to bottom, #000 0%, #000 12%, transparent 44%); }
   .differ-fade-top .pb4 { -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 6%,  transparent 24%);  mask-image: linear-gradient(to bottom, #000 0%, #000 6%,  transparent 24%); }
-  /* bottom band: mirrored — 0% = section bottom edge */
+  /* bottom band: mirrored - 0% = section bottom edge */
   .differ-fade-bottom .pb1 { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 40%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, #000 40%, transparent 100%); }
   .differ-fade-bottom .pb2 { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 22%, transparent 68%);  mask-image: linear-gradient(to top, #000 0%, #000 22%, transparent 68%); }
   .differ-fade-bottom .pb3 { -webkit-mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 44%);  mask-image: linear-gradient(to top, #000 0%, #000 12%, transparent 44%); }
@@ -1733,7 +1641,7 @@ const seo = {
     align-items: center;
     overflow: hidden;
     border-radius: 24px;
-    /* Frosted card matching Figma 1056:6783 — translucent fill + white outline +
+    /* Frosted card matching Figma 1056:6783 - translucent fill + white outline +
        backdrop blur over the panel gradient (Tier-2 alpha, un-flattenable over a
        gradient; the backdrop-filter frost is rule-5 sanctioned). */
     background-color: #7474741a; /* Tier-2: rgba(116,116,116,0.1) over gradient */
@@ -1743,7 +1651,7 @@ const seo = {
     padding-inline: 32px;
     padding-block: 40px;
   }
-  /* Subtle frosted-glass grain — self-contained monochrome SVG noise (no external
+  /* Subtle frosted-glass grain - self-contained monochrome SVG noise (no external
      asset; CSP-safe), tiled and held very low so it reads as texture on the glass
      surface without touching legibility. Sits above the frost, below the content
      (which is lifted with z-index). Decorative translucency, like the frost. */
@@ -1755,7 +1663,7 @@ const seo = {
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 140px 140px;
-    opacity: 0.1; /* decorative grain — sanctioned (frosted-glass texture); tune 0.05–0.15 */
+    opacity: 0.1; /* decorative grain - sanctioned (frosted-glass texture); tune 0.05–0.15 */
     mix-blend-mode: overlay;
   }
   .why-box-11 {
@@ -1785,17 +1693,17 @@ const seo = {
     list-style-type: disc;
     flex-direction: column;
     gap: 16px;
-    padding-inline-start: 21px; /* off-grid — parity (Tier-2) */
+    padding-inline-start: 21px; /* off-grid - parity (Tier-2) */
     font-size: 14px;
   }
-  /* mweb: "Why Shriram" flattens to a plain vertical card stack — the scroll-pin,
+  /* mweb: "Why Shriram" flattens to a plain vertical card stack - the scroll-pin,
      the horizontal-clip rail math, the frosted-glass card blur and the progressive-
      blur edge bands are all desktop-only affordances of the pinned reveal. Below the
      1024px parallax threshold we drop them and list the cards as normal solid cards.
      JS is guarded to match (see the page <script>). */
   @media (max-width: 1023px) {
     #differ-pin-wrap {
-      height: auto !important; /* override inline 280vh — no tall scroll track */
+      height: auto !important; /* override inline 280vh - no tall scroll track */
     }
     .why-box {
       position: static;
@@ -1931,13 +1839,13 @@ const seo = {
     color: #202318; /* --color-charcoal-825 */
     width: 100%; /* mobile: full-width CTA (fixed 220px restored ≥640px) */
     height: 48px;
-    border-radius: 6px; /* home button radius — off-scale (Tier-2) */
+    border-radius: 6px; /* home button radius - off-scale (Tier-2) */
     cursor: pointer;
     white-space: nowrap;
     border: none;
     justify-content: center;
     align-items: center;
-    gap: 6px; /* off-grid — parity (Tier-2) */
+    gap: 6px; /* off-grid - parity (Tier-2) */
     padding: 0 20px;
     font-size: 14px;
     font-weight: 500;
@@ -1951,7 +1859,7 @@ const seo = {
     transform: translateY(-1px);
   }
   }
-  /* ── mweb (≤1023px) — Strategic Advisory: single-column stack; each card puts a
+  /* ── mweb (≤1023px) - Strategic Advisory: single-column stack; each card puts a
      40px icon + uppercase title on one row with a full-width description below
      (Figma 1119:13399). .advisory-box-5 dissolves so its title/desc become grid
      rows. Desktop (≥1024px) keeps its horizontal icon-left cards untouched. ── */
@@ -2005,7 +1913,7 @@ const seo = {
   .product-text {
     margin-top: 12px;
     font-size: 16px;
-    color: #ffffff8c; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark gradient) */
+    color: #ffffff8c; /* Tier-2: rule-5 (alpha) - parity-preserved (over dark gradient) */
   }
   .product-link {
     flex-shrink: 0;
@@ -2024,7 +1932,7 @@ const seo = {
     grid-template-columns: repeat(2, minmax(0, 1fr)); /* mweb: 2-col grid (4 at ≥1280) */
     gap: 16px;
   }
-  /* Scroll reveal — the section header + each card fade/rise in as the grid
+  /* Scroll reveal - the section header + each card fade/rise in as the grid
      enters view (the page-local observer below adds .revealed, staggered per
      card by the inline transition-delay). Gated on .js-reveal so no-JS /
      reduced-motion (BaseLayout omits .js-reveal there) paints them visible with
@@ -2051,7 +1959,7 @@ const seo = {
      center) so nothing snaps. At rest: icon + a 40px gap + copy, centred as one
      group; the CTA is collapsed (max-height:0) so it takes no space. On hover
      the CTA grows into flow (max-height + margin animate) with a matching 40px
-     gap, so the centred group grows and re-centres each frame — icon + copy
+     gap, so the centred group grows and re-centres each frame - icon + copy
      glide up while the CTA slides in, staying equidistant throughout. */
   .product-box-6 {
     position: relative;
@@ -2077,15 +1985,15 @@ const seo = {
     color: var(--color-white);
   }
   .product-text-2 {
-    color: #ffffff80; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark card) */
+    color: #ffffff80; /* Tier-2: rule-5 (alpha) - parity-preserved (over dark card) */
   }
   @media (min-width: 1024px) and (hover: hover) {
     .product-link-2:hover .product-text-2 {
-      color: #ffffffb3; /* Tier-2: rule-5 (alpha) — parity-preserved */
+      color: #ffffffb3; /* Tier-2: rule-5 (alpha) - parity-preserved */
     }
   }
 
-  /* Products — Figma "Product Card v7" Smart-Animate (node 904:9490).
+  /* Products - Figma "Product Card v7" Smart-Animate (node 904:9490).
      Idle: charcoal card. Hover: the charcoal overlay CONDENSES into the
      top-right arrow point, revealing the olive card; a gold circle + arrow
      scale in, the icon enlarges + brightens, content rises, "View More" fades
@@ -2115,7 +2023,7 @@ const seo = {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background-color: #2b2c2b; /* charcoal overlay — page-local literal (Tier-2) */
+    background-color: #2b2c2b; /* charcoal overlay - page-local literal (Tier-2) */
     clip-path: circle(150% at calc(100% - 60px) 60px);
     transition: clip-path var(--pc-dur) var(--pc-ease);
   }
@@ -2124,7 +2032,7 @@ const seo = {
       clip-path: circle(0% at calc(100% - 60px) 60px);
     }
   }
-  /* icon scales from its left edge — grows rightward, not from centre */
+  /* icon scales from its left edge - grows rightward, not from centre */
   .product-img {
     width: 40px;
     height: 40px;
@@ -2156,7 +2064,7 @@ const seo = {
     font-size: 14px;
   }
   /* View More: in flow but collapsed (max-height:0) at rest. On hover it grows
-     into place — max-height + margin-top + opacity all animate together, so the
+     into place - max-height + margin-top + opacity all animate together, so the
      CTA slides in and pushes the container's centred content upward smoothly. */
   .product-label {
     display: block;
@@ -2165,7 +2073,7 @@ const seo = {
     max-height: 0;
     font-size: 12px;
     font-weight: 500;
-    color: #fffc; /* Tier-2: rule-5 (alpha) — parity-preserved (#ffffffcc) */
+    color: #fffc; /* Tier-2: rule-5 (alpha) - parity-preserved (#ffffffcc) */
     opacity: 0;
     transform: translateY(8px);
     transition: opacity var(--pc-dur) var(--pc-ease), transform var(--pc-dur) var(--pc-ease),
@@ -2217,7 +2125,7 @@ const seo = {
       transform: rotate(0deg);
     }
   }
-  /* Figma trigger: Mouse enter · 100ms delay — hover-IN only (0s at rest) */
+  /* Figma trigger: Mouse enter · 100ms delay - hover-IN only (0s at rest) */
   .product-link-2::before,
   .product-img,
   .product-card-circle,
@@ -2241,7 +2149,7 @@ const seo = {
   @media (max-width: 1023px) {
     .product-link-2 {
       height: auto;
-      padding: 16px; /* was 32px — proportional reduction so two columns fit */
+      padding: 16px; /* was 32px - proportional reduction so two columns fit */
     }
     .product-label {
       margin-top: 16px;
@@ -2255,7 +2163,7 @@ const seo = {
       padding: 48px 16px;
     }
     @media (min-width: 1024px) and (hover: hover) {
-      /* Remove the hover animation entirely on mweb — hold every layer at its
+      /* Remove the hover animation entirely on mweb - hold every layer at its
        resting value even while :hover matches (it does in a desktop browser at
        mobile width, which is why the animation still fired). No animation, no
        state change; the card is fully static. */
@@ -2297,132 +2205,12 @@ const seo = {
     }
     @media (min-width: 1024px) and (hover: hover) {
       .product-link-2:hover .product-text-2 {
-      color: #ffffff80; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark card) */
+      color: #ffffff80; /* Tier-2: rule-5 (alpha) - parity-preserved (over dark card) */
     }
     }
   }
 
-  /* ---- STEPS ---- */
-  .steps-box {
-    padding-block: 64px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: clamp(1rem, 6vw, 8rem);
-    padding-right: clamp(1rem, 6vw, 8rem);
-  }
-  .steps-box-2 {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 48px;
-  }
-  .steps-box-3 {
-    display: flex;
-    max-width: 600px;
-    flex-direction: column;
-    gap: 48px;
-  }
-  .steps-text {
-    font-size: 18px;
-    color: #4f583b; /* --color-olive-600 */
-    letter-spacing: 0;
-  }
-  .steps-link {
-    display: flex;
-    height: 48px; /* rule 14: 48px tap target (was 40px) */
-    width: 220px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    background-color: #f3b83f; /* --color-gold-400 (fork --color-brand) */
-    font-size: 12px;
-    font-weight: 500;
-    color: #202318; /* --color-charcoal-825 */
-    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 0.15s;
-  }
-  @media (min-width: 1024px) and (hover: hover) {
-    .steps-link:hover {
-      background-color: #d4982a; /* --color-gold-600 (fork --color-brand-hover) */
-    }
-  }
-  .steps-box-4 {
-    display: none;
-    flex: 1;
-    align-items: center;
-  }
-  .steps-img {
-    height: auto;
-    max-height: 360px;
-    width: 100%;
-    object-fit: contain;
-    object-position: right;
-  }
-  .steps-box-5 {
-    position: relative;
-    margin-top: 64px;
-  }
-  .steps-cta-wrap {
-    margin-top: 80px;
-    display: flex;
-    justify-content: center;
-  }
-  .steps-box-6 {
-    position: absolute;
-    top: 31px; /* off-grid — parity (Tier-2) */
-    display: none;
-    height: 2px;
-  }
-  .steps-box-7 {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 24px;
-    row-gap: 48px;
-  }
-  .steps-box-8 {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    text-align: center;
-  }
-  .steps-box-9 {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    height: 64px;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: 24px;
-    background-color: #fff0d7; /* --color-gold-100 */
-    padding-inline: 32px;
-  }
-  .steps-img-2 {
-    height: 26px; /* Tier-2: off-scale icon (parity) */
-    width: 26px;
-    object-fit: contain;
-  }
-  .steps-box-10 {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .steps-text-2 {
-    font-size: 20px;
-    font-weight: 500;
-    color: #2e3914; /* --color-olive-900 */
-  }
-  .steps-text-3 {
-    margin-inline: auto;
-    max-width: 234px; /* page-local literal */
-    font-size: 14px;
-    color: #4f583b; /* --color-olive-600 */
-  }
+  /* ---- STEPS - now the shared <HowSoon /> component (self-contained styles) ---- */
 
   /* ---- ANTARA ---- */
   .antara-box {
@@ -2433,7 +2221,7 @@ const seo = {
     height: 1100px;
     width: 1100px;
     border-radius: 999px; /* was 3.40282e38px */
-    background-color: #4f583b40; /* Tier-2: rule-5 (alpha) — parity-preserved (blur orb) */
+    background-color: #4f583b40; /* Tier-2: rule-5 (alpha) - parity-preserved (blur orb) */
     filter: blur(64px);
   }
   .antara-box-2 {
@@ -2445,7 +2233,7 @@ const seo = {
     width: 1000px;
     transform: translateY(-50%);
     border-radius: 999px; /* was 3.40282e38px */
-    background-color: #4f583b26; /* Tier-2: rule-5 (alpha) — parity-preserved (blur orb) */
+    background-color: #4f583b26; /* Tier-2: rule-5 (alpha) - parity-preserved (blur orb) */
     filter: blur(64px);
   }
   .antara-box-3 {
@@ -2457,7 +2245,7 @@ const seo = {
     margin-top: 20px;
     max-width: 730px;
     font-size: 16px;
-    color: #ffffffd9; /* Tier-2: rule-5 (alpha) — parity-preserved (over dark gradient) */
+    color: #ffffffd9; /* Tier-2: rule-5 (alpha) - parity-preserved (over dark gradient) */
   }
   .antara-box-4 {
     display: flex;
@@ -2466,8 +2254,8 @@ const seo = {
   }
   .antara-box-5 {
     border-radius: 24px;
-    border: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) — parity-preserved */
-    background-color: #0003; /* Tier-2: rule-5 (alpha) — parity-preserved (#00000033 over gradient) */
+    border: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) - parity-preserved */
+    background-color: #0003; /* Tier-2: rule-5 (alpha) - parity-preserved (#00000033 over gradient) */
     padding: 32px;
     text-align: center;
     -webkit-backdrop-filter: blur(8px);
@@ -2492,11 +2280,11 @@ const seo = {
     grid-template-columns: repeat(1, minmax(0, 1fr));
     overflow: hidden;
     border-radius: 24px;
-    border: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) — parity-preserved */
-    background-color: #ffffff08; /* Tier-2: rule-5 (alpha) — parity-preserved (3% white) */
+    border: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) - parity-preserved */
+    background-color: #ffffff08; /* Tier-2: rule-5 (alpha) - parity-preserved (3% white) */
   }
   .antara-box-6 > :not(:last-child) {
-    border-bottom: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) — parity-preserved (divide-y) */
+    border-bottom: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) - parity-preserved (divide-y) */
   }
   .antara-box-7 {
     display: flex;
@@ -2519,10 +2307,10 @@ const seo = {
   .antara-label-3 {
     font-size: 12px;
     letter-spacing: 0.08em;
-    color: #fff6; /* Tier-2: rule-5 (alpha) — parity-preserved (#ffffff66) */
+    color: #fff6; /* Tier-2: rule-5 (alpha) - parity-preserved (#ffffff66) */
     text-transform: uppercase;
   }
-  /* App-store buttons — hidden by default (desktop shows the QR card); the mweb
+  /* App-store buttons - hidden by default (desktop shows the QR card); the mweb
      block below reveals them and hides the QR. */
   .antara-stores {
     display: none;
@@ -2563,7 +2351,7 @@ const seo = {
     letter-spacing: 0.01em;
   }
 
-  /* ---- FAQ (native <details> — mechanism kept verbatim) ---- */
+  /* ---- FAQ (native <details> - mechanism kept verbatim) ---- */
   #faq-accord details {
     interpolate-size: allow-keywords;
   }
@@ -2672,7 +2460,7 @@ const seo = {
   .faq-text-2 {
     margin-top: 12px;
     font-size: 14px;
-    color: #fffc; /* Tier-2: rule-5 (alpha) — parity-preserved (#ffffffcc over olive) */
+    color: #fffc; /* Tier-2: rule-5 (alpha) - parity-preserved (#ffffffcc over olive) */
   }
   .faq-link {
     margin-top: 24px;
@@ -2697,7 +2485,7 @@ const seo = {
   }
 
   /* =====================================================================
-     RESPONSIVE — ported verbatim from home.css (Tailwind min-width variants
+     RESPONSIVE - ported verbatim from home.css (Tailwind min-width variants
      mapped to their px boundaries: 40rem=640px, 64rem=1024px, 80rem=1280px).
      ===================================================================== */
   @media (min-width: 640px) {
@@ -2734,20 +2522,12 @@ const seo = {
       align-items: flex-end;
       justify-content: space-between;
     }
-    .steps-box-6 {
-      right: 10%;
-      left: 10%;
-      display: block;
-    }
-    .steps-box-7 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
     .antara-box-6 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .antara-box-6 > :not(:last-child) {
       border-bottom: 0;
-      border-inline-end: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) — parity-preserved (divide-x) */
+      border-inline-end: 1px solid #ffffff1a; /* Tier-2: rule-5 (alpha) - parity-preserved (divide-x) */
     }
   }
 
@@ -2833,7 +2613,7 @@ const seo = {
       flex-direction: column;
       justify-content: center;
       /* Full-height section, viewport-relative with NO 923px cap so it scales up
-         to fill much larger screens too — the same height model as the "Why
+         to fill much larger screens too - the same height model as the "Why
          Shriram" pin (.why-fill). Adapts to the nav auto-hide: when the header
          retracts (html.header-hidden) reclaim its 80px on the same 0.3s ease
          (96px → 16px = +80px). */
@@ -2847,15 +2627,6 @@ const seo = {
     }
     .product-box-4 {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .steps-box {
-      padding-block: 96px;
-    }
-    .steps-box-4 {
-      display: flex;
-    }
-    .steps-box-5 {
-      margin-top: 80px;
     }
     .antara-box-3 {
       grid-template-columns: 1fr auto;
@@ -2895,25 +2666,18 @@ const seo = {
     .why-box-8 {
       width: 580px;
     }
-    .steps-box {
-      padding-block: 144px;
-    }
-    .steps-box-5 {
-      margin-top: 48px;
-    }
   }
 
   /* mweb: uniform 16px page gutter on every first-level section container. Placed
-     last so it overrides the ≥640 (32px) and clamp() gutters at ≤1023px only —
+     last so it overrides the ≥640 (32px) and clamp() gutters at ≤1023px only -
      desktop (≥1024) keeps its existing clamp()/32px gutters untouched. */
   @media (max-width: 1023px) {
     .hero-box-2,
-    .advisory-box,
-    .steps-box {
+    .advisory-box {
       padding-left: 16px;
       padding-right: 16px;
     }
-    /* Dark sections (Why / Products / Antara) are FULL-BLEED on mweb — their sides
+    /* Dark sections (Why / Products / Antara) are FULL-BLEED on mweb - their sides
        stick to the screen edge (Figma dark containers at x=0, w=517). The inset
        moves inside to the content wrappers below. */
     .why-box-2,
@@ -2927,7 +2691,7 @@ const seo = {
       padding-inline: 24px;
     }
 
-    /* Products — mweb list (Figma 1108:10671): heading, then a single-column stack
+    /* Products - mweb list (Figma 1108:10671): heading, then a single-column stack
        of horizontal cards (olive icon-box → title/desc → arrow), then "View All"
        centred at the bottom. All desktop (≥1024) rules are untouched. */
     .product-box-2 {
@@ -2994,7 +2758,7 @@ const seo = {
     .product-text-2 {
       grid-column: 1 / -1;
       grid-row: 2;
-      color: var(--color-sage-200); /* #bfc1bc — body on dark card */
+      color: var(--color-sage-200); /* #bfc1bc - body on dark card */
     }
     .product-label {
       display: none; /* no "View More" on mweb */
@@ -3039,55 +2803,9 @@ const seo = {
     }
     }
 
-    /* How Soon Can I Start? — mweb vertical process timeline: circular icon markers
-       down the left joined by a dashed spine, content on the right. The desktop
-       (≥1024) horizontal 5-step row is untouched. */
-    .steps-box-7 {
-      display: flex;
-      flex-direction: column;
-      row-gap: 0;
-      column-gap: 0;
-    }
-    .steps-box-8 {
-      position: relative;
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 16px;
-      text-align: left;
-      padding-bottom: 40px;
-    }
-    .steps-box-8:last-child {
-      padding-bottom: 0;
-    }
-    /* dashed spine segment: from this marker's centre to the next marker's centre,
-       behind the (opaque) markers so it reads as a line joining them */
-    .steps-box-8:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      left: 23px; /* centre of the 48px marker (−1px for the 2px line) */
-      top: 24px;
-      bottom: -24px;
-      width: 2px;
-      background-image: repeating-linear-gradient(180deg, #ebdec6 0 7px, transparent 7px 14px);
-      z-index: 0;
-    }
-    .steps-box-9 {
-      width: 48px;
-      height: 48px;
-      padding-inline: 0;
-      border-radius: 50%; /* circular marker (desktop pill untouched) */
-    }
-    .steps-box-10 {
-      flex: 1;
-      gap: 8px;
-      padding-top: 8px; /* nudge the title toward the marker's centre */
-    }
-    .steps-text-3 {
-      margin-inline: 0; /* was auto-centred for the horizontal layout */
-      max-width: none;
-    }
+    /* (How Soon mweb vertical timeline now lives in the <HowSoon /> component.) */
 
-    /* Antara (mweb) — swap the QR card for app-store buttons (Figma 1111:11828). */
+    /* Antara (mweb) - swap the QR card for app-store buttons (Figma 1111:11828). */
     .antara-box-5 {
       display: none;
     }
@@ -3095,7 +2813,7 @@ const seo = {
       display: flex;
     }
 
-    /* Products (mweb) — the updated Figma uses a small 16px arrow (was 32px). */
+    /* Products (mweb) - the updated Figma uses a small 16px arrow (was 32px). */
     .product-card-circle,
     .product-card-circle svg {
       width: 16px;
@@ -3147,7 +2865,7 @@ const seo = {
      mega-overlay open/close scripts (shared now via Header.astro / MegaNav.astro).
 
      RE-ADDED (Decision 1): a minimal scroll listener toggling .header-hidden on
-     <html> — the pinned "Why Shriram" fill effect keys off that class. This is
+     <html> - the pinned "Why Shriram" fill effect keys off that class. This is
      NOT a nav re-implementation; the shared Header owns nav auto-hide, but its
      class toggles on the nav element, not <html>, so the fill needs this. */
   (function () {
@@ -3167,7 +2885,7 @@ const seo = {
     );
   })();
 
-  /* Hero "Get Started" — AES-GCM-encrypt the mobile number into the signup URL;
+  /* Hero "Get Started" - AES-GCM-encrypt the mobile number into the signup URL;
      falls back to the plain signup URL on any failure. Verbatim from legacy. */
   const g = document.getElementById('hero-mobile') as HTMLInputElement | null,
     h = document.getElementById('hero-get-started') as HTMLAnchorElement | null;
@@ -3205,7 +2923,7 @@ const seo = {
     });
   }
 
-  /* Hero video — fade the wash + start playback once the video can play.
+  /* Hero video - fade the wash + start playback once the video can play.
      Verbatim from legacy. */
   const r = document.getElementById('hero-video') as HTMLVideoElement | null,
     w = document.querySelector('.hero-wave') as HTMLElement | null;
@@ -3224,14 +2942,14 @@ const seo = {
         setTimeout(() => { e(); t(); }, 1500));
   }
 
-  /* "Why Shriram" scroll-pin — map page scroll through the tall wrapper onto the
+  /* "Why Shriram" scroll-pin - map page scroll through the tall wrapper onto the
      card rail's scrollTop, and drift the collage upward. Verbatim from legacy. */
   const f = document.getElementById('differ-pin-wrap'),
     i = document.getElementById('differ-scroll'),
     m = document.getElementById('differ-collage') as HTMLElement | null;
   if (f && i) {
     const e = () => {
-      /* mweb: no pin/parallax — reset the rail + collage and bail (CSS lists the
+      /* mweb: no pin/parallax - reset the rail + collage and bail (CSS lists the
          cards as a static vertical stack below 1024px). */
       if (window.innerWidth < 1024) {
         i.scrollTop = 0;
@@ -3243,14 +2961,16 @@ const seo = {
       if (o <= 0) return;
       const n = Math.min(1, Math.max(0, -tRect.top / o));
       i.scrollTop = n * (i.scrollHeight - i.clientHeight);
-      m && (m.style.transform = `translateY(${(-n * 23).toFixed(2)}%)`);
+      /* Start the collage 160px higher so the founder's head isn't clipped at
+         the top, then drift up with scroll from there. */
+      m && (m.style.transform = `translateY(calc(-160px - ${(n * 23).toFixed(2)}%))`);
     };
     window.addEventListener('scroll', e, { passive: true });
     window.addEventListener('resize', e, { passive: true });
     e();
   }
 
-  /* Product-card reveal-on-scroll — add .revealed as each card enters, then
+  /* Product-card reveal-on-scroll - add .revealed as each card enters, then
      clear its stagger delay. Verbatim from legacy. */
   const p = document.querySelectorAll('.product-box-3, .product-card-reveal');
   if (p.length) {
@@ -3272,7 +2992,7 @@ const seo = {
     p.forEach((t) => e.observe(t));
   }
 
-  /* FAQ — single-open <details> accordion. Verbatim from legacy. */
+  /* FAQ - single-open <details> accordion. Verbatim from legacy. */
   const E = document.getElementById('faq-accord');
   E?.querySelectorAll('details').forEach((el) => {
     el.addEventListener('toggle', () => {

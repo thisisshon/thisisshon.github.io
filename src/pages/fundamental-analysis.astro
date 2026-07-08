@@ -1,36 +1,36 @@
 ---
 /**
- * Fundamental Analysis — /fundamental-analysis/
+ * Fundamental Analysis - /fundamental-analysis/
  * Research-Centre content page on Shriram's Fundamental Research offering.
  * Root route → BaseLayout / component imports at ../ depth. Rendered entirely
  * in the shared design system: the standardised olive hero (rule 7), shared
  * section / card / .approaches / feature-grid / FAQ / CTA components, with
  * page-local styles ONLY for the icon feature grid. Every value binds to a
  * token (rule 9); the grids are data-driven so the same templates scale to
- * thousands of instances — the scale North Star.
+ * thousands of instances - the scale North Star.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// "Our Research Process" — four pillars of a fundamental deep-dive. Each `icon`
+// "Our Research Process" - four pillars of a fundamental deep-dive. Each `icon`
 // maps to an inline <svg> in the ICON defs below (rule 4: real SVGs only).
 const PROCESS = [
-  { icon: 'ledger', title: 'Company Financials', body: 'We read the numbers line by line — revenue quality, margin trend, cash flow, debt and return ratios across multiple quarters, not just the latest print.' },
-  { icon: 'scale', title: 'Valuation', body: 'DCF, relative multiples and scenario models to estimate a stock’s intrinsic worth — so you know whether the price already reflects the story.' },
-  { icon: 'users', title: 'Management Quality', body: 'Capital allocation record, promoter holding, governance and what management actually said on the concall — read against what the business delivered.' },
+  { icon: 'ledger', title: 'Company Financials', body: 'We read the numbers line by line - revenue quality, margin trend, cash flow, debt and return ratios across multiple quarters, not just the latest print.' },
+  { icon: 'scale', title: 'Valuation', body: 'DCF, relative multiples and scenario models to estimate a stock’s intrinsic worth - so you know whether the price already reflects the story.' },
+  { icon: 'users', title: 'Management Quality', body: 'Capital allocation record, promoter holding, governance and what management actually said on the concall - read against what the business delivered.' },
   { icon: 'globe', title: 'Industry Outlook', body: 'Where the sector sits in its cycle, the competitive moat, regulation and the structural tailwinds or headwinds shaping the next few years.' },
 ];
 
-// "What You Get" — the deliverables of the coverage. Same feature-card template.
+// "What You Get" - the deliverables of the coverage. Same feature-card template.
 const DELIVER = [
-  { icon: 'book', title: 'Full research reports', body: 'Initiating-coverage notes and quarterly earnings reviews — with the thesis, the numbers and the risks laid out in a downloadable PDF.' },
-  { icon: 'target', title: 'Target prices & ratings', body: 'A clear stance — Buy, Accumulate, Hold or Reduce — with a 12-month target price and the level that would make us change our mind.' },
+  { icon: 'book', title: 'Full research reports', body: 'Initiating-coverage notes and quarterly earnings reviews - with the thesis, the numbers and the risks laid out in a downloadable PDF.' },
+  { icon: 'target', title: 'Target prices & ratings', body: 'A clear stance - Buy, Accumulate, Hold or Reduce - with a 12-month target price and the level that would make us change our mind.' },
   { icon: 'grid', title: 'Coverage universe', body: 'A followed list of companies tracked across quarters and sectors, so the view stays current as the business evolves.' },
 ];
 
-// "Who It's For" — the checklist (verbatim tone from the reference pages).
+// "Who It's For" - the checklist (verbatim tone from the reference pages).
 const AUDIENCE = [
   'Long-term investors who want to own quality businesses, not just tickers',
   'SIP and portfolio investors sizing positions around fair value',
@@ -39,31 +39,31 @@ const AUDIENCE = [
   'Clients building conviction to hold through the noise of a full cycle',
 ];
 
-// Frequently Asked Questions — first item open (site convention).
+// Frequently Asked Questions - first item open (site convention).
 const FAQS = [
   {
     q: 'What is fundamental analysis?',
-    a: 'Fundamental analysis is the study of a company’s intrinsic worth — its financial statements, valuation, management quality and industry position — to decide whether a stock is worth owning and at what price. It answers what to buy and what it is really worth, rather than when to trade it.',
+    a: 'Fundamental analysis is the study of a company’s intrinsic worth - its financial statements, valuation, management quality and industry position - to decide whether a stock is worth owning and at what price. It answers what to buy and what it is really worth, rather than when to trade it.',
   },
   {
     q: 'How is fundamental research different from technical research?',
-    a: 'Fundamental research reads the business — earnings, cash flow, valuation and the sector cycle — to judge long-term value. Technical research reads the chart — price, volume and levels — to time entries and exits. They are complementary: fundamentals tell you what to own, technicals help you decide when.',
+    a: 'Fundamental research reads the business - earnings, cash flow, valuation and the sector cycle - to judge long-term value. Technical research reads the chart - price, volume and levels - to time entries and exits. They are complementary: fundamentals tell you what to own, technicals help you decide when.',
   },
   {
     q: 'What do the fundamental reports contain?',
-    a: 'Each report carries a clear rating and 12-month target price, a summary of the investment thesis, the key financials and valuation, management commentary from the latest concall, and the risks that would change the view — all in a downloadable PDF.',
+    a: 'Each report carries a clear rating and 12-month target price, a summary of the investment thesis, the key financials and valuation, management commentary from the latest concall, and the risks that would change the view - all in a downloadable PDF.',
   },
   {
     q: 'Do I need to login to read the reports?',
-    a: 'Report titles and short overviews are open to everyone. Full reports — with detailed models, target prices, PDFs and data tables — unlock when you log in to the Antara app or open a Shriram demat account.',
+    a: 'Report titles and short overviews are open to everyone. Full reports - with detailed models, target prices, PDFs and data tables - unlock when you log in to the Antara app or open a Shriram demat account.',
   },
   {
     q: 'How do I open a demat account to access research?',
-    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account — once verified, every fundamental report, valuation model and coverage note is unlocked in full.',
+    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account - once verified, every fundamental report, valuation model and coverage note is unlocked in full.',
   },
   {
     q: 'Is the research free for clients?',
-    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library — every fundamental report, earnings review and coverage note — at no extra charge.',
+    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library - every fundamental report, earnings review and coverage note - at no extra charge.',
   },
 ];
 
@@ -77,7 +77,7 @@ const seo = {
 ---
 
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
-  <!-- Inline icon set — every glyph is a real <svg> (rule 4), sized 24. -->
+  <!-- Inline icon set - every glyph is a real <svg> (rule 4), sized 24. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
       <g id="fi-ledger"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
@@ -95,7 +95,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Research Centre', href: '/research-hub/' }, { name: 'Fundamental Research' }]} />
     <div class="hero-inner" data-enter>
       <h1>Fundamental <span class="g">Research</span></h1>
-      <p class="lead">Own the business, not just the ticker. We read the financials, value the company and judge the management — so you know what a stock is really worth before you buy.</p>
+      <p class="lead">Own the business, not just the ticker. We read the financials, value the company and judge the management - so you know what a stock is really worth before you buy.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -111,7 +111,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Fundamental Analysis</h2>
-      <p class="sec-lead">Fundamental analysis reads the business, not the chart — a company’s financial statements, its valuation, the quality of its management and the industry it competes in. The goal is to estimate a stock’s intrinsic worth: what the business is really worth, whether today’s price already reflects it, and whether it deserves a place in your portfolio for the long term. Where technical research answers when to trade, fundamental research answers what to own and at what price.</p>
+      <p class="sec-lead">Fundamental analysis reads the business, not the chart - a company’s financial statements, its valuation, the quality of its management and the industry it competes in. The goal is to estimate a stock’s intrinsic worth: what the business is really worth, whether today’s price already reflects it, and whether it deserves a place in your portfolio for the long term. Where technical research answers when to trade, fundamental research answers what to own and at what price.</p>
     </div>
   </section>
 
@@ -119,7 +119,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-process" data-section="process" style="gap:56px">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Our Research Process</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Every coverage note is built the same way — four disciplines, each grounded in primary data and read against what the business actually delivered.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every coverage note is built the same way - four disciplines, each grounded in primary data and read against what the business actually delivered.</p>
     </div>
     <div class="feat-grid" data-reveal-row>
       {PROCESS.map((c) => (
@@ -136,7 +136,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-deliver" data-section="deliver" style="gap:56px">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What You Get</h2>
-      <p class="sec-lead">Research you can act on — a clear rating and target price, the full thesis in a downloadable report, and a coverage universe that stays current across quarters.</p>
+      <p class="sec-lead">Research you can act on - a clear rating and target price, the full thesis in a downloadable report, and a coverage universe that stays current across quarters.</p>
     </div>
     <div class="feat-grid three" data-reveal-row>
       {DELIVER.map((c) => (
@@ -154,7 +154,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-audience" data-section="audience" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Who It’s For</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Fundamental research is for investors who buy businesses to hold — and want the numbers, the valuation and a second opinion before they commit capital.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Fundamental research is for investors who buy businesses to hold - and want the numbers, the valuation and a second opinion before they commit capital.</p>
     </div>
     <div class="card" style="display:flex;flex-direction:column">
       <div class="check-list">
@@ -207,7 +207,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== Fundamental Analysis — page-local components only. Every value binds
+  /* ===== Fundamental Analysis - page-local components only. Every value binds
      to a design token; the only genuinely-new block is the icon feature grid
      (reused by the process + deliverables sections). Hero / section / card /
      check-list / FAQ / CTA are all shared components from global.css. ===== */
@@ -217,7 +217,7 @@ const seo = {
   }
 
   /* The FAQ sits on --sec-light, so the block needs a defined edge: stroke the
-     accordion AND the helper side card together (background-dependent rule —
+     accordion AND the helper side card together (background-dependent rule -
      same as research/technical). */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
   .faq-side { border: 1px solid var(--color-border-card); }
@@ -234,7 +234,7 @@ const seo = {
   @media (min-width: 1024px) and (hover: hover) {
     .fcard:hover { border-color: var(--color-sage-450); }
   }
-  /* icon tile — 48px container (8px grid), warm gold tint + olive brand icon */
+  /* icon tile - 48px container (8px grid), warm gold tint + olive brand icon */
   .fic { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--color-gold-100); color: var(--color-text-heading-dark); display: inline-flex; align-items: center; justify-content: center; }
   .fic svg { width: 24px; height: 24px; display: block; }
   .fcard h3 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }

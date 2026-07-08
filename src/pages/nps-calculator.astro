@@ -1,6 +1,6 @@
 ---
 /**
- * NPS Calculator — /nps-calculator/
+ * NPS Calculator - /nps-calculator/
  * Projects the National Pension System corpus at retirement (age 60), the
  * lump-sum you can withdraw and the monthly pension from the annuitised
  * portion. Built on the shared calculator UI in global.css; page carries
@@ -17,7 +17,7 @@ const MORE = otherCalculators('nps');
 const FAQS = [
   {
     q: 'How does this NPS calculator project my corpus?',
-    a: 'It treats your monthly NPS contribution like a SIP that runs until you turn 60. Each contribution compounds at your expected annual rate of return, and the calculator sums them to project the total corpus at retirement, splitting it into the amount you invested and the returns earned.',
+    a: 'It treats your monthly NPS contribution like a SIP that runs until your chosen retirement age. Each contribution compounds at your expected annual rate of return, and the calculator sums them to project the total corpus at retirement, then splits it into a tax-free lump sum and the annuitised portion that funds your pension.',
   },
   {
     q: 'Why must part of the corpus be used for an annuity?',
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: 'What annuity rate does the monthly pension assume?',
-    a: 'The pension estimate assumes the annuitised amount earns roughly 6% per annum, paid monthly — a typical assumption for illustration. Your actual pension depends on the annuity plan and rates available from the insurer at the time you retire, so treat this figure as an indicative guide.',
+    a: 'The pension estimate assumes the annuitised amount earns roughly 6% per annum, paid monthly - a typical assumption for illustration. Your actual pension depends on the annuity plan and rates available from the insurer at the time you retire, so treat this figure as an indicative guide.',
   },
   {
     q: 'What rate of return should I expect from NPS?',
@@ -59,7 +59,7 @@ const seo = {
   <!-- ===== NPS Calculator ===== -->
   <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">NPS Calculator</h2>
-    <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly. Contributions are assumed to run until you turn 60.</p>
+    <p class="calc-hint">Drag the sliders or type your own numbers - results update instantly.</p>
 
     <div class="calc-row">
       <!-- inputs -->
@@ -67,38 +67,56 @@ const seo = {
         <div class="fields">
           <div class="field">
             <div class="field-top">
-              <label for="amt">Monthly investment</label>
-              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="5,000" aria-label="Monthly investment in rupees" /></div>
-            </div>
-            <input class="slider" id="amtR" type="range" min="500" max="150000" step="500" value="5000" aria-label="Monthly investment" />
-            <div class="slider-scale"><span>₹500</span><span>₹1,50,000</span></div>
-          </div>
-
-          <div class="field">
-            <div class="field-top">
-              <label for="age">Current age</label>
-              <div class="field-val"><input id="age" type="text" inputmode="numeric" value="30" aria-label="Current age in years" /><span class="sfx">Yr</span></div>
+              <label for="age">Current Age</label>
+              <div class="field-val"><input id="age" type="text" inputmode="numeric" value="30" aria-label="Current age in years" /><span class="sfx">yrs</span></div>
             </div>
             <input class="slider" id="ageR" type="range" min="18" max="59" step="1" value="30" aria-label="Current age in years" />
-            <div class="slider-scale"><span>18 Yr</span><span>59 Yr</span></div>
+            <div class="slider-scale"><span>18 yrs</span><span>59 yrs</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="rate">Expected rate of return</label>
+              <label for="rage">Retirement Age</label>
+              <div class="field-val"><input id="rage" type="text" inputmode="numeric" value="60" aria-label="Retirement age in years" /><span class="sfx">yrs</span></div>
+            </div>
+            <input class="slider" id="rageR" type="range" min="40" max="70" step="1" value="60" aria-label="Retirement age in years" />
+            <div class="slider-scale"><span>40 yrs</span><span>70 yrs</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="amt">Monthly Contribution</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="5,000" aria-label="Monthly contribution in rupees" /></div>
+            </div>
+            <input class="slider" id="amtR" type="range" min="500" max="100000" step="500" value="5000" aria-label="Monthly contribution" />
+            <div class="slider-scale"><span>₹500</span><span>₹1,00,000</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="rate">Expected Return (% p.a.)</label>
               <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="10" aria-label="Expected annual rate of return in percent" /><span class="sfx">%</span></div>
             </div>
-            <input class="slider" id="rateR" type="range" min="1" max="15" step="0.5" value="10" aria-label="Expected annual rate of return in percent" />
-            <div class="slider-scale"><span>1%</span><span>15%</span></div>
+            <input class="slider" id="rateR" type="range" min="4" max="15" step="0.5" value="10" aria-label="Expected annual rate of return in percent" />
+            <div class="slider-scale"><span>4%</span><span>15%</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="ann">Annuity purchased</label>
+              <label for="ann">Annuity Purchase (%)</label>
               <div class="field-val"><input id="ann" type="text" inputmode="numeric" value="40" aria-label="Share of corpus used to buy an annuity, in percent" /><span class="sfx">%</span></div>
             </div>
             <input class="slider" id="annR" type="range" min="40" max="100" step="5" value="40" aria-label="Share of corpus used to buy an annuity" />
             <div class="slider-scale"><span>40%</span><span>100%</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="arate">Annuity Rate (% p.a.)</label>
+              <div class="field-val"><input id="arate" type="text" inputmode="decimal" value="6" aria-label="Expected annuity rate in percent per year" /><span class="sfx">%</span></div>
+            </div>
+            <input class="slider" id="arateR" type="range" min="4" max="10" step="0.5" value="6" aria-label="Expected annuity rate" />
+            <div class="slider-scale"><span>4%</span><span>10%</span></div>
           </div>
         </div>
       </div>
@@ -108,47 +126,33 @@ const seo = {
         <div class="bar-wrap">
           <div class="bar-top">
             <div class="bar-head">
-              <span class="bar-cap">Total Corpus At 60</span>
+              <span class="bar-cap">Total Corpus</span>
               <span class="bar-tot" id="d-tot">₹1,13,96,627</span>
             </div>
-            <div class="stack-bar" role="img" aria-label="Corpus split between invested amount and interest earned">
-              <div class="seg seg-inv" id="seg-inv" style="width:16%"></div>
-              <div class="seg seg-ret" id="seg-ret" style="width:84%"></div>
+            <div class="stack-bar" role="img" aria-label="Corpus split between tax-free lump sum and the annuitised portion">
+              <div class="seg seg-inv" id="seg-inv" style="width:60%"></div>
+              <div class="seg seg-ret" id="seg-ret" style="width:40%"></div>
             </div>
           </div>
 
           <div class="res-cards" data-reveal-row>
             <div class="res-card">
-              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Invested Amount</div>
-              <div class="res-val" id="r-inv">₹18,00,000</div>
-            </div>
-            <div class="res-card">
-              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Interest Earned</div>
-              <div class="res-val" id="r-ret">₹95,96,627</div>
-            </div>
-          </div>
-
-          <div class="bar-div" role="presentation"></div>
-
-          <!-- annuitisation outcomes -->
-          <div class="res-cards" data-reveal-row>
-            <div class="res-card">
-              <div class="res-top">Lump-sum Withdrawal</div>
+              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Lump Sum (Tax-Free)</div>
               <div class="res-val" id="r-lump">₹68,37,976</div>
             </div>
             <div class="res-card">
-              <div class="res-top">Expected Monthly Pension</div>
-              <div class="res-val" id="r-pen">₹22,793</div>
+              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Monthly Pension</div>
+              <div class="res-val" id="r-pen">₹22,793/mo</div>
             </div>
           </div>
 
           <div class="bar-div" role="presentation"></div>
 
-          <p class="bar-note">Note: Assumes contributions until age 60 and that the annuitised share earns about 6% p.a. Figures are illustrative; NPS returns are market-linked and the actual pension depends on annuity rates at retirement.</p>
+          <p class="bar-note">A two-stage estimate: the corpus accumulates monthly, then the annuitised portion converts to pension. The lump sum (up to 60%) is tax-free; pension income is taxable.</p>
         </div>
 
         <div class="ready-bar">
-          <p class="ready-text">Start a <b id="cta-amt">₹5,000/month NPS</b> and secure your retirement</p>
+          <p class="ready-text">Put your plan into action - <b>open a free Demat account</b></p>
           <a class="ready-btn" href="/open-demat-account/">Open Demat Account</a>
         </div>
       </div>
@@ -160,7 +164,7 @@ const seo = {
   <!-- ===== What Is An NPS Calculator ===== -->
   <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
     <h2 class="sec-title">What Is An NPS Calculator?</h2>
-    <p class="sec-lead">An NPS calculator is a free online tool that projects the retirement corpus you can build through the National Pension System. By entering your monthly contribution, your current age, an expected annual rate of return and the share of the corpus you plan to annuitise, it estimates the total corpus at 60, the lump sum you can withdraw and the monthly pension your annuity could provide. It turns decades of contributions into a clear, single-screen picture of your retirement.</p>
+    <p class="sec-lead">An NPS calculator is a free online tool that projects the retirement corpus you can build through the National Pension System. By entering your current and retirement age, your monthly contribution, an expected annual rate of return, the share of the corpus you plan to annuitise and the annuity rate, it estimates the total corpus at retirement, the lump sum you can withdraw and the monthly pension your annuity could provide. It turns decades of contributions into a clear, single-screen picture of your retirement.</p>
   </section>
 
   <!-- ===== How An NPS Calculator Helps You ===== -->
@@ -168,17 +172,17 @@ const seo = {
     <h2 class="sec-title">How An NPS Calculator Helps You</h2>
     <p class="sec-lead">Retirement is decades away and easy to under-plan. The calculator makes the long horizon tangible:</p>
     <ul class="bullets">
-      <li>See the corpus your monthly contribution could grow into by the time you turn 60.</li>
+      <li>See the corpus your monthly contribution could grow into by the time you retire.</li>
       <li>Understand how much you can take as a lump sum versus what funds your pension.</li>
       <li>Estimate your monthly pension so you can judge whether it meets your retirement needs.</li>
-      <li>Test how starting earlier or contributing more changes the outcome — the earlier the bigger.</li>
+      <li>Test how starting earlier or contributing more changes the outcome - the earlier the bigger.</li>
     </ul>
   </section>
 
   <!-- ===== How Does An NPS Calculator Work ===== -->
   <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
     <h2 class="sec-title">How Does An NPS Calculator Work?</h2>
-    <p class="sec-lead">The calculator first works out how many months remain until you turn 60 and compounds each monthly contribution at your expected rate of return over that period — the same future-value logic as a SIP — to arrive at your corpus. It then subtracts your total contributions to show the returns earned. Finally it applies your chosen annuitisation share: the annuitised portion is used to estimate a lifelong monthly pension (assuming roughly a 6% annuity rate), and the remainder is your tax-free lump-sum withdrawal.</p>
+    <p class="sec-lead">The calculator first works out how many months remain until your retirement age and compounds each monthly contribution at your expected rate of return over that period - the same future-value logic as a SIP - to arrive at your corpus. It then applies your chosen annuitisation share: the annuitised portion is converted into a lifelong monthly pension at your chosen annuity rate, and the remainder is your tax-free lump-sum withdrawal.</p>
   </section>
 
   <!-- ===== Advantages Of An NPS Calculator ===== -->
@@ -231,32 +235,57 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* NPS calculator — calculator UI is shared in global.css. Page-local:
+  /* NPS calculator - calculator UI is shared in global.css. Page-local:
      General Questions sits on --sec-light, so the accordion + helper side card
      need a defined edge. */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
   .faq-side { border: 1px solid var(--color-border-card); }
+
+  /* NPS has six inputs - lay the sliders out two-across (a 2-column grid) from
+     tablet up; phones keep the single-column stack. NPS-only (page-scoped).
+     The grid grows to fill the input card and distributes its three rows
+     (align-content) so it spans the same vertical extent as the results column
+     to its right. Wider 64px column gutter between the two slider columns. */
+  @media (min-width: 640px) {
+    .fields {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 64px;
+      row-gap: 32px;
+      align-content: space-between;
+    }
+  }
 </style>
 
 <script>
-  // NPS calculator — SIP-style corpus to age 60, then annuitisation split.
+  // NPS calculator - SIP-style corpus to retirement, then annuitisation split.
+  import { createFlow } from '../scripts/number-flow';
+
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const RETIRE_AGE = 60;
-  const ANNUITY_RATE = 0.06; // assumed annuity return, p.a.
 
-  const amt = document.getElementById('amt') as HTMLInputElement;
-  const amtR = document.getElementById('amtR') as HTMLInputElement;
   const age = document.getElementById('age') as HTMLInputElement;
   const ageR = document.getElementById('ageR') as HTMLInputElement;
+  const rage = document.getElementById('rage') as HTMLInputElement;
+  const rageR = document.getElementById('rageR') as HTMLInputElement;
+  const amt = document.getElementById('amt') as HTMLInputElement;
+  const amtR = document.getElementById('amtR') as HTMLInputElement;
   const rate = document.getElementById('rate') as HTMLInputElement;
   const rateR = document.getElementById('rateR') as HTMLInputElement;
   const ann = document.getElementById('ann') as HTMLInputElement;
   const annR = document.getElementById('annR') as HTMLInputElement;
+  const arate = document.getElementById('arate') as HTMLInputElement;
+  const arateR = document.getElementById('arateR') as HTMLInputElement;
 
   const segInv = document.getElementById('seg-inv') as HTMLElement;
   const segRet = document.getElementById('seg-ret') as HTMLElement;
-  let last = { inv: 0, ret: 0, tot: 0, lump: 0, pen: 0 };
+
+  // odometer reels for the three result values
+  const flowTot = createFlow(document.getElementById('d-tot') as HTMLElement);
+  const flowLump = createFlow(document.getElementById('r-lump') as HTMLElement);
+  const flowPen = createFlow(document.getElementById('r-pen') as HTMLElement);
+  let started = false; // first paint snaps; every change after that rolls
 
   function digits(s: string) {
     return String(s).replace(/[^0-9.]/g, '');
@@ -269,72 +298,90 @@ const seo = {
     sl.style.background =
       'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
   }
-  function countTo(el: HTMLElement, from: number, to: number, fn: (n: number) => string) {
-    if (reduce || from === to) {
-      el.textContent = fn(to);
+
+  /* Re-targeting count animation. Reads the start value from what's CURRENTLY
+     shown and cancels any in-flight tween on the same element, so rapid slider
+     moves roll smoothly toward a moving target instead of restarting from a stale
+     value. `read`/`write` adapt it to either a result <span> (textContent) or an
+     <input> (value). Snaps instantly under reduced-motion or for sub-unit deltas. */
+  const DUR = 300;
+  function animateCount(
+    el: HTMLElement & { _raf?: number | null },
+    to: number,
+    read: (el: HTMLElement) => number,
+    write: (el: HTMLElement, v: number) => void
+  ) {
+    const from = read(el);
+    if (el._raf) {
+      cancelAnimationFrame(el._raf);
+      el._raf = null;
+    }
+    if (reduce || Math.abs(to - from) < 1) {
+      write(el, to);
       return;
     }
     let t0: number | null = null;
-    const d = 350;
     function tick(ts: number) {
       if (t0 === null) t0 = ts;
-      const t = Math.min(1, (ts - t0) / d);
+      const t = Math.min(1, (ts - t0) / DUR);
       const e = 1 - Math.pow(1 - t, 3);
-      el.textContent = fn(from + (to - from) * e);
-      if (t < 1) requestAnimationFrame(tick);
+      write(el, from + (to - from) * e);
+      el._raf = t < 1 ? requestAnimationFrame(tick) : null;
     }
-    requestAnimationFrame(tick);
+    el._raf = requestAnimationFrame(tick);
+  }
+  // input value driven by its slider: tween the number the field displays
+  function countInput(el: HTMLInputElement, to: number, fn: (n: number) => string) {
+    animateCount(el, to, (e) => parseFloat(digits((e as HTMLInputElement).value)) || 0, (e, v) => {
+      (e as HTMLInputElement).value = fn(v);
+    });
   }
 
-  function render(animate: boolean) {
-    const monthly = clamp(parseFloat(digits(amt.value)) || 0, +amtR.min, +amtR.max);
-    const curAge = clamp(parseFloat(digits(age.value)) || 0, +ageR.min, +ageR.max);
-    const ratePct = clamp(parseFloat(digits(rate.value)) || 0, +rateR.min, +rateR.max);
-    const annPct = clamp(parseFloat(digits(ann.value)) || 0, +annR.min, +annR.max);
+  // Computation reads the RANGE sliders (always the exact current value), never
+  // the text fields - those may be mid count-animation and would corrupt the maths.
+  function render() {
+    const curAge = clamp(+ageR.value, +ageR.min, +ageR.max);
+    const retAge = clamp(+rageR.value, +rageR.min, +rageR.max);
+    const monthly = clamp(+amtR.value, +amtR.min, +amtR.max);
+    const ratePct = clamp(+rateR.value, +rateR.min, +rateR.max);
+    const annPct = clamp(+annR.value, +annR.min, +annR.max);
+    const annRatePct = clamp(+arateR.value, +arateR.min, +arateR.max);
 
-    const months = Math.max(0, (RETIRE_AGE - curAge) * 12);
+    const months = Math.max(0, Math.round((retAge - curAge) * 12));
     const i = ratePct / 100 / 12;
     // future value of a monthly contribution stream (annuity-due)
     const corpus = i > 0 ? monthly * ((Math.pow(1 + i, months) - 1) / i) * (1 + i) : monthly * months;
-    const invested = monthly * months;
-    const interest = corpus - invested;
     const annuityValue = corpus * (annPct / 100);
     const lump = corpus - annuityValue;
-    const pension = (annuityValue * ANNUITY_RATE) / 12;
+    const pension = (annuityValue * (annRatePct / 100)) / 12;
     const rupee = (v: number) => '₹' + fmt.format(Math.round(v));
+    const perMonth = (v: number) => '₹' + fmt.format(Math.round(v)) + '/mo';
 
-    if (animate) {
-      countTo(document.getElementById('r-inv') as HTMLElement, last.inv, invested, rupee);
-      countTo(document.getElementById('r-ret') as HTMLElement, last.ret, interest, rupee);
-      countTo(document.getElementById('d-tot') as HTMLElement, last.tot, corpus, rupee);
-      countTo(document.getElementById('r-lump') as HTMLElement, last.lump, lump, rupee);
-      countTo(document.getElementById('r-pen') as HTMLElement, last.pen, pension, rupee);
-    } else {
-      (document.getElementById('r-inv') as HTMLElement).textContent = rupee(invested);
-      (document.getElementById('r-ret') as HTMLElement).textContent = rupee(interest);
-      (document.getElementById('d-tot') as HTMLElement).textContent = rupee(corpus);
-      (document.getElementById('r-lump') as HTMLElement).textContent = rupee(lump);
-      (document.getElementById('r-pen') as HTMLElement).textContent = rupee(pension);
-    }
-    last = { inv: invested, ret: interest, tot: corpus, lump: lump, pen: pension };
+    const roll = started && !reduce;
+    flowTot(rupee(corpus), roll);
+    flowLump(rupee(lump), roll);
+    flowPen(perMonth(pension), roll);
+    started = true;
 
-    const invPct = corpus > 0 ? (invested / corpus) * 100 : 0;
-    segInv.style.width = invPct + '%';
-    segRet.style.width = 100 - invPct + '%';
+    // dark = tax-free lump sum, gold = annuitised portion
+    const lumpPct = corpus > 0 ? (lump / corpus) * 100 : 0;
+    segInv.style.width = lumpPct + '%';
+    segRet.style.width = 100 - lumpPct + '%';
 
-    (document.getElementById('cta-amt') as HTMLElement).textContent = '₹' + fmt.format(monthly) + '/month NPS';
     (document.getElementById('sr-summary') as HTMLElement).textContent =
-      'By age 60 your corpus is ' + rupee(corpus) + ', giving a ' + rupee(lump) + ' lump sum and about ' + rupee(pension) + ' monthly pension.';
+      'By age ' + retAge + ' your corpus is ' + rupee(corpus) + ', giving a ' + rupee(lump) + ' tax-free lump sum and about ' + perMonth(pension) + ' pension.';
 
-    updateUrl(monthly, curAge, ratePct, annPct);
-    amtR.setAttribute('aria-valuetext', '₹' + fmt.format(monthly));
+    updateUrl(curAge, retAge, monthly, ratePct, annPct, annRatePct);
     ageR.setAttribute('aria-valuetext', curAge + ' years');
+    rageR.setAttribute('aria-valuetext', retAge + ' years');
+    amtR.setAttribute('aria-valuetext', '₹' + fmt.format(monthly));
     rateR.setAttribute('aria-valuetext', ratePct + ' percent');
     annR.setAttribute('aria-valuetext', annPct + ' percent');
+    arateR.setAttribute('aria-valuetext', annRatePct + ' percent');
   }
 
-  function updateUrl(monthly: number, curAge: number, ratePct: number, annPct: number) {
-    const q = '?amt=' + monthly + '&age=' + curAge + '&rate=' + ratePct + '&ann=' + annPct;
+  function updateUrl(curAge: number, retAge: number, monthly: number, ratePct: number, annPct: number, annRatePct: number) {
+    const q = '?age=' + curAge + '&rage=' + retAge + '&amt=' + monthly + '&rate=' + ratePct + '&ann=' + annPct + '&arate=' + annRatePct;
     try {
       history.replaceState(null, '', q);
     } catch (e) {
@@ -343,30 +390,49 @@ const seo = {
   }
 
   function pairNumberAndSlider(numEl: HTMLInputElement, slEl: HTMLInputElement, group: boolean) {
+    // decimals to show for this field, inferred from the slider step (e.g. 0.5 → 1)
+    const dec = ((slEl.step || '').split('.')[1] || '').length;
+    // money → grouped integer; otherwise round to the step's precision but drop a
+    // trailing ".0" so whole numbers read "14", not "14.0".
+    const fmtField = (v: number) =>
+      group ? fmt.format(Math.round(v)) : String(+v.toFixed(dec));
+
+    // Dragging the slider drives the field - count-animate the field toward the
+    // slider value, and let render() count-animate the results. Maths reads the
+    // slider, so the trailing field display never affects the computed numbers.
     slEl.addEventListener('input', function () {
-      numEl.value = group ? fmt.format(+slEl.value) : slEl.value;
+      countInput(numEl, +slEl.value, fmtField);
       fillSlider(slEl);
-      render(false);
+      render();
     });
+    // Typing sets the field verbatim (no self-animation) and drives the slider.
     numEl.addEventListener('input', function () {
       const raw = parseFloat(digits(numEl.value)) || 0;
       if (group) numEl.value = raw ? fmt.format(raw) : '';
       slEl.value = String(clamp(raw, +slEl.min, +slEl.max));
       fillSlider(slEl);
-      render(false);
+      render();
     });
+    // On blur, snap the field to the clamped, formatted value.
     numEl.addEventListener('change', function () {
       const v = clamp(parseFloat(digits(numEl.value)) || +slEl.min, +slEl.min, +slEl.max);
-      numEl.value = group ? fmt.format(v) : String(v);
+      const nf = numEl as HTMLInputElement & { _raf?: number | null };
+      if (nf._raf) {
+        cancelAnimationFrame(nf._raf);
+        nf._raf = null;
+      }
+      numEl.value = fmtField(v);
       slEl.value = String(v);
       fillSlider(slEl);
-      render(true);
+      render();
     });
   }
-  pairNumberAndSlider(amt, amtR, true);
   pairNumberAndSlider(age, ageR, false);
+  pairNumberAndSlider(rage, rageR, false);
+  pairNumberAndSlider(amt, amtR, true);
   pairNumberAndSlider(rate, rateR, false);
   pairNumberAndSlider(ann, annR, false);
+  pairNumberAndSlider(arate, arateR, false);
 
   (function initFromUrl() {
     const p = new URLSearchParams(location.search);
@@ -376,12 +442,14 @@ const seo = {
       sl.value = String(v);
       el.value = group ? fmt.format(v) : String(v);
     }
-    setNum(amt, amtR, 'amt', true);
     setNum(age, ageR, 'age', false);
+    setNum(rage, rageR, 'rage', false);
+    setNum(amt, amtR, 'amt', true);
     setNum(rate, rateR, 'rate', false);
     setNum(ann, annR, 'ann', false);
+    setNum(arate, arateR, 'arate', false);
   })();
 
-  [amtR, ageR, rateR, annR].forEach(fillSlider);
-  render(true);
+  [ageR, rageR, amtR, rateR, annR, arateR].forEach(fillSlider);
+  render();
 </script>

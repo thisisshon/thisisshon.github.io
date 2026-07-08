@@ -1,6 +1,6 @@
 ---
 /**
- * SWP Calculator — /swp-calculator/
+ * SWP Calculator - /swp-calculator/
  * Systematic Withdrawal Plan: simulates a lumpsum that grows while you draw a
  * fixed amount each month, month by month (so depletion is handled exactly).
  * Built on the shared calculator UI in global.css; page carries content + maths.
@@ -16,7 +16,7 @@ const MORE = otherCalculators('swp');
 const FAQS = [
   {
     q: 'What is a Systematic Withdrawal Plan (SWP)?',
-    a: 'An SWP lets you withdraw a fixed amount from a lumpsum investment — usually a mutual fund — at regular intervals, while the balance stays invested and continues to grow. It is the mirror image of a SIP: instead of building a corpus by investing regularly, you draw a steady income from a corpus you already have.',
+    a: 'An SWP lets you withdraw a fixed amount from a lumpsum investment - usually a mutual fund - at regular intervals, while the balance stays invested and continues to grow. It is the mirror image of a SIP: instead of building a corpus by investing regularly, you draw a steady income from a corpus you already have.',
   },
   {
     q: 'How does this SWP calculator work?',
@@ -24,15 +24,15 @@ const FAQS = [
   },
   {
     q: 'What happens if my withdrawals are larger than my returns?',
-    a: 'If you withdraw more than the corpus earns, you are drawing down principal and the balance shrinks over time — it can even reach zero before the period ends, at which point withdrawals stop. The calculator caps the final withdrawal so you never take out more than is available, giving a realistic picture of how long your money lasts.',
+    a: 'If you withdraw more than the corpus earns, you are drawing down principal and the balance shrinks over time - it can even reach zero before the period ends, at which point withdrawals stop. The calculator caps the final withdrawal so you never take out more than is available, giving a realistic picture of how long your money lasts.',
   },
   {
     q: 'Is SWP income taxed?',
-    a: 'Each SWP withdrawal from a mutual fund is treated as a partial redemption, so the gains portion is subject to capital-gains tax based on the fund type and holding period. Because only the gain within each withdrawal is taxed — not the whole amount — an SWP can be more tax-efficient than a fully taxable interest payout.',
+    a: 'Each SWP withdrawal from a mutual fund is treated as a partial redemption, so the gains portion is subject to capital-gains tax based on the fund type and holding period. Because only the gain within each withdrawal is taxed - not the whole amount - an SWP can be more tax-efficient than a fully taxable interest payout.',
   },
   {
     q: 'Who should consider an SWP?',
-    a: 'SWPs suit retirees and anyone wanting a predictable, self-scheduled income stream from an existing corpus while keeping the rest invested for growth. Choosing a sustainable withdrawal rate — one your expected returns can broadly support — is key to making the corpus last.',
+    a: 'SWPs suit retirees and anyone wanting a predictable, self-scheduled income stream from an existing corpus while keeping the rest invested for growth. Choosing a sustainable withdrawal rate - one your expected returns can broadly support - is key to making the corpus last.',
   },
 ];
 
@@ -51,14 +51,14 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'SWP Calculator' }]} />
     <div class="hero-inner" data-enter>
       <h1>Plan A Steady Income With The <span class="g">SWP Calculator</span></h1>
-      <p class="lead">See how long your corpus lasts when you draw a fixed amount each month — while the rest stays invested and keeps growing.</p>
+      <p class="lead">See how long your corpus lasts when you draw a fixed amount each month - while the rest stays invested and keeps growing.</p>
     </div>
   </section>
 
   <!-- ===== SWP Calculator ===== -->
   <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">SWP Calculator</h2>
-    <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly.</p>
+    <p class="calc-hint">Drag the sliders or type your own numbers - results update instantly.</p>
 
     <div class="calc-row">
       <!-- inputs -->
@@ -66,38 +66,29 @@ const seo = {
         <div class="fields">
           <div class="field">
             <div class="field-top">
-              <label for="amt">Total investment</label>
-              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="10,00,000" aria-label="Total investment amount in rupees" /></div>
+              <label for="amt">Initial Corpus</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="20,00,000" aria-label="Initial corpus in rupees" /></div>
             </div>
-            <input class="slider" id="amtR" type="range" min="50000" max="50000000" step="10000" value="1000000" aria-label="Total investment amount" />
-            <div class="slider-scale"><span>₹50,000</span><span>₹5,00,00,000</span></div>
+            <input class="slider" id="amtR" type="range" min="10000" max="100000000" step="10000" value="2000000" aria-label="Initial corpus" />
+            <div class="slider-scale"><span>₹10,000</span><span>₹10,00,00,000</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="wd">Withdrawal per month</label>
-              <div class="field-val"><span class="pfx">₹</span><input id="wd" type="text" inputmode="numeric" value="10,000" aria-label="Monthly withdrawal amount in rupees" /></div>
+              <label for="wd">Monthly Withdrawal</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="wd" type="text" inputmode="numeric" value="20,000" aria-label="Monthly withdrawal amount in rupees" /></div>
             </div>
-            <input class="slider" id="wdR" type="range" min="500" max="500000" step="500" value="10000" aria-label="Monthly withdrawal amount" />
-            <div class="slider-scale"><span>₹500</span><span>₹5,00,000</span></div>
+            <input class="slider" id="wdR" type="range" min="1000" max="500000" step="500" value="20000" aria-label="Monthly withdrawal amount" />
+            <div class="slider-scale"><span>₹1,000</span><span>₹5,00,000</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="rate">Expected rate of return</label>
+              <label for="rate">Expected Return (% p.a.)</label>
               <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="8" aria-label="Expected annual rate of return in percent" /><span class="sfx">%</span></div>
             </div>
             <input class="slider" id="rateR" type="range" min="1" max="20" step="0.5" value="8" aria-label="Expected annual rate of return in percent" />
             <div class="slider-scale"><span>1%</span><span>20%</span></div>
-          </div>
-
-          <div class="field">
-            <div class="field-top">
-              <label for="dur">Time period</label>
-              <div class="field-val"><input id="dur" type="text" inputmode="numeric" value="10" aria-label="Withdrawal period in years" /><span class="sfx">Yr</span></div>
-            </div>
-            <input class="slider" id="durR" type="range" min="1" max="40" step="1" value="10" aria-label="Withdrawal period in years" />
-            <div class="slider-scale"><span>1 Yr</span><span>40 Yr</span></div>
           </div>
         </div>
       </div>
@@ -107,33 +98,33 @@ const seo = {
         <div class="bar-wrap">
           <div class="bar-top">
             <div class="bar-head">
-              <span class="bar-cap">Total Value Generated</span>
-              <span class="bar-tot" id="d-tot">₹15,90,180</span>
+              <span class="bar-cap">How Long It Lasts</span>
+              <span class="bar-tot" id="d-tot">13.8 yrs</span>
             </div>
-            <div class="stack-bar" role="img" aria-label="Total value split between final balance and total withdrawn">
-              <div class="seg seg-inv" id="seg-inv" style="width:25%"></div>
-              <div class="seg seg-ret" id="seg-ret" style="width:75%"></div>
+            <div class="stack-bar" role="img" aria-label="Share of the corpus withdrawn versus remaining">
+              <div class="seg seg-inv" id="seg-inv" style="width:100%"></div>
+              <div class="seg seg-ret" id="seg-ret" style="width:0%"></div>
             </div>
           </div>
 
           <div class="res-cards" data-reveal-row>
             <div class="res-card">
-              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Final Value</div>
-              <div class="res-val" id="r-fin">₹3,90,180</div>
+              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Total Withdrawn</div>
+              <div class="res-val" id="r-wd">₹33,20,000</div>
             </div>
             <div class="res-card">
-              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Total Withdrawal</div>
-              <div class="res-val" id="r-wd">₹12,00,000</div>
+              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Remaining Corpus</div>
+              <div class="res-val" id="r-rem">₹0</div>
             </div>
           </div>
 
           <div class="bar-div" role="presentation"></div>
 
-          <p class="bar-note" id="bar-note">Note: The balance grows at the assumed rate each month, then the withdrawal is deducted. Figures are illustrative; actual returns fluctuate and withdrawals stop if the corpus runs out.</p>
+          <p class="bar-note" id="bar-note">Each month your corpus earns a return, then your withdrawal is deducted. If monthly returns exceed your withdrawal, the corpus can last indefinitely (shown as 50+ yrs).</p>
         </div>
 
         <div class="ready-bar">
-          <p class="ready-text">Draw <b id="cta-amt">₹10,000/month</b> from your investments</p>
+          <p class="ready-text">Put your plan into action - <b>open a free Demat account</b></p>
           <a class="ready-btn" href="/open-demat-account/">Open Demat Account</a>
         </div>
       </div>
@@ -145,7 +136,7 @@ const seo = {
   <!-- ===== What Is An SWP Calculator ===== -->
   <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
     <h2 class="sec-title">What Is An SWP Calculator?</h2>
-    <p class="sec-lead">An SWP calculator is a free online tool that shows how a Systematic Withdrawal Plan plays out over time. By entering your invested corpus, the amount you want to withdraw each month, an expected annual rate of return and the period, it simulates every month — growing the balance, deducting your withdrawal — to reveal how much income you draw in total and what remains at the end. It turns an open-ended question about drawing down savings into a clear, month-by-month projection.</p>
+    <p class="sec-lead">An SWP calculator is a free online tool that shows how a Systematic Withdrawal Plan plays out over time. By entering your invested corpus, the amount you want to withdraw each month, an expected annual rate of return and the period, it simulates every month - growing the balance, deducting your withdrawal - to reveal how much income you draw in total and what remains at the end. It turns an open-ended question about drawing down savings into a clear, month-by-month projection.</p>
   </section>
 
   <!-- ===== How An SWP Calculator Helps You ===== -->
@@ -153,7 +144,7 @@ const seo = {
     <h2 class="sec-title">How An SWP Calculator Helps You</h2>
     <p class="sec-lead">Deciding how much you can safely withdraw without exhausting your corpus is one of the hardest questions in retirement planning. The calculator makes it concrete:</p>
     <ul class="bullets">
-      <li>See exactly how a monthly withdrawal draws down — or is offset by growth in — your corpus.</li>
+      <li>See exactly how a monthly withdrawal draws down - or is offset by growth in - your corpus.</li>
       <li>Test different withdrawal amounts to find a rate your expected returns can sustain.</li>
       <li>Understand how long your money lasts before the balance runs out.</li>
       <li>Balance the income you need today against the corpus you want to preserve for later.</li>
@@ -216,7 +207,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* SWP calculator — calculator UI is shared in global.css. Page-local:
+  /* SWP calculator - calculator UI is shared in global.css. Page-local:
      General Questions sits on --sec-light, so the accordion + helper side card
      need a defined edge. */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
@@ -224,7 +215,7 @@ const seo = {
 </style>
 
 <script>
-  // SWP calculator — month-by-month drawdown of a growing lumpsum.
+  // SWP calculator - month-by-month drawdown of a growing lumpsum.
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -234,13 +225,10 @@ const seo = {
   const wdR = document.getElementById('wdR') as HTMLInputElement;
   const rate = document.getElementById('rate') as HTMLInputElement;
   const rateR = document.getElementById('rateR') as HTMLInputElement;
-  const dur = document.getElementById('dur') as HTMLInputElement;
-  const durR = document.getElementById('durR') as HTMLInputElement;
 
   const segInv = document.getElementById('seg-inv') as HTMLElement;
   const segRet = document.getElementById('seg-ret') as HTMLElement;
-  const barNote = document.getElementById('bar-note') as HTMLElement;
-  let last = { fin: 0, wd: 0, tot: 0 };
+  let last = { wd: 0, rem: 0 };
 
   function digits(s: string) {
     return String(s).replace(/[^0-9.]/g, '');
@@ -270,80 +258,69 @@ const seo = {
     requestAnimationFrame(tick);
   }
 
-  /* month-by-month drawdown; caps the last withdrawal if the corpus runs out. */
-  function compute(principal: number, monthly: number, ratePct: number, years: number) {
-    const n = Math.round(years * 12);
+  /* month-by-month drawdown until the corpus empties, capped at 50 years. Each
+     month the balance earns a return, then the withdrawal is taken. If monthly
+     growth outpaces the withdrawal the corpus survives the cap (lasts indefinitely). */
+  const CAP_MONTHS = 600; // 50-year horizon
+  function compute(corpus: number, monthly: number, ratePct: number) {
     const i = ratePct / 100 / 12;
-    let balance = principal;
+    let balance = corpus;
     let withdrawn = 0;
-    let depletedMonth = 0;
-    for (let m = 1; m <= n; m++) {
+    let months = 0;
+    for (let m = 1; m <= CAP_MONTHS; m++) {
       balance = balance * (1 + i);
-      const take = Math.min(monthly, balance);
-      balance -= take;
-      withdrawn += take;
-      if (balance <= 0) {
-        depletedMonth = m;
+      months = m;
+      if (balance >= monthly) {
+        balance -= monthly;
+        withdrawn += monthly;
+      } else {
+        withdrawn += balance; // partial final withdrawal empties the corpus
         balance = 0;
         break;
       }
     }
-    return { finalValue: balance, withdrawn: withdrawn, depletedMonth: depletedMonth };
+    const indefinite = balance > 0; // still solvent at the cap
+    return { months: months, withdrawn: withdrawn, remaining: balance, indefinite: indefinite };
   }
 
   function render(animate: boolean) {
-    const principal = clamp(parseFloat(digits(amt.value)) || 0, +amtR.min, +amtR.max);
+    const corpus = clamp(parseFloat(digits(amt.value)) || 0, +amtR.min, +amtR.max);
     const monthly = clamp(parseFloat(digits(wd.value)) || 0, +wdR.min, +wdR.max);
     const ratePct = clamp(parseFloat(digits(rate.value)) || 0, +rateR.min, +rateR.max);
-    const years = clamp(parseFloat(digits(dur.value)) || 0, +durR.min, +durR.max);
 
-    const r = compute(principal, monthly, ratePct, years);
-    const total = r.finalValue + r.withdrawn;
+    const r = compute(corpus, monthly, ratePct);
     const rupee = (v: number) => '₹' + fmt.format(Math.round(v));
+    const durText = r.indefinite ? '50+ yrs' : (r.months / 12).toFixed(1) + ' yrs';
+
+    // headline is a formatted duration string, not a running number
+    (document.getElementById('d-tot') as HTMLElement).textContent = durText;
 
     if (animate) {
-      countTo(document.getElementById('r-fin') as HTMLElement, last.fin, r.finalValue, rupee);
       countTo(document.getElementById('r-wd') as HTMLElement, last.wd, r.withdrawn, rupee);
-      countTo(document.getElementById('d-tot') as HTMLElement, last.tot, total, rupee);
+      countTo(document.getElementById('r-rem') as HTMLElement, last.rem, r.remaining, rupee);
     } else {
-      (document.getElementById('r-fin') as HTMLElement).textContent = rupee(r.finalValue);
       (document.getElementById('r-wd') as HTMLElement).textContent = rupee(r.withdrawn);
-      (document.getElementById('d-tot') as HTMLElement).textContent = rupee(total);
+      (document.getElementById('r-rem') as HTMLElement).textContent = rupee(r.remaining);
     }
-    last = { fin: r.finalValue, wd: r.withdrawn, tot: total };
+    last = { wd: r.withdrawn, rem: r.remaining };
 
-    const finPct = total > 0 ? (r.finalValue / total) * 100 : 0;
-    segInv.style.width = finPct + '%';
-    segRet.style.width = 100 - finPct + '%';
+    // dark = share withdrawn, gold = share remaining (fully dark once depleted)
+    const total = r.withdrawn + r.remaining;
+    const wdPct = total > 0 ? (r.withdrawn / total) * 100 : 100;
+    segInv.style.width = wdPct + '%';
+    segRet.style.width = 100 - wdPct + '%';
 
-    /* if the corpus runs out early, flag it in the note */
-    if (r.depletedMonth > 0) {
-      const yrs = Math.floor(r.depletedMonth / 12);
-      const mos = r.depletedMonth % 12;
-      const when =
-        (yrs > 0 ? yrs + (yrs === 1 ? ' year' : ' years') : '') +
-        (yrs > 0 && mos > 0 ? ' ' : '') +
-        (mos > 0 ? mos + (mos === 1 ? ' month' : ' months') : '');
-      barNote.textContent =
-        'Your corpus runs out after about ' + when + ' at this withdrawal rate — withdrawals then stop. Figures are illustrative and actual returns fluctuate.';
-    } else {
-      barNote.textContent =
-        'The balance grows at the assumed rate each month, then the withdrawal is deducted. Figures are illustrative; actual returns fluctuate and withdrawals stop if the corpus runs out.';
-    }
-
-    (document.getElementById('cta-amt') as HTMLElement).textContent = '₹' + fmt.format(monthly) + '/month';
     (document.getElementById('sr-summary') as HTMLElement).textContent =
-      'Over ' + years + ' years you withdraw ' + rupee(r.withdrawn) + ' in total, leaving a final value of ' + rupee(r.finalValue) + '.';
+      'A ₹' + fmt.format(corpus) + ' corpus with ₹' + fmt.format(monthly) + ' monthly withdrawals lasts ' + durText + ', withdrawing ' + rupee(r.withdrawn) + ' in total.';
 
-    updateUrl(principal, monthly, ratePct, years);
-    amtR.setAttribute('aria-valuetext', '₹' + fmt.format(principal));
+    updateUrl(corpus, monthly, ratePct);
+    amtR.setAttribute('aria-valuetext', '₹' + fmt.format(corpus));
     wdR.setAttribute('aria-valuetext', '₹' + fmt.format(monthly));
     rateR.setAttribute('aria-valuetext', ratePct + ' percent');
-    durR.setAttribute('aria-valuetext', years + ' years');
   }
 
-  function updateUrl(principal: number, monthly: number, ratePct: number, years: number) {
-    const q = '?amt=' + principal + '&wd=' + monthly + '&rate=' + ratePct + '&dur=' + years;
+  function updateUrl(corpus: number, monthly: number, ratePct: number) {
+    const q = '?amt=' + corpus + '&wd=' + monthly + '&rate=' + ratePct;
     try {
       history.replaceState(null, '', q);
     } catch (e) {
@@ -375,7 +352,6 @@ const seo = {
   pairNumberAndSlider(amt, amtR, true);
   pairNumberAndSlider(wd, wdR, true);
   pairNumberAndSlider(rate, rateR, false);
-  pairNumberAndSlider(dur, durR, false);
 
   (function initFromUrl() {
     const p = new URLSearchParams(location.search);
@@ -388,9 +364,8 @@ const seo = {
     setNum(amt, amtR, 'amt', true);
     setNum(wd, wdR, 'wd', true);
     setNum(rate, rateR, 'rate', false);
-    setNum(dur, durR, 'dur', false);
   })();
 
-  [amtR, wdR, rateR, durR].forEach(fillSlider);
+  [amtR, wdR, rateR].forEach(fillSlider);
   render(true);
 </script>

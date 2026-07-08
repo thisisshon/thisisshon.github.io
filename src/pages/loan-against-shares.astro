@@ -1,10 +1,10 @@
 ---
 /**
- * Loan Against Securities (LAS) — /loan-against-shares/
+ * Loan Against Securities (LAS) - /loan-against-shares/
  * Long-form product page. Built entirely from the shared design-system
  * components in global.css (hero, .section/.sec-title, .card, .cat-grid,
  * .steps, .product-page_table, .check-card, .risks, FaqAccordion, .cta-box).
- * No page-scoped CSS — the eight-cell .cat-grid handles the securities grid.
+ * No page-scoped CSS - the eight-cell .cat-grid handles the securities grid.
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -14,30 +14,30 @@ import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo'
 
 // Approved securities and indicative loan-to-value by type (fills the .cat-grid).
 const SECURITIES = [
-  { h: 'Approved Shares', p: 'Listed equity shares on the lender-approved list — LTV up to ~50% of value.' },
-  { h: 'Mutual Fund Units', p: 'Equity and debt fund units pledged via RTA/depository — LTV ~50%–80%.' },
-  { h: 'Bonds & NCDs', p: 'Listed government and corporate bonds — LTV up to ~80% for high-rated paper.' },
-  { h: 'Exchange-Traded Funds', p: 'Approved equity and debt ETFs held in your demat account — LTV up to ~50%.' },
-  { h: 'Sovereign Gold Bonds', p: 'RBI-issued SGBs pledged as collateral — a stable, sovereign-backed asset.' },
-  { h: 'Government Securities', p: 'G-Secs and treasury bills — among the highest LTVs given sovereign backing.' },
+  { h: 'Approved Shares', p: 'Listed equity shares on the lender-approved list - LTV up to ~50% of value.' },
+  { h: 'Mutual Fund Units', p: 'Equity and debt fund units pledged via RTA/depository - LTV ~50%–80%.' },
+  { h: 'Bonds & NCDs', p: 'Listed government and corporate bonds - LTV up to ~80% for high-rated paper.' },
+  { h: 'Exchange-Traded Funds', p: 'Approved equity and debt ETFs held in your demat account - LTV up to ~50%.' },
+  { h: 'Sovereign Gold Bonds', p: 'RBI-issued SGBs pledged as collateral - a stable, sovereign-backed asset.' },
+  { h: 'Government Securities', p: 'G-Secs and treasury bills - among the highest LTVs given sovereign backing.' },
   { h: 'Life Insurance Policies', p: 'Select traditional policies with a surrender value can be assigned as security.' },
   { h: 'Fixed Maturity Plans', p: 'Approved close-ended debt schemes accepted subject to the lender list.' },
 ];
 
-// How a Loan Against Securities works — five steps.
+// How a Loan Against Securities works - five steps.
 const STEPS = [
   { h: 'Pledge Securities from Your Demat', p: 'Select the approved shares, bonds, ETFs or fund units you want to pledge and mark a digital lien from your demat account.' },
   { h: 'Get a Sanctioned Overdraft Limit', p: 'The lender sets a credit limit as a percentage of the current value of your pledged securities, typically within a working day.' },
-  { h: 'Draw Funds When You Need Them', p: 'Withdraw against the limit in part or in full, straight to your linked bank account — like an overdraft ready to use.' },
+  { h: 'Draw Funds When You Need Them', p: 'Withdraw against the limit in part or in full, straight to your linked bank account - like an overdraft ready to use.' },
   { h: 'Repay and Re-Draw Flexibly', p: 'Repay any time to free up your limit, then draw again as needed. There is no fixed EMI on the unused portion.' },
-  { h: 'Pay Interest Only on What You Use', p: 'Interest accrues only on the utilised amount for the days it stays outstanding — your securities remain invested throughout.' },
+  { h: 'Pay Interest Only on What You Use', p: 'Interest accrues only on the utilised amount for the days it stays outstanding - your securities remain invested throughout.' },
 ];
 
 // LAS vs selling shares vs personal loan.
 const COMPARE = [
-  { k: 'Keeps Portfolio Intact', l: 'Yes — shares stay in your name and keep their upside', r: 'No — you sell and give up future gains', p: 'Not applicable' },
+  { k: 'Keeps Portfolio Intact', l: 'Yes - shares stay in your name and keep their upside', r: 'No - you sell and give up future gains', p: 'Not applicable' },
   { k: 'Cost', l: 'Interest only on the amount used', r: 'Brokerage / exit cost, plus opportunity cost', p: 'Higher interest on the full sanctioned amount' },
-  { k: 'Speed of Access', l: 'Quick — digital pledge, often same day', r: 'T+1 settlement for sale proceeds', p: 'Days — full underwriting and approval' },
+  { k: 'Speed of Access', l: 'Quick - digital pledge, often same day', r: 'T+1 settlement for sale proceeds', p: 'Days - full underwriting and approval' },
   { k: 'Tax Event', l: 'No sale, so no capital-gains tax triggered', r: 'Sale triggers capital-gains tax', p: 'No sale, no tax event' },
   { k: 'Best Suited For', l: 'Short-term liquidity while staying invested', r: 'When you want to exit the position', p: 'Unsecured, one-off funding needs' },
 ];
@@ -45,16 +45,16 @@ const COMPARE = [
 // Risks to weigh with a Loan Against Securities.
 const RISKS = [
   { h: 'Margin Call on Price Fall', p: 'If the market value of your pledged securities drops below the required cover, the lender can issue a margin call asking you to repay part of the loan or pledge more securities at short notice.' },
-  { h: 'Part-Sale of Pledged Shares', p: 'If a margin call is not met in time, the lender is entitled to invoke the pledge and sell part of your holdings to restore the cover — potentially at an unfavourable price.' },
+  { h: 'Part-Sale of Pledged Shares', p: 'If a margin call is not met in time, the lender is entitled to invoke the pledge and sell part of your holdings to restore the cover - potentially at an unfavourable price.' },
   { h: 'Interest Cost', p: 'Interest accrues on every rupee utilised. If a drawdown stays outstanding for long, cumulative interest can erode the benefit of staying invested.' },
   { h: 'Pledged Securities Are Locked', p: "You can't sell, transfer or deliver pledged securities until the lien is released, which can limit your ability to react during volatile markets." },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is a Loan Against Securities?',
-    a: 'A Loan Against Securities (LAS) is a secured overdraft where you pledge financial assets — shares, bonds, ETFs, mutual fund units or government securities — as collateral and receive a credit limit against their value. You continue to own the securities and stay invested, while borrowing against them and paying interest only on the amount you use.',
+    a: 'A Loan Against Securities (LAS) is a secured overdraft where you pledge financial assets - shares, bonds, ETFs, mutual fund units or government securities - as collateral and receive a credit limit against their value. You continue to own the securities and stay invested, while borrowing against them and paying interest only on the amount you use.',
   },
   {
     q: 'Which securities can I pledge for a loan?',
@@ -66,7 +66,7 @@ const FAQS = [
   },
   {
     q: 'Do I have to sell my shares to raise funds?',
-    a: 'No. You only pledge your securities — they remain in your demat account, keep their market upside and continue to earn dividends or interest. Because nothing is sold, no capital-gains tax is triggered and your portfolio stays intact.',
+    a: 'No. You only pledge your securities - they remain in your demat account, keep their market upside and continue to earn dividends or interest. Because nothing is sold, no capital-gains tax is triggered and your portfolio stays intact.',
   },
   {
     q: 'How is interest charged on a Loan Against Securities?',
@@ -110,7 +110,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Loan Against Securities' }]} />
     <div class="hero-inner" data-enter>
       <h1>Borrow Against Your Portfolio <span class="g">Without Selling</span></h1>
-      <p class="lead">Pledge your shares, bonds, ETFs and mutual funds for an instant overdraft limit — keep your portfolio invested and pay interest only on the amount you actually use.</p>
+      <p class="lead">Pledge your shares, bonds, ETFs and mutual funds for an instant overdraft limit - keep your portfolio invested and pay interest only on the amount you actually use.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -127,7 +127,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is a Loan Against Securities?</h2>
-      <p class="sec-lead">A Loan Against Securities (LAS) is a secured line of credit that lets you borrow money by pledging financial assets — shares, bonds, ETFs, mutual fund units or government securities — instead of selling them. You mark a digital lien on the securities in your demat account, the lender sanctions an overdraft limit against their current value, and you draw down cash whenever you need it. Your securities stay in your name, keep their market upside and continue to earn returns, and no capital-gains tax is triggered because nothing is sold.</p>
+      <p class="sec-lead">A Loan Against Securities (LAS) is a secured line of credit that lets you borrow money by pledging financial assets - shares, bonds, ETFs, mutual fund units or government securities - instead of selling them. You mark a digital lien on the securities in your demat account, the lender sanctions an overdraft limit against their current value, and you draw down cash whenever you need it. Your securities stay in your name, keep their market upside and continue to earn returns, and no capital-gains tax is triggered because nothing is sold.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -141,7 +141,7 @@ const seo = {
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Pay Interest Only on What You Use</h4>
-          <p class="card-p">The sanctioned limit waits ready like an overdraft. Interest accrues only on the amount drawn, for the days it stays outstanding — never on the full limit.</p>
+          <p class="card-p">The sanctioned limit waits ready like an overdraft. Interest accrues only on the amount drawn, for the days it stays outstanding - never on the full limit.</p>
         </div>
       </div>
     </div>
@@ -165,7 +165,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">How a Loan Against Securities Works</h2>
-      <p class="sec-lead">Five simple steps from pledging your holdings to drawing down funds — entirely digital, straight from your demat account.</p>
+      <p class="sec-lead">Five simple steps from pledging your holdings to drawing down funds - entirely digital, straight from your demat account.</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
       <div class="steps" data-reveal-row>
@@ -192,7 +192,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-charges" data-section="charges" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Interest &amp; Charges</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">A Loan Against Securities is priced like an overdraft — you pay for what you use, plus a few one-time and annual charges. Indicative terms are shown below; final terms depend on the lender and your portfolio.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">A Loan Against Securities is priced like an overdraft - you pay for what you use, plus a few one-time and annual charges. Indicative terms are shown below; final terms depend on the lender and your portfolio.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3">
       <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Basis</p></div><div class="cell th"><p>Indicative Range</p></div>
@@ -209,7 +209,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">LAS vs Selling Shares vs Personal Loan</h2>
-      <p class="sec-lead">Three ways to raise cash — pledging your securities, selling them, or taking an unsecured loan. Here is how they compare on the factors that matter most.</p>
+      <p class="sec-lead">Three ways to raise cash - pledging your securities, selling them, or taking an unsecured loan. Here is how they compare on the factors that matter most.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t4 bordered">
       <div class="cell th"><p>Factor</p></div><div class="cell th"><p>Loan Against Securities</p></div><div class="cell th"><p>Selling Shares</p></div><div class="cell th"><p>Personal Loan</p></div>

@@ -1,6 +1,6 @@
 ---
 /**
- * Equity Derivatives (F&O) — /derivatives/
+ * Equity Derivatives (F&O) - /derivatives/
  * Long-form F&O guide. Built entirely from shared design-system components in
  * global.css (hero, .section/.sec-title, .card, .cat-grid, .product-page_table,
  * .approaches, .risks, FaqAccordion, .cta-box). Frontmatter data arrays feed the
@@ -15,7 +15,7 @@ import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo'
 const INSTRUMENTS = [
   {
     h: 'Index Futures',
-    p: 'A contract to buy or sell a stock index — such as the Nifty 50 or Bank Nifty — at a preset price on a future date. Cash-settled and widely used to take a view on the broad market or to hedge a portfolio.',
+    p: 'A contract to buy or sell a stock index - such as the Nifty 50 or Bank Nifty - at a preset price on a future date. Cash-settled and widely used to take a view on the broad market or to hedge a portfolio.',
   },
   {
     h: 'Stock Futures',
@@ -23,7 +23,7 @@ const INSTRUMENTS = [
   },
   {
     h: 'Index Options',
-    p: 'Call and put options on an index. They carry the right — not the obligation — to buy or sell the index at the strike price, and are the most actively traded contracts on Indian exchanges.',
+    p: 'Call and put options on an index. They carry the right - not the obligation - to buy or sell the index at the strike price, and are the most actively traded contracts on Indian exchanges.',
   },
   {
     h: 'Stock Options',
@@ -31,23 +31,23 @@ const INSTRUMENTS = [
   },
 ];
 
-// Core F&O vocabulary — short glossary terms for the cat-grid.
+// Core F&O vocabulary - short glossary terms for the cat-grid.
 const TERMS = [
   { h: 'Call Option', p: 'The right to buy the underlying at the strike price before or on expiry.' },
   { h: 'Put Option', p: 'The right to sell the underlying at the strike price before or on expiry.' },
   { h: 'Long', p: 'Buying a contract in expectation that its price will rise.' },
   { h: 'Short', p: 'Selling (writing) a contract in expectation that its price will fall.' },
-  { h: 'In the Money (ITM)', p: 'An option with intrinsic value — profitable if exercised now.' },
+  { h: 'In the Money (ITM)', p: 'An option with intrinsic value - profitable if exercised now.' },
   { h: 'At the Money (ATM)', p: 'An option whose strike is roughly equal to the current spot price.' },
-  { h: 'Out of the Money (OTM)', p: 'An option with no intrinsic value — only time value remains.' },
+  { h: 'Out of the Money (OTM)', p: 'An option with no intrinsic value - only time value remains.' },
   { h: 'Lot Size', p: 'The fixed quantity of the underlying in one F&O contract, set by the exchange.' },
 ];
 
-// F&O trading strategies — approaches list (Explore cards).
+// F&O trading strategies - approaches list (Explore cards).
 const STRATEGIES = [
   {
     h: 'Hedging',
-    p: 'Use futures or options to protect an existing portfolio against adverse moves — for example, buying index puts to cap downside on a basket of stocks during volatile markets.',
+    p: 'Use futures or options to protect an existing portfolio against adverse moves - for example, buying index puts to cap downside on a basket of stocks during volatile markets.',
   },
   {
     h: 'Speculation',
@@ -79,11 +79,11 @@ const RISKS = [
   },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What are equity derivatives?',
-    a: 'Equity derivatives are financial contracts whose value is derived from an underlying equity asset — a stock or a stock index. The two main types traded in India are futures and options, together known as the F&O segment.',
+    a: 'Equity derivatives are financial contracts whose value is derived from an underlying equity asset - a stock or a stock index. The two main types traded in India are futures and options, together known as the F&O segment.',
   },
   {
     q: 'What is the difference between futures and options?',
@@ -91,7 +91,7 @@ const FAQS = [
   },
   {
     q: 'What is a lot size in F&O?',
-    a: 'F&O contracts are traded in fixed quantities called lots. The exchange sets the lot size for each index and stock — you cannot trade a single share, only whole lots. Lot sizes are revised periodically to keep contract value within regulatory bands.',
+    a: 'F&O contracts are traded in fixed quantities called lots. The exchange sets the lot size for each index and stock - you cannot trade a single share, only whole lots. Lot sizes are revised periodically to keep contract value within regulatory bands.',
   },
   {
     q: 'When do F&O contracts expire in India?',
@@ -156,12 +156,12 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Are Equity Derivatives?</h2>
-      <p class="sec-lead">A derivative is a contract whose value is derived from an underlying asset — in the equity market, that asset is a stock or a stock index. Rather than owning the shares, you trade a contract that tracks their price. In India these contracts trade in the Futures &amp; Options (F&amp;O) segment of the NSE and BSE, regulated by SEBI. Traders use them to speculate on price direction, to hedge existing holdings, and to profit from pricing differences across markets.</p>
+      <p class="sec-lead">A derivative is a contract whose value is derived from an underlying asset - in the equity market, that asset is a stock or a stock index. Rather than owning the shares, you trade a contract that tracks their price. In India these contracts trade in the Futures &amp; Options (F&amp;O) segment of the NSE and BSE, regulated by SEBI. Traders use them to speculate on price direction, to hedge existing holdings, and to profit from pricing differences across markets.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
         <h3 class="sub-title">Futures &amp; Options Explained</h3>
-        <p class="sub-lead">The two building blocks of the F&amp;O segment — one carries an obligation, the other carries a right.</p>
+        <p class="sub-lead">The two building blocks of the F&amp;O segment - one carries an obligation, the other carries a right.</p>
       </div>
       <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
@@ -170,7 +170,7 @@ const seo = {
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Options</h4>
-          <p class="card-p">An option gives the buyer the right — not the obligation — to buy (call) or sell (put) the underlying at a fixed strike price, in exchange for a premium. The buyer's risk is capped at the premium; the seller earns it but takes on larger risk.</p>
+          <p class="card-p">An option gives the buyer the right - not the obligation - to buy (call) or sell (put) the underlying at a fixed strike price, in exchange for a premium. The buyer's risk is capped at the premium; the seller earns it but takes on larger risk.</p>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Types of Derivatives</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">The F&amp;O segment covers four instrument families — futures and options, each on an index or an individual stock.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The F&amp;O segment covers four instrument families - futures and options, each on an index or an individual stock.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -211,7 +211,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-mechanics" data-section="mechanics" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">How F&amp;O Works: Margins, Lot Sizes &amp; Expiry</h2>
-      <p class="sec-lead">Three mechanics define every derivatives trade — the margin you post, the lot you trade in, and the expiry that settles it.</p>
+      <p class="sec-lead">Three mechanics define every derivatives trade - the margin you post, the lot you trade in, and the expiry that settles it.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Mechanic</p></div><div class="cell th"><p>Futures</p></div><div class="cell th"><p>Options</p></div>
@@ -228,7 +228,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade derivatives, and how your F&amp;O income is treated for tax — with no hidden costs.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade derivatives, and how your F&amp;O income is treated for tax - with no hidden costs.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -247,10 +247,10 @@ const seo = {
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
         <h3 class="sub-title">How F&amp;O Income Is Taxed</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Unlike delivery equity, derivatives are treated as business income — not capital gains.</p>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Unlike delivery equity, derivatives are treated as business income - not capital gains.</p>
       </div>
       <div class="card">
-        <p class="card-p">Income from futures and options is classified as <strong>non-speculative business income</strong> under the Income Tax Act. It is added to your total income and taxed at your applicable slab rate — there is no separate LTCG/STCG treatment. Trading expenses can be deducted, and F&amp;O losses can be set off against other business income and carried forward for up to eight years, subject to timely return filing. Because turnover thresholds can trigger a tax audit, most active F&amp;O traders maintain proper books. This is general information — consult a qualified tax adviser for your situation.</p>
+        <p class="card-p">Income from futures and options is classified as <strong>non-speculative business income</strong> under the Income Tax Act. It is added to your total income and taxed at your applicable slab rate - there is no separate LTCG/STCG treatment. Trading expenses can be deducted, and F&amp;O losses can be set off against other business income and carried forward for up to eight years, subject to timely return filing. Because turnover thresholds can trigger a tax audit, most active F&amp;O traders maintain proper books. This is general information - consult a qualified tax adviser for your situation.</p>
       </div>
     </div>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
@@ -260,7 +260,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-strategies" data-section="strategies" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Trading Strategies</h2>
-      <p class="sec-lead">Derivatives serve three broad purposes — protecting a portfolio, taking a view, and capturing pricing gaps. Match the strategy to your goal and risk appetite.</p>
+      <p class="sec-lead">Derivatives serve three broad purposes - protecting a portfolio, taking a view, and capturing pricing gaps. Match the strategy to your goal and risk appetite.</p>
     </div>
     <div class="approaches" data-reveal-row>
       {STRATEGIES.map((s, i) => (

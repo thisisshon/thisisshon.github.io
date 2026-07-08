@@ -1,6 +1,6 @@
 ---
 /**
- * Margin Trading Facility (MTF) — /mtf/
+ * Margin Trading Facility (MTF) - /mtf/
  * Long-form MTF guide. Built entirely from shared design-system components in
  * global.css (hero, .section/.sec-title, .card, .steps, .check-card,
  * .product-page_table, .risks, FaqAccordion, .cta-box). Frontmatter data arrays
@@ -13,7 +13,7 @@ import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo'
 
 // How MTF works, step by step.
 const STEPS = [
-  { h: 'Fund Your Share of the Trade', p: 'You pay an initial margin — a portion of the total order value — from your own funds.' },
+  { h: 'Fund Your Share of the Trade', p: 'You pay an initial margin - a portion of the total order value - from your own funds.' },
   { h: 'The Broker Funds the Rest', p: 'Shriram funds the balance so you can buy more shares than your cash alone would allow.' },
   { h: 'Pledge the Shares as Collateral', p: 'The shares you buy are pledged with the depository as collateral against the funded amount.' },
   { h: 'Pay Interest on the Funded Amount', p: 'A daily interest is charged only on the amount funded by the broker, for as long as the position is open.' },
@@ -42,7 +42,7 @@ const ELIGIBLE = [
 const RISKS = [
   {
     h: 'Interest Cost',
-    p: "Interest accrues daily on the funded amount for as long as the position stays open. Hold too long and the interest can erode — or exceed — your gains.",
+    p: "Interest accrues daily on the funded amount for as long as the position stays open. Hold too long and the interest can erode - or exceed - your gains.",
   },
   {
     h: 'Margin Calls',
@@ -50,7 +50,7 @@ const RISKS = [
   },
   {
     h: 'Forced Square-Off',
-    p: "If you don't meet a margin call in time, the broker can sell your pledged shares to recover the funded amount — sometimes at an unfavourable price.",
+    p: "If you don't meet a margin call in time, the broker can sell your pledged shares to recover the funded amount - sometimes at an unfavourable price.",
   },
   {
     h: 'Amplified Market Fall',
@@ -58,7 +58,7 @@ const RISKS = [
   },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is Margin Trading Facility (MTF)?',
@@ -82,7 +82,7 @@ const FAQS = [
   },
   {
     q: 'How is MTF different from F&O?',
-    a: 'MTF is delivery-based — you actually own the shares, funded partly by the broker, and can hold them subject to interest and square-off rules. F&O involves derivative contracts with expiry dates and no ownership of the underlying. MTF suits leveraged delivery positions; F&O suits directional and hedging strategies.',
+    a: 'MTF is delivery-based - you actually own the shares, funded partly by the broker, and can hold them subject to interest and square-off rules. F&O involves derivative contracts with expiry dates and no ownership of the underlying. MTF suits leveraged delivery positions; F&O suits directional and hedging strategies.',
   },
   {
     q: 'Are the charges transparent?',
@@ -118,7 +118,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Margin Trading Facility' }]} />
     <div class="hero-inner" data-enter>
       <h1>Buy More Than Your Cash Allows With <span class="g">Margin Trading</span></h1>
-      <p class="lead">Amplify your buying power with Margin Trading Facility — pay a part of the trade, let Shriram fund the rest, and pledge the shares as collateral, all with transparent charges.</p>
+      <p class="lead">Amplify your buying power with Margin Trading Facility - pay a part of the trade, let Shriram fund the rest, and pledge the shares as collateral, all with transparent charges.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -135,17 +135,17 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Margin Trading Facility?</h2>
-      <p class="sec-lead">Margin Trading Facility (MTF) lets you buy more shares than your available cash would normally allow. You pay a fraction of the total order value as margin, and the broker funds the remaining amount. The shares you purchase are pledged as collateral against that funding, and you pay interest on the funded portion for as long as you hold the position. MTF is a SEBI-regulated, delivery-based product — you actually own the shares, unlike in F&amp;O where you trade contracts.</p>
+      <p class="sec-lead">Margin Trading Facility (MTF) lets you buy more shares than your available cash would normally allow. You pay a fraction of the total order value as margin, and the broker funds the remaining amount. The shares you purchase are pledged as collateral against that funding, and you pay interest on the funded portion for as long as you hold the position. MTF is a SEBI-regulated, delivery-based product - you actually own the shares, unlike in F&amp;O where you trade contracts.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
         <h3 class="sub-title">Why Traders Use MTF</h3>
-        <p class="sub-lead">Two things set MTF apart from a plain cash purchase — leverage and ownership.</p>
+        <p class="sub-lead">Two things set MTF apart from a plain cash purchase - leverage and ownership.</p>
       </div>
       <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">More Buying Power</h4>
-          <p class="card-p">A limited amount of cash can command a larger position — often up to four times your margin — letting you act on a conviction without waiting to accumulate the full amount.</p>
+          <p class="card-p">A limited amount of cash can command a larger position - often up to four times your margin - letting you act on a conviction without waiting to accumulate the full amount.</p>
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">You Still Own the Shares</h4>
@@ -159,7 +159,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
       <h2 class="sec-title">How MTF Works</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">From your first margin payment to the final square-off — five steps that define every MTF trade.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">From your first margin payment to the final square-off - five steps that define every MTF trade.</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
       <div class="steps" data-reveal-row>
@@ -186,7 +186,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-charges" data-section="charges" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Interest &amp; Charges</h2>
-      <p class="sec-lead">MTF costs are simple and disclosed upfront — interest on the funded amount, brokerage, and depository pledge charges.</p>
+      <p class="sec-lead">MTF costs are simple and disclosed upfront - interest on the funded amount, brokerage, and depository pledge charges.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3">
       <div class="cell th"><p>Charge Type</p></div><div class="cell th"><p>Basis</p></div><div class="cell th"><p>How It Applies</p></div>
@@ -240,8 +240,8 @@ const seo = {
     </div>
     <div class="t-scroll"><div class="product-page_table t4 bordered">
       <div class="cell th"><p>Feature</p></div><div class="cell th"><p>MTF</p></div><div class="cell th"><p>Delivery (Cash)</p></div><div class="cell th"><p>F&amp;O</p></div>
-      <div class="cell tb"><p class="k">Ownership</p></div><div class="cell tb"><p class="v">You own the shares (pledged)</p></div><div class="cell tb"><p class="v">You fully own the shares</p></div><div class="cell tb"><p class="v">No ownership — contracts only</p></div>
-      <div class="cell tb"><p class="k">Leverage</p></div><div class="cell tb"><p class="v">Up to ~4x via broker funding</p></div><div class="cell tb"><p class="v">None — pay full value</p></div><div class="cell tb"><p class="v">High, via margin</p></div>
+      <div class="cell tb"><p class="k">Ownership</p></div><div class="cell tb"><p class="v">You own the shares (pledged)</p></div><div class="cell tb"><p class="v">You fully own the shares</p></div><div class="cell tb"><p class="v">No ownership - contracts only</p></div>
+      <div class="cell tb"><p class="k">Leverage</p></div><div class="cell tb"><p class="v">Up to ~4x via broker funding</p></div><div class="cell tb"><p class="v">None - pay full value</p></div><div class="cell tb"><p class="v">High, via margin</p></div>
       <div class="cell tb"><p class="k">Holding Period</p></div><div class="cell tb"><p class="v">Flexible, subject to interest</p></div><div class="cell tb"><p class="v">Unlimited</p></div><div class="cell tb"><p class="v">Until contract expiry</p></div>
       <div class="cell tb"><p class="k">Main Cost</p></div><div class="cell tb"><p class="v">Daily interest on funding</p></div><div class="cell tb"><p class="v">Brokerage only</p></div><div class="cell tb"><p class="v">Premium / margin + brokerage</p></div>
       <div class="cell tb"><p class="k">Key Risk</p></div><div class="cell tb"><p class="v">Interest cost &amp; forced square-off</p></div><div class="cell tb"><p class="v">Market price movement</p></div><div class="cell tb"><p class="v">Leverage, expiry &amp; time decay</p></div>
@@ -261,7 +261,7 @@ const seo = {
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Use MTF with discipline — keep an eye on interest accruing on the funded amount, respond to margin calls promptly, and size positions so a market fall never forces an unplanned square-off.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Use MTF with discipline - keep an eye on interest accruing on the funded amount, respond to margin calls promptly, and size positions so a market fall never forces an unplanned square-off.</p>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -289,7 +289,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Trade With More Buying Power in Minutes</h3>
-        <p class="ct-sub">Open your Demat account, activate MTF, and buy more than your cash allows — with transparent charges.</p>
+        <p class="ct-sub">Open your Demat account, activate MTF, and buy more than your cash allows - with transparent charges.</p>
       </div>
       <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
     </div>

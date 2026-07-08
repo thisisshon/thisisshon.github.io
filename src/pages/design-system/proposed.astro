@@ -1,12 +1,12 @@
 ---
 /**
- * Design System — "What is suggested" · /design-system/proposed/
+ * Design System - "What is suggested" · /design-system/proposed/
  * THE Figma artifact. The consolidated, duplication-proofed system, rendered
  * LIVE from the tokens in styles.css. Every colour chip / type specimen / spacing
- * bar / component below reads its value from a `var(--token)` — so this doc can
+ * bar / component below reads its value from a `var(--token)` - so this doc can
  * never drift from the stylesheet. Internal tooling docs (noindex).
  *
- * INVARIANT: chips MUST use live tokens (style={`background: var(--...)`}) — never
+ * INVARIANT: chips MUST use live tokens (style={`background: var(--...)`}) - never
  * a hardcoded hex. Token NAMES + roles below are transcribed from global.css.
  * Values that Tailwind currently tree-shakes out of :root carry a var() FALLBACK
  * via cv() so the live token always wins when present (see the FALLBACK note).
@@ -14,16 +14,16 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const seo = {
-  title: 'Design System — What Is Suggested (Live Token Reference)',
+  title: 'Design System - What Is Suggested (Live Token Reference)',
   description:
-    'The consolidated Shriram design system rendered live from styles.css: primitive → semantic → component colour tokens, the type scale, 8px spacing + radii, shadows, motion and a component gallery — structured to map 1:1 onto Figma variables.',
+    'The consolidated Shriram design system rendered live from styles.css: primitive → semantic → component colour tokens, the type scale, 8px spacing + radii, shadows, motion and a component gallery - structured to map 1:1 onto Figma variables.',
   path: '/design-system/proposed/',
   noindex: true,
 };
 
 /* Tokens global.css does not yet reference get tree-shaken out of :root by
    Tailwind v4, so `var(--token)` would resolve empty. FALLBACK gives those the
-   audited literal as a var() fallback — the LIVE token still wins whenever it
+   audited literal as a var() fallback - the LIVE token still wins whenever it
    is present, so nothing is hardcoded in place of a live value. Tokens absent
    from this map are live-retained and need no fallback.
    `cv(token)` → `var(--token[, literal])`. */
@@ -64,23 +64,23 @@ type Tok = { token: string; role: string };
 
 const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
   {
-    name: 'Gold — brand primary',
+    name: 'Gold - brand primary',
     toks: [
       { token: 'color-gold-100', role: 'warm chip / step-pill bg' },
       { token: 'color-gold-200', role: 'slider accent (sip)' },
       { token: 'color-gold-300', role: 'input focus border (field-bd-active)' },
-      { token: 'color-gold-400', role: 'THE brand gold — CTAs, highlights. Absorbs #f2b83f' },
+      { token: 'color-gold-400', role: 'THE brand gold - CTAs, highlights. Absorbs #f2b83f' },
       { token: 'color-gold-500', role: 'step numbers, gradient stop (legacy --gold)' },
       { token: 'color-gold-600', role: 'gold hover. Absorbs #c79a38' },
       { token: 'color-gold-950', role: 'legacy --gold-ink' },
     ],
   },
   {
-    name: 'Olive — brand secondary',
+    name: 'Olive - brand secondary',
     toks: [
-      { token: 'color-olive-950', role: 'deep olive — dark cards, .to-top. Absorbs #1a2010' },
+      { token: 'color-olive-950', role: 'deep olive - dark cards, .to-top. Absorbs #1a2010' },
       { token: 'color-olive-925', role: 'dark-card hover bg' },
-      { token: 'color-olive-900', role: 'THE brand olive — titles, button ink, icons. Absorbs #2d3813' },
+      { token: 'color-olive-900', role: 'THE brand olive - titles, button ink, icons. Absorbs #2d3813' },
       { token: 'color-olive-800', role: 'hero / sidebar gradient middle stop' },
       { token: 'color-olive-700', role: 'dark-card hover border' },
       { token: 'color-olive-600', role: 'hero gradient start, sip invested' },
@@ -89,7 +89,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Charcoal — dark neutrals ⚠ 12 steps (Tier-2: → ~4)',
+    name: 'Charcoal - dark neutrals ⚠ 12 steps (Tier-2: → ~4)',
     toks: [
       { token: 'color-charcoal-950', role: 'homepage footer bg (home fork)' },
       { token: 'color-charcoal-925', role: 'filled input text (field-ink)' },
@@ -106,7 +106,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Sage — gray-greens',
+    name: 'Sage - gray-greens',
     toks: [
       { token: 'color-sage-900', role: 'overlay headings / view-all. Absorbs 3 near-dupes' },
       { token: 'color-sage-800', role: 'legacy --ink-2' },
@@ -122,7 +122,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Gray — pure neutrals',
+    name: 'Gray - pure neutrals',
     toks: [
       { token: 'color-gray-700', role: 'leads (legacy --ink-3)' },
       { token: 'color-gray-650', role: 'home muted (fork of sage-600)' },
@@ -139,7 +139,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Warm gray — hairlines on cream',
+    name: 'Warm gray - hairlines on cream',
     tint: true,
     toks: [
       { token: 'color-warmgray-300', role: 'overlay divider' },
@@ -148,7 +148,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Cream — light surfaces ⚠ 9 steps (Tier-2: → ~5)',
+    name: 'Cream - light surfaces ⚠ 9 steps (Tier-2: → ~5)',
     tint: true,
     toks: [
       { token: 'color-cream-50', role: 'card surface (legacy --card)' },
@@ -163,7 +163,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Tan — warm borders / accents',
+    name: 'Tan - warm borders / accents',
     tint: true,
     toks: [
       { token: 'color-tan-200', role: 'product-card border, overlay gradient start' },
@@ -260,7 +260,7 @@ const semantic: { group: string; rows: { role: string; points: string }[] }[] = 
   },
 ];
 
-/* ---- Type scale — rendered live at real size via var(--text-*) ---- */
+/* ---- Type scale - rendered live at real size via var(--text-*) ---- */
 const typeScale: { token: string; px: string; use: string }[] = [
   { token: 'text-5xl', px: '40px', use: 'section titles, hero H1' },
   { token: 'text-4xl', px: '32px', use: 'step numbers, overlay headings, home hero title' },
@@ -303,7 +303,7 @@ const shadows: { token: string; use: string }[] = [
   { token: 'shadow-ring-gold', use: 'about timeline ring' },
   { token: 'shadow-glass', use: 'home hero card' },
 ];
-const eases = ['--ease-standard · cubic-bezier(0.4,0,0.2,1) — overlay, FAQ, reveals', '--ease-spring · cubic-bezier(0.22,1,0.36,1) — index cards', '--ease-reveal · cubic-bezier(0.2,0.6,0.2,1) — scroll reveal'];
+const eases = ['--ease-standard · cubic-bezier(0.4,0,0.2,1) - overlay, FAQ, reveals', '--ease-spring · cubic-bezier(0.22,1,0.36,1) - index cards', '--ease-reveal · cubic-bezier(0.2,0.6,0.2,1) - scroll reveal'];
 const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-overlay 0.48s', '--dur-reveal 0.6s'];
 ---
 
@@ -316,7 +316,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
         <h1>What Is <span class="g">Suggested</span></h1>
         <p class="lead">
           The consolidated, duplication-proofed design system. Every value below is a
-          <b>live token</b> from <code>styles.css</code> — structured to map 1:1 onto Figma
+          <b>live token</b> from <code>styles.css</code> - structured to map 1:1 onto Figma
           variables (primitive → semantic → component) for the round-trip.
         </p>
       </div>
@@ -330,12 +330,12 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
       <div class="tier-card">
         <span class="tier-n">01</span>
         <h3>Primitive</h3>
-        <p>Raw palette values — <code>--color-gold-400</code>, <code>--text-5xl</code>. Named by family + numeric step. Nothing binds to a hex directly.</p>
+        <p>Raw palette values - <code>--color-gold-400</code>, <code>--text-5xl</code>. Named by family + numeric step. Nothing binds to a hex directly.</p>
       </div>
       <div class="tier-card">
         <span class="tier-n">02</span>
         <h3>Semantic</h3>
-        <p>Role names that point at a primitive — <code>--color-action-primary</code> → <code>gold-400</code>. The layer components bind to.</p>
+        <p>Role names that point at a primitive - <code>--color-action-primary</code> → <code>gold-400</code>. The layer components bind to.</p>
       </div>
       <div class="tier-card">
         <span class="tier-n">03</span>
@@ -346,17 +346,17 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
     <div class="policy-note">
       <p>
         <b>Merge policy.</b> <b>Tier 1 (applied):</b> near-duplicates ≤2 RGB points apart are already
-        collapsed — imperceptible. <b>Tier 2 (proposed, awaiting sign-off):</b> visible unifications
-        the audit flags but this system keeps for pixel parity — the 12→4 charcoal collapse, 15→5
+        collapsed - imperceptible. <b>Tier 2 (proposed, awaiting sign-off):</b> visible unifications
+        the audit flags but this system keeps for pixel parity - the 12→4 charcoal collapse, 15→5
         creams, the button-spec fork, the footer fork, the 4 hero gradients. Steps marked ⚠ are the
         honest current count.
       </p>
     </div>
   </section>
 
-  <!-- ================= COLOUR — PRIMITIVES ================= -->
+  <!-- ================= COLOUR - PRIMITIVES ================= -->
   <section class="section" id="sec-primitives" data-section="primitives">
-    <h2 class="sec-title">Colour tokens — primitives</h2>
+    <h2 class="sec-title">Colour tokens - primitives</h2>
     <p class="sec-lead ds-section-lead">
       Each chip’s background is the <b>live token</b> (<code>var(--color-…)</code>), so a swatch can
       never disagree with the stylesheet. Labelled with token name + role and what legacy near-dupes
@@ -383,11 +383,11 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
     </div>
   </section>
 
-  <!-- ================= COLOUR — SEMANTIC ================= -->
+  <!-- ================= COLOUR - SEMANTIC ================= -->
   <section class="section sec-tint" id="sec-semantic" data-section="semantic">
-    <h2 class="sec-title">Colour tokens — semantic</h2>
+    <h2 class="sec-title">Colour tokens - semantic</h2>
     <p class="sec-lead ds-section-lead">
-      Role → primitive. The chip renders the <b>semantic token itself</b> live — proving the pointer
+      Role → primitive. The chip renders the <b>semantic token itself</b> live - proving the pointer
       resolves. Components bind here, never to a primitive or a hex.
     </p>
 
@@ -420,7 +420,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   <section class="section" id="sec-type" data-section="type">
     <h2 class="sec-title">Typography</h2>
     <p class="sec-lead ds-section-lead">
-      One typeface — <b>Outfit</b>, site-wide, no exceptions — and every text element renders at
+      One typeface - <b>Outfit</b>, site-wide, no exceptions - and every text element renders at
       <b>line-height 1.5</b>. Each specimen below is set at its real <code>var(--text-*)</code> size.
     </p>
 
@@ -526,7 +526,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   <section class="section sec-tint" id="sec-gallery" data-section="gallery">
     <h2 class="sec-title">Component gallery</h2>
     <p class="sec-lead ds-section-lead">
-      The real shared components, rendered live from <code>global.css</code> — the same classes every
+      The real shared components, rendered live from <code>global.css</code> - the same classes every
       page uses. Interactive states are shown statically by adding the state class.
     </p>
 
@@ -684,30 +684,30 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
       </div>
       <div class="rule">
         <h3>One font</h3>
-        <p>Outfit only, site-wide — no second family. Form controls force-inherit it. Every text element renders at line-height 1.5.</p>
+        <p>Outfit only, site-wide - no second family. Form controls force-inherit it. Every text element renders at line-height 1.5.</p>
       </div>
       <div class="rule">
         <h3>Icon sizes</h3>
-        <p>Icons are real <code>&lt;svg&gt;</code>s — never text glyphs — sized <b>16 / 20 / 24 / 32px</b> only, chosen from context.</p>
+        <p>Icons are real <code>&lt;svg&gt;</code>s - never text glyphs - sized <b>16 / 20 / 24 / 32px</b> only, chosen from context.</p>
       </div>
       <div class="rule">
-        <h3>Hero — standard &amp; calculator variant</h3>
-        <p>Every page uses the shared <code>.hero</code>: one radial-gradient band, <code>min-height: clamp(440px, 29vw, 552px)</code>, breadcrumb + content vertically centred by auto-margins. <b>Calculator detail pages</b> use the <code>.hero.hero-compact</code> variant — it drops the tall band (<code>min-height: 0</code>) and the auto-margin centring so the band <b>hugs</b> its breadcrumb + H1 + lead (no CTA) on a small explicit padding, deliberately shorter than the product hero. Padding (above breadcrumb · breadcrumb→H1 · below lead): desktop <b>40 / 24 / 40</b>, mobile <b>32 / 16 / 32</b>. One modifier class, applied to all five calculators.</p>
+        <h3>Hero - standard &amp; calculator variant</h3>
+        <p>Every page uses the shared <code>.hero</code>: one radial-gradient band, <code>min-height: clamp(440px, 29vw, 552px)</code>, breadcrumb + content vertically centred by auto-margins. <b>Calculator detail pages</b> use the <code>.hero.hero-compact</code> variant - it drops the tall band (<code>min-height: 0</code>) and the auto-margin centring so the band <b>hugs</b> its breadcrumb + H1 + lead (no CTA) on a small explicit padding, deliberately shorter than the product hero. Padding (above breadcrumb · breadcrumb→H1 · below lead): desktop <b>40 / 24 / 40</b>, mobile <b>32 / 16 / 32</b>. One modifier class, applied to all five calculators.</p>
       </div>
       <div class="rule">
         <h3>Heading alignment</h3>
-        <p>The hero H1, every <code>.sec-title</code> and every <code>.sub-title</code> (with their leads) are <b>left-aligned</b> — never centred, no <code>max-width</code> cap on the lead. The only centred text is the promotional bands (<code>.cta-box</code> and dark CTA / access bands). Reference: <code>products/equity.astro</code>.</p>
+        <p>The hero H1, every <code>.sec-title</code> and every <code>.sub-title</code> (with their leads) are <b>left-aligned</b> - never centred, no <code>max-width</code> cap on the lead. The only centred text is the promotional bands (<code>.cta-box</code> and dark CTA / access bands). Reference: <code>products/equity.astro</code>.</p>
       </div>
       <div class="rule">
         <h3>Mobile tap targets</h3>
-        <p>Every tappable control presents a <b>≥44px</b> touch area on mobile — the site standard is <b>48px</b> (on the 8px grid, matching <code>.hf-field</code> and <code>.to-top</code>). <b>Pad out the hit area</b>, never enlarge the icon: the glyph stays on its 16/20/24/32 scale while the container / <code>min-width</code> / <code>min-height</code> grows to 48px. See footer <code>.socials a</code> and <code>.nav-toggle</code>. This governs tap area, not font size — micro-labels (the <code>.hf-field</code> floating label ~10px) are a sanctioned exception.</p>
+        <p>Every tappable control presents a <b>≥44px</b> touch area on mobile - the site standard is <b>48px</b> (on the 8px grid, matching <code>.hf-field</code> and <code>.to-top</code>). <b>Pad out the hit area</b>, never enlarge the icon: the glyph stays on its 16/20/24/32 scale while the container / <code>min-width</code> / <code>min-height</code> grows to 48px. See footer <code>.socials a</code> and <code>.nav-toggle</code>. This governs tap area, not font size - micro-labels (the <code>.hf-field</code> floating label ~10px) are a sanctioned exception.</p>
       </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  /* ===== Doc 2 — LIVE token reference. Chips read var(--token); nothing here
+  /* ===== Doc 2 - LIVE token reference. Chips read var(--token); nothing here
      hardcodes a hex. Chrome uses the same semantic tokens as the site.
 
      Tailwind v4 tree-shakes @theme tokens that global.css never references
@@ -716,7 +716,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
      reference below therefore carries a var(--token, <literal>) FALLBACK: the
      token stays authoritative and auto-updates the moment global.css uses it;
      until then it degrades to the audited literal instead of rendering blank.
-     No value is hardcoded IN PLACE OF a live token — the token always wins. ===== */
+     No value is hardcoded IN PLACE OF a live token - the token always wins. ===== */
   .ds-eyebrow {
     font-weight: 500;
     font-size: 12px;

@@ -1,6 +1,6 @@
 ---
 /**
- * FD — /fixed-deposit/
+ * FD - /fixed-deposit/
  * Long-form Fixed Deposit guide. Built entirely from the shared design-system
  * components in global.css (hero, .section/.sec-title, .card, .cat-grid,
  * .product-page_table, .risks, FaqAccordion, .cta-box). The only page-scoped
@@ -12,7 +12,7 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// Types of fixed deposit — payout / structure differences.
+// Types of fixed deposit - payout / structure differences.
 const TYPES = [
   {
     h: 'Cumulative FD',
@@ -20,7 +20,7 @@ const TYPES = [
   },
   {
     h: 'Non-Cumulative FD',
-    p: 'Interest is paid out at regular intervals — monthly, quarterly, half-yearly or annually — making it useful for those who need a steady income stream.',
+    p: 'Interest is paid out at regular intervals - monthly, quarterly, half-yearly or annually - making it useful for those who need a steady income stream.',
   },
   {
     h: 'Tax-Saver FD',
@@ -36,7 +36,7 @@ const TYPES = [
   },
   {
     h: 'Corporate / Company FD',
-    p: 'Issued by companies and NBFCs, often at higher rates than bank FDs — but they are not DICGC-insured, so check the issuer’s credit rating first.',
+    p: 'Issued by companies and NBFCs, often at higher rates than bank FDs - but they are not DICGC-insured, so check the issuer’s credit rating first.',
   },
 ];
 
@@ -60,7 +60,7 @@ const RISKS = [
   },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is a Fixed Deposit?',
@@ -68,11 +68,11 @@ const FAQS = [
   },
   {
     q: 'What is the difference between a cumulative and non-cumulative FD?',
-    a: 'In a cumulative FD, interest is compounded and paid out along with the principal at maturity, so the corpus grows. In a non-cumulative FD, interest is paid out at regular intervals — monthly, quarterly, half-yearly or annually — which suits investors who want a steady income.',
+    a: 'In a cumulative FD, interest is compounded and paid out along with the principal at maturity, so the corpus grows. In a non-cumulative FD, interest is paid out at regular intervals - monthly, quarterly, half-yearly or annually - which suits investors who want a steady income.',
   },
   {
     q: 'How is FD interest taxed?',
-    a: 'Interest earned on a fixed deposit is added to your total income and taxed at your applicable income-tax slab rate. There is no special or concessional rate for FD interest — it is treated as “income from other sources”.',
+    a: 'Interest earned on a fixed deposit is added to your total income and taxed at your applicable income-tax slab rate. There is no special or concessional rate for FD interest - it is treated as “income from other sources”.',
   },
   {
     q: 'When is TDS deducted on FD interest?',
@@ -80,7 +80,7 @@ const FAQS = [
   },
   {
     q: 'Do FDs offer any tax benefit?',
-    a: 'Yes — a 5-year Tax-Saver FD qualifies for a deduction of up to ₹1.5 lakh under Section 80C. Note that the interest it earns is still taxable, and the deposit carries a 5-year lock-in with no premature withdrawal.',
+    a: 'Yes - a 5-year Tax-Saver FD qualifies for a deduction of up to ₹1.5 lakh under Section 80C. Note that the interest it earns is still taxable, and the deposit carries a 5-year lock-in with no premature withdrawal.',
   },
   {
     q: 'Do senior citizens get higher FD rates?',
@@ -88,7 +88,7 @@ const FAQS = [
   },
   {
     q: 'Are fixed deposits safe?',
-    a: 'Bank FDs are among the safest investments — deposits are insured by DICGC up to ₹5 lakh per depositor per bank. Corporate or company FDs may offer higher rates but are not DICGC-insured, so their safety depends on the issuer’s credit rating and financial strength.',
+    a: 'Bank FDs are among the safest investments - deposits are insured by DICGC up to ₹5 lakh per depositor per bank. Corporate or company FDs may offer higher rates but are not DICGC-insured, so their safety depends on the issuer’s credit rating and financial strength.',
   },
 ];
 
@@ -120,7 +120,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Fixed Deposit' }]} />
     <div class="hero-inner" data-enter>
       <h1>Grow Your Savings Safely With a <span class="g">Fixed Deposit</span></h1>
-      <p class="lead">Lock in a lump sum for a fixed tenure at an assured rate of interest — with predictable, market-independent returns, flexible payouts and DICGC-insured bank deposits.</p>
+      <p class="lead">Lock in a lump sum for a fixed tenure at an assured rate of interest - with predictable, market-independent returns, flexible payouts and DICGC-insured bank deposits.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -137,7 +137,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is a Fixed Deposit?</h2>
-      <p class="sec-lead">A Fixed Deposit is a low-risk investment in which you place a lump sum with a bank or company for a fixed tenure at an assured rate of interest. The rate is locked in when you book the deposit, so your returns stay predictable regardless of how market interest rates move afterwards. In return for committing your money for a set period, you earn a higher rate than an ordinary savings account — and with bank FDs, your deposit is insured by DICGC up to ₹5 lakh per depositor per bank.</p>
+      <p class="sec-lead">A Fixed Deposit is a low-risk investment in which you place a lump sum with a bank or company for a fixed tenure at an assured rate of interest. The rate is locked in when you book the deposit, so your returns stay predictable regardless of how market interest rates move afterwards. In return for committing your money for a set period, you earn a higher rate than an ordinary savings account - and with bank FDs, your deposit is insured by DICGC up to ₹5 lakh per depositor per bank.</p>
     </div>
   </section>
 
@@ -159,7 +159,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-rates" data-section="rates" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Interest Rates &amp; Tenure</h2>
-      <p class="sec-lead">FD rates generally rise with tenure, and senior citizens earn a bonus over the standard rate. The rates below are indicative — actual rates vary by issuer and change periodically.</p>
+      <p class="sec-lead">FD rates generally rise with tenure, and senior citizens earn a bonus over the standard rate. The rates below are indicative - actual rates vary by issuer and change periodically.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Tenure Band</p></div><div class="cell th"><p>Indicative Rate (General)</p></div><div class="cell th"><p>Senior Citizen Rate</p></div>
@@ -215,7 +215,7 @@ const seo = {
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Used well, an FD is a dependable anchor for the low-risk part of a portfolio — pair it with the right tenure, ladder your deposits to manage reinvestment risk, and keep bank deposits within the DICGC cover where safety is the priority.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Used well, an FD is a dependable anchor for the low-risk part of a portfolio - pair it with the right tenure, ladder your deposits to manage reinvestment risk, and keep bank deposits within the DICGC cover where safety is the priority.</p>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -251,7 +251,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== fd — page-specific only ===== */
+  /* ===== fd - page-specific only ===== */
 
   /* Generic responsive card grid for the FD-types card set (the shared .row-2 is
      2-up and .cat-grid's border math is tuned for its own cell count; this handles

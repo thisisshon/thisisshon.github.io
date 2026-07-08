@@ -1,0 +1,309 @@
+---
+/**
+ * HowSoon - the "How Soon Can I Start?" band lifted verbatim from the homepage
+ * so any page can reuse it (open a Demat / trading account onboarding). Text
+ * left + rocket illustration right, then a five-step timeline (horizontal pills
+ * ≥768, vertical dashed spine on mweb) and a centred CTA.
+ *
+ * Self-contained: markup + every breakpoint of styling live here, so it renders
+ * pixel-identical wherever it is dropped in. Content is parametric - heading,
+ * lead (slot), CTA and the step list all have homepage defaults.
+ */
+interface Step {
+  icon: string;
+  title: string;
+  desc: string;
+}
+interface Props {
+  heading?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+  steps?: Step[];
+}
+const {
+  heading = 'How Soon Can I Start?',
+  ctaHref = '/open-demat-account/',
+  ctaLabel = 'Get Started',
+  steps = [
+    { icon: '/images/step-icon-1.svg', title: 'Basic Information', desc: 'Name, mobile number, PAN - takes under two minutes.' },
+    { icon: '/images/step-icon-2.svg', title: 'Complete eKYC via Aadhaar', desc: 'OTP-based verification - no physical forms or branch visits.' },
+    { icon: '/images/step-icon-3.svg', title: 'Upload Documents', desc: "Bank proof and a live photograph from your phone's camera." },
+    { icon: '/images/step-icon-4.svg', title: 'Digital eSign', desc: 'Aadhaar-based e-sign replaces physical signature on all forms.' },
+    { icon: '/images/step-icon-5.svg', title: 'Account Activation', desc: 'Credentials delivered to your registered email. Start investing.' },
+  ],
+} = Astro.props;
+---
+
+<section class="hs-sec">
+  <div class="steps-box">
+    <!-- Top row: text left + rocket right -->
+    <div class="steps-box-2">
+      <div class="steps-box-3">
+        <div class="hs-copy">
+          <h2 class="hs-title">{heading}</h2>
+          <p class="steps-text">
+            <slot name="lead">Within <strong>minutes</strong>. You can create a Trading Account swiftly in a five-stage online process that can be completed on any of your devices.</slot>
+          </p>
+        </div>
+      </div>
+      <!-- Rocket illustration - flush to the right section edge -->
+      <div class="steps-box-4" style="margin-right: calc(-1 * clamp(1rem, 6vw, 8rem))">
+        <img
+          src="/images/how-soon-illustration.svg"
+          alt="Rocket launch illustration"
+          width="777"
+          height="340"
+          class="steps-img"
+        />
+      </div>
+    </div>
+    <!-- Steps row - #FFF0D7 pills + dashed connector (#EBDEC6, 2px, 7-7) -->
+    <div class="steps-box-5">
+      <div
+        class="steps-box-6"
+        style="background-image:repeating-linear-gradient(90deg,#EBDEC6 0 7px,transparent 7px 14px);"
+      >
+      </div>
+      <div class="steps-box-7" data-reveal-row>
+        {
+          steps.map((s) => (
+            <div class="steps-box-8">
+              <div class="steps-box-9">
+                <img src={s.icon} alt="" class="steps-img-2" />
+              </div>
+              <div class="steps-box-10">
+                <p class="steps-text-2">{s.title}</p>
+                <p class="steps-text-3">{s.desc}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <!-- Centred CTA below the timeline -->
+      <div class="steps-cta-wrap">
+        <a href={ctaHref} class="steps-link">{ctaLabel}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hs-sec {
+    background-color: #fffcf3; /* --color-cream-100 (home body bg) */
+  }
+  .steps-box {
+    padding-block: 64px;
+    width: 100%;
+    margin-inline: auto;
+    padding-left: clamp(1rem, 6vw, 8rem);
+    padding-right: clamp(1rem, 6vw, 8rem);
+  }
+  .steps-box-2 {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+  }
+  .steps-box-3 {
+    display: flex;
+    max-width: 600px;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .hs-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .hs-title {
+    font-size: 32px; /* mweb; 40px ≥1024 - matches homepage .why-title */
+    font-weight: 400;
+    color: #2e3914; /* --color-olive-900 */
+  }
+  .steps-text {
+    font-size: 18px;
+    color: #4f583b; /* --color-olive-600 */
+    letter-spacing: 0;
+  }
+  .steps-text :global(strong) {
+    font-weight: 600;
+  }
+  .steps-link {
+    display: flex;
+    height: 48px; /* rule 14: 48px tap target */
+    width: 220px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: #f3b83f; /* --color-gold-400 */
+    font-size: 12px;
+    font-weight: 500;
+    color: #202318; /* --color-charcoal-825 */
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.15s;
+  }
+  .steps-box-4 {
+    display: none;
+    flex: 1;
+    align-items: center;
+  }
+  .steps-img {
+    height: auto;
+    max-height: 360px;
+    width: 100%;
+    object-fit: contain;
+    object-position: right;
+  }
+  .steps-box-5 {
+    position: relative;
+    margin-top: 64px;
+  }
+  .steps-cta-wrap {
+    margin-top: 80px;
+    display: flex;
+    justify-content: center;
+  }
+  .steps-box-6 {
+    position: absolute;
+    top: 31px; /* off-grid - parity (Tier-2) */
+    display: none;
+    height: 2px;
+  }
+  .steps-box-7 {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 48px;
+  }
+  .steps-box-8 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+  }
+  .steps-box-9 {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    height: 64px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    background-color: #fff0d7; /* --color-gold-100 */
+    padding-inline: 32px;
+  }
+  .steps-img-2 {
+    height: 26px; /* Tier-2: off-scale icon (parity) */
+    width: 26px;
+    object-fit: contain;
+  }
+  .steps-box-10 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .steps-text-2 {
+    font-size: 20px;
+    font-weight: 500;
+    color: #2e3914; /* --color-olive-900 */
+  }
+  .steps-text-3 {
+    margin-inline: auto;
+    max-width: 234px; /* page-local literal */
+    font-size: 14px;
+    color: #4f583b; /* --color-olive-600 */
+  }
+
+  @media (min-width: 768px) {
+    .steps-box-6 {
+      right: 10%;
+      left: 10%;
+      display: block;
+    }
+    .steps-box-7 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .steps-box {
+      padding-block: 96px;
+    }
+    .steps-box-4 {
+      display: flex;
+    }
+    .steps-box-5 {
+      margin-top: 80px;
+    }
+    .hs-title {
+      font-size: 40px;
+    }
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .steps-link:hover {
+      background-color: #d4982a; /* --color-gold-600 */
+    }
+  }
+  @media (min-width: 1280px) {
+    .steps-box {
+      padding-block: 144px;
+    }
+    .steps-box-5 {
+      margin-top: 48px;
+    }
+  }
+  /* mweb: 16px gutter + vertical dashed-spine timeline (desktop row untouched) */
+  @media (max-width: 1023px) {
+    .steps-box {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .steps-box-7 {
+      display: flex;
+      flex-direction: column;
+      row-gap: 0;
+      column-gap: 0;
+    }
+    .steps-box-8 {
+      position: relative;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 16px;
+      text-align: left;
+      padding-bottom: 40px;
+    }
+    .steps-box-8:last-child {
+      padding-bottom: 0;
+    }
+    /* dashed spine: this marker's centre → the next marker's centre */
+    .steps-box-8:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 23px; /* centre of the 48px marker (−1px for the 2px line) */
+      top: 24px;
+      bottom: -24px;
+      width: 2px;
+      background-image: repeating-linear-gradient(180deg, #ebdec6 0 7px, transparent 7px 14px);
+      z-index: 0;
+    }
+    .steps-box-9 {
+      width: 48px;
+      height: 48px;
+      padding-inline: 0;
+      border-radius: 50%; /* circular marker (desktop pill untouched) */
+    }
+    .steps-box-10 {
+      flex: 1;
+      gap: 8px;
+      padding-top: 8px;
+    }
+    .steps-text-3 {
+      margin-inline: 0;
+      max-width: none;
+    }
+  }
+</style>

@@ -1,10 +1,10 @@
 ---
 /**
- * BaseLayout — the one layout every page uses.
+ * BaseLayout - the one layout every page uses.
  *
  * Renders the complete <head> (templated SEO: title / description / canonical /
  * OG / Twitter / JSON-LD), the shared site chrome (Header + MegaNav + Footer)
- * and the page content in between. Pages supply content + an `seo` object —
+ * and the page content in between. Pages supply content + an `seo` object -
  * nothing else. Head boilerplate is never hand-copied between pages.
  */
 import '../styles/global.css';
@@ -17,12 +17,12 @@ interface Props {
   seo: SEO;
   /**
    * 'site' (default) renders the shared Footer (+ back-to-top).
-   * 'custom' skips it — the page supplies its own via the default slot.
+   * 'custom' skips it - the page supplies its own via the default slot.
    * Only the homepage uses 'custom': its legacy footer is VISIBLY different
-   * (Tier-2 unification pending sign-off — see docs/legacy-style-audit.md §E2).
+   * (Tier-2 unification pending sign-off - see docs/legacy-style-audit.md §E2).
    */
   footer?: 'site' | 'custom';
-  /** Optional class on <main> — e.g. opt a page into a reveal-motion variant. */
+  /** Optional class on <main> - e.g. opt a page into a reveal-motion variant. */
   mainClass?: string;
 }
 
@@ -42,7 +42,7 @@ const title = fullTitle(seo.title);
     <title>{title}</title>
     <meta name="description" content={seo.description} />
     <link rel="canonical" href={canonical} />
-    {/* Site-wide noindex — the site is not ready to be indexed yet. Remove this
+    {/* Site-wide noindex - the site is not ready to be indexed yet. Remove this
         line (and restore `seo.noindex` gating below) before launch. */}
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#1d1d1d" />
@@ -61,7 +61,7 @@ const title = fullTitle(seo.title);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
 
-    <!-- Font: Outfit — the site's single typeface -->
+    <!-- Font: Outfit - the site's single typeface -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -93,7 +93,7 @@ const title = fullTitle(seo.title);
     <slot name="body-end" />
 
     <script>
-      // Scroll reveal (progressive enhancement) — parity with legacy app.js.
+      // Scroll reveal (progressive enhancement) - parity with legacy app.js.
       // Gated on .js-reveal so the hidden state never applies without JS;
       // skipped under prefers-reduced-motion / missing IntersectionObserver.
       const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -106,7 +106,7 @@ const title = fullTitle(seo.title);
 
         const blocks = Array.from(document.querySelectorAll<HTMLElement>(SELECTOR)).filter(
           // skip sr-only, and anything inside a [data-enter] section (that whole
-          // section eases in on load as one block — don't also reveal its children)
+          // section eases in on load as one block - don't also reveal its children)
           (el) => !el.classList.contains('sr-only') && !el.closest('[data-enter]')
         );
         // Rows opt in via [data-reveal-row]; their children stagger left-to-right

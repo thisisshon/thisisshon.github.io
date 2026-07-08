@@ -1,5 +1,5 @@
 /**
- * SEO — templated per-page metadata.
+ * SEO - templated per-page metadata.
  *
  * Every page passes an `SEO` object to BaseLayout; the layout renders the
  * complete head: title, description, canonical, Open Graph, Twitter card and
@@ -16,7 +16,7 @@ export interface SEO {
    * Combined with Astro.site to form the canonical + og:url.
    */
   path: string;
-  /** og:type — defaults to "website". */
+  /** og:type - defaults to "website". */
   ogType?: 'website' | 'article';
   /** Optional JSON-LD blocks (FAQPage, BreadcrumbList, Organization, …). */
   jsonLd?: Record<string, unknown>[];
@@ -30,12 +30,12 @@ export const SITE_NAME = 'Shriram Financial Services';
 export function fullTitle(title: string): string {
   // Strip any brand suffix a page may still carry (either separator), then
   // append the canonical `| SITE_NAME` so every <title> is consistent.
-  const bare = title.replace(new RegExp(`\\s*[—|]\\s*${SITE_NAME}\\s*$`), '').trim();
+  const bare = title.replace(new RegExp(`\\s*[-|]\\s*${SITE_NAME}\\s*$`), '').trim();
   return `${bare} | ${SITE_NAME}`;
 }
 
 /* ------------------------------------------------------------------ */
-/* JSON-LD builders — shared shapes used across many pages.            */
+/* JSON-LD builders - shared shapes used across many pages.            */
 /* ------------------------------------------------------------------ */
 
 export interface FAQEntry {

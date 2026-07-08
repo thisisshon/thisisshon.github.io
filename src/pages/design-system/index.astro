@@ -1,14 +1,14 @@
 ---
 /**
- * Design System — hub · /design-system/
+ * Design System - hub · /design-system/
  * Internal tooling docs (noindex). The export artifact for the Figma round-trip.
  * Two documentation pages: the honest as-built inventory ("current") and the
- * consolidated, live-token system ("proposed" — the Figma artifact).
+ * consolidated, live-token system ("proposed" - the Figma artifact).
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const seo = {
-  title: 'Design System — Documentation Hub',
+  title: 'Design System - Documentation Hub',
   description:
     'Internal design-system documentation for Shriram Financial Services: the honest as-built style inventory of the legacy site, and the consolidated token system rendered live from styles.css for the Figma round-trip.',
   path: '/design-system/',
@@ -38,7 +38,7 @@ const seo = {
       <h2 class="sec-title">Two views of one system</h2>
       <p class="sec-lead">
         The audit (<code>docs/legacy-style-audit.md</code>) inventoried every style value in the
-        legacy static site — roughly 150 colors across two parallel stylesheets. The token system
+        legacy static site - roughly 150 colors across two parallel stylesheets. The token system
         in <code>src/styles/global.css</code> resolves that sprawl. These two pages are the
         before &amp; after: <b>Current</b> is the honest mirror of what was; <b>Proposed</b> is
         the clean system, rendered live, ready to become Figma variables.
@@ -50,7 +50,7 @@ const seo = {
         <span class="ds-card-tag">Doc 1 · the “before”</span>
         <h3>What is used</h3>
         <p>
-          The honest as-built inventory extracted from the full audit — ~150 colors grouped into
+          The honest as-built inventory extracted from the full audit - ~150 colors grouped into
           near-duplicate clusters, the two-stylesheet fork, and the off-scale type / off-grid
           spacing the token system corrects. Values here are historical literals.
         </p>
@@ -64,7 +64,7 @@ const seo = {
         <span class="ds-card-tag">Doc 2 · the Figma artifact</span>
         <h3>What is suggested</h3>
         <p>
-          The consolidated, duplication-proofed system rendered <b>live from the tokens</b> —
+          The consolidated, duplication-proofed system rendered <b>live from the tokens</b> -
           primitive → semantic → component, a full colour/type/spacing/shadow reference and a
           component gallery. Structured to map 1:1 onto Figma variables for the round-trip.
         </p>

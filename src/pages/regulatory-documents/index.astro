@@ -1,10 +1,10 @@
 ---
 /**
- * Regulatory Documents — /regulatory-documents/
+ * Regulatory Documents - /regulatory-documents/
  * Hub page indexing the company's regulatory / compliance documents. The two
  * live sub-pages (Investor Charter, Mandatory Member Details) plus the standard
  * SEBI / exchange disclosure documents render as the shared view/download
- * .doc-card (.doc-grid / .doc-card, global.css) — the same card used by
+ * .doc-card (.doc-grid / .doc-card, global.css) - the same card used by
  * /regulatory-documents/regulatory-documents/investor-charter/. DATA-DRIVEN (DOCS below) so the
  * template scales to any number of documents (rule 1). No component forks (rule 2).
  */
@@ -80,8 +80,8 @@ const seo = {
     <div class="hero-inner">
       <h1>Regulatory <span class="g">Documents</span></h1>
       <p class="lead">
-        Every regulatory and compliance document from Shriram Financial Services — investor
-        charters, member disclosures, risk documents and policies — in one place. View online or
+        Every regulatory and compliance document from Shriram Financial Services - investor
+        charters, member disclosures, risk documents and policies - in one place. View online or
         download as PDF.
       </p>
     </div>
@@ -109,11 +109,11 @@ const seo = {
               {d.meta}
             </span>
             <div class="doc-links">
-              <a class="doc-dl" href={d.href} aria-label={`View — ${d.name}`}>
+              <a class="doc-dl" href={d.href} aria-label={`View - ${d.name}`}>
                 View
               </a>
               {d.download && (
-                <a class="doc-dl" href={d.href} download aria-label={`Download — ${d.name}`}>
+                <a class="doc-dl" href={d.href} download aria-label={`Download - ${d.name}`}>
                   Download
                 </a>
               )}
@@ -139,7 +139,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== Regulatory Documents hub — page-local styles only. The document cards
+  /* ===== Regulatory Documents hub - page-local styles only. The document cards
      use the shared .doc-grid / .doc-card component from global.css; only the
      disclosure fine print is page-specific. ===== */
   .section {
@@ -151,7 +151,7 @@ const seo = {
     margin-top: 32px;
   }
 
-  /* compliance disclosure — plain fine print on the tinted band. */
+  /* compliance disclosure - plain fine print on the tinted band. */
   .disc {
     max-width: 1288px;
     font-weight: 400;

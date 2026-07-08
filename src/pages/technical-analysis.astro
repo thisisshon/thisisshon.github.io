@@ -1,71 +1,71 @@
 ---
 /**
- * Technical Research — /technical-analysis/
+ * Technical Research - /technical-analysis/
  * Research sub-page (nested route → imports at ../../ depth). Built to the
  * Figma "Technical Research" wireframe (V4, node 977-6333) but rendered
  * entirely in the shared design system: the standardised olive hero (rule 7),
  * shared section / card / check-list / FAQ components, and page-local styles
- * ONLY for the two genuinely-new blocks — the gated "note" card and the
+ * ONLY for the two genuinely-new blocks - the gated "note" card and the
  * research-report card grid. Every value binds to a token (rule 9).
  *
  * The report grid is DATA-DRIVEN (src-of-truth: REPORTS below) so the same
- * template scales to thousands of report instances — the scale North Star.
+ * template scales to thousands of report instances - the scale North Star.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// Research reports — verbatim from the wireframe. `kind` maps to a badge tint;
+// Research reports - verbatim from the wireframe. `kind` maps to a badge tint;
 // `locked` gates the card (skeleton + lock overlay + unlock bar); unlocked
 // cards show the publisher header + a PDF download instead.
 const REPORTS = [
   {
     badge: 'Cautious', kind: 'warn', date: '19 May 2026', pages: '3 pages',
-    title: 'Daily EQ Trend — Nifty Recovers from Demand Zone; 24,000 Remains Key Trigger',
+    title: 'Daily EQ Trend - Nifty Recovers from Demand Zone; 24,000 Remains Key Trigger',
     tags: 'Equity | Index', author: 'Brijesh Ail, AVP Research', locked: false,
   },
   {
     badge: 'Positive', kind: 'pos', date: '19 May 2026', pages: '3 pages',
-    title: 'Daily Commodity Trend — Gold near 10 DEMA Support; Crude Momentum Positive',
+    title: 'Daily Commodity Trend - Gold near 10 DEMA Support; Crude Momentum Positive',
     tags: 'Commodity | MCX', author: 'Brijesh Ail, AVP Research', locked: false,
   },
   {
     badge: 'Range-Bound', kind: 'warn', date: '16 May 2026', pages: '4 pages',
-    title: 'Bank Nifty Weekly — 61.8% Fib Support Held; Breakout Above 54,800 Awaited',
+    title: 'Bank Nifty Weekly - 61.8% Fib Support Held; Breakout Above 54,800 Awaited',
     tags: 'Equity | Banking', author: 'Brijesh Ail, AVP Research', locked: true,
   },
   {
     badge: 'Buy', kind: 'info', date: '15 May 2026', pages: '3 pages',
-    title: 'MCX Zinc & Crude Oil Trading Strategy — Entry Levels and Stop Loss Zones',
+    title: 'MCX Zinc & Crude Oil Trading Strategy - Entry Levels and Stop Loss Zones',
     tags: 'Commodity | Strategy', author: 'Brijesh Ail, AVP Research', locked: true,
   },
   {
     badge: 'Data Report', kind: 'info', date: '14 May 2026', pages: '2 pages',
-    title: 'Nifty 50 Pivot Table — Full S1 S2 R1 R2 Levels for All 50 Constituents',
+    title: 'Nifty 50 Pivot Table - Full S1 S2 R1 R2 Levels for All 50 Constituents',
     tags: 'Equity | Pivot Data', author: 'Research Desk', locked: true,
   },
   {
     badge: 'Accumulate', kind: 'pos', date: '13 May 2026', pages: '5 pages',
-    title: 'IT Sector Breakout Watch — TechM +4.85%, Infosys +2.38% Lead Sectoral Rally',
+    title: 'IT Sector Breakout Watch - TechM +4.85%, Infosys +2.38% Lead Sectoral Rally',
     tags: 'Equity | Sectoral', author: 'Brijesh Ail, AVP Research', locked: true,
   },
 ];
 
-// What Technical Research contains — the checklist (wireframe, verbatim).
+// What Technical Research contains - the checklist (wireframe, verbatim).
 const CONTAINS = [
   'Daily support, resistance and pivot levels for key indices and commodities',
-  'Candlestick and pattern reads — rounding tops, trend reversals, breakouts',
+  'Candlestick and pattern reads - rounding tops, trend reversals, breakouts',
   'Derivatives strategy notes built for F&O traders',
   'Intraday and positional trade ideas, with entry, target and stop-loss',
-  'A level that would make us review the call — stated upfront, not after',
+  'A level that would make us review the call - stated upfront, not after',
 ];
 
-// Frequently Asked Questions — first item open (site convention).
+// Frequently Asked Questions - first item open (site convention).
 const FAQS = [
   {
     q: 'What is Shriram Research?',
-    a: 'Shriram Research is the equity and commodity research division of Shriram Financial Services. We publish daily technical trend reports, fundamental stock analysis, and monthly mutual fund industry reviews — all produced by SEBI-registered analysts.',
+    a: 'Shriram Research is the equity and commodity research division of Shriram Financial Services. We publish daily technical trend reports, fundamental stock analysis, and monthly mutual fund industry reviews - all produced by SEBI-registered analysts.',
   },
   {
     q: 'What types of research reports are available?',
@@ -73,15 +73,15 @@ const FAQS = [
   },
   {
     q: 'Do I need to login to read the reports?',
-    a: 'A short preview of every report is open to everyone. Full reports — with detailed levels, entry, target and stop-loss — unlock when you log in to the Antara app or open a Shriram demat account.',
+    a: 'A short preview of every report is open to everyone. Full reports - with detailed levels, entry, target and stop-loss - unlock when you log in to the Antara app or open a Shriram demat account.',
   },
   {
     q: 'How do I open a demat account to access research?',
-    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account — once verified, every research PDF, pivot table and trade idea is unlocked in full.',
+    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account - once verified, every research PDF, pivot table and trade idea is unlocked in full.',
   },
   {
     q: 'Is the research free for clients?',
-    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library — all technical notes, pivot tables and trading ideas — at no extra charge.',
+    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library - all technical notes, pivot tables and trading ideas - at no extra charge.',
   },
   {
     q: 'How often are reports published?',
@@ -104,7 +104,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Research Centre', href: '/research-hub/' }, { name: 'Technical Research' }]} />
     <div class="hero-inner" data-enter>
       <h1>Technical <span class="g">Research</span></h1>
-      <p class="lead">Where price is the only fundamental that matters today. We read the chart — support, resistance and the level that would change the view.</p>
+      <p class="lead">Where price is the only fundamental that matters today. We read the chart - support, resistance and the level that would change the view.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -120,7 +120,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Technical Research</h2>
-      <p class="sec-lead">Technical Research reads the chart, not the balance sheet — price action, volume, moving averages and the patterns they form, across equity indices, individual stocks, currencies and commodities. The output is short and dated: today's support and resistance, the level that would change the view, and what we're watching the chart for next.</p>
+      <p class="sec-lead">Technical Research reads the chart, not the balance sheet - price action, volume, moving averages and the patterns they form, across equity indices, individual stocks, currencies and commodities. The output is short and dated: today's support and resistance, the level that would change the view, and what we're watching the chart for next.</p>
     </div>
   </section>
 
@@ -128,7 +128,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-contains" data-section="contains" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Technical Research Contains</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Every desk note is built the same way — actionable levels, the pattern behind them, and the risk stated upfront. Here's what lands in your inbox each trading day.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every desk note is built the same way - actionable levels, the pattern behind them, and the risk stated upfront. Here's what lands in your inbox each trading day.</p>
     </div>
     <div class="card" style="display:flex;flex-direction:column">
       <div class="check-list">
@@ -145,7 +145,7 @@ const seo = {
     </div>
   </section>
 
-  <!-- ================= OPEN DEMAT ACCOUNT — gated daily note ================= -->
+  <!-- ================= OPEN DEMAT ACCOUNT - gated daily note ================= -->
   <section class="section stack sec-light" id="sec-note" data-section="note" style="gap:40px;align-items:center;justify-content:center">
     <h2 class="sec-title" style="text-align:center">Open Demat Account</h2>
     <div class="card gate">
@@ -165,7 +165,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-notes" data-section="notes" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px;align-items:center;text-align:center">
       <h2 class="sec-title">Technical Research Notes All You Need In One Place</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary);max-width:720px">Daily trend notes, pivot tables and strategy calls — each with a clear stance and the levels that matter. Preview any report; unlock the full PDF with a demat account.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary);max-width:720px">Daily trend notes, pivot tables and strategy calls - each with a clear stance and the levels that matter. Preview any report; unlock the full PDF with a demat account.</p>
     </div>
 
     <div class="notes-grid" data-reveal-row>
@@ -221,7 +221,7 @@ const seo = {
       ))}
     </div>
 
-    <!-- Unlock band — the wireframe's blue CTA, rendered in the site's dark
+    <!-- Unlock band - the wireframe's blue CTA, rendered in the site's dark
          focus-band palette (blue is functional-only in the token system). -->
     <div class="unlock">
       <div class="unlock-tx">
@@ -229,7 +229,7 @@ const seo = {
         <p>Open your Shriram demat account and get free, unlimited access to all research PDFs, pivot tables, analyst webinars and model portfolios.</p>
       </div>
       <div class="unlock-cta">
-        <a class="btn-gold" href="/open-demat-account/">Open Demat Account — Free</a>
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account - Free</a>
         <a class="btn-outline" href="#">Login to Existing Account</a>
       </div>
     </div>
@@ -271,7 +271,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== Technical Research — page-local components only. Every value binds
+  /* ===== Technical Research - page-local components only. Every value binds
      to a design token; the two genuinely-new blocks are the gated note card
      and the research-report grid. Section/hero/card/check-list/FAQ/CTA are all
      shared components from global.css. ===== */
@@ -281,7 +281,7 @@ const seo = {
   }
 
   /* The FAQ sits on --sec-light, so the block needs a defined edge: stroke the
-     accordion AND the helper side card together (background-dependent rule —
+     accordion AND the helper side card together (background-dependent rule -
      same as /calculators/sip/). */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
   .faq-side { border: 1px solid var(--color-border-card); }
@@ -311,14 +311,14 @@ const seo = {
   /* preview pane (publisher header + skeleton, or lock overlay when gated) */
   .rcard-preview { position: relative; height: 184px; padding: 24px; overflow: hidden; }
   .rcard-skel { display: flex; flex-direction: column; gap: 12px; }
-  .rcard.locked .rcard-skel { opacity: 0.45; } /* state dim — sanctioned opacity use (rule 5) */
+  .rcard.locked .rcard-skel { opacity: 0.45; } /* state dim - sanctioned opacity use (rule 5) */
   .rcard-pub { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .rcard-pub .pub-ic { width: 24px; height: 24px; flex: none; border-radius: 4px; background: var(--color-surface-section-tint); color: var(--color-text-heading-dark); display: inline-flex; align-items: center; justify-content: center; }
   .rcard-pub .pub-ic svg { width: 16px; height: 16px; }
   .rcard-pub .pub-tx { display: flex; flex-direction: column; }
   .rcard-pub b { font-weight: 700; font-size: 10px; letter-spacing: 1px; color: var(--color-text-heading-dark); }
   .rcard-pub small { font-weight: 400; font-size: 10px; color: var(--color-text-faint); }
-  /* skeleton bars — neutral gray tokens standing in for report body text */
+  /* skeleton bars - neutral gray tokens standing in for report body text */
   .sk { display: block; height: 8px; border-radius: 999px; background: var(--color-gray-150); }
   .sk-1 { width: 100%; }
   .sk-2 { width: 86%; }
@@ -327,7 +327,7 @@ const seo = {
   .sk-a { flex: 0 0 40%; background: var(--color-gray-200); }
   .sk-b { flex: 1 1 auto; }
 
-  /* lock overlay (gated cards) — blue is the functional link token */
+  /* lock overlay (gated cards) - blue is the functional link token */
   .rcard-lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
   .rcard-lock .lock-ic { width: 40px; height: 40px; border-radius: 999px; background: var(--color-link); color: var(--color-white); display: inline-flex; align-items: center; justify-content: center; }
   .rcard-lock .lock-tx { font-weight: 600; font-size: 14px; color: var(--color-link); }
@@ -339,7 +339,7 @@ const seo = {
   .rcard-body { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 24px; border-top: 1px solid var(--color-border-hairline); }
   .rcard-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .rbadge { padding: 4px 8px; border-radius: 999px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-  /* badge tints — all bind to tokens (rule 9). The blue tint is the shared
+  /* badge tints - all bind to tokens (rule 9). The blue tint is the shared
      --color-surface-info-tint (was a page-local literal). */
   .rbadge--pos { background: var(--color-success-tint); color: var(--color-success-strong); }
   .rbadge--warn { background: var(--color-gold-100); color: var(--color-gold-950); }
@@ -356,7 +356,7 @@ const seo = {
     .rcard-link:hover { text-decoration: underline; }
   }
 
-  /* unlock bar at card foot (gated cards) — shared light-blue info tint */
+  /* unlock bar at card foot (gated cards) - shared light-blue info tint */
   .rcard-action { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 24px; background: var(--color-surface-info-tint); border-top: 1px solid var(--color-border-hairline); color: var(--color-link); font-weight: 600; font-size: 14px; }
   .rcard-action svg { width: 16px; height: 16px; flex: none; }
   /* nudge the trailing arrow on hover (matches the site's .appr / .pcard language) */
@@ -365,7 +365,7 @@ const seo = {
     .rcard-action:hover svg:last-child { transform: translateX(4px); }
   }
 
-  /* ===== Unlock band — dark focus band (parity with the site's .rpt pattern);
+  /* ===== Unlock band - dark focus band (parity with the site's .rpt pattern);
      the wireframe's saturated blue is remapped to the olive focus palette so
      the page stays inside the one token set. Solid hex only. ===== */
   .unlock {
@@ -390,7 +390,7 @@ const seo = {
     .unlock-cta { width: 100%; }
     .unlock-cta .btn-gold, .unlock-cta .btn-outline { width: 100%; flex: 1 1 100%; }
     .gate-cta .btn-ghost, .gate-cta .btn-gold { width: 100%; }
-    /* bump the publisher badge off 10px for readability on phones —
+    /* bump the publisher badge off 10px for readability on phones -
        raise the pair together so the eyebrow/reg hierarchy is preserved */
     .rcard-pub b, .rcard-pub small { font-size: 12px; }
   }

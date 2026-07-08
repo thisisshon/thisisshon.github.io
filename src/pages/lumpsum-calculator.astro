@@ -1,6 +1,6 @@
 ---
 /**
- * Lumpsum Calculator — /lumpsum-calculator/
+ * Lumpsum Calculator - /lumpsum-calculator/
  * Interactive one-time-investment future-value calculator. Built on the shared
  * calculator UI in global.css (.calc-* / .field / .slider / .bar-* / .res-* /
  * .ready-* / .bullets / .explore-grid); page carries only content + its maths.
@@ -17,7 +17,7 @@ const MORE = otherCalculators('lumpsum');
 const FAQS = [
   {
     q: 'What is a lumpsum investment?',
-    a: 'A lumpsum investment is a single, one-time deployment of capital into a mutual fund, stock or other instrument — as opposed to a SIP, where you invest a fixed amount at regular intervals. Because the full amount is invested from day one, every rupee compounds for the entire investment horizon.',
+    a: 'A lumpsum investment is a single, one-time deployment of capital into a mutual fund, stock or other instrument - as opposed to a SIP, where you invest a fixed amount at regular intervals. Because the full amount is invested from day one, every rupee compounds for the entire investment horizon.',
   },
   {
     q: 'How is the future value of a lumpsum calculated?',
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: 'Is a lumpsum better than a SIP?',
-    a: 'Neither is universally better — it depends on your situation. A lumpsum can outperform when markets rise steadily after you invest, because your full capital is working from the start. A SIP averages your entry price across market cycles and suits investors deploying money gradually from monthly income. Many investors use both.',
+    a: 'Neither is universally better - it depends on your situation. A lumpsum can outperform when markets rise steadily after you invest, because your full capital is working from the start. A SIP averages your entry price across market cycles and suits investors deploying money gradually from monthly income. Many investors use both.',
   },
   {
     q: 'What rate of return should I assume?',
@@ -33,7 +33,7 @@ const FAQS = [
   },
   {
     q: 'Are the projected returns guaranteed?',
-    a: 'No. Market-linked investments do not offer guaranteed returns — the figures here are illustrative and assume a constant annual rate compounded over the full term. Actual returns depend on market performance and are not assured.',
+    a: 'No. Market-linked investments do not offer guaranteed returns - the figures here are illustrative and assume a constant annual rate compounded over the full term. Actual returns depend on market performance and are not assured.',
   },
 ];
 
@@ -52,14 +52,14 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'Lumpsum Calculator' }]} />
     <div class="hero-inner" data-enter>
       <h1>Grow A One-Time Investment With The <span class="g">Lumpsum Calculator</span></h1>
-      <p class="lead">See how a single investment could grow over time — just set your amount, horizon and expected rate of return.</p>
+      <p class="lead">See how a single investment could grow over time - just set your amount, horizon and expected rate of return.</p>
     </div>
   </section>
 
   <!-- ===== Lumpsum Calculator ===== -->
   <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">Lumpsum Calculator</h2>
-    <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly.</p>
+    <p class="calc-hint">Drag the sliders or type your own numbers - results update instantly.</p>
 
     <div class="calc-row">
       <!-- inputs -->
@@ -67,29 +67,29 @@ const seo = {
         <div class="fields">
           <div class="field">
             <div class="field-top">
-              <label for="amt">Total investment</label>
-              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="1,00,000" aria-label="Total investment amount in rupees" /></div>
+              <label for="amt">One-Time Investment</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="1,00,000" aria-label="One-time investment amount in rupees" /></div>
             </div>
-            <input class="slider" id="amtR" type="range" min="1000" max="10000000" step="1000" value="100000" aria-label="Total investment amount" />
+            <input class="slider" id="amtR" type="range" min="1000" max="10000000" step="1000" value="100000" aria-label="One-time investment amount" />
             <div class="slider-scale"><span>₹1,000</span><span>₹1,00,00,000</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="dur">Investment duration</label>
-              <div class="field-val"><input id="dur" type="text" inputmode="numeric" value="10" aria-label="Investment duration in years" /><span class="sfx">Yr</span></div>
-            </div>
-            <input class="slider" id="durR" type="range" min="1" max="40" step="1" value="10" aria-label="Investment duration in years" />
-            <div class="slider-scale"><span>1 Yr</span><span>40 Yr</span></div>
-          </div>
-
-          <div class="field">
-            <div class="field-top">
-              <label for="rate">Expected rate of return</label>
+              <label for="rate">Expected Return (% p.a.)</label>
               <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="12" aria-label="Expected annual rate of return in percent" /><span class="sfx">%</span></div>
             </div>
             <input class="slider" id="rateR" type="range" min="1" max="30" step="0.5" value="12" aria-label="Expected annual rate of return in percent" />
             <div class="slider-scale"><span>1%</span><span>30%</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="dur">Investment Period</label>
+              <div class="field-val"><input id="dur" type="text" inputmode="numeric" value="10" aria-label="Investment period in years" /><span class="sfx">yrs</span></div>
+            </div>
+            <input class="slider" id="durR" type="range" min="1" max="40" step="1" value="10" aria-label="Investment period in years" />
+            <div class="slider-scale"><span>1 yrs</span><span>40 yrs</span></div>
           </div>
         </div>
       </div>
@@ -99,7 +99,7 @@ const seo = {
         <div class="bar-wrap">
           <div class="bar-top">
             <div class="bar-head">
-              <span class="bar-cap">Total Assumed Value</span>
+              <span class="bar-cap">Total Value</span>
               <span class="bar-tot" id="d-tot">₹3,10,585</span>
             </div>
             <div class="stack-bar" role="img" aria-label="Total assumed value split between invested amount and estimated returns">
@@ -110,7 +110,7 @@ const seo = {
 
           <div class="res-cards" data-reveal-row>
             <div class="res-card">
-              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Invested Amount</div>
+              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Amount Invested</div>
               <div class="res-val" id="r-inv">₹1,00,000</div>
             </div>
             <div class="res-card">
@@ -121,11 +121,11 @@ const seo = {
 
           <div class="bar-div" role="presentation"></div>
 
-          <p class="bar-note">Note: Figures are illustrative and assume a constant annual rate of return compounded over the full term; actual market returns fluctuate and are not guaranteed.</p>
+          <p class="bar-note">Figures are illustrative and assume a constant annual return compounded over the full term; actual market returns fluctuate and are not guaranteed.</p>
         </div>
 
         <div class="ready-bar">
-          <p class="ready-text">Invest a <b id="cta-amt">₹1,00,000 lumpsum</b> and grow your wealth</p>
+          <p class="ready-text">Put your plan into action - <b>open a free Demat account</b></p>
           <a class="ready-btn" href="/open-demat-account/">Open Demat Account</a>
         </div>
       </div>
@@ -148,14 +148,14 @@ const seo = {
       <li>Instantly estimate the future value of a one-time investment without any manual maths.</li>
       <li>Compare scenarios by changing your amount, duration or expected return to find what fits your goals.</li>
       <li>See clearly how much of your final corpus is your own capital versus estimated returns.</li>
-      <li>Decide whether to invest a windfall as a lumpsum or spread it out — with numbers, not guesswork.</li>
+      <li>Decide whether to invest a windfall as a lumpsum or spread it out - with numbers, not guesswork.</li>
     </ul>
   </section>
 
   <!-- ===== How Does A Lumpsum Calculator Work ===== -->
   <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
     <h2 class="sec-title">How Does A Lumpsum Calculator Work?</h2>
-    <p class="sec-lead">The calculator uses the standard compound-interest formula for a one-time investment: A = P × (1 + r)ⁿ, where P is your invested amount, r is the expected annual rate of return and n is the number of years you stay invested. Because the entire amount compounds from day one for the full term, even a modest rate of return can produce substantial growth over long horizons — a direct illustration of the power of compounding.</p>
+    <p class="sec-lead">The calculator uses the standard compound-interest formula for a one-time investment: A = P × (1 + r)ⁿ, where P is your invested amount, r is the expected annual rate of return and n is the number of years you stay invested. Because the entire amount compounds from day one for the full term, even a modest rate of return can produce substantial growth over long horizons - a direct illustration of the power of compounding.</p>
   </section>
 
   <!-- ===== Advantages Of A Lumpsum Calculator ===== -->
@@ -208,7 +208,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* Lumpsum calculator — calculator UI is shared in global.css. Page-local:
+  /* Lumpsum calculator - calculator UI is shared in global.css. Page-local:
      General Questions sits on --sec-light, so the accordion + helper side card
      need a defined edge. */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
@@ -216,7 +216,7 @@ const seo = {
 </style>
 
 <script>
-  // Lumpsum calculator — compound growth of a single one-time investment.
+  // Lumpsum calculator - compound growth of a single one-time investment.
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -284,8 +284,6 @@ const seo = {
     segInv.style.width = invPct + '%';
     segRet.style.width = 100 - invPct + '%';
 
-    (document.getElementById('cta-amt') as HTMLElement).textContent =
-      '₹' + fmt.format(amount) + ' lumpsum';
     (document.getElementById('sr-summary') as HTMLElement).textContent =
       'Projected total value ' + rupee(fv) + ' from ' + rupee(invested) + ' invested over ' + years + ' years.';
 

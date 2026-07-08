@@ -1,37 +1,37 @@
 ---
 /**
- * Currency — /currency/
+ * Currency - /currency/
  * Product long-form page. Net-new page built entirely from the shared design
  * system (tokens + component classes in global.css); structural sibling of
  * products/equity.astro and products/mutual-funds.astro. Built from the Figma
  * wireframe (V4, node 995:6766). Nested route → imports at ../../ depth.
  *
  * Page-unique scoped block below holds only two things not (yet) in the system:
- *  - .vsteps — a 6-step vertical numbered flow (shared .steps is 4-wide horizontal)
- *  - .stat   — legal/restricted status pills (token-bound to success/danger)
+ *  - .vsteps - a 6-step vertical numbered flow (shared .steps is 4-wide horizontal)
+ *  - .stat   - legal/restricted status pills (token-bound to success/danger)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General Questions — currency-derivatives domain content, first item open.
+// General Questions - currency-derivatives domain content, first item open.
 const FAQS = [
   {
     q: 'What is the minimum amount needed to start currency trading in India?',
-    a: "There's no exchange-mandated minimum, but you need enough margin to cover at least one lot of your chosen pair — typically a few thousand rupees for a single USDINR lot, depending on current margin requirements.",
+    a: "There's no exchange-mandated minimum, but you need enough margin to cover at least one lot of your chosen pair - typically a few thousand rupees for a single USDINR lot, depending on current margin requirements.",
   },
   {
     q: 'Can I trade currency without a demat account?',
-    a: 'Yes. Exchange-traded currency derivatives are cash-settled, so no demat holding is required — you only need a trading account with the currency segment activated. Most brokers bundle the segment with your standard account.',
+    a: 'Yes. Exchange-traded currency derivatives are cash-settled, so no demat holding is required - you only need a trading account with the currency segment activated. Most brokers bundle the segment with your standard account.',
   },
   {
     q: 'What are the margin requirements for currency futures?',
-    a: 'Margins are set by the exchange and revised periodically. You typically post SPAN plus exposure margin — a low single-digit percentage of contract value — so a single USDINR lot needs a few thousand rupees. Always confirm current margins before placing an order.',
+    a: 'Margins are set by the exchange and revised periodically. You typically post SPAN plus exposure margin - a low single-digit percentage of contract value - so a single USDINR lot needs a few thousand rupees. Always confirm current margins before placing an order.',
   },
   {
     q: 'Which currency pairs can I trade in India?',
-    a: 'Four rupee pairs carry the bulk of volume — USDINR, EURINR, GBPINR and JPYINR — alongside a smaller set of cross-currency pairs such as EURUSD, GBPUSD and USDJPY, all traded on the NSE and BSE currency segments.',
+    a: 'Four rupee pairs carry the bulk of volume - USDINR, EURINR, GBPINR and JPYINR - alongside a smaller set of cross-currency pairs such as EURUSD, GBPUSD and USDJPY, all traded on the NSE and BSE currency segments.',
   },
   {
     q: 'How is currency trading taxed?',
@@ -57,7 +57,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Currency' }]} />
     <div class="hero-inner" data-enter>
       <h1>Currency trading in India, <span class="g">explained from the first trade to the last expiry</span></h1>
-      <p class="lead">Trade USDINR, EURINR, GBPINR and JPYINR on regulated exchanges with margins that start in the low single digits of contract value. No offshore account, no FEMA grey area — just exchange-traded currency derivatives, settled in rupees.</p>
+      <p class="lead">Trade USDINR, EURINR, GBPINR and JPYINR on regulated exchanges with margins that start in the low single digits of contract value. No offshore account, no FEMA grey area - just exchange-traded currency derivatives, settled in rupees.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -74,9 +74,9 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is Currency Trading?</h2>
-      <p class="sec-lead">Currency trading is the buying and selling of one currency against another with the aim of profiting from changes in the exchange rate, or to lock in a future rate against a known exposure. In India, this happens almost entirely through currency derivatives — exchange-traded futures and options contracts on currency pairs — rather than the spot, over-the-counter market that most people associate with the word "forex."</p>
+      <p class="sec-lead">Currency trading is the buying and selling of one currency against another with the aim of profiting from changes in the exchange rate, or to lock in a future rate against a known exposure. In India, this happens almost entirely through currency derivatives - exchange-traded futures and options contracts on currency pairs - rather than the spot, over-the-counter market that most people associate with the word "forex."</p>
     </div>
-    <p class="sec-lead">That distinction matters. Globally, "forex trading" usually means trading spot currency pairs directly with a broker, often through an offshore platform, with no central exchange involved. In India, retail participants trade currency derivatives — contracts that derive their value from an underlying exchange rate — through the National Stock Exchange (NSE) and the Bombay Stock Exchange (BSE), cleared through a recognised clearing corporation, in the same way equity futures and options work.</p>
+    <p class="sec-lead">That distinction matters. Globally, "forex trading" usually means trading spot currency pairs directly with a broker, often through an offshore platform, with no central exchange involved. In India, retail participants trade currency derivatives - contracts that derive their value from an underlying exchange rate - through the National Stock Exchange (NSE) and the Bombay Stock Exchange (BSE), cleared through a recognised clearing corporation, in the same way equity futures and options work.</p>
   </section>
 
   <!-- ===== How It Works on the NSE and BSE ===== -->
@@ -89,7 +89,7 @@ const seo = {
       <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">Exchange</h4>
-          <p class="card-p">NSE and BSE run separate currency derivatives segments. Prices are quoted and matched electronically — the same order-book mechanism used for equity futures.</p>
+          <p class="card-p">NSE and BSE run separate currency derivatives segments. Prices are quoted and matched electronically - the same order-book mechanism used for equity futures.</p>
         </div>
         <div class="card">
           <h4 class="card-h">Clearing corporation</h4>
@@ -103,7 +103,7 @@ const seo = {
         </div>
         <div class="card">
           <h4 class="card-h">Expiry &amp; settlement</h4>
-          <p class="card-p">Most contracts expire on the last working day of the month, two days prior to the last business day. Final settlement uses the RBI's reference rate, and the difference is paid in rupees — no foreign currency changes hands.</p>
+          <p class="card-p">Most contracts expire on the last working day of the month, two days prior to the last business day. Final settlement uses the RBI's reference rate, and the difference is paid in rupees - no foreign currency changes hands.</p>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-pairs" data-section="pairs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Currency Pairs Available in India</h2>
-      <p class="sec-lead">Four rupee pairs carry the bulk of volume. A smaller set of cross-currency pairs — where neither leg is the rupee — lets traders take a view on global currency movements without an INR component.</p>
+      <p class="sec-lead">Four rupee pairs carry the bulk of volume. A smaller set of cross-currency pairs - where neither leg is the rupee - lets traders take a view on global currency movements without an INR component.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t4 bordered">
       <div class="cell th"><p>Pair</p></div><div class="cell th"><p>Underlying</p></div><div class="cell th"><p>Lot Size</p></div><div class="cell th"><p>Tick Size</p></div>
@@ -122,11 +122,11 @@ const seo = {
       <div class="cell tb"><p class="k">EURINR</p></div><div class="cell tb"><p class="v">Euro / Indian rupee</p></div><div class="cell tb"><p class="v">1,000 EUR</p></div><div class="cell tb"><p class="v">₹0.0025</p></div>
       <div class="cell tb"><p class="k">GBPINR</p></div><div class="cell tb"><p class="v">British pound / Indian rupee</p></div><div class="cell tb"><p class="v">1,000 GBP</p></div><div class="cell tb"><p class="v">₹0.0025</p></div>
       <div class="cell tb"><p class="k">JPYINR</p></div><div class="cell tb"><p class="v">Japanese yen / Indian rupee</p></div><div class="cell tb"><p class="v">100,000 JPY</p></div><div class="cell tb"><p class="v">₹0.0025</p></div>
-      <div class="cell tb"><p class="k">EURUSD</p></div><div class="cell tb"><p class="v">Euro / US dollar — cross pair</p></div><div class="cell tb"><p class="v">1,000 EUR</p></div><div class="cell tb"><p class="v">$0.0001</p></div>
-      <div class="cell tb"><p class="k">GBPUSD</p></div><div class="cell tb"><p class="v">British pound / US dollar — cross pair</p></div><div class="cell tb"><p class="v">1,000 GBP</p></div><div class="cell tb"><p class="v">$0.0001</p></div>
-      <div class="cell tb"><p class="k">USDJPY</p></div><div class="cell tb"><p class="v">US dollar / Japanese yen — cross pair</p></div><div class="cell tb"><p class="v">1,000 USD</p></div><div class="cell tb"><p class="v">¥0.01</p></div>
+      <div class="cell tb"><p class="k">EURUSD</p></div><div class="cell tb"><p class="v">Euro / US dollar - cross pair</p></div><div class="cell tb"><p class="v">1,000 EUR</p></div><div class="cell tb"><p class="v">$0.0001</p></div>
+      <div class="cell tb"><p class="k">GBPUSD</p></div><div class="cell tb"><p class="v">British pound / US dollar - cross pair</p></div><div class="cell tb"><p class="v">1,000 GBP</p></div><div class="cell tb"><p class="v">$0.0001</p></div>
+      <div class="cell tb"><p class="k">USDJPY</p></div><div class="cell tb"><p class="v">US dollar / Japanese yen - cross pair</p></div><div class="cell tb"><p class="v">1,000 USD</p></div><div class="cell tb"><p class="v">¥0.01</p></div>
     </div></div>
-    <p class="sub-lead">Lot sizes and tick sizes are set by the exchange and revised periodically — always confirm current contract specifications before placing an order.</p>
+    <p class="sub-lead">Lot sizes and tick sizes are set by the exchange and revised periodically - always confirm current contract specifications before placing an order.</p>
   </section>
 
   <!-- ===== Futures vs Options ===== -->
@@ -140,11 +140,11 @@ const seo = {
       <div class="cell tb"><p class="k">Obligation</p></div><div class="cell tb"><p class="v">Buyer and seller both obligated to settle</p></div><div class="cell tb"><p class="v">Buyer has a right, not an obligation; seller is obligated</p></div>
       <div class="cell tb"><p class="k">Upfront cost</p></div><div class="cell tb"><p class="v">Margin only, no premium</p></div><div class="cell tb"><p class="v">Buyer pays a premium; seller receives it and posts margin</p></div>
       <div class="cell tb"><p class="k">Maximum loss (buyer)</p></div><div class="cell tb"><p class="v">Theoretically unlimited if the market moves against you</p></div><div class="cell tb"><p class="v">Capped at the premium paid</p></div>
-      <div class="cell tb"><p class="k">Leverage</p></div><div class="cell tb"><p class="v">High — small margin controls a full lot</p></div><div class="cell tb"><p class="v">Premium cost is small relative to lot value</p></div>
+      <div class="cell tb"><p class="k">Leverage</p></div><div class="cell tb"><p class="v">High - small margin controls a full lot</p></div><div class="cell tb"><p class="v">Premium cost is small relative to lot value</p></div>
       <div class="cell tb"><p class="k">Typical use</p></div><div class="cell tb"><p class="v">Directional trades, hedging known exposure</p></div><div class="cell tb"><p class="v">Defined-risk speculation, hedging with optionality</p></div>
       <div class="cell tb"><p class="k">Expiry cycle</p></div><div class="cell tb"><p class="v">Monthly contracts, several months listed at once</p></div><div class="cell tb"><p class="v">Monthly expiry, generally on USDINR, EURINR, GBPINR, JPYINR</p></div>
     </div></div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">A call option gives the buyer the right to buy the underlying pair at the strike price; a put gives the right to sell. Both lose value as expiry approaches if the market doesn't move in the buyer's favour — a concept known as time decay — which is why option buying and option selling carry very different risk profiles even though they sit on opposite sides of the same contract.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">A call option gives the buyer the right to buy the underlying pair at the strike price; a put gives the right to sell. Both lose value as expiry approaches if the market doesn't move in the buyer's favour - a concept known as time decay - which is why option buying and option selling carry very different risk profiles even though they sit on opposite sides of the same contract.</p>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Options Trading</a>
   </section>
 
@@ -152,7 +152,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-legal" data-section="legal" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Is Currency Trading Legal in India?</h2>
-      <p class="sec-lead">Yes — through the right channel. Exchange-traded currency derivatives on NSE and BSE are fully legal and regulated. The legal grey area exists entirely on the offshore side.</p>
+      <p class="sec-lead">Yes - through the right channel. Exchange-traded currency derivatives on NSE and BSE are fully legal and regulated. The legal grey area exists entirely on the offshore side.</p>
     </div>
     <div class="row-2" data-reveal-row>
       <div class="card">
@@ -161,19 +161,19 @@ const seo = {
       </div>
       <div class="card">
         <span class="stat no">Restricted</span>
-        <p class="card-p">Spot forex trading through offshore or unregistered platforms. The Foreign Exchange Management Act (FEMA) restricts most retail forex transactions to specific, permitted purposes — speculative spot trading via an overseas broker generally falls outside those purposes.</p>
+        <p class="card-p">Spot forex trading through offshore or unregistered platforms. The Foreign Exchange Management Act (FEMA) restricts most retail forex transactions to specific, permitted purposes - speculative spot trading via an overseas broker generally falls outside those purposes.</p>
       </div>
     </div>
-    <p class="sec-lead">The Reserve Bank of India and SEBI jointly oversee the currency derivatives segment — RBI from a capital-account and exchange-rate-management standpoint, SEBI as the market regulator for exchanges, brokers, and clearing corporations. Both bodies have repeatedly cautioned the public against offshore forex platforms that solicit Indian residents directly, many of which operate outside any regulatory framework that an Indian trader could appeal to in a dispute.</p>
+    <p class="sec-lead">The Reserve Bank of India and SEBI jointly oversee the currency derivatives segment - RBI from a capital-account and exchange-rate-management standpoint, SEBI as the market regulator for exchanges, brokers, and clearing corporations. Both bodies have repeatedly cautioned the public against offshore forex platforms that solicit Indian residents directly, many of which operate outside any regulatory framework that an Indian trader could appeal to in a dispute.</p>
   </section>
 
   <!-- ===== Taxation ===== -->
   <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Taxation on Currency Trading</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">How your gains are taxed depends on how you classify your trading activity — and that classification is yours to make, within the rules, every financial year.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">How your gains are taxed depends on how you classify your trading activity - and that classification is yours to make, within the rules, every financial year.</p>
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Income from exchange-traded currency derivatives is generally treated as non-speculative business income under the Income Tax Act, since these are derivative contracts settled through a recognised exchange — unlike intraday equity trades, which are classified as speculative. That means profits are added to your other business income and taxed at your applicable slab rate, while losses can be set off against most other heads of income and carried forward.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Income from exchange-traded currency derivatives is generally treated as non-speculative business income under the Income Tax Act, since these are derivative contracts settled through a recognised exchange - unlike intraday equity trades, which are classified as speculative. That means profits are added to your other business income and taxed at your applicable slab rate, while losses can be set off against most other heads of income and carried forward.</p>
   </section>
 
   <!-- ===== How to Start ===== -->
@@ -189,7 +189,7 @@ const seo = {
       </div>
       <div class="vstep">
         <div class="vnum">2</div>
-        <div class="vbody"><h4>Activate the currency derivatives segment</h4><p>This is usually a one-time request through your broker's app or website — an additional KYC step beyond your equity segment activation, sometimes requiring income proof.</p></div>
+        <div class="vbody"><h4>Activate the currency derivatives segment</h4><p>This is usually a one-time request through your broker's app or website - an additional KYC step beyond your equity segment activation, sometimes requiring income proof.</p></div>
       </div>
       <div class="vstep">
         <div class="vnum">3</div>
@@ -205,7 +205,7 @@ const seo = {
       </div>
       <div class="vstep">
         <div class="vnum">6</div>
-        <div class="vbody"><h4>Track and manage to expiry</h4><p>Follow daily mark-to-market and manage your position through to expiry, or square it off earlier — most traders exit well before the contract's final settlement date.</p></div>
+        <div class="vbody"><h4>Track and manage to expiry</h4><p>Follow daily mark-to-market and manage your position through to expiry, or square it off earlier - most traders exit well before the contract's final settlement date.</p></div>
       </div>
     </div>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Currency Trading</a>
@@ -225,7 +225,7 @@ const seo = {
       <div class="row-2" data-reveal-row>
         <div class="card">
           <h4 class="card-h">RSI (Relative Strength Index)</h4>
-          <p class="card-p">Flags when a pair has moved sharply enough, in a short time, that a pause or reversal becomes more likely — useful for timing entries on USDINR's frequent intraday swings.</p>
+          <p class="card-p">Flags when a pair has moved sharply enough, in a short time, that a pause or reversal becomes more likely - useful for timing entries on USDINR's frequent intraday swings.</p>
         </div>
         <div class="card">
           <h4 class="card-h">MACD</h4>
@@ -246,7 +246,7 @@ const seo = {
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
-  <!-- ===== FAQs — Currency Trading ===== -->
+  <!-- ===== FAQs - Currency Trading ===== -->
   <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
@@ -271,7 +271,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Currency Trading Within Minutes</h3>
-        <p class="ct-sub">Trade regulated currency derivatives on NSE and BSE — settled in rupees, with zero paperwork.</p>
+        <p class="ct-sub">Trade regulated currency derivatives on NSE and BSE - settled in rupees, with zero paperwork.</p>
       </div>
       <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
     </div>

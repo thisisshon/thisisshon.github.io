@@ -1,6 +1,6 @@
 ---
 /**
- * Header — sticky site header (auto-hides on scroll down, reappears on
+ * Header - sticky site header (auto-hides on scroll down, reappears on
  * scroll up) with the primary nav, Login + CTA actions and the hamburger
  * that opens the mobile menu. Markup parity with the legacy `.nav` header.
  *
@@ -14,7 +14,7 @@ import MobileMenu from './MobileMenu.astro';
 
 <header class="nav">
   <div class="nav-left">
-    <a href="/" class="nav-logo-link" aria-label="Shriram Financial Services — home">
+    <a href="/" class="nav-logo-link" aria-label="Shriram Financial Services - home">
       <div class="logo-box">
         <div class="logo-crop">
           <img src="/assets/logo.png" alt="Shriram Financial Services" />
@@ -50,18 +50,25 @@ import MobileMenu from './MobileMenu.astro';
   </div>
   <div class="nav-right">
     <div class="nav-actions">
-      <a class="login" href={headerActions.login.href}>
-        <span>{headerActions.login.label}</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path
-            d="M4 6 8 10l4-4"
-            stroke="#2f7ef4"
-            stroke-width="1.3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </a>
+      <div class="login-wrap">
+        <button class="login" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="login-menu">
+          <span>{headerActions.login.label}</span>
+          <svg class="login-chev" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M4 6 8 10l4-4"
+              stroke="#2f7ef4"
+              stroke-width="1.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <div class="login-menu" id="login-menu" role="menu">
+          <span class="login-item login-item--soon" role="menuitem" aria-disabled="true">Explore Antara</span>
+          <a class="login-item" role="menuitem" href="https://antara.way2wealth.com/login">Antara Web Login</a>
+          <span class="login-item login-item--soon" role="menuitem" aria-disabled="true">Back Office</span>
+        </div>
+      </div>
       <a class="btn-dark" href={headerActions.cta.href}>{headerActions.cta.label}</a>
     </div>
   </div>
@@ -121,5 +128,25 @@ import MobileMenu from './MobileMenu.astro';
       },
       { passive: true }
     );
+  }
+
+  // Login dropdown: toggle on click, close on outside click / Escape.
+  const loginWrap = document.querySelector<HTMLElement>('.login-wrap');
+  const loginBtn = loginWrap?.querySelector<HTMLButtonElement>('.login');
+  if (loginWrap && loginBtn) {
+    const setOpen = (open: boolean) => {
+      loginWrap.classList.toggle('open', open);
+      loginBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    loginBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(!loginWrap.classList.contains('open'));
+    });
+    document.addEventListener('click', (e) => {
+      if (!loginWrap.contains(e.target as Node)) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
   }
 </script>

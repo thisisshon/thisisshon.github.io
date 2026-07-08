@@ -1,19 +1,19 @@
 ---
 /**
- * Sitemap — /sitemap/
+ * Sitemap - /sitemap/
  * A public, human-facing directory of the whole site (distinct from the
  * machine-readable /sitemap-index.xml that @astrojs/sitemap emits at build).
  *
  * Scale note: the link groups are BUILT FROM navigation.ts (the single source
- * of truth). New nav entries appear here automatically — no hand-maintained
+ * of truth). New nav entries appear here automatically - no hand-maintained
  * second list to drift out of sync. Only the top-level "Company" and "Legal"
  * groups (pages that don't live in the mega-nav) are declared locally.
  *
  * Layout: standard shared .hero, then the .pgroup pattern (same as
- * products/index.astro) — each group is an uppercase header + blurb over a
+ * products/index.astro) - each group is an uppercase header + blurb over a
  * uniform grid of compact link tiles, so a 15-link group and a 3-link group
  * read with equal weight. Every page (section landing pages included) is a
- * tile — nothing is hidden behind a "view all". Left-aligned headers
+ * tile - nothing is hidden behind a "view all". Left-aligned headers
  * (rule 12); one shared .cta-box.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -57,7 +57,7 @@ const hubLabels: Record<string, string> = {
   'research-centre': 'Research Centre',
 };
 
-// Products / Research / Calculators / Support — flattened from the nav tree.
+// Products / Research / Calculators / Support - flattened from the nav tree.
 const navGroups: SmGroup[] = megaNavSections.map((s) => {
   const links = s.columns.flatMap((c) => c.linkGroups.flat()).filter(isReal);
   const hub = s.viewAll && isReal(s.viewAll) ? s.viewAll.href : null;
@@ -68,7 +68,7 @@ const navGroups: SmGroup[] = megaNavSections.map((s) => {
   return { title: s.heading, blurb: blurbs[s.id] ?? '', links };
 });
 
-// Legal & compliance — curated real pages (kept out of the mega-nav).
+// Legal & compliance - curated real pages (kept out of the mega-nav).
 const legal: SmGroup = {
   title: 'Legal & Compliance',
   blurb: 'Policies, charters and regulatory disclosures.',
@@ -78,7 +78,7 @@ const legal: SmGroup = {
     { label: 'Mandatory Member Details', href: '/regulatory-documents/mandatory-member-details/' },
     { label: 'Privacy Policy', href: '/privacy-policy/' },
     { label: 'Terms & Conditions', href: '/terms-and-conditions/' },
-    { label: 'Terms of Use — Purse', href: '/terms-of-use-purse/' },
+    { label: 'Terms of Use - Purse', href: '/terms-of-use-purse/' },
     { label: 'Grievance Redressal', href: '/grievance-redressal/' },
     { label: 'SEBI SCORES', href: 'https://scores.sebi.gov.in' },
   ],
@@ -109,7 +109,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Sitemap' }]} />
     <div class="hero-inner" data-enter>
       <h1>Find Your Way Around <span class="g">Our Site</span></h1>
-      <p class="lead">A complete directory of everything on Shriram Financial Services — every product, research desk, calculator and support page, organised in one place.</p>
+      <p class="lead">A complete directory of everything on Shriram Financial Services - every product, research desk, calculator and support page, organised in one place.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
     </div>
   </section>
@@ -148,7 +148,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Didn't Find What You Were Looking For?</h3>
-        <p class="ct-sub">Our team is ready to point you in the right direction — reach out any time.</p>
+        <p class="ct-sub">Our team is ready to point you in the right direction - reach out any time.</p>
       </div>
       <a class="btn-gold" href="/contact-us/">Contact Support</a>
     </div>
@@ -156,9 +156,9 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== sitemap — page-local directory tiles (extends the .pgroup pattern) ===== */
+  /* ===== sitemap - page-local directory tiles (extends the .pgroup pattern) ===== */
 
-  /* Uniform tile grid — decouples visual weight from link count. */
+  /* Uniform tile grid - decouples visual weight from link count. */
   .sm-link-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -172,7 +172,7 @@ const seo = {
     padding: 16px;
     background: var(--color-surface-card);
     border: 1px solid var(--color-border-product-card);
-    border-radius: var(--radius-md); /* 8px — small tile */
+    border-radius: var(--radius-md); /* 8px - small tile */
     transition: background 0.25s ease, border-color 0.25s ease;
   }
   @media (min-width: 1024px) and (hover: hover) {

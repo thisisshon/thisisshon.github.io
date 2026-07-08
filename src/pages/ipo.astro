@@ -1,6 +1,6 @@
 ---
 /**
- * IPO — /ipo/
+ * IPO - /ipo/
  * Long-form Initial Public Offering guide. Built entirely from the shared
  * design-system components in global.css (hero, .section/.sec-title, .card,
  * .product-page_table, .risks, .steps, .cat-grid, FaqAccordion, .cta-box).
@@ -12,7 +12,7 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// Issue-structure cards — two ways an IPO can be priced and two ways shares are sourced.
+// Issue-structure cards - two ways an IPO can be priced and two ways shares are sourced.
 const STRUCTURE = [
   {
     h: 'Fixed Price Issue',
@@ -28,20 +28,20 @@ const STRUCTURE = [
   },
   {
     h: 'Offer for Sale (OFS)',
-    p: 'Existing shareholders — promoters or early investors — sell part of their holding to the public. The proceeds go to those selling shareholders, not the company.',
+    p: 'Existing shareholders - promoters or early investors - sell part of their holding to the public. The proceeds go to those selling shareholders, not the company.',
   },
 ];
 
-// How to apply — five-step ASBA/UPI flow through a broker or bank.
+// How to apply - five-step ASBA/UPI flow through a broker or bank.
 const STEPS = [
   { h: 'Pick an Open IPO', p: 'Browse live and upcoming IPOs, read the RHP and check the price band, lot size and issue dates.' },
   { h: 'Place Your Bid', p: 'Apply through your broker or bank at cut-off or a chosen price within the band, in multiples of the lot size.' },
-  { h: 'Block Funds via UPI / ASBA', p: 'The application amount is blocked in your bank account through UPI or ASBA — it stays in your account until allotment.' },
+  { h: 'Block Funds via UPI / ASBA', p: 'The application amount is blocked in your bank account through UPI or ASBA - it stays in your account until allotment.' },
   { h: 'Allotment', p: 'On finalisation, shares are credited to your Demat account; if oversubscribed, allotment may be partial or by lottery.' },
   { h: 'Listing Day', p: 'Blocked funds for un-allotted shares are released, and allotted shares begin trading on the NSE/BSE from the listing date.' },
 ];
 
-// Key IPO terms — term + plain-language definition.
+// Key IPO terms - term + plain-language definition.
 const TERMS = [
   {
     t: 'Price Band',
@@ -61,7 +61,7 @@ const TERMS = [
   },
   {
     t: 'ASBA',
-    d: 'Application Supported by Blocked Amount — the mandatory mechanism where your application money is blocked, not debited, until shares are allotted.',
+    d: 'Application Supported by Blocked Amount - the mandatory mechanism where your application money is blocked, not debited, until shares are allotted.',
   },
   {
     t: 'RII / NII / QIB',
@@ -77,7 +77,7 @@ const CATEGORIES = [
   { h: 'Anchor Investors', p: 'A sub-set of QIBs who commit ahead of the issue opening, lending confidence and helping anchor the price band.' },
 ];
 
-// Allotment & listing rows — scenario / what happens.
+// Allotment & listing rows - scenario / what happens.
 const ALLOT_ROWS = [
   {
     k: 'Under-subscribed',
@@ -99,13 +99,13 @@ const ALLOT_ROWS = [
 
 // Risks to weigh before applying.
 const RISKS = [
-  { h: 'No Allotment Risk', p: 'A heavily oversubscribed IPO is allotted by lottery — applying is no guarantee you will receive any shares at all.' },
+  { h: 'No Allotment Risk', p: 'A heavily oversubscribed IPO is allotted by lottery - applying is no guarantee you will receive any shares at all.' },
   { h: 'Listing-Day Volatility', p: 'Prices can swing sharply on debut. A stock may list below its issue price, turning an anticipated gain into an immediate loss.' },
   { h: 'Valuation Risk', p: 'IPOs are often priced to favour the seller. A rich valuation can limit upside and leave little margin of safety for new investors.' },
   { h: 'Lock-in & Limited History', p: 'Anchor and promoter shares carry lock-ins that can pressure prices on release, and a newly listed company has a short public track record.' },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is an IPO?',
@@ -121,7 +121,7 @@ const FAQS = [
   },
   {
     q: 'How does IPO allotment work if the issue is oversubscribed?',
-    a: 'When retail demand exceeds the shares on offer, allotment is done by a computerised lottery in multiples of the lot size. Every successful applicant receives at least one lot, and applicants who are not drawn receive no shares — the blocked funds are then released.',
+    a: 'When retail demand exceeds the shares on offer, allotment is done by a computerised lottery in multiples of the lot size. Every successful applicant receives at least one lot, and applicants who are not drawn receive no shares - the blocked funds are then released.',
   },
   {
     q: 'What is ASBA and how does UPI fit in?',
@@ -165,7 +165,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'IPO' }]} />
     <div class="hero-inner" data-enter>
       <h1>Invest in Companies at Their <span class="g">Public Debut</span></h1>
-      <p class="lead">Apply for Initial Public Offerings on the NSE and BSE — with UPI-backed applications, research-led insights and transparent, zero-fee guidance from Shriram.</p>
+      <p class="lead">Apply for Initial Public Offerings on the NSE and BSE - with UPI-backed applications, research-led insights and transparent, zero-fee guidance from Shriram.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -192,7 +192,7 @@ const seo = {
       <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Raise Growth Capital</h4>
-          <p class="card-p">A fresh issue of shares brings new money into the company to fund expansion, repay debt or invest in operations — without the fixed obligations of a loan.</p>
+          <p class="card-p">A fresh issue of shares brings new money into the company to fund expansion, repay debt or invest in operations - without the fixed obligations of a loan.</p>
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Provide an Exit &amp; Liquidity</h4>
@@ -206,7 +206,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">IPO Types &amp; Structure</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Every IPO is defined by two choices — how the shares are priced, and where the shares being sold come from.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every IPO is defined by two choices - how the shares are priced, and where the shares being sold come from.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -253,7 +253,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-terms" data-section="terms" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Key IPO Terms</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">The core vocabulary that appears in every offer document — worth understanding before you place a bid.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The core vocabulary that appears in every offer document - worth understanding before you place a bid.</p>
     </div>
     <div class="card">
       <dl class="gloss">
@@ -340,9 +340,9 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== ipo — page-specific only ===== */
+  /* ===== ipo - page-specific only ===== */
 
-  /* Key-terms glossary — a definition list inside a shared .card.
+  /* Key-terms glossary - a definition list inside a shared .card.
      Mirrors the bonds glossary pattern; all values on the 8px grid,
      colours bound to tokens. */
   .gloss {

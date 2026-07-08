@@ -1,6 +1,6 @@
 ---
 /**
- * Loan Against Mutual Funds (LAMF) — /loan-against-mutual-fund/
+ * Loan Against Mutual Funds (LAMF) - /loan-against-mutual-fund/
  * Long-form product page. Built entirely from the shared design-system
  * components in global.css (hero, .section/.sec-title, .card, .steps,
  * .product-page_table, .check-card, .risks, FaqAccordion, .cta-box).
@@ -12,20 +12,20 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// How a Loan Against Mutual Funds works — five steps.
+// How a Loan Against Mutual Funds works - five steps.
 const STEPS = [
   { h: 'Select Your Mutual Fund Holdings', p: 'Choose the equity or debt fund units you want to pledge from your demat or statement-of-account (SoA) folios.' },
-  { h: 'Pledge Digitally via RTA / Depository', p: 'Mark a lien on the units online through the RTA (CAMS/KFintech) or your depository (NSDL/CDSL) — no physical paperwork.' },
+  { h: 'Pledge Digitally via RTA / Depository', p: 'Mark a lien on the units online through the RTA (CAMS/KFintech) or your depository (NSDL/CDSL) - no physical paperwork.' },
   { h: 'Get a Sanctioned Overdraft Limit', p: 'A credit limit is set as a percentage of the current NAV of your pledged units, typically within a working day.' },
   { h: 'Withdraw Funds as Needed', p: 'Draw down against the limit whenever you need cash, in part or in full, straight to your linked bank account.' },
-  { h: 'Pay Interest Only on What You Use', p: 'Interest accrues only on the amount actually utilised — repay and re-draw flexibly, while your units stay invested.' },
+  { h: 'Pay Interest Only on What You Use', p: 'Interest accrues only on the amount actually utilised - repay and re-draw flexibly, while your units stay invested.' },
 ];
 
 // LAMF vs redeeming vs personal loan.
 const COMPARE = [
-  { k: 'Stays Invested', l: 'Yes — units remain in your name and keep compounding', r: 'No — you sell and exit the market', p: 'Not applicable' },
+  { k: 'Stays Invested', l: 'Yes - units remain in your name and keep compounding', r: 'No - you sell and exit the market', p: 'Not applicable' },
   { k: 'Cost', l: 'Interest only on the amount used', r: 'No interest, but exit load / opportunity cost', p: 'Higher interest on the full sanctioned amount' },
-  { k: 'Speed of Access', l: 'Quick — digital pledge, often same day', r: 'T+1 to T+3 for redemption proceeds', p: 'Days — full underwriting and approval' },
+  { k: 'Speed of Access', l: 'Quick - digital pledge, often same day', r: 'T+1 to T+3 for redemption proceeds', p: 'Days - full underwriting and approval' },
   { k: 'Tax Event', l: 'No sale, so no capital-gains tax triggered', r: 'Redemption triggers capital-gains tax', p: 'No sale, no tax event' },
   { k: 'Best Suited For', l: 'Short-term liquidity without breaking investments', r: 'When you no longer want to hold the units', p: 'Unsecured, one-off funding needs' },
 ];
@@ -35,10 +35,10 @@ const RISKS = [
   { h: 'Margin Call on Market Fall', p: "If markets fall and your pledged units' value drops below the required cover, the lender can ask you to top up funds or pledge more units at short notice." },
   { h: 'Interest Cost', p: 'Interest accrues on every rupee you utilise. If a drawdown stays outstanding for long, the cumulative interest can outweigh the convenience of not redeeming.' },
   { h: 'Pledged Units Are Locked', p: "You can't redeem, switch or transfer pledged units until the lien is released. This can limit your ability to rebalance or exit during volatile markets." },
-  { h: 'Forced Sale Risk', p: 'If a margin call is not met, the lender is entitled to invoke the pledge and sell your units — potentially at an unfavourable price and triggering a capital-gains tax event.' },
+  { h: 'Forced Sale Risk', p: 'If a margin call is not met, the lender is entitled to invoke the pledge and sell your units - potentially at an unfavourable price and triggering a capital-gains tax event.' },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is a Loan Against Mutual Funds?',
@@ -46,15 +46,15 @@ const FAQS = [
   },
   {
     q: 'How much loan can I get against my mutual funds?',
-    a: 'The sanctioned limit is a percentage of the current NAV of your pledged units. For equity mutual funds the loan-to-value is typically around 50%, while for debt mutual funds it can be higher — often up to about 80% — because debt funds are less volatile.',
+    a: 'The sanctioned limit is a percentage of the current NAV of your pledged units. For equity mutual funds the loan-to-value is typically around 50%, while for debt mutual funds it can be higher - often up to about 80% - because debt funds are less volatile.',
   },
   {
     q: 'Do I have to sell my mutual fund units to take this loan?',
-    a: 'No. You only pledge the units — they remain in your name and continue to earn returns. Because there is no sale, no capital-gains tax is triggered, and the units keep compounding while you borrow against them.',
+    a: 'No. You only pledge the units - they remain in your name and continue to earn returns. Because there is no sale, no capital-gains tax is triggered, and the units keep compounding while you borrow against them.',
   },
   {
     q: 'How is the interest charged on a Loan Against Mutual Funds?',
-    a: 'Interest is charged only on the amount you actually draw down, not on the full sanctioned limit. This works like an overdraft — if you use a smaller portion of the limit, you pay interest only on that portion for the days it stays outstanding.',
+    a: 'Interest is charged only on the amount you actually draw down, not on the full sanctioned limit. This works like an overdraft - if you use a smaller portion of the limit, you pay interest only on that portion for the days it stays outstanding.',
   },
   {
     q: 'What happens if the market falls after I pledge my units?',
@@ -66,7 +66,7 @@ const FAQS = [
   },
   {
     q: 'How quickly can I get the funds?',
-    a: 'Because the pledge is done digitally through the RTA or depository, a Loan Against Mutual Funds can usually be sanctioned within a working day, and drawdowns are credited to your linked bank account soon after — far faster than an unsecured personal loan.',
+    a: 'Because the pledge is done digitally through the RTA or depository, a Loan Against Mutual Funds can usually be sanctioned within a working day, and drawdowns are credited to your linked bank account soon after - far faster than an unsecured personal loan.',
   },
 ];
 
@@ -98,7 +98,7 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Loan Against Mutual Funds' }]} />
     <div class="hero-inner" data-enter>
       <h1>Unlock Cash <span class="g">Without Redeeming</span> Your Mutual Funds</h1>
-      <p class="lead">Pledge your mutual fund units for an instant overdraft limit — stay invested, keep compounding, and pay interest only on the amount you actually use.</p>
+      <p class="lead">Pledge your mutual fund units for an instant overdraft limit - stay invested, keep compounding, and pay interest only on the amount you actually use.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
       <div class="hero-feats">
         <div class="feats">
@@ -115,7 +115,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is a Loan Against Mutual Funds?</h2>
-      <p class="sec-lead">A Loan Against Mutual Funds (LAMF) is a secured line of credit that lets you borrow money by pledging your mutual fund units instead of selling them. You mark a lien on your units, the lender sanctions an overdraft limit against their current value, and you draw down cash whenever you need it — paying interest only on the amount you actually use. Your units stay in your name, continue to earn returns, and no capital-gains tax is triggered because nothing is sold.</p>
+      <p class="sec-lead">A Loan Against Mutual Funds (LAMF) is a secured line of credit that lets you borrow money by pledging your mutual fund units instead of selling them. You mark a lien on your units, the lender sanctions an overdraft limit against their current value, and you draw down cash whenever you need it - paying interest only on the amount you actually use. Your units stay in your name, continue to earn returns, and no capital-gains tax is triggered because nothing is sold.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -129,7 +129,7 @@ const seo = {
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Pay Interest Only on What You Use</h4>
-          <p class="card-p">The sanctioned limit sits ready like an overdraft. Interest accrues only on the amount drawn, for the days it stays outstanding — not on the full limit.</p>
+          <p class="card-p">The sanctioned limit sits ready like an overdraft. Interest accrues only on the amount drawn, for the days it stays outstanding - not on the full limit.</p>
         </div>
       </div>
     </div>
@@ -139,7 +139,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">How a Loan Against Mutual Funds Works</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Five simple steps from selecting your holdings to drawing down funds — entirely digital.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Five simple steps from selecting your holdings to drawing down funds - entirely digital.</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
       <div class="steps" data-reveal-row>
@@ -166,7 +166,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-ltv" data-section="ltv" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Loan-to-Value &amp; Interest</h2>
-      <p class="sec-lead">How much you can borrow depends on the type of fund you pledge — debt funds command a higher loan-to-value than equity funds because they are less volatile. Indicative terms are shown below; final terms depend on the lender and your portfolio.</p>
+      <p class="sec-lead">How much you can borrow depends on the type of fund you pledge - debt funds command a higher loan-to-value than equity funds because they are less volatile. Indicative terms are shown below; final terms depend on the lender and your portfolio.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t3 bordered">
       <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>Equity Mutual Funds</p></div><div class="cell th"><p>Debt Mutual Funds</p></div>
@@ -222,7 +222,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">LAMF vs Redeeming vs Personal Loan</h2>
-      <p class="sec-lead">Three ways to raise cash — pledging your units, selling them, or taking an unsecured loan. Here is how they compare on the factors that matter most.</p>
+      <p class="sec-lead">Three ways to raise cash - pledging your units, selling them, or taking an unsecured loan. Here is how they compare on the factors that matter most.</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t4 bordered">
       <div class="cell th"><p>Factor</p></div><div class="cell th"><p>Loan Against MF</p></div><div class="cell th"><p>Redeeming Units</p></div><div class="cell th"><p>Personal Loan</p></div>

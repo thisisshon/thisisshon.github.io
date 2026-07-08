@@ -1,6 +1,6 @@
 ---
 /**
- * Mutual Funds — /mutual-funds/
+ * Mutual Funds - /mutual-funds/
  * Product long-form page. Net-new page built entirely from the shared design
  * system (tokens + component classes in global.css); structural sibling of
  * products/equity.astro. Nested route → BaseLayout / component imports at ../../ depth.
@@ -10,7 +10,7 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// General Questions — mutual-fund domain content, first item open.
+// General Questions - mutual-fund domain content, first item open.
 const FAQS = [
   {
     q: 'What is a mutual fund?',
@@ -22,11 +22,11 @@ const FAQS = [
   },
   {
     q: 'What is an SIP and how much do I need to start?',
-    a: 'A Systematic Investment Plan (SIP) invests a fixed amount at regular intervals — usually monthly — regardless of market level. It builds discipline, averages your purchase cost across market cycles (rupee-cost averaging) and harnesses compounding. You can start an SIP with as little as ₹500 per month.',
+    a: 'A Systematic Investment Plan (SIP) invests a fixed amount at regular intervals - usually monthly - regardless of market level. It builds discipline, averages your purchase cost across market cycles (rupee-cost averaging) and harnesses compounding. You can start an SIP with as little as ₹500 per month.',
   },
   {
     q: 'Do I need a Demat account to invest in mutual funds?',
-    a: 'Not always — mutual fund units can be held in a statement (folio) form without a Demat account. However, holding them in your Demat account gives you a single consolidated view alongside your stocks and ETFs, and simplifies transmission and pledging. With Shriram you can invest either way.',
+    a: 'Not always - mutual fund units can be held in a statement (folio) form without a Demat account. However, holding them in your Demat account gives you a single consolidated view alongside your stocks and ETFs, and simplifies transmission and pledging. With Shriram you can invest either way.',
   },
   {
     q: 'How are mutual fund returns taxed?',
@@ -34,11 +34,11 @@ const FAQS = [
   },
   {
     q: 'What is an expense ratio?',
-    a: 'The expense ratio is the annual fee an AMC charges to manage the fund, expressed as a percentage of assets. It covers fund management, administration and distribution. It is deducted from the NAV, so a lower expense ratio — as in a Direct plan — leaves more return in your hands over the long run.',
+    a: 'The expense ratio is the annual fee an AMC charges to manage the fund, expressed as a percentage of assets. It covers fund management, administration and distribution. It is deducted from the NAV, so a lower expense ratio - as in a Direct plan - leaves more return in your hands over the long run.',
   },
   {
     q: 'Are mutual funds safe?',
-    a: 'Mutual funds are regulated by SEBI and your money is held by an independent custodian, so the structure is transparent and well-governed. However, returns are market-linked and not guaranteed — the value of your units can rise or fall. Diversification and a long horizon reduce risk, but do not eliminate it.',
+    a: 'Mutual funds are regulated by SEBI and your money is held by an independent custodian, so the structure is transparent and well-governed. However, returns are market-linked and not guaranteed - the value of your units can rise or fall. Diversification and a long horizon reduce risk, but do not eliminate it.',
   },
 ];
 
@@ -83,11 +83,11 @@ const seo = {
       <div class="row-2" data-reveal-row>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">AMC &amp; Fund Manager</h4>
-          <p class="card-p">An Asset Management Company runs the scheme, and a professional fund manager decides what to buy and sell in line with the fund's stated objective — so you get institutional research and active management without picking individual securities yourself.</p>
+          <p class="card-p">An Asset Management Company runs the scheme, and a professional fund manager decides what to buy and sell in line with the fund's stated objective - so you get institutional research and active management without picking individual securities yourself.</p>
         </div>
         <div class="card" style="border-color:var(--color-border-card)">
           <h4 class="card-h">Units &amp; NAV</h4>
-          <p class="card-p">Your money buys units at the day's Net Asset Value — the fund's total holdings, minus expenses, divided by units outstanding. As the underlying portfolio rises or falls, the NAV moves with it, and your returns track the value of the units you hold.</p>
+          <p class="card-p">Your money buys units at the day's Net Asset Value - the fund's total holdings, minus expenses, divided by units outstanding. As the underlying portfolio rises or falls, the NAV moves with it, and your returns track the value of the units you hold.</p>
         </div>
       </div>
     </div>
@@ -97,7 +97,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Types of Mutual Funds</h2>
-      <p class="sec-lead">Funds are grouped two ways — by what they invest in, and by how you can enter and exit them.</p>
+      <p class="sec-lead">Funds are grouped two ways - by what they invest in, and by how you can enter and exit them.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -121,8 +121,8 @@ const seo = {
         <p class="sub-lead">The main categories investors use to match a fund to their goal and risk appetite.</p>
       </div>
       <div class="cat-grid" data-reveal-row>
-        <div class="cat"><h4>Equity Funds</h4><p>Invest mainly in stocks — higher growth potential over the long term with higher risk.</p></div>
-        <div class="cat"><h4>Debt Funds</h4><p>Invest in bonds and money-market instruments — steadier returns with lower risk.</p></div>
+        <div class="cat"><h4>Equity Funds</h4><p>Invest mainly in stocks - higher growth potential over the long term with higher risk.</p></div>
+        <div class="cat"><h4>Debt Funds</h4><p>Invest in bonds and money-market instruments - steadier returns with lower risk.</p></div>
         <div class="cat"><h4>Hybrid Funds</h4><p>Blend equity and debt in one scheme to balance growth against stability.</p></div>
         <div class="cat"><h4>Index Funds</h4><p>Passively track an index like the Nifty 50 at a low cost, with no stock selection.</p></div>
         <div class="cat"><h4>ELSS Funds</h4><p>Equity funds with a 3-year lock-in offering tax deduction under Section 80C.</p></div>
@@ -138,12 +138,12 @@ const seo = {
   <section class="section stack sec-light" id="sec-getting-started" data-section="getting-started" style="gap:56px;align-items:center;justify-content:center">
     <div class="stack" style="gap:16px;width:100%">
       <h2 class="sec-title">How to Start Investing</h2>
-      <p class="sec-lead">Four simple steps from sign-up to your first SIP — plus exactly what you'll need to qualify.</p>
+      <p class="sec-lead">Four simple steps from sign-up to your first SIP - plus exactly what you'll need to qualify.</p>
     </div>
     <div class="steps" data-reveal-row>
       <div class="step">
         <div class="num">1</div>
-        <div class="st-body"><h4 style="white-space:nowrap">Open Your Account</h4><p>Open a free account online with Shriram in minutes — fully paperless.</p></div>
+        <div class="st-body"><h4 style="white-space:nowrap">Open Your Account</h4><p>Open a free account online with Shriram in minutes - fully paperless.</p></div>
       </div>
       <div class="step-div"></div>
       <div class="step">
@@ -205,7 +205,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Costs &amp; Taxes</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to invest, and how your gains are taxed — with no hidden costs.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to invest, and how your gains are taxed - with no hidden costs.</p>
     </div>
 
     <div class="stack" style="gap:32px">
@@ -225,7 +225,7 @@ const seo = {
 
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Tax on Mutual Funds — Equity vs Debt</h3>
+        <h3 class="sub-title">Tax on Mutual Funds - Equity vs Debt</h3>
         <p class="sub-lead" style="color:var(--color-text-secondary)">How capital gains are treated depends on the type of fund and how long you hold it.</p>
       </div>
       <div class="t-scroll"><div class="product-page_table t3">
@@ -279,7 +279,7 @@ const seo = {
         <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>SIP</p></div><div class="cell th"><p>Lumpsum</p></div>
         <div class="cell tb"><p class="k">How It Works</p></div><div class="cell tb"><p class="v">Fixed amount at regular intervals</p></div><div class="cell tb"><p class="v">One-time investment</p></div>
         <div class="cell tb"><p class="k">Entry Amount</p></div><div class="cell tb"><p class="v">From ₹500 per month</p></div><div class="cell tb"><p class="v">Larger one-time corpus</p></div>
-        <div class="cell tb"><p class="k">Market Timing</p></div><div class="cell tb"><p class="v">Not needed — averages cost</p></div><div class="cell tb"><p class="v">Timing affects returns</p></div>
+        <div class="cell tb"><p class="k">Market Timing</p></div><div class="cell tb"><p class="v">Not needed - averages cost</p></div><div class="cell tb"><p class="v">Timing affects returns</p></div>
         <div class="cell tb"><p class="k">Best Suited For</p></div><div class="cell tb"><p class="v">Salaried, steady savers</p></div><div class="cell tb"><p class="v">Investors with surplus capital</p></div>
         <div class="cell tb"><p class="k">Volatility Impact</p></div><div class="cell tb"><p class="v">Cushioned by averaging</p></div><div class="cell tb"><p class="v">Fully exposed at entry</p></div>
       </div></div>
@@ -341,7 +341,7 @@ const seo = {
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Start Your SIP Within Minutes</h3>
-        <p class="ct-sub">Invest in Direct Plan mutual funds at 0% commission — with zero paperwork.</p>
+        <p class="ct-sub">Invest in Direct Plan mutual funds at 0% commission - with zero paperwork.</p>
       </div>
       <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
     </div>

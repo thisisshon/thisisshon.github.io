@@ -1,6 +1,6 @@
 ---
 /**
- * FaqAccordion — the "General Questions" accordion (single-open, accessible).
+ * FaqAccordion - the "General Questions" accordion (single-open, accessible).
  *
  * Renders the .faq-acc item list; pages compose the surrounding
  * .faq-wrap / .faq-cols / .faq-side themselves (the side card varies).
@@ -47,7 +47,7 @@ const { faqs, openIndex = 0 } = Astro.props;
 </div>
 
 <script>
-  // Single-open accessible accordion — behaviour parity with legacy app.js.
+  // Single-open accessible accordion - behaviour parity with legacy app.js.
   // Runs once per page (Astro dedupes component scripts) over every .faq-acc.
   document.querySelectorAll<HTMLElement>('.faq-acc').forEach((acc, accIndex) => {
     const items = Array.from(acc.querySelectorAll<HTMLElement>('.faq-item'));

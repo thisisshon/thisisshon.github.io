@@ -1,11 +1,11 @@
 ---
 /**
- * Mandatory Member Details — /regulatory-documents/mandatory-member-details/
+ * Mandatory Member Details - /regulatory-documents/mandatory-member-details/
  * SEBI-mandated member disclosures listed with the shared view/download document
- * card (.doc-grid / .doc-card, global.css) — the same card used by
- * /regulatory-documents/investor-charter/ — then the compliance disclosure band. Standardised olive
+ * card (.doc-grid / .doc-card, global.css) - the same card used by
+ * /regulatory-documents/investor-charter/ - then the compliance disclosure band. Standardised olive
  * hero (rule 7). DATA-DRIVEN (DOCS below) so the template scales to any number of
- * member documents — the scale North Star. No page-local component forks (rule 2).
+ * member documents - the scale North Star. No page-local component forks (rule 2).
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/site/Breadcrumb.astro';
@@ -16,7 +16,7 @@ import { organizationSchema } from '../../lib/seo';
 const DOCS = [
   'Rights & Obligations of Members, Authorised Persons & Clients',
   'Risk Disclosure Document (RDD)',
-  "Guidance Note — Do's & Don'ts for Trading",
+  "Guidance Note - Do's & Don'ts for Trading",
   'Policies & Procedures',
   'Additional Risk Disclosure for Derivatives Trading',
   'Investor Charter & Complaints Disclosure',
@@ -26,7 +26,7 @@ const site = Astro.site!.href;
 const seo = {
   title: 'Mandatory Member Details',
   description:
-    'All mandatory disclosures, investor rights, grievance mechanisms and compliance documents — in one place. View online or download as PDF.',
+    'All mandatory disclosures, investor rights, grievance mechanisms and compliance documents - in one place. View online or download as PDF.',
   path: '/regulatory-documents/mandatory-member-details/',
   jsonLd: [organizationSchema(site)],
 };
@@ -40,7 +40,7 @@ const seo = {
       <h1><span class="g">Mandatory Member Details</span></h1>
       <p class="lead">
         All mandatory disclosures, investor rights, grievance mechanisms and compliance documents
-        — in one place. View online or download as PDF.
+        - in one place. View online or download as PDF.
       </p>
     </div>
   </section>
@@ -62,8 +62,8 @@ const seo = {
             <h3 class="nm">{name}</h3>
             <span class="upd">PDF<span class="sep">·</span>Updated Jul 2026</span>
             <div class="doc-links">
-              <a class="doc-dl" href="#" aria-label={`View — ${name}`}>View</a>
-              <a class="doc-dl" href="#" download aria-label={`Download — ${name}`}>
+              <a class="doc-dl" href="#" aria-label={`View - ${name}`}>View</a>
+              <a class="doc-dl" href="#" download aria-label={`Download - ${name}`}>
                 Download
               </a>
             </div>
@@ -88,7 +88,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== Mandatory Member Details — page-local styles only. The document cards
+  /* ===== Mandatory Member Details - page-local styles only. The document cards
      use the shared .doc-grid / .doc-card component from global.css; only the
      disclosure fine print is page-specific. ===== */
   .section {
@@ -100,7 +100,7 @@ const seo = {
     margin-top: 32px;
   }
 
-  /* compliance disclosure — plain fine print on the tinted band. */
+  /* compliance disclosure - plain fine print on the tinted band. */
   .disc {
     max-width: 1288px;
     font-weight: 400;

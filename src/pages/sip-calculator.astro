@@ -1,6 +1,6 @@
 ---
 /**
- * SIP Calculator — /sip-calculator/
+ * SIP Calculator - /sip-calculator/
  * Interactive SIP future-value calculator. Pixel parity with legacy
  * calculators/sip/index.html. Nested page → links are root-absolute,
  * shared imports use ../../ depth.
@@ -11,26 +11,26 @@ import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 import { otherCalculators, calcHref } from '../data/calculators';
 
-// "Explore More" rail — the four other calculators, from the shared dataset.
+// "Explore More" rail - the four other calculators, from the shared dataset.
 const MORE = otherCalculators('sip');
 
-// General-Questions FAQ — legacy content verbatim, same order.
+// General-Questions FAQ - legacy content verbatim, same order.
 const FAQS = [
   {
     q: 'What is a SIP and how is it different from a lumpsum investment?',
-    a: 'A Systematic Investment Plan (SIP) lets you invest a fixed amount at regular intervals — usually monthly — rather than committing a large sum all at once. This spreads your entry points across market cycles, averages out your purchase cost over time (rupee-cost averaging) and makes investing more affordable and disciplined. A lumpsum, by contrast, is a single one-time investment.',
+    a: 'A Systematic Investment Plan (SIP) lets you invest a fixed amount at regular intervals - usually monthly - rather than committing a large sum all at once. This spreads your entry points across market cycles, averages out your purchase cost over time (rupee-cost averaging) and makes investing more affordable and disciplined. A lumpsum, by contrast, is a single one-time investment.',
   },
   {
     q: 'How accurate are the results from this SIP calculator?',
-    a: 'The calculator applies the standard SIP future-value formula precisely to the inputs you provide. However, the expected rate of return is an assumption — real market returns fluctuate year to year. Treat the output as a well-grounded estimate for planning purposes rather than a guaranteed outcome.',
+    a: 'The calculator applies the standard SIP future-value formula precisely to the inputs you provide. However, the expected rate of return is an assumption - real market returns fluctuate year to year. Treat the output as a well-grounded estimate for planning purposes rather than a guaranteed outcome.',
   },
   {
     q: 'Can I change or stop my SIP amount later?',
-    a: 'Yes. SIPs are flexible — you can increase, decrease, pause or stop your contributions at any time, and many investors use a step-up SIP to raise their instalment each year as their income grows. There is typically no penalty for modifying or stopping a SIP.',
+    a: 'Yes. SIPs are flexible - you can increase, decrease, pause or stop your contributions at any time, and many investors use a step-up SIP to raise their instalment each year as their income grows. There is typically no penalty for modifying or stopping a SIP.',
   },
   {
     q: 'What is a realistic rate of return to assume?',
-    a: 'For equity-oriented funds, investors often use a long-term assumption in the range of 10–12% per annum, while debt-oriented funds are usually modelled lower. The right figure depends on your fund choice and risk appetite — it is wise to run the calculator with both an optimistic and a conservative rate to understand the range of possible outcomes.',
+    a: 'For equity-oriented funds, investors often use a long-term assumption in the range of 10–12% per annum, while debt-oriented funds are usually modelled lower. The right figure depends on your fund choice and risk appetite - it is wise to run the calculator with both an optimistic and a conservative rate to understand the range of possible outcomes.',
   },
   {
     q: 'Is there a minimum amount required to start a SIP?',
@@ -60,7 +60,7 @@ const seo = {
   <!-- ===== SIP Calculator ===== -->
   <section class="section stack sec-light" id="sec-calc" data-section="calc" data-enter="2" style="gap:24px">
     <h2 class="sec-title">SIP Calculator</h2>
-    <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly. Switch frequency or add an annual step-up to model a growing SIP.</p>
+    <p class="calc-hint">Drag the sliders or type your own numbers - results update instantly. Switch frequency or add an annual step-up to model a growing SIP.</p>
 
     <div class="calc-row">
       <!-- inputs + split bar -->
@@ -140,7 +140,7 @@ const seo = {
           <p class="bar-note">Note: Figures are illustrative and assume a constant annual rate of return compounded over the full term; actual mutual-fund returns fluctuate and are not guaranteed.</p>
         </div>
 
-        <!-- ready CTA — sits in the results column, under the results card -->
+        <!-- ready CTA - sits in the results column, under the results card -->
         <div class="ready-bar">
           <p class="ready-text">Start a <b id="cta-amt">₹10,000/month SIP</b> and build your future</p>
           <a class="ready-btn" href="/open-demat-account/">Open Demat Account</a>
@@ -166,7 +166,7 @@ const seo = {
       <li>Instantly estimate the future value of your monthly investments without complex manual calculations.</li>
       <li>Compare different scenarios by changing your contribution, duration or expected return to find what fits your goals.</li>
       <li>Understand how much of your final corpus comes from invested capital versus estimated returns.</li>
-      <li>Set realistic, time-bound financial goals — be it a home, education, or retirement — and track progress toward them.</li>
+      <li>Set realistic, time-bound financial goals - be it a home, education, or retirement - and track progress toward them.</li>
     </ul>
   </section>
 
@@ -226,7 +226,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* SIP calculator — all calculator UI now lives in global.css (.calc-* / .field
+  /* SIP calculator - all calculator UI now lives in global.css (.calc-* / .field
      / .slider / .bar-* / .res-* / .ready-* / .bullets / .explore-grid). Only the
      page-local FAQ border remains: General Questions sits on --sec-light here, so
      the accordion + helper side card need a defined edge. */
@@ -235,7 +235,7 @@ const seo = {
 </style>
 
 <script>
-  // SIP calculator — ported verbatim from legacy inline script (var → const/let,
+  // SIP calculator - ported verbatim from legacy inline script (var → const/let,
   // behaviour identical). Astro <script> is a deferred module at end of body,
   // so the DOM is ready when it runs.
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });

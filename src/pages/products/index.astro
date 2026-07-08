@@ -1,6 +1,6 @@
 ---
 /**
- * Product Suite / Product Listing — /products/
+ * Product Suite / Product Listing - /products/
  * Nested page (depth ../../). Pixel parity with legacy products/index.html.
  *
  * Uses the shared .pgroup / .pcard-grid / .pcard components from global.css
@@ -12,7 +12,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaqAccordion from '../../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../../lib/seo';
 
-// General Questions — legacy content verbatim, same order (first item open).
+// General Questions - legacy content verbatim, same order (first item open).
 const FAQS = [
   {
     q: 'What is a Demat Account?',
@@ -20,11 +20,11 @@ const FAQS = [
   },
   {
     q: 'What are the benefits of a Demat Account?',
-    a: 'A Demat account removes the risks of physical certificates — theft, loss and forgery — and enables faster, paperless settlement. You get a single consolidated view of your holdings, easy access to corporate actions such as dividends and bonuses, and the ability to trade from anywhere.',
+    a: 'A Demat account removes the risks of physical certificates - theft, loss and forgery - and enables faster, paperless settlement. You get a single consolidated view of your holdings, easy access to corporate actions such as dividends and bonuses, and the ability to trade from anywhere.',
   },
   {
     q: 'What are the brokerage charges for options trading with Shriram Financial Services?',
-    a: 'Brokerage charges for options trading are structured to be competitive and straightforward. Shriram Financial Services charges a flat fee of ₹20 per executed order for options trading. To understand and calculate the total cost — including brokerage, taxes and other fees — use the Brokerage Calculator, which estimates the net profit or loss on your trades after all applicable charges.',
+    a: 'Brokerage charges for options trading are structured to be competitive and straightforward. Shriram Financial Services charges a flat fee of ₹20 per executed order for options trading. To understand and calculate the total cost - including brokerage, taxes and other fees - use the Brokerage Calculator, which estimates the net profit or loss on your trades after all applicable charges.',
   },
   {
     q: 'Are there any charges associated with the Demat Account?',
@@ -32,7 +32,7 @@ const FAQS = [
   },
   {
     q: 'What is Intraday brokerage and Option brokerage?',
-    a: 'Intraday brokerage applies to positions bought and sold within the same trading day, while option brokerage applies to options contracts. Both are charged per executed order — you can estimate the exact cost of any trade with our Brokerage Calculator.',
+    a: 'Intraday brokerage applies to positions bought and sold within the same trading day, while option brokerage applies to options contracts. Both are charged per executed order - you can estimate the exact cost of any trade with our Brokerage Calculator.',
   },
   {
     q: 'Can I have multiple Demat Accounts?',
@@ -58,7 +58,7 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <div class="hero-inner">
       <h1>Our Complete <span class="g">Product Suite</span></h1>
-      <p class="lead">Trade, invest or borrow across our comprehensive list of product offerings — all from one connected account.</p>
+      <p class="lead">Trade, invest or borrow across our comprehensive list of product offerings - all from one connected account.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
     </div>
   </section>
@@ -67,7 +67,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-products" data-section="products" style="gap:56px">
     <h2 class="sec-title">All Products</h2>
 
-    <!-- Group 1 — Trade -->
+    <!-- Group 1 - Trade -->
     <div class="pgroup" id="pg-trade">
       <div class="pgroup-head">
         <h3>Trade with speed and precision</h3>
@@ -97,7 +97,7 @@ const seo = {
       </div>
     </div>
 
-    <!-- Group 2 — Long-Term Investment -->
+    <!-- Group 2 - Long-Term Investment -->
     <div class="pgroup" id="pg-invest">
       <div class="pgroup-head">
         <h3>Long-Term Investment Strategy</h3>
@@ -139,7 +139,7 @@ const seo = {
       </div>
     </div>
 
-    <!-- Group 3 — Highlighted Financial Solutions -->
+    <!-- Group 3 - Highlighted Financial Solutions -->
     <div class="pgroup" id="pg-loans">
       <div class="pgroup-head">
         <h3>Highlighted Financial Solutions</h3>
@@ -163,7 +163,7 @@ const seo = {
     <div class="orbit-in">
       <div class="orbit-head">
         <h2 class="sec-title">Six Financial Stages, One Orbit.</h2>
-        <p class="sec-lead">Every financial move you make — trading, building, borrowing, protecting — happens in one connected place. Tap any stage to explore.</p>
+        <p class="sec-lead">Every financial move you make - trading, building, borrowing, protecting - happens in one connected place. Tap any stage to explore.</p>
       </div>
       <div class="orbit-panel">
         <div class="orbit-list">
@@ -270,10 +270,10 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== products — page-specific only (product-card component lives in global.css §6) ===== */
+  /* ===== products - page-specific only (product-card component lives in global.css §6) ===== */
 
-  /* ===== Orbit feature section (dark) — "Six Financial Stages, One Orbit" ===== */
-  /* Own single-use gradient — page-local LITERAL, Tier-2 candidate. */
+  /* ===== Orbit feature section (dark) - "Six Financial Stages, One Orbit" ===== */
+  /* Own single-use gradient - page-local LITERAL, Tier-2 candidate. */
   .orbit {
     padding: var(--section-y) var(--pad);
     background: radial-gradient(125% 210% at 100% -8%, #4f583b 0%, #363a2c 50%, #1d1d1d 100%);
@@ -287,10 +287,10 @@ const seo = {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 731px; /* page-local — Tier-2 candidate */
+    max-width: 731px; /* page-local - Tier-2 candidate */
   }
   .orbit .sec-title {
-    color: var(--color-gray-50); /* #f7f7f7 — standard 40px section-title scale, on dark */
+    color: var(--color-gray-50); /* #f7f7f7 - standard 40px section-title scale, on dark */
   }
   .orbit .sec-lead {
     color: var(--color-sage-100); /* #c9cac7 */
@@ -300,15 +300,15 @@ const seo = {
   .orbit-panel {
     display: flex;
     align-items: stretch;
-    border: 1px solid #4f583b; /* page-local — Tier-2 candidate (matches olive-600 #4f583b) */
+    border: 1px solid #4f583b; /* page-local - Tier-2 candidate (matches olive-600 #4f583b) */
     border-radius: 24px;
     overflow: hidden;
   }
   .orbit-list {
-    flex: 0 0 48.5%; /* page-local — Tier-2 candidate */
+    flex: 0 0 48.5%; /* page-local - Tier-2 candidate */
     display: flex;
     flex-direction: column;
-    background: #4f583b; /* page-local — Tier-2 candidate (matches olive-600) */
+    background: #4f583b; /* page-local - Tier-2 candidate (matches olive-600) */
   }
   .orbit-row {
     flex: 1 0 0;
@@ -317,7 +317,7 @@ const seo = {
     justify-content: space-between;
     gap: 24px;
     padding: 24px;
-    border-top: 1px solid #5c6545; /* page-local — Tier-2 candidate */
+    border-top: 1px solid #5c6545; /* page-local - Tier-2 candidate */
     transition: background 0.25s ease;
   }
   .orbit-row:first-child {
@@ -325,7 +325,7 @@ const seo = {
   }
   @media (min-width: 1024px) and (hover: hover) {
     .orbit-row:hover {
-    background: #576142; /* quiet surface shift — page-local, Tier-2 candidate */
+    background: #576142; /* quiet surface shift - page-local, Tier-2 candidate */
   }
   }
   .orbit-stage {
@@ -341,7 +341,7 @@ const seo = {
   .orbit-stage .name {
     font-weight: 700;
     font-size: 16px;
-    color: #f2eee3; /* page-local — Tier-2 candidate */
+    color: #f2eee3; /* page-local - Tier-2 candidate */
   }
   .orbit-tags {
     display: flex;
@@ -353,13 +353,13 @@ const seo = {
   .orbit-tags .tag {
     font-weight: 400;
     font-size: 16px;
-    color: #f2eee3; /* page-local — Tier-2 candidate */
+    color: #f2eee3; /* page-local - Tier-2 candidate */
     padding: 8px;
   }
   .orbit-tags .div {
     width: 1px;
     height: 16px;
-    background: #7d8564; /* page-local — Tier-2 candidate */
+    background: #7d8564; /* page-local - Tier-2 candidate */
     flex: none;
   }
   .orbit-viz {
@@ -427,7 +427,7 @@ const seo = {
     }
   }
 
-  /* ===== Gateway CTA band (dark, full-width bar) — page-local, values EXACT ===== */
+  /* ===== Gateway CTA band (dark, full-width bar) - page-local, values EXACT ===== */
   .gateway {
     padding: 40px var(--pad);
     background: radial-gradient(140% 220% at 88% -30%, #3a3f30 0%, #23261c 46%, #1a1a13 100%);

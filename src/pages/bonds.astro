@@ -1,10 +1,10 @@
 ---
 /**
- * Bonds — /bonds/
+ * Bonds - /bonds/
  * Long-form bond-investing guide. Built entirely from the shared design-system
  * components in global.css (hero, .section/.sec-title, .card, .product-page_table,
  * .risks, .steps, FaqAccordion, .cta-box). The only page-scoped CSS is a generic
- * responsive card grid (.bond-cards) and a glossary list (.gloss) — both token-bound.
+ * responsive card grid (.bond-cards) and a glossary list (.gloss) - both token-bound.
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -12,11 +12,11 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// Key terms glossary — term + plain-language definition.
+// Key terms glossary - term + plain-language definition.
 const TERMS = [
   {
     t: 'Face Value',
-    d: 'The principal amount of the bond — typically ₹1,000 per bond for Indian retail bonds — repaid to the investor at maturity.',
+    d: 'The principal amount of the bond - typically ₹1,000 per bond for Indian retail bonds - repaid to the investor at maturity.',
   },
   {
     t: 'Coupon Rate',
@@ -28,7 +28,7 @@ const TERMS = [
   },
   {
     t: 'Yield to Maturity (YTM)',
-    d: 'The total annualised return you earn if you hold the bond to maturity — accounting for coupons and any gap between purchase price and face value.',
+    d: 'The total annualised return you earn if you hold the bond to maturity - accounting for coupons and any gap between purchase price and face value.',
   },
   {
     t: 'Credit Rating',
@@ -72,11 +72,11 @@ const TYPES = [
   },
   {
     h: 'Floating Rate Bonds',
-    p: "The coupon isn't fixed — it resets periodically against a benchmark rate. The RBI issues floating-rate savings bonds for retail investors.",
+    p: "The coupon isn't fixed - it resets periodically against a benchmark rate. The RBI issues floating-rate savings bonds for retail investors.",
   },
   {
     h: 'Bond ETFs',
-    p: 'Exchange-traded funds that invest in a basket of bonds — a simple way to access the bond market without buying individual bonds.',
+    p: 'Exchange-traded funds that invest in a basket of bonds - a simple way to access the bond market without buying individual bonds.',
   },
   {
     h: 'Debt Mutual Funds',
@@ -84,7 +84,7 @@ const TYPES = [
   },
 ];
 
-// Risk factors table — risk / meaning / mitigation.
+// Risk factors table - risk / meaning / mitigation.
 const RISK_ROWS = [
   {
     k: 'Interest Rate Risk',
@@ -108,7 +108,7 @@ const RISK_ROWS = [
   },
 ];
 
-// How to evaluate a bond — four parameters.
+// How to evaluate a bond - four parameters.
 const EVALUATE = [
   {
     h: 'Credit Rating & Issuer Profile',
@@ -116,7 +116,7 @@ const EVALUATE = [
   },
   {
     h: 'Yield Metrics',
-    p: "The coupon rate alone doesn't show the full return. Look at current yield — the coupon against market price — and yield to maturity, the total return if held to maturity with all payments made.",
+    p: "The coupon rate alone doesn't show the full return. Look at current yield - the coupon against market price - and yield to maturity, the total return if held to maturity with all payments made.",
   },
   {
     h: 'Tenor or Maturity Period',
@@ -142,7 +142,7 @@ const STEPS = [
 const STRATEGIES = [
   {
     h: 'Bond Laddering',
-    p: 'Invest in bonds with different maturity dates instead of one tenure. As bonds mature, proceeds can be reinvested — helping manage liquidity and interest-rate risk.',
+    p: 'Invest in bonds with different maturity dates instead of one tenure. As bonds mature, proceeds can be reinvested - helping manage liquidity and interest-rate risk.',
   },
   {
     h: 'Barbell Strategy',
@@ -158,7 +158,7 @@ const STRATEGIES = [
   },
   {
     h: 'Duration Management',
-    p: "Adjust your portfolio's sensitivity to rate changes — shorter durations reduce volatility when rates rise, longer durations benefit more when rates fall.",
+    p: "Adjust your portfolio's sensitivity to rate changes - shorter durations reduce volatility when rates rise, longer durations benefit more when rates fall.",
   },
 ];
 
@@ -174,7 +174,7 @@ const WARNINGS = [
   },
   {
     h: 'High Coupon Rates',
-    p: "A very high coupon almost always signals higher credit risk. Don't chase yield without verifying the issuer's rating, financial health and repayment record — several high-yield NCDs have defaulted.",
+    p: "A very high coupon almost always signals higher credit risk. Don't chase yield without verifying the issuer's rating, financial health and repayment record - several high-yield NCDs have defaulted.",
   },
   {
     h: 'Capital Loss Risk',
@@ -182,7 +182,7 @@ const WARNINGS = [
   },
   {
     h: 'Promoter Background & Financials',
-    p: "For corporate NCDs, read the latest annual report and rating rationale. Verify debt-to-equity, interest coverage and cash flow — key signals of an issuer's ability to repay.",
+    p: "For corporate NCDs, read the latest annual report and rating rationale. Verify debt-to-equity, interest coverage and cash flow - key signals of an issuer's ability to repay.",
   },
   {
     h: 'Warning Signs to Watch',
@@ -190,7 +190,7 @@ const WARNINGS = [
   },
 ];
 
-// General Questions — plain-text answers, shared with the FAQPage schema.
+// General Questions - plain-text answers, shared with the FAQPage schema.
 const FAQS = [
   {
     q: 'What is a bond in India?',
@@ -279,7 +279,7 @@ const seo = {
   <section class="section stack sec-light" id="sec-about" data-section="about" data-enter="2" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Is a Bond?</h2>
-      <p class="sec-lead">A bond is a fixed-income investment where you lend money to an issuer — a government, public sector entity, municipal authority or company — in exchange for regular interest payments and repayment of the invested amount at maturity. In simple terms, when you invest in a bond you are lending money to the issuer, rather than buying ownership as you do in equities.</p>
+      <p class="sec-lead">A bond is a fixed-income investment where you lend money to an issuer - a government, public sector entity, municipal authority or company - in exchange for regular interest payments and repayment of the invested amount at maturity. In simple terms, when you invest in a bond you are lending money to the issuer, rather than buying ownership as you do in equities.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
@@ -428,7 +428,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* ===== bonds — page-specific only ===== */
+  /* ===== bonds - page-specific only ===== */
 
   /* Generic responsive card grid for the types / strategies / warning-sign
      card sets (the shared .row-2 is 2-up and .cat-grid's border math is tuned
@@ -445,7 +445,7 @@ const seo = {
     gap: 12px;
   }
 
-  /* Key-terms glossary — a definition list inside a shared .card. */
+  /* Key-terms glossary - a definition list inside a shared .card. */
   .gloss {
     margin: 0;
     display: flex;

@@ -1,11 +1,11 @@
-# Legacy Style Audit — Shriram Financial Services
+# Legacy Style Audit - Shriram Financial Services
 
 > Exhaustive inventory of every style value in the legacy static site
 > (`../Project 1`, git snapshot `711c666`), produced 2026-07-03 as the evidence
 > base for the token system in `src/styles/global.css` and the
 > `/design-system/current/` documentation page.
 >
-> Sources: `styles.css` (614 ln), `home.css` (456 ln — Tailwind-compiled fork,
+> Sources: `styles.css` (614 ln), `home.css` (456 ln - Tailwind-compiled fork,
 > index.html only), `app.js`, inline `<style>` blocks + `style=""` attrs + SVG
 > fills/strokes in all 13 HTML files. Counts are raw textual occurrences.
 
@@ -158,8 +158,8 @@
 
 1. Gold #f3b83f(16) ← #f2b83f(14); hover #d4982a ← #c79a38, distinct from #e0a82e
 2. Olive #2e3914 ← #2d3813; #1b2010 ← #1a2010
-3. Near-black ink: #333 / #383838 / #2b2b2b / #404040 / #1c1c16 / #121212 / #222320 — ≥4 competing "body ink" values (Tier-2 merge)
-4. Gold-button ink: #202318 (home) vs #231a06 (`--gold-ink`) vs #2e3914 (site) — 3 inks, one role (Tier-2)
+3. Near-black ink: #333 / #383838 / #2b2b2b / #404040 / #1c1c16 / #121212 / #222320 - ≥4 competing "body ink" values (Tier-2 merge)
+4. Gold-button ink: #202318 (home) vs #231a06 (`--gold-ink`) vs #2e3914 (site) - 3 inks, one role (Tier-2)
 5. Hero gradient: 4 recipes for one visual role (standard / index hero / index band / products orbit) (Tier-2)
 6. Olive-grays ×9 within a few points → 2 tokens proposed
 7. #3a3c39 ← #3a3a35/#363731/#353731
@@ -185,10 +185,10 @@
 ### A4. SVG icon colors (UI icons)
 
 - stroke #333 ×4/page (nav chevrons, 52 total); #2f7ef4 ×1/page (login, 13)
-- stroke #404040 — card/list icons (72 total: demat 14, products 14, equity 14, research 12, sip 10, partner 8)
-- stroke #2e3914 — olive icons (about 12, demat 11+1 fill, partner 10)
-- stroke #f2b83f — about gold icons ×12 (≠ #f3b83f!)
-- stroke #202318 — index arrows ×8
+- stroke #404040 - card/list icons (72 total: demat 14, products 14, equity 14, research 12, sip 10, partner 8)
+- stroke #2e3914 - olive icons (about 12, demat 11+1 fill, partner 10)
+- stroke #f2b83f - about gold icons ×12 (≠ #f3b83f!)
+- stroke #202318 - index arrows ×8
 - Illustration content excluded: products orbit palette, demat India flag
 
 ### A5. Legacy custom properties
@@ -204,16 +204,16 @@
 ## B. Typography
 
 - **Family:** Outfit canonical. Violations: home `--font-display/body` list "Inter" fallback; home `--font-sans`(ui-sans) applied to html + `--font-mono` on code/kbd/samp/pre.
-- **Loading gap:** index loads Outfit 300–800; other pages 400–700 — but weight **300 is used by .nps-item on every page** (overlay) → synthesized on 12 pages. Weight 800 loaded, unused.
+- **Loading gap:** index loads Outfit 300–800; other pages 400–700 - but weight **300 is used by .nps-item on every page** (overlay) → synthesized on 12 pages. Weight 800 loaded, unused.
 - **Sizes (px/count):** 10/4, 12/33, 14/91, **15/2 (off-scale)**, 16/84, 18/19, **19/1 (off-scale)**, 20/20, 24/14, 28/1(+clamp min), 32/12, 40/8, 104/1 (about ghost numeral), ~18 clamp() responsive variants (home pins some back with !important).
 - **Weights:** 400×80, 500×92, 600×40, 700×12, 300×2, bolder×2 (home reset).
-- **line-height:** 1.5 global !important rule (both files). Exceptions: 1 ×11 (display resets), 1.4 ×6 (.nps-col-items a), 1.2 ×4, 1.3 ×3, 1.6 ×4 (home body 1.6 — overridden by 1.5 rule), 20px ×2 (.nav-link span), 28px ×1. Element-level values on text elements are dead (global rule wins).
-- **letter-spacing:** five different "wide eyebrow" values (1px/1.2px/2px/.08em/.1em) — Tier-2: one token.
+- **line-height:** 1.5 global !important rule (both files). Exceptions: 1 ×11 (display resets), 1.4 ×6 (.nps-col-items a), 1.2 ×4, 1.3 ×3, 1.6 ×4 (home body 1.6 - overridden by 1.5 rule), 20px ×2 (.nav-link span), 28px ×1. Element-level values on text elements are dead (global rule wins).
+- **letter-spacing:** five different "wide eyebrow" values (1px/1.2px/2px/.08em/.1em) - Tier-2: one token.
 
 ## C. Spacing & layout
 
 - **Grid frequency (px/count):** 16/155, 8/80, 24/70, 32/60, 56/42, 40/39, 12/39, 20/33, 4/30, 48/15, 96/13, 28/13, 36/10, 72/8, 144/7, 80/6, 64/5.
-- **Off-grid violations:** gap:6 (.hf-verified, home advisory), padding:10px 12px (.nps-logo — both files), gap:10 ×3, gap:14 ×2, clamp mins 18/14 (.nps-col*), padding-inline-start:21px (home), padding-top:5px (demat), padding:7px 20px (sip), padding:16px 10px (about).
+- **Off-grid violations:** gap:6 (.hf-verified, home advisory), padding:10px 12px (.nps-logo - both files), gap:10 ×3, gap:14 ×2, clamp mins 18/14 (.nps-col*), padding-inline-start:21px (home), padding-top:5px (demat), padding:7px 20px (sip), padding:16px 10px (about).
 - **Radius:** 24×46 (card), 50%×22, 4×18 (buttons), 8×14 (inputs), 12×7, 999×5, 3.40282e38×4 (Tailwind pill artifact), 20×4, 6×3 (home btn), 2×3, sidebar `0 40px 40px 0`×3. Pill written 4 different ways.
 - **Widths:** no max-width container (gutter --pad); --hero-text-w 600, --hero-aside-w clamp(360,40vw,520), .faq-side 464, buttons 220/200, home hero card 560, .foot-brand 512, text measures 448–840 (731 vs 730 near-dup).
 - **Gutter conflict:** home content clamp(1rem,6vw,8rem) ≠ site clamp(20px,8vw,144px) ≠ home's own nav (which uses the site clamp).
@@ -232,7 +232,7 @@
 2. **Both-file components:** nav + mobile-menu byte-identical dupes; overlay ×3 (one dead) reconciled by !important pins; footer VISIBLY different (bg #15150f vs #0a0b07, solid grays vs alpha-whites, 36px vs 32px socials); gold button 4 specs (heights 40/48, inks #2e3914/#202318, radius 4/6, one hover-translateY); FAQ different bg (#fffdf8 vs #f8f4e8) AND mechanism (buttons vs `<details>` + interpolate-size); hero H1 40px vs clamp!important; body bg differs.
 3. **Page `<style>` blocks (lines):** about 196, partner 222, demat 135, index 0 (all in home.css + 22 inline attrs), charter 56, privacy 39, research 59, calculators 41, sip 125, products 71, equity 0 (52 inline attrs incl. off-grid chart positions 448.65/312.73/165px), support 233, grievance 73.
 4. **Duplicated across page blocks (should be shared):** .to-top ×7 identical, .btn-ghost ×5 (4 identical +1 variant), .cta-actions ×4, .feat-grid ×4, .hf-note ×3, .port-cols ×3, .hours-bar ×2, .hf-success/.hf-head/.hf-body ×2, hero gradient re-declared ×3.
-5. **!important:** styles.css 13, home.css 12, pages 9 — overlay font-size pins are pure inter-file conflict resolution.
+5. **!important:** styles.css 13, home.css 12, pages 9 - overlay font-size pins are pure inter-file conflict resolution.
 6. **Odd units/artifacts:** radius 3.40282e38px ×4; logo-crop % crop duplicated both files; border 1.5px/1.6px; interpolate-size + ::details-content (Chrome-only); color-mix ×8; webkit-only backdrop-filter; global scrollbar hiding (home).
 7. **app.js:** styling-clean (only reveal stagger + body.overflow). Injected icons 16/20/24 compliant.
 8. **Icon-size violations (home.css):** .product-img 44px, .product-card-circle svg 26px, .steps-img-2 26px, .hero-label-5 18px.

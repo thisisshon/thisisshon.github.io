@@ -1,10 +1,10 @@
 ---
 /**
- * Fixed Deposit Calculator — /fd-calculator/
+ * Fixed Deposit Calculator - /fd-calculator/
  * Estimates FD maturity value and interest earned, with a selectable
  * compounding frequency. Built on the shared calculator UI in global.css;
  * page carries only content + its maths. (The FD *product* page lives at
- * /fixed-deposit/ — this is the calculator tool.)
+ * /fixed-deposit/ - this is the calculator tool.)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
@@ -17,7 +17,7 @@ const MORE = otherCalculators('fd');
 const FAQS = [
   {
     q: 'How is fixed deposit maturity value calculated?',
-    a: 'The calculator uses the compound-interest formula A = P × (1 + r/n)^(n·t), where P is your principal, r is the annual interest rate, n is the number of times interest is compounded per year and t is the tenure in years. Most banks compound FD interest quarterly, which is the default here — you can switch to monthly or yearly to match your bank.',
+    a: 'The calculator uses the compound-interest formula A = P × (1 + r/n)^(n·t), where P is your principal, r is the annual interest rate, n is the number of times interest is compounded per year and t is the tenure in years. Most banks compound FD interest quarterly, which is what this calculator uses.',
   },
   {
     q: 'Why does compounding frequency change my maturity amount?',
@@ -25,7 +25,7 @@ const FAQS = [
   },
   {
     q: 'Is the interest on a fixed deposit taxable?',
-    a: 'Yes. Interest earned on a fixed deposit is added to your income and taxed at your applicable slab rate, and banks deduct TDS once interest crosses the prescribed threshold in a financial year. This calculator shows gross interest before tax — your in-hand return will be lower after tax.',
+    a: 'Yes. Interest earned on a fixed deposit is added to your income and taxed at your applicable slab rate, and banks deduct TDS once interest crosses the prescribed threshold in a financial year. This calculator shows gross interest before tax - your in-hand return will be lower after tax.',
   },
   {
     q: 'Can I withdraw my fixed deposit before maturity?',
@@ -52,50 +52,44 @@ const seo = {
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'FD Calculator' }]} />
     <div class="hero-inner" data-enter>
       <h1>Estimate Your Returns With The <span class="g">Fixed Deposit Calculator</span></h1>
-      <p class="lead">Work out exactly what your deposit will be worth at maturity — adjust the amount, interest rate, tenure and compounding frequency.</p>
+      <p class="lead">Work out exactly what your deposit will be worth at maturity - adjust the amount, interest rate and tenure.</p>
     </div>
   </section>
 
   <!-- ===== FD Calculator ===== -->
   <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
     <h2 class="sec-title">Fixed Deposit Calculator</h2>
-    <p class="calc-hint">Drag the sliders or type your own numbers — results update instantly. Switch the compounding frequency to match your bank.</p>
+    <p class="calc-hint">Drag the sliders or type your own numbers - results update instantly.</p>
 
     <div class="calc-row">
       <!-- inputs -->
       <div class="card calc-panel">
-        <div class="freq-toggle" role="group" aria-label="Compounding frequency">
-          <button type="button" class="freq-btn" data-freq="12" aria-pressed="false">Monthly</button>
-          <button type="button" class="freq-btn is-active" data-freq="4" aria-pressed="true">Quarterly</button>
-          <button type="button" class="freq-btn" data-freq="1" aria-pressed="false">Yearly</button>
-        </div>
-
         <div class="fields">
           <div class="field">
             <div class="field-top">
-              <label for="amt">Total investment</label>
-              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="1,00,000" aria-label="Deposit amount in rupees" /></div>
+              <label for="amt">Principal Amount</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="1,00,000" aria-label="Principal amount in rupees" /></div>
             </div>
-            <input class="slider" id="amtR" type="range" min="1000" max="10000000" step="1000" value="100000" aria-label="Deposit amount" />
+            <input class="slider" id="amtR" type="range" min="1000" max="10000000" step="1000" value="100000" aria-label="Principal amount" />
             <div class="slider-scale"><span>₹1,000</span><span>₹1,00,00,000</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="rate">Rate of interest</label>
-              <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="7" aria-label="Annual interest rate in percent" /><span class="sfx">%</span></div>
+              <label for="rate">Interest Rate (% p.a.)</label>
+              <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="7.5" aria-label="Annual interest rate in percent" /><span class="sfx">%</span></div>
             </div>
-            <input class="slider" id="rateR" type="range" min="1" max="15" step="0.1" value="7" aria-label="Annual interest rate in percent" />
+            <input class="slider" id="rateR" type="range" min="1" max="15" step="0.1" value="7.5" aria-label="Annual interest rate in percent" />
             <div class="slider-scale"><span>1%</span><span>15%</span></div>
           </div>
 
           <div class="field">
             <div class="field-top">
-              <label for="dur">Time period</label>
-              <div class="field-val"><input id="dur" type="text" inputmode="numeric" value="5" aria-label="Tenure in years" /><span class="sfx">Yr</span></div>
+              <label for="dur">Tenure</label>
+              <div class="field-val"><input id="dur" type="text" inputmode="numeric" value="3" aria-label="Tenure in years" /><span class="sfx">yrs</span></div>
             </div>
-            <input class="slider" id="durR" type="range" min="1" max="20" step="1" value="5" aria-label="Tenure in years" />
-            <div class="slider-scale"><span>1 Yr</span><span>20 Yr</span></div>
+            <input class="slider" id="durR" type="range" min="1" max="10" step="1" value="3" aria-label="Tenure in years" />
+            <div class="slider-scale"><span>1 yrs</span><span>10 yrs</span></div>
           </div>
         </div>
       </div>
@@ -105,12 +99,12 @@ const seo = {
         <div class="bar-wrap">
           <div class="bar-top">
             <div class="bar-head">
-              <span class="bar-cap">Maturity Value</span>
-              <span class="bar-tot" id="d-tot">₹1,41,478</span>
+              <span class="bar-cap">Total Value</span>
+              <span class="bar-tot" id="d-tot">₹1,24,899</span>
             </div>
-            <div class="stack-bar" role="img" aria-label="Maturity value split between invested amount and interest earned">
-              <div class="seg seg-inv" id="seg-inv" style="width:71%"></div>
-              <div class="seg seg-ret" id="seg-ret" style="width:29%"></div>
+            <div class="stack-bar" role="img" aria-label="Total value split between invested amount and estimated returns">
+              <div class="seg seg-inv" id="seg-inv" style="width:80%"></div>
+              <div class="seg seg-ret" id="seg-ret" style="width:20%"></div>
             </div>
           </div>
 
@@ -120,18 +114,18 @@ const seo = {
               <div class="res-val" id="r-inv">₹1,00,000</div>
             </div>
             <div class="res-card">
-              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Total Interest</div>
-              <div class="res-val" id="r-ret">₹41,478</div>
+              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Estimated Returns</div>
+              <div class="res-val" id="r-ret">₹24,899</div>
             </div>
           </div>
 
           <div class="bar-div" role="presentation"></div>
 
-          <p class="bar-note">Note: Interest is compounded at the selected frequency; figures are illustrative and gross of tax. TDS and your income-tax slab will reduce the in-hand return.</p>
+          <p class="bar-note">Figures are illustrative and assume a constant rate over the full term; actual returns fluctuate and are not guaranteed.</p>
         </div>
 
         <div class="ready-bar">
-          <p class="ready-text">Lock in a <b id="cta-amt">₹1,00,000 fixed deposit</b> today</p>
+          <p class="ready-text">Put your plan into action - <b>open a free Demat account</b></p>
           <a class="ready-btn" href="/open-demat-account/">Open Demat Account</a>
         </div>
       </div>
@@ -161,7 +155,7 @@ const seo = {
   <!-- ===== How Does An FD Calculator Work ===== -->
   <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
     <h2 class="sec-title">How Does A Fixed Deposit Calculator Work?</h2>
-    <p class="sec-lead">The calculator applies the compound-interest formula A = P × (1 + r/n)^(n·t), where P is your principal, r is the annual interest rate expressed as a decimal, n is the number of compounding periods per year and t is the tenure in years. It computes the maturity value A, then subtracts your principal to show the total interest earned. Because interest is reinvested each period, choosing a more frequent compounding schedule increases the final figure — the calculator lets you see that effect immediately.</p>
+    <p class="sec-lead">The calculator applies the compound-interest formula A = P × (1 + r/n)^(n·t), where P is your principal, r is the annual interest rate expressed as a decimal, n is the number of compounding periods per year and t is the tenure in years. Interest is compounded quarterly - the standard for most Indian bank fixed deposits - and the tool computes the maturity value A, then subtracts your principal to show the total interest earned.</p>
   </section>
 
   <!-- ===== Advantages Of An FD Calculator ===== -->
@@ -214,7 +208,7 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* Fixed Deposit calculator — calculator UI is shared in global.css. Page-local:
+  /* Fixed Deposit calculator - calculator UI is shared in global.css. Page-local:
      General Questions sits on --sec-light, so the accordion + helper side card
      need a defined edge. */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
@@ -222,7 +216,7 @@ const seo = {
 </style>
 
 <script>
-  // Fixed deposit calculator — compound interest with selectable frequency.
+  // Fixed deposit calculator - compound interest with selectable frequency.
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -232,7 +226,7 @@ const seo = {
   const rateR = document.getElementById('rateR') as HTMLInputElement;
   const dur = document.getElementById('dur') as HTMLInputElement;
   const durR = document.getElementById('durR') as HTMLInputElement;
-  let freq = 4; // compounding periods per year — default quarterly
+  const freq = 4; // compounding periods per year - quarterly (Indian FD standard)
 
   const segInv = document.getElementById('seg-inv') as HTMLElement;
   const segRet = document.getElementById('seg-ret') as HTMLElement;
@@ -292,8 +286,6 @@ const seo = {
     segInv.style.width = invPct + '%';
     segRet.style.width = 100 - invPct + '%';
 
-    (document.getElementById('cta-amt') as HTMLElement).textContent =
-      '₹' + fmt.format(amount) + ' fixed deposit';
     (document.getElementById('sr-summary') as HTMLElement).textContent =
       'Maturity value ' + rupee(fv) + ' on ' + rupee(invested) + ' deposited for ' + years + ' years.';
 
@@ -337,18 +329,6 @@ const seo = {
   pairNumberAndSlider(rate, rateR, false);
   pairNumberAndSlider(dur, durR, false);
 
-  document.querySelectorAll('.freq-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      freq = parseInt(btn.getAttribute('data-freq') || '4', 10);
-      document.querySelectorAll('.freq-btn').forEach(function (b) {
-        const on = b === btn;
-        b.classList.toggle('is-active', on);
-        b.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-      render(true);
-    });
-  });
-
   (function initFromUrl() {
     const p = new URLSearchParams(location.search);
     function setNum(el: HTMLInputElement, sl: HTMLInputElement, key: string, group: boolean) {
@@ -360,17 +340,6 @@ const seo = {
     setNum(amt, amtR, 'amt', true);
     setNum(rate, rateR, 'rate', false);
     setNum(dur, durR, 'dur', false);
-    if (p.has('freq')) {
-      const f = parseInt(p.get('freq') || '', 10);
-      if (f === 12 || f === 4 || f === 1) {
-        freq = f;
-        document.querySelectorAll('.freq-btn').forEach(function (b) {
-          const on = parseInt(b.getAttribute('data-freq') || '', 10) === f;
-          b.classList.toggle('is-active', on);
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        });
-      }
-    }
   })();
 
   [amtR, rateR, durR].forEach(fillSlider);

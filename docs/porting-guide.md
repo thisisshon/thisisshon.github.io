@@ -1,4 +1,4 @@
-# Page-Porting Guide — legacy HTML → Astro
+# Page-Porting Guide - legacy HTML → Astro
 
 The contract for porting a legacy page from `../Project 1` into this project.
 **Prime directive: ZERO visual change.** The legacy page is the pixel spec.
@@ -69,7 +69,7 @@ const seo = {
 FAQ sections: keep the surrounding `.faq-wrap`/`.faq-cols`/`.faq-side` markup
 from the page; replace the `.faq-acc` inner list with
 `<FaqAccordion faqs={FAQS} />`. Answers may contain simple HTML (rendered via
-set:html) — copy legacy answer HTML verbatim.
+set:html) - copy legacy answer HTML verbatim.
 
 ## 4. Tokenising the page `<style>` block
 
@@ -102,11 +102,11 @@ Layout vars unchanged: `--pad`, `--container-pad`, `--section-y`, `--cta-w`,
   `#3a3a35`/`#363731`/`#353731`→`--color-sage-900` → use the canonical token.
 - Anything else (page-local single-use colors, gradient-stop variants,
   off-grid spacing, off-scale font sizes): **keep the literal value** and add
-  `/* page-local — Tier-2 candidate */`.
+  `/* page-local - Tier-2 candidate */`.
 - Inline SVG stroke/fill attributes in markup: keep verbatim, EXCEPT the two
   Tier-1 golds/olives (`#f2b83f`→`#f3b83f`, `#2d3813`→`#2e3914`).
 
-Astro `<style>` is scoped — fine, since the styled markup lives in the same
+Astro `<style>` is scoped - fine, since the styled markup lives in the same
 file. Never use `:global()` to restyle shared chrome; if a page tries to, stop
 and note it in your report instead.
 

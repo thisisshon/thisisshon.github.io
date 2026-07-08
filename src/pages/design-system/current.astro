@@ -1,22 +1,22 @@
 ---
 /**
- * Design System — "What is used" · /design-system/current/
+ * Design System - "What is used" · /design-system/current/
  * The honest as-built inventory of the legacy static site, extracted from the
  * full audit (docs/legacy-style-audit.md). Values here are HISTORICAL LITERALS
- * — this doc documents the OLD values, so hardcoded hexes are correct here.
+ * - this doc documents the OLD values, so hardcoded hexes are correct here.
  * Internal tooling docs (noindex).
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const seo = {
-  title: 'Design System — What Is Used (Legacy Inventory)',
+  title: 'Design System - What Is Used (Legacy Inventory)',
   description:
     'The honest as-built style inventory of the legacy Shriram site: ~150 colors grouped by near-duplicate cluster, the two-stylesheet fork, and the off-scale type / off-grid spacing / gradient recipes the token system resolves.',
   path: '/design-system/current/',
   noindex: true,
 };
 
-/* ---- Colour inventory (audit §A1). Literal legacy hexes — history. ---- */
+/* ---- Colour inventory (audit §A1). Literal legacy hexes - history. ---- */
 type Sw = { hex: string; count: string; use: string };
 
 const darkInks: Sw[] = [
@@ -181,8 +181,8 @@ const durations = ['0.2s (58×)', '0.25s (19×)', '0.3s (17×)', '0.6s (8×)', '
 const fork: { comp: string; styles: string; home: string }[] = [
   { comp: 'Nav + mobile menu', styles: 'canonical', home: 'byte-identical duplicate' },
   { comp: 'Mega-nav overlay', styles: 'canonical', home: 'exists ×2 (one dead), reconciled by !important pins' },
-  { comp: 'Footer', styles: 'bg #15150f, solid grays, 36px socials', home: 'bg #0a0b07, alpha-whites, 32px socials — VISIBLY different' },
-  { comp: 'Gold button', styles: '40px, ink #2e3914, radius 4px', home: '48px variant, ink #202318, radius 6px, hover-translateY — 4 specs total' },
+  { comp: 'Footer', styles: 'bg #15150f, solid grays, 36px socials', home: 'bg #0a0b07, alpha-whites, 32px socials - VISIBLY different' },
+  { comp: 'Gold button', styles: '40px, ink #2e3914, radius 4px', home: '48px variant, ink #202318, radius 6px, hover-translateY - 4 specs total' },
   { comp: 'FAQ', styles: 'bg #fffdf8, <button> mechanism', home: 'bg #f8f4e8, <details> + interpolate-size' },
   { comp: 'Hero H1', styles: '40px', home: 'clamp() !important' },
   { comp: 'Page background', styles: '#fcf8ef (--page)', home: '#fffcf3 (≠ --page)' },
@@ -199,7 +199,7 @@ const fork: { comp: string; styles: string; home: string }[] = [
         <p class="ds-eyebrow">Doc 1 · the “before”</p>
         <h1>What Is <span class="g">Used</span></h1>
         <p class="lead">
-          The honest as-built inventory of the legacy site — what it actually rendered, extracted
+          The honest as-built inventory of the legacy site - what it actually rendered, extracted
           from the full audit. This is the sprawl the token system resolves.
         </p>
       </div>
@@ -216,7 +216,7 @@ const fork: { comp: string; styles: string; home: string }[] = [
         <b>two parallel stylesheets</b> (<code>styles.css</code> + a homepage-only
         <code>home.css</code> fork), a mega-nav overlay declared three times, 15 cream backgrounds,
         12 dark charcoals, 4 hero-gradient recipes, and 9 transition durations. Every value on this
-        page is a historical literal — this doc records history, not the system.
+        page is a historical literal - this doc records history, not the system.
       </p>
     </div>
   </section>
@@ -348,7 +348,7 @@ const fork: { comp: string; styles: string; home: string }[] = [
     <h2 class="sec-title">Near-duplicate clusters</h2>
     <p class="sec-lead ds-section-lead">
       The same visual role expressed by many almost-identical hexes (§A2). Seen side by side, the
-      duplication is obvious — each cluster collapses to a small number of tokens.
+      duplication is obvious - each cluster collapses to a small number of tokens.
     </p>
 
     <div class="ds-clusters">
@@ -468,7 +468,7 @@ const fork: { comp: string; styles: string; home: string }[] = [
 </BaseLayout>
 
 <style>
-  /* ===== Doc 1 — legacy inventory. Chrome uses tokens; the SWATCHES are
+  /* ===== Doc 1 - legacy inventory. Chrome uses tokens; the SWATCHES are
      hardcoded legacy hexes on purpose (this doc records old values). ===== */
   .ds-eyebrow {
     font-weight: 500;

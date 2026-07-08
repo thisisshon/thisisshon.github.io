@@ -1,6 +1,6 @@
 ---
 /**
- * Investor Charter — /regulatory-documents/investor-charter/
+ * Investor Charter - /regulatory-documents/investor-charter/
  * Mandatory-disclosure document listing: investor charters plus grievance,
  * compliance, risk and policy documents. Searchable + filterable by category
  * (shared .doc-toolbar / .doc-chips / .doc-group component from global.css).
@@ -16,16 +16,16 @@ const seo = {
   path: '/regulatory-documents/investor-charter/',
 };
 
-// Documents grouped by category — feeds the filter chips and the grouped grids.
+// Documents grouped by category - feeds the filter chips and the grouped grids.
 const CATEGORIES = [
   {
     id: 'investor-charter',
     label: 'Investor Charter',
     docs: [
-      { name: 'Investor Charter — Equity & F&O Broking', meta: 'Effective Apr 2025' },
-      { name: 'Investor Charter — Depository Participant', meta: 'Effective Apr 2025' },
-      { name: 'Investor Charter — Research Analyst', meta: 'Effective Jan 2025' },
-      { name: 'Investor Charter — Mutual Fund Distributor', meta: 'Effective Apr 2025' },
+      { name: 'Investor Charter - Equity & F&O Broking', meta: 'Effective Apr 2025' },
+      { name: 'Investor Charter - Depository Participant', meta: 'Effective Apr 2025' },
+      { name: 'Investor Charter - Research Analyst', meta: 'Effective Jan 2025' },
+      { name: 'Investor Charter - Mutual Fund Distributor', meta: 'Effective Apr 2025' },
     ],
   },
   {
@@ -36,7 +36,7 @@ const CATEGORIES = [
   {
     id: 'annual-compliance',
     label: 'Annual Compliance',
-    docs: [{ name: 'Annual Compliance Report — FY 2024–25', meta: 'Published Apr 2025' }],
+    docs: [{ name: 'Annual Compliance Report - FY 2024–25', meta: 'Published Apr 2025' }],
   },
   {
     id: 'risk-disclosures',
@@ -65,7 +65,7 @@ const TOTAL = CATEGORIES.reduce((n, c) => n + c.docs.length, 0);
       <h1>Investor <span class="g">Charter</span></h1>
       <p class="lead">
         All mandatory disclosures, investor rights, grievance mechanisms and compliance documents
-        — in one place. Search, filter by category, and view online or download as PDF.
+        - in one place. Search, filter by category, and view online or download as PDF.
       </p>
       <div class="hero-feats">
         <div class="feats">
@@ -166,7 +166,7 @@ const TOTAL = CATEGORIES.reduce((n, c) => n + c.docs.length, 0);
 </BaseLayout>
 
 <script>
-  /* Investor Charter — client-side search + category-chip filter over the shared
+  /* Investor Charter - client-side search + category-chip filter over the shared
      .doc-group / .doc-card component. Progressive enhancement: with JS off, every
      document is visible (nothing is hidden server-side). */
   (function () {
@@ -213,7 +213,7 @@ const TOTAL = CATEGORIES.reduce((n, c) => n + c.docs.length, 0);
 </script>
 
 <style>
-  /* ===== Investor Charter — page-specific styles. Values reuse shared tokens.
+  /* ===== Investor Charter - page-specific styles. Values reuse shared tokens.
      The document toolbar / chips / groups / cards are the shared component in
      global.css; only the hero disclosure block is unique to this page. ===== */
   .section {

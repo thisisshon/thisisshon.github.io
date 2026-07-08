@@ -1,5 +1,5 @@
 /**
- * Calculators — single source of truth.
+ * Calculators - single source of truth.
  *
  * One dataset drives:
  *  1. The calculators hub grid   (src/pages/calculators/index.astro)
@@ -8,7 +8,7 @@
  *     the same order as `calculators` below.
  *
  * Add a calculator by adding one row here + a matching page at
- * src/pages/calculators/<slug>.astro — the hub and the cross-links update
+ * src/pages/calculators/<slug>.astro - the hub and the cross-links update
  * automatically.
  */
 
@@ -59,6 +59,6 @@ export const calculators: CalcMeta[] = [
 /** Build the canonical directory-format URL for a calculator slug. */
 export const calcHref = (slug: string): string => `/${slug}-calculator/`;
 
-/** Every calculator except `slug` — feeds a detail page's "Explore More" rail. */
+/** Every calculator except `slug` - feeds a detail page's "Explore More" rail. */
 export const otherCalculators = (slug: string): CalcMeta[] =>
   calculators.filter((c) => c.slug !== slug);
