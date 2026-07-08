@@ -10,30 +10,72 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
-import { otherCalculators, calcHref } from '../data/calculators';
 
-const MORE = otherCalculators('fd');
-
+// General-Questions FAQ - compliance doc content verbatim, same order.
 const FAQS = [
   {
-    q: 'How is fixed deposit maturity value calculated?',
-    a: 'The calculator uses the compound-interest formula A = P × (1 + r/n)^(n·t), where P is your principal, r is the annual interest rate, n is the number of times interest is compounded per year and t is the tenure in years. Most banks compound FD interest quarterly, which is what this calculator uses.',
+    q: 'What is a fixed deposit calculator?',
+    a: 'A fixed deposit calculator is an online tool that estimates FD maturity value and interest earned using amount, rate, tenure and compounding frequency.',
   },
   {
-    q: 'Why does compounding frequency change my maturity amount?',
-    a: 'The more often interest is compounded, the sooner earned interest itself starts earning interest. So for the same rate and tenure, monthly compounding yields slightly more than quarterly, which yields more than yearly. The difference is small over short tenures but grows with longer terms and larger deposits.',
+    q: 'How is FD maturity calculated?',
+    a: 'For cumulative FDs, interest is compounded. For short-tenure or payout FDs, simple interest may be used.',
   },
   {
-    q: 'Is the interest on a fixed deposit taxable?',
-    a: 'Yes. Interest earned on a fixed deposit is added to your income and taxed at your applicable slab rate, and banks deduct TDS once interest crosses the prescribed threshold in a financial year. This calculator shows gross interest before tax - your in-hand return will be lower after tax.',
+    q: 'Is FD interest taxable?',
+    a: 'Yes. FD interest is generally added to income and taxed as per the applicable income tax slab.',
   },
   {
-    q: 'Can I withdraw my fixed deposit before maturity?',
-    a: 'Most FDs allow premature withdrawal, but banks typically apply a penalty and pay interest at a lower rate for the period the deposit was actually held. If you may need the money sooner, consider a shorter tenure or a laddered set of deposits rather than breaking one large FD.',
+    q: 'What is TDS on FD interest?',
+    a: 'TDS may apply when annual interest crosses the prescribed threshold. The threshold and rate can change, so users should check current tax rules.',
   },
   {
-    q: 'Does this calculator apply to cumulative or non-cumulative FDs?',
-    a: 'It models a cumulative FD, where interest is reinvested and paid together with the principal at maturity. In a non-cumulative FD the interest is paid out periodically instead of compounding, so the maturity value equals your principal and the total interest received is lower.',
+    q: 'What is the difference between cumulative and non-cumulative FD?',
+    a: 'Cumulative FDs pay interest at maturity. Non-cumulative FDs pay interest at regular intervals.',
+  },
+  {
+    q: 'Can an FD be broken before maturity?',
+    a: 'Yes, an FD can be broken before maturity, but  few issuers may charge a penalty or offer a lower effective rate.',
+  },
+  {
+    q: 'What is a tax-saver FD?',
+    a: 'A tax-saver FD has a 5-year lock-in and may provide deduction benefits under Section 80C, subject to rules.',
+  },
+  {
+    q: 'Is FD safe?',
+    a: 'FDs are considered low-risk, but users should check the issuer’s strength and deposit insurance limits.',
+  },
+  {
+    q: 'What is DICGC insurance?',
+    a: 'DICGC (Deposit Insurance and Credit Guarantee Corporation) insurance protects eligible bank deposits up to the prescribed limit per depositor per bank.',
+  },
+  {
+    q: 'How does the calculator handle senior citizen rates?',
+    a: 'Users can select Senior Citizen and apply the additional rate offered by the institution.',
+  },
+  {
+    q: 'What is the minimum amount to open an FD?',
+    a: 'Minimum amounts vary by issuers or platform. Many banks and NBFC allow FDs from small starting amounts i.e Rs. 1000.',
+  },
+  {
+    q: 'Is FD better than RD?',
+    a: 'FD suits lump sum investing. RD, on the other hand, suits regular monthly saving.',
+  },
+  {
+    q: 'Can I take a loan against my FD?',
+    a: 'Many banks allow loans against FDs. Please note that the limit and interest rate vary by bank.',
+  },
+  {
+    q: 'What is FD laddering?',
+    a: 'FD laddering means splitting money across FDs with different maturity dates for liquidity and rate flexibility.',
+  },
+  {
+    q: 'What is the difference between NRE and NRO FD?',
+    a: 'NRE (Non-Resident External) FDs are for overseas income. NRO (Non-Resident Ordinary) FDs are for income earned in India by NRIs.',
+  },
+  {
+    q: 'Is NRE FD interest taxable in India?',
+    a: 'NRE FD interest is generally tax-free in India, subject to eligibility and current rules.',
   },
 ];
 
@@ -51,8 +93,9 @@ const seo = {
   <section class="hero hero-compact" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'FD Calculator' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Estimate Your Returns With The <span class="g">Fixed Deposit Calculator</span></h1>
-      <p class="lead">Work out exactly what your deposit will be worth at maturity - adjust the amount, interest rate and tenure.</p>
+      <h1>FD Calculator – Calculate Fixed Deposit Interest &amp; <span class="g">Maturity Amount Instantly</span></h1>
+      <p class="lead">Estimate your FD returns in seconds and plan your savings with confidence.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open FD Online Now</a><a class="btn-ghost" href="/fixed-deposit/">Compare FD Rates</a></div>
     </div>
   </section>
 
@@ -134,56 +177,153 @@ const seo = {
     <p class="sr-only" id="sr-summary" aria-live="polite"></p>
   </section>
 
-  <!-- ===== What Is An FD Calculator ===== -->
-  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
-    <h2 class="sec-title">What Is A Fixed Deposit Calculator?</h2>
-    <p class="sec-lead">A fixed deposit calculator is a free online tool that estimates the maturity value and total interest of an FD before you invest. By entering your deposit amount, the interest rate your bank offers, the tenure and how often interest is compounded, it projects exactly what your deposit will be worth at maturity. It takes the manual maths out of comparing offers, so you can pick the tenure and bank that suit your goals.</p>
-  </section>
-
-  <!-- ===== How An FD Calculator Helps You ===== -->
-  <section class="section stack sec-light" id="sec-help" data-section="help" style="gap:24px">
-    <h2 class="sec-title">How A Fixed Deposit Calculator Helps You</h2>
-    <p class="sec-lead">Comparing FD offers by hand means recomputing compound interest for every rate and tenure. The calculator does it instantly:</p>
-    <ul class="bullets">
-      <li>Estimate your exact maturity amount and total interest before committing any money.</li>
-      <li>Compare tenures and rates side by side to find the deposit that best fits your horizon.</li>
-      <li>See how monthly, quarterly or yearly compounding changes your final return.</li>
-      <li>Plan around your goals with a firm, guaranteed-style number rather than a rough guess.</li>
-    </ul>
-  </section>
-
-  <!-- ===== How Does An FD Calculator Work ===== -->
-  <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
-    <h2 class="sec-title">How Does A Fixed Deposit Calculator Work?</h2>
-    <p class="sec-lead">The calculator applies the compound-interest formula A = P × (1 + r/n)^(n·t), where P is your principal, r is the annual interest rate expressed as a decimal, n is the number of compounding periods per year and t is the tenure in years. Interest is compounded quarterly - the standard for most Indian bank fixed deposits - and the tool computes the maturity value A, then subtracts your principal to show the total interest earned.</p>
-  </section>
-
-  <!-- ===== Advantages Of An FD Calculator ===== -->
-  <section class="section stack sec-light" id="sec-adv" data-section="adv" style="gap:24px">
-    <h2 class="sec-title">Advantages Of A Fixed Deposit Calculator</h2>
-    <p class="sec-lead">For a low-risk, predictable instrument like an FD, knowing your return in advance is half the value:</p>
-    <ul class="bullets">
-      <li>Precise, instant maturity and interest figures for any amount, rate and tenure.</li>
-      <li>Completely free to use, with no sign-up required and results delivered in real time.</li>
-      <li>Makes it easy to ladder deposits or compare cumulative options with confidence.</li>
-      <li>Helps you balance FDs against market-linked options within your overall portfolio.</li>
-    </ul>
-  </section>
-
-  <!-- ===== Explore More ===== -->
-  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
-    <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid" data-reveal-row>
-      {
-        MORE.map((c) => (
-          <a class="xcard" href={calcHref(c.slug)}>
-            <span class="xc-title">{c.title}</span>
-            <span class="xc-desc">{c.desc}</span>
-            <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
-          </a>
-        ))
-      }
+  <!-- ===== What Is an FD Calculator? ===== -->
+  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is an FD Calculator?</h2>
+      <p class="sec-lead">An FD Calculator is a free online tool that calculates the maturity amount and interest earned on a fixed deposit. It helps remove manual errors and makes it easier to compare FD options before investing.</p>
+      <p class="sec-lead">Key benefits of an FD calculator:</p>
     </div>
+    <ul class="bullets">
+      <li>Know your maturity value instantly.</li>
+      <li>Compare cumulative and non-cumulative FD returns.</li>
+      <li>Estimate tax deducted at source, where applicable.</li>
+      <li>Check the benefit of senior citizen rates.</li>
+      <li>Use it free, with no login required.</li>
+    </ul>
+  </section>
+
+  <!-- ===== How Does the FD Calculator Work? ===== -->
+  <section class="section stack sec-light" id="sec-work" data-section="work" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Does the FD Calculator Work?</h2>
+      <p class="sec-lead">The calculator uses either compound interest or simple interest, depending on the FD type and tenure.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:repeat(3,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Mode</p></div><div class="cell th"><p>Formula</p></div><div class="cell th"><p>Best Used For</p></div>
+      <div class="cell tb"><p class="k">Compound Interest</p></div><div class="cell tb"><p class="v">A = P × (1 + r/n)^(n×t)</p></div><div class="cell tb"><p class="v">Cumulative FDs where interest is reinvested.</p></div>
+      <div class="cell tb"><p class="k">Simple Interest</p></div><div class="cell tb"><p class="v">SI = P × r × t / 100</p></div><div class="cell tb"><p class="v">Short-tenure or payout-based calculations.</p></div>
+    </div></div>
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Symbol</p></div><div class="cell th"><p>Meaning</p></div>
+      <div class="cell tb"><p class="k">A</p></div><div class="cell tb"><p class="v">Maturity amount</p></div>
+      <div class="cell tb"><p class="k">P</p></div><div class="cell tb"><p class="v">Principal amount</p></div>
+      <div class="cell tb"><p class="k">r</p></div><div class="cell tb"><p class="v">Annual interest rate</p></div>
+      <div class="cell tb"><p class="k">n</p></div><div class="cell tb"><p class="v">Compounding frequency</p></div>
+      <div class="cell tb"><p class="k">t</p></div><div class="cell tb"><p class="v">Tenure in years</p></div>
+    </div></div>
+    <p class="sec-lead">Worked example Investment: ₹5,00,000 at 7% for 3 years. Quarterly compounding: maturity is about ₹6,15,720 and interest is about ₹1,15,720. Simple interest: interest is ₹1,05,000 and total value is ₹6,05,000.</p>
+  </section>
+
+  <!-- ===== FD Interest Rate Scenarios ===== -->
+  <section class="section stack sec-tint" id="sec-scenarios" data-section="scenarios" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">FD Interest Rate Scenarios</h2>
+      <p class="sec-lead">Use these examples as quick reference points. Actual returns may differ by bank, tenure, payout option and compounding rule.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t6 bordered" style="grid-template-columns:repeat(6,minmax(0,1fr));min-width:760px">
+      <div class="cell th"><p>Principal</p></div><div class="cell th"><p>Rate</p></div><div class="cell th"><p>Tenure</p></div><div class="cell th"><p>Maturity</p></div><div class="cell th"><p>Interest Earned</p></div><div class="cell th"><p>Monthly Interest*</p></div>
+      <div class="cell tb"><p class="k">₹1,00,000</p></div><div class="cell tb"><p class="v">6.50%</p></div><div class="cell tb"><p class="v">1 year</p></div><div class="cell tb"><p class="v">₹1,06,660</p></div><div class="cell tb"><p class="v">₹6,660</p></div><div class="cell tb"><p class="v">₹542</p></div>
+      <div class="cell tb"><p class="k">₹1,00,000</p></div><div class="cell tb"><p class="v">7.00%</p></div><div class="cell tb"><p class="v">3 years</p></div><div class="cell tb"><p class="v">₹1,23,144</p></div><div class="cell tb"><p class="v">₹23,144</p></div><div class="cell tb"><p class="v">₹583</p></div>
+      <div class="cell tb"><p class="k">₹5,00,000</p></div><div class="cell tb"><p class="v">7.00%</p></div><div class="cell tb"><p class="v">3 years</p></div><div class="cell tb"><p class="v">₹6,15,720</p></div><div class="cell tb"><p class="v">₹1,15,720</p></div><div class="cell tb"><p class="v">₹2,917</p></div>
+      <div class="cell tb"><p class="k">₹5,00,000</p></div><div class="cell tb"><p class="v">7.50%</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">₹7,24,974</p></div><div class="cell tb"><p class="v">₹2,24,974</p></div><div class="cell tb"><p class="v">₹3,125</p></div>
+      <div class="cell tb"><p class="k">₹10,00,000</p></div><div class="cell tb"><p class="v">7.00%</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">₹14,14,778</p></div><div class="cell tb"><p class="v">₹4,14,778</p></div><div class="cell tb"><p class="v">₹5,833</p></div>
+      <div class="cell tb"><p class="k">₹10,00,000</p></div><div class="cell tb"><p class="v">7.50%</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">₹14,49,948</p></div><div class="cell tb"><p class="v">₹4,49,948</p></div><div class="cell tb"><p class="v">₹6,250</p></div>
+      <div class="cell tb"><p class="k">₹25,00,000</p></div><div class="cell tb"><p class="v">7.00%</p></div><div class="cell tb"><p class="v">3 years</p></div><div class="cell tb"><p class="v">₹30,78,598</p></div><div class="cell tb"><p class="v">₹5,78,598</p></div><div class="cell tb"><p class="v">₹14,583</p></div>
+      <div class="cell tb"><p class="k">₹50,00,000</p></div><div class="cell tb"><p class="v">7.25%</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">₹71,61,303</p></div><div class="cell tb"><p class="v">₹21,61,303</p></div><div class="cell tb"><p class="v">₹30,208</p></div>
+    </div></div>
+    <p class="sec-lead">*Disclaimer: The numbers used in this table are illustrative examples only. Actual returns may differ based on the bank’s FD terms, interest rate, tenure, compounding method, and payout option.</p>
+  </section>
+
+  <!-- ===== How to Use the FD Calculator ===== -->
+  <section class="section stack sec-light" id="sec-how-to-use" data-section="how-to-use" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Use the FD Calculator</h2>
+      <p class="sec-lead">Use the FD Calculator to quickly estimate your maturity amount and interest earned by entering your investment amount, interest rate, tenure, and payout preferences.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Step 1</h4><p>Enter the amount you want to invest.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Step 2</h4><p>Add the annual interest rate offered by your chosen bank or NBFC.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Step 3</h4><p>Select the tenure in years and months.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Step 4</h4><p>Choose the compounding frequency or simple interest option.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Select Regular or Senior Citizen and view results instantly.</h4></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Cumulative vs Non-Cumulative FD ===== -->
+  <section class="section stack sec-tint" id="sec-cumulative" data-section="cumulative" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Cumulative vs Non-Cumulative FD</h2>
+      <p class="sec-lead">Understand the difference between cumulative and non-cumulative FDs to choose whether you want higher maturity returns or regular interest payouts.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:repeat(3,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>Cumulative FD</p></div><div class="cell th"><p>Non-Cumulative FD</p></div>
+      <div class="cell tb"><p class="k">Interest payout</p></div><div class="cell tb"><p class="v">Paid at maturity</p></div><div class="cell tb"><p class="v">Paid monthly, quarterly or annually</p></div>
+      <div class="cell tb"><p class="k">Return potential</p></div><div class="cell tb"><p class="v">Higher, due to compounding</p></div><div class="cell tb"><p class="v">Lower, as interest is not reinvested</p></div>
+      <div class="cell tb"><p class="k">Best for</p></div><div class="cell tb"><p class="v">Long-term goals</p></div><div class="cell tb"><p class="v">Regular income needs</p></div>
+      <div class="cell tb"><p class="k">Suitable users</p></div><div class="cell tb"><p class="v">Salaried investors and goal planners</p></div><div class="cell tb"><p class="v">Retirees and income-focused investors</p></div>
+      <div class="cell tb"><p class="k">TDS point</p></div><div class="cell tb"><p class="v">Usually on annual accrual</p></div><div class="cell tb"><p class="v">Usually when interest is credited</p></div>
+      <div class="cell tb"><p class="k">Example</p></div><div class="cell tb"><p class="v">₹5 lakh at 7% for 5 years grows to about ₹7.07 lakh maturity.</p></div><div class="cell tb"><p class="v">₹5 lakh at 7% gives about ₹2,917 per month payout till tenure.</p></div>
+    </div></div>
+    <p class="sec-lead">Quick tip: Choose a cumulative FD if regular income is not needed. Choose a non-cumulative FD if predictable cash flow is the priority.</p>
+  </section>
+
+  <!-- ===== FD Laddering Strategy ===== -->
+  <section class="section stack sec-light" id="sec-laddering" data-section="laddering" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">FD Laddering Strategy</h2>
+      <p class="sec-lead">FD laddering means splitting one large deposit into smaller FDs with different maturity dates. It gives regular liquidity and reduces the risk of locking all money at one rate.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t6 bordered" style="grid-template-columns:repeat(6,minmax(0,1fr));min-width:760px">
+      <div class="cell th"><p>Tranche</p></div><div class="cell th"><p>Amount</p></div><div class="cell th"><p>Tenure</p></div><div class="cell th"><p>Illustrative Rate</p></div><div class="cell th"><p>Maturity Value</p></div><div class="cell th"><p>Matures In</p></div>
+      <div class="cell tb"><p class="k">FD 1</p></div><div class="cell tb"><p class="v">₹2,00,000</p></div><div class="cell tb"><p class="v">1 year</p></div><div class="cell tb"><p class="v">6.80%</p></div><div class="cell tb"><p class="v">₹2,13,951</p></div><div class="cell tb"><p class="v">Year 1</p></div>
+      <div class="cell tb"><p class="k">FD 2</p></div><div class="cell tb"><p class="v">₹2,00,000</p></div><div class="cell tb"><p class="v">2 years</p></div><div class="cell tb"><p class="v">7.00%</p></div><div class="cell tb"><p class="v">₹2,29,776</p></div><div class="cell tb"><p class="v">Year 2</p></div>
+      <div class="cell tb"><p class="k">FD 3</p></div><div class="cell tb"><p class="v">₹2,00,000</p></div><div class="cell tb"><p class="v">3 years</p></div><div class="cell tb"><p class="v">7.20%</p></div><div class="cell tb"><p class="v">₹2,47,744</p></div><div class="cell tb"><p class="v">Year 3</p></div>
+      <div class="cell tb"><p class="k">FD 4</p></div><div class="cell tb"><p class="v">₹2,00,000</p></div><div class="cell tb"><p class="v">4 years</p></div><div class="cell tb"><p class="v">7.30%</p></div><div class="cell tb"><p class="v">₹2,67,116</p></div><div class="cell tb"><p class="v">Year 4</p></div>
+      <div class="cell tb"><p class="k">FD 5</p></div><div class="cell tb"><p class="v">₹2,00,000</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">7.50%</p></div><div class="cell tb"><p class="v">₹2,89,990</p></div><div class="cell tb"><p class="v">Year 5</p></div>
+    </div></div>
+    <ul class="bullets">
+      <li>One FD can mature every year.</li>
+      <li>Maturing amounts can be reinvested at new rates.</li>
+      <li>The investor avoids locking the full amount into one tenure.</li>
+      <li>This strategy is useful for retirees and conservative investors.</li>
+    </ul>
+  </section>
+
+  <!-- ===== How to Avoid Common Mistakes While Selecting FDs ===== -->
+  <section class="section stack sec-tint" id="sec-mistakes" data-section="mistakes" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How to Avoid Common Mistakes While Selecting FDs</h2>
+      <p class="sec-lead">While selecting FDs, we can avoid mistakes by reviewing rates, penalties, tax forms, deposit limits, and real returns before investing or renewing a fixed deposit.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Mistake</p></div><div class="cell th"><p>Simple Fix</p></div>
+      <div class="cell tb"><p class="k">Auto-renewing without checking rates</p></div><div class="cell tb"><p class="v">Compare rates before renewal.</p></div>
+      <div class="cell tb"><p class="k">Breaking an FD early without checking penalty</p></div><div class="cell tb"><p class="v">Check the premature withdrawal rule first.</p></div>
+      <div class="cell tb"><p class="k">Ignoring Form 15G or 15H</p></div><div class="cell tb"><p class="v">Submit the right form if eligible.</p></div>
+      <div class="cell tb"><p class="k">Putting all money into one large FD</p></div><div class="cell tb"><p class="v">Split deposits by goal, tenure or bank.</p></div>
+      <div class="cell tb"><p class="k">Choosing an NBFC FD only for a higher rate</p></div><div class="cell tb"><p class="v">Check credit rating and risk.</p></div>
+      <div class="cell tb"><p class="k">Ignoring real returns</p></div><div class="cell tb"><p class="v">Review post-tax and inflation-adjusted return.</p></div>
+    </div></div>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -203,6 +343,33 @@ const seo = {
           <a class="btn-gold" href="#">Book A Discovery Call</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== Related Calculators ===== -->
+  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+    <h2 class="sec-title">Related Calculators</h2>
+    <div class="explore-grid" data-reveal-row>
+      <a class="xcard" href="/swp-calculator/">
+        <span class="xc-title">SWP Calculator</span>
+        <span class="xc-desc">Check long-term savings under PPF.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/sip-calculator/">
+        <span class="xc-title">SIP Calculator</span>
+        <span class="xc-desc">Estimate long-term mutual fund SIP growth.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/lumpsum-calculator/">
+        <span class="xc-title">Lumpsum Calculator</span>
+        <span class="xc-desc">Estimate growth from one-time investments.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/nps-calculator/">
+        <span class="xc-title">NPS Calculator</span>
+        <span class="xc-desc">Plan retirement savings and pension corpus.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
     </div>
   </section>
 </BaseLayout>

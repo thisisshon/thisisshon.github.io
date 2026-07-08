@@ -9,31 +9,48 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
-import { otherCalculators, calcHref } from '../data/calculators';
 
-const MORE = otherCalculators('lumpsum');
-
-// General-Questions FAQ.
+// General-Questions FAQ - compliance doc content verbatim, same order.
 const FAQS = [
   {
-    q: 'What is a lumpsum investment?',
-    a: 'A lumpsum investment is a single, one-time deployment of capital into a mutual fund, stock or other instrument - as opposed to a SIP, where you invest a fixed amount at regular intervals. Because the full amount is invested from day one, every rupee compounds for the entire investment horizon.',
+    q: 'What is a lumpsum calculator?',
+    a: 'It is a tool that estimates the future value of a one-time investment using amount, return and time period.',
   },
   {
-    q: 'How is the future value of a lumpsum calculated?',
-    a: 'The calculator uses the standard compound-interest formula: A = P × (1 + r)ⁿ, where P is your invested amount, r is the expected annual rate of return and n is the number of years. It compounds your capital once a year over the full term to project the maturity value.',
+    q: 'How accurate is the lumpsum calculator?',
+    a: 'A lumpsum calculator gives an estimate based on your inputs. Actual mutual fund returns can be higher or lower.',
   },
   {
-    q: 'Is a lumpsum better than a SIP?',
-    a: 'Neither is universally better - it depends on your situation. A lumpsum can outperform when markets rise steadily after you invest, because your full capital is working from the start. A SIP averages your entry price across market cycles and suits investors deploying money gradually from monthly income. Many investors use both.',
+    q: 'What return rate should I assume?',
+    a: 'Use a realistic long-term assumption. Equity funds may fluctuate widely, so avoid very high estimates.',
   },
   {
-    q: 'What rate of return should I assume?',
-    a: 'For equity-oriented funds, a long-term assumption of 10–12% per annum is common, while debt funds are modelled lower. Real returns fluctuate year to year, so it is wise to run the calculator with both an optimistic and a conservative rate to understand the range of possible outcomes.',
+    q: 'Is lumpsum better than SIP?',
+    a: 'Lumpsum suits surplus money and long-term investing. SIP suits regular monthly investing and reduces timing risk.',
   },
   {
-    q: 'Are the projected returns guaranteed?',
-    a: 'No. Market-linked investments do not offer guaranteed returns - the figures here are illustrative and assume a constant annual rate compounded over the full term. Actual returns depend on market performance and are not assured.',
+    q: 'What is the minimum lumpsum investment?',
+    a: 'Many funds allow lumpsum investment from ₹500, but the amount varies by scheme.',
+  },
+  {
+    q: 'Can I invest lumpsum in ELSS?',
+    a: 'Yes. ELSS allows one-time lumpsum investment.',
+  },
+  {
+    q: 'How is lumpsum return calculated?',
+    a: 'Lumpsum investment is calculated using compound growth: A = P × (1 + r/100)^n.',
+  },
+  {
+    q: 'Does the lumpsum calculator include inflation?',
+    a: 'Yes, switch on the inflation option to see the estimated real value of your investment.',
+  },
+  {
+    q: 'When is the best time to invest lumpsum?',
+    a: 'The best time to invest in lumpsum is when you have surplus money, a suitable fund and a long-term plan.',
+  },
+  {
+    q: 'Do I need a demat account?',
+    a: 'Not necessarily. Many mutual funds can be bought (under the distribution mode) online without a demat account.',
   },
 ];
 
@@ -51,8 +68,15 @@ const seo = {
   <section class="hero hero-compact" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'Lumpsum Calculator' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Grow A One-Time Investment With The <span class="g">Lumpsum Calculator</span></h1>
-      <p class="lead">See how a single investment could grow over time - just set your amount, horizon and expected rate of return.</p>
+      <h1>Lumpsum Calculator – Know Your One-Time Investment Returns <span class="g">Instantly</span></h1>
+      <p class="lead">Estimate the future value of your lumpsum investment in seconds.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Invest Now</a><a class="btn-ghost" href="/mutual-funds/">Start Lumpsum</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered and AMFI-compliant platform.</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Trusted by Traders Across India.</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -134,56 +158,206 @@ const seo = {
     <p class="sr-only" id="sr-summary" aria-live="polite"></p>
   </section>
 
-  <!-- ===== What Is A Lumpsum Calculator ===== -->
-  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
-    <h2 class="sec-title">What Is A Lumpsum Calculator?</h2>
-    <p class="sec-lead">A lumpsum calculator is a free online tool that estimates the maturity value of a single, one-time investment. By entering the amount you plan to invest, how long you intend to stay invested and an expected annual rate of return, it projects how much your capital could grow. It removes the guesswork from planning, giving you an instant, data-backed picture of a one-shot investment so you can set realistic goals and invest with confidence.</p>
-  </section>
-
-  <!-- ===== How A Lumpsum Calculator Helps You ===== -->
-  <section class="section stack sec-light" id="sec-help" data-section="help" style="gap:24px">
-    <h2 class="sec-title">How A Lumpsum Calculator Helps You</h2>
-    <p class="sec-lead">Working out compound growth by hand is tedious and error-prone. A lumpsum calculator does it in seconds, so you can focus on the decisions that matter:</p>
-    <ul class="bullets">
-      <li>Instantly estimate the future value of a one-time investment without any manual maths.</li>
-      <li>Compare scenarios by changing your amount, duration or expected return to find what fits your goals.</li>
-      <li>See clearly how much of your final corpus is your own capital versus estimated returns.</li>
-      <li>Decide whether to invest a windfall as a lumpsum or spread it out - with numbers, not guesswork.</li>
-    </ul>
-  </section>
-
-  <!-- ===== How Does A Lumpsum Calculator Work ===== -->
-  <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
-    <h2 class="sec-title">How Does A Lumpsum Calculator Work?</h2>
-    <p class="sec-lead">The calculator uses the standard compound-interest formula for a one-time investment: A = P × (1 + r)ⁿ, where P is your invested amount, r is the expected annual rate of return and n is the number of years you stay invested. Because the entire amount compounds from day one for the full term, even a modest rate of return can produce substantial growth over long horizons - a direct illustration of the power of compounding.</p>
-  </section>
-
-  <!-- ===== Advantages Of A Lumpsum Calculator ===== -->
-  <section class="section stack sec-light" id="sec-adv" data-section="adv" style="gap:24px">
-    <h2 class="sec-title">Advantages Of A Lumpsum Calculator</h2>
-    <p class="sec-lead">Whether you are deploying a bonus, an inheritance or accumulated savings, a lumpsum calculator brings clarity to your planning:</p>
-    <ul class="bullets">
-      <li>Accurate, instant projections that account for compounding across the entire horizon.</li>
-      <li>Completely free to use, with no sign-up required and results delivered in real time.</li>
-      <li>Helps you gauge whether a one-time investment aligns with your goals and timeframe.</li>
-      <li>Makes the long-term payoff of staying invested easy to visualise and commit to.</li>
-    </ul>
-  </section>
-
-  <!-- ===== Explore More ===== -->
-  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
-    <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid" data-reveal-row>
-      {
-        MORE.map((c) => (
-          <a class="xcard" href={calcHref(c.slug)}>
-            <span class="xc-title">{c.title}</span>
-            <span class="xc-desc">{c.desc}</span>
-            <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
-          </a>
-        ))
-      }
+  <!-- ===== What Is a Lumpsum Calculator? ===== -->
+  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is a Lumpsum Calculator?</h2>
+      <p class="sec-lead">A lumpsum calculator is an online tool that estimates how much a one-time investment may grow over time. It uses your investment amount, expected annual return and investment period.</p>
+      <p class="sec-lead">In a lumpsum investment, you invest the full amount at once. This is different from an SIP, where you invest a fixed amount regularly. Your money grows when the mutual fund’s Net Asset Value (NAV), rises over time.</p>
     </div>
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Lumpsum Investment</p></div>
+      <div class="cell tb"><p class="k">Mode</p></div><div class="cell tb"><p class="v">One-time investment</p></div>
+      <div class="cell tb"><p class="k">Minimum amount</p></div><div class="cell tb"><p class="v">Usually from ₹500, depending on the fund</p></div>
+      <div class="cell tb"><p class="k">Growth</p></div><div class="cell tb"><p class="v">Through NAV appreciation and compounding</p></div>
+      <div class="cell tb"><p class="k">Key risk</p></div><div class="cell tb"><p class="v">Entry point matters more than in SIP</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== How Does the Lumpsum Calculator Work? ===== -->
+  <section class="section stack sec-light" id="sec-work" data-section="work" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Does the Lumpsum Calculator Work?</h2>
+      <p class="sec-lead">The lumpsum calculator uses the compound interest formula to estimate the future value of your investment.</p>
+    </div>
+
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Formula A = P × (1 + r/100)^n</p></div><div class="cell th"><p>A = maturity amount | P = investment amount | r = expected annual return | n = time period in years</p></div>
+      <div class="cell tb"><p class="k">Inflation-adjusted formula</p></div><div class="cell tb"><p class="v">Real Value = Maturity Amount ÷ (1 + inflation rate)^n</p></div>
+    </div></div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Example</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="cell th"><p>Input</p></div><div class="cell th"><p>Value</p></div>
+        <div class="cell tb"><p class="k">Investment amount</p></div><div class="cell tb"><p class="v">₹5,00,000</p></div>
+        <div class="cell tb"><p class="k">Expected return</p></div><div class="cell tb"><p class="v">12% p.a.</p></div>
+        <div class="cell tb"><p class="k">Time period</p></div><div class="cell tb"><p class="v">10 years</p></div>
+        <div class="cell tb"><p class="k">Inflation</p></div><div class="cell tb"><p class="v">6% p.a.</p></div>
+        <div class="cell tb"><p class="k">Estimated maturity value</p></div><div class="cell tb"><p class="v">₹15.53 L</p></div>
+        <div class="cell tb"><p class="k">Estimated real value</p></div><div class="cell tb"><p class="v">₹8.67 L</p></div>
+      </div></div>
+    </div>
+
+    <p class="sec-lead">Key Takeaway: At 12% annual returns over 10 years, ₹5 lakh grows to ₹15.53 lakh. But inflation at 6% reduces the real purchasing power to ₹8.67 lakh. Always check the inflation-adjusted column before setting your goal target.</p>
+  </section>
+
+  <!-- ===== When Should You Choose Lumpsum over SIP? ===== -->
+  <section class="section stack sec-tint" id="sec-choose" data-section="choose" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">When Should You Choose Lumpsum over SIP?</h2>
+      <p class="sec-lead">Choose lumpsum when you have surplus money and a long investment horizon. Choose SIP when you want to invest from regular income or reduce timing risk.</p>
+      <p class="sec-lead">Use this simple guide if you're unsure whether to invest all at once or gradually.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:repeat(3,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Situation</p></div><div class="cell th"><p>Better Option</p></div><div class="cell th"><p>Why</p></div>
+      <div class="cell tb"><p class="k">You received an annual bonus or windfall</p></div><div class="cell tb"><p class="v">Lumpsum</p></div><div class="cell tb"><p class="v">You can put idle money to work quickly.</p></div>
+      <div class="cell tb"><p class="k">You earn a regular monthly salary</p></div><div class="cell tb"><p class="v">SIP</p></div><div class="cell tb"><p class="v">It builds discipline and spreads entry points.</p></div>
+      <div class="cell tb"><p class="k">Markets have corrected sharply</p></div><div class="cell tb"><p class="v">Lumpsum</p></div><div class="cell tb"><p class="v">You may get a better entry level.</p></div>
+      <div class="cell tb"><p class="k">Markets are near all-time highs</p></div><div class="cell tb"><p class="v">SIP or staggered lumpsum</p></div><div class="cell tb"><p class="v">This reduces timing risk.</p></div>
+      <div class="cell tb"><p class="k">You have a 10+ year goal</p></div><div class="cell tb"><p class="v">Lumpsum or hybrid approach</p></div><div class="cell tb"><p class="v">Longer time helps manage volatility.</p></div>
+      <div class="cell tb"><p class="k">You are unsure about timing</p></div><div class="cell tb"><p class="v">STP or staggered investment</p></div><div class="cell tb"><p class="v">Move money gradually into equity.</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== What is the Biggest Risk in Lumpsum Investing? ===== -->
+  <section class="section stack sec-light" id="sec-risk" data-section="risk" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What is the Biggest Risk in Lumpsum Investing?</h2>
+      <p class="sec-lead">The biggest risk in lumpsum investing is entering the market just before a fall. In event of that, your portfolio may show a loss in the short term, even if the long-term plan is sound.</p>
+    </div>
+
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell tb"><p class="k">Example</p></div><div class="cell tb"><p class="v">An investor who put ₹10 lakh into the market at a peak could see the value fall in the first few months. With a longer holding period, recovery becomes more likely, but it is never guaranteed.</p></div>
+    </div></div>
+
+    <p class="sec-lead">A few of the options to reduce timing risk include:</p>
+    <ul class="bullets">
+      <li>Splitting your lumpsum into 3–4 parts over 3–6 months.</li>
+      <li>Parking money in a debt fund and use an STP into equity.</li>
+      <li>Using balanced advantage or hybrid funds for automatic asset allocation.</li>
+    </ul>
+
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell tb"><p class="k">Remember</p></div><div class="cell tb"><p class="v">Lumpsum investing needs patience. It is recommended to avoid judging a long-term investment by daily NAV movement.</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== Lumpsum Returns – Illustrative Scenarios ===== -->
+  <section class="section stack sec-tint" id="sec-scenarios" data-section="scenarios" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Lumpsum Returns – Illustrative Scenarios</h2>
+      <p class="sec-lead">These examples show how compounding can work. The real value column assumes 6% annual inflation. This helps you see how much your money will actually buy in today's terms.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t5 bordered" style="grid-template-columns:repeat(5,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Investment</p></div><div class="cell th"><p>Return</p></div><div class="cell th"><p>Period</p></div><div class="cell th"><p>Maturity Value</p></div><div class="cell th"><p>Real Value</p></div>
+      <div class="cell tb"><p class="k">₹1.00 L</p></div><div class="cell tb"><p class="v">12%</p></div><div class="cell tb"><p class="v">5 years</p></div><div class="cell tb"><p class="v">₹1.76 L</p></div><div class="cell tb"><p class="v">₹1.32 L</p></div>
+      <div class="cell tb"><p class="k">₹1.00 L</p></div><div class="cell tb"><p class="v">12%</p></div><div class="cell tb"><p class="v">10 years</p></div><div class="cell tb"><p class="v">₹3.11 L</p></div><div class="cell tb"><p class="v">₹1.73 L</p></div>
+      <div class="cell tb"><p class="k">₹5.00 L</p></div><div class="cell tb"><p class="v">12%</p></div><div class="cell tb"><p class="v">10 years</p></div><div class="cell tb"><p class="v">₹15.53 L</p></div><div class="cell tb"><p class="v">₹8.67 L</p></div>
+      <div class="cell tb"><p class="k">₹10.00 L</p></div><div class="cell tb"><p class="v">12%</p></div><div class="cell tb"><p class="v">15 years</p></div><div class="cell tb"><p class="v">₹54.74 L</p></div><div class="cell tb"><p class="v">₹22.84 L</p></div>
+      <div class="cell tb"><p class="k">₹25.00 L</p></div><div class="cell tb"><p class="v">10%</p></div><div class="cell tb"><p class="v">20 years</p></div><div class="cell tb"><p class="v">₹1.68 Cr</p></div><div class="cell tb"><p class="v">₹52.44 L</p></div>
+      <div class="cell tb"><p class="k">₹50.00 L</p></div><div class="cell tb"><p class="v">10%</p></div><div class="cell tb"><p class="v">25 years</p></div><div class="cell tb"><p class="v">₹5.42 Cr</p></div><div class="cell tb"><p class="v">₹1.26 Cr</p></div>
+    </div></div>
+    <p class="sec-lead">Disclaimer: These numbers are illustrative only. Actual mutual fund returns vary and are not guaranteed. Do not use these numbers as the basis of a financial plan without professional advice.</p>
+  </section>
+
+  <!-- ===== Is Lumpsum Investment Right for You? ===== -->
+  <section class="section stack sec-light" id="sec-right" data-section="right" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Is Lumpsum Investment Right for You?</h2>
+      <p class="sec-lead">A lumpsum investment is an upfront, single-payment investment of a large amount of money. It is best suited for individuals with a significant financial windfall, higher risk tolerance, and a long-term horizon to maximize the power of compounding.</p>
+      <p class="sec-lead">Use the profiles below to find which scenario matches your situation</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t5 bordered" style="grid-template-columns:repeat(5,minmax(0,1fr));min-width:720px">
+      <div class="cell th"><p>Profile</p></div><div class="cell th"><p>Situation</p></div><div class="cell th"><p>Suggested Category</p></div><div class="cell th"><p>Risk</p></div><div class="cell th"><p>Simple Guidance</p></div>
+      <div class="cell tb"><p class="k">The Bonus Earner</p></div><div class="cell tb"><p class="v">Received ₹5–20 lakh bonus</p></div><div class="cell tb"><p class="v">Equity mutual funds</p></div><div class="cell tb"><p class="v">High</p></div><div class="cell tb"><p class="v">Best suited for 5+ year goals.</p></div>
+      <div class="cell tb"><p class="k">The Conservative Investor</p></div><div class="cell tb"><p class="v">Wants stability</p></div><div class="cell tb"><p class="v">Debt or hybrid funds</p></div><div class="cell tb"><p class="v">Low to medium</p></div><div class="cell tb"><p class="v">Suitable when capital safety matters.</p></div>
+      <div class="cell tb"><p class="k">The Retirement Planner</p></div><div class="cell tb"><p class="v">Has a larger corpus</p></div><div class="cell tb"><p class="v">Balanced advantage funds</p></div><div class="cell tb"><p class="v">Medium</p></div><div class="cell tb"><p class="v">Balances growth and downside control.</p></div>
+      <div class="cell tb"><p class="k">The Goal-Based Investor</p></div><div class="cell tb"><p class="v">Saving for education or home</p></div><div class="cell tb"><p class="v">Equity now, safer funds near goal</p></div><div class="cell tb"><p class="v">Medium to high</p></div><div class="cell tb"><p class="v">Link investment to a clear target.</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== How Much Lumpsum Do You Need to Reach Your Goal? ===== -->
+  <section class="section stack sec-tint" id="sec-goal" data-section="goal" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Much Lumpsum Do You Need to Reach Your Goal?</h2>
+      <p class="sec-lead">A lumpsum investment works best when it is linked to a clear goal. For instance, you can invest in financial products provided by Shriram Financial Services to work toward the following goals.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:repeat(3,minmax(0,1fr));min-width:720px">
+      <div class="cell th"><p>Goal</p></div><div class="cell th"><p>Target</p></div><div class="cell th"><p>Planning Estimate</p></div>
+      <div class="cell tb"><p class="k">Retirement in 20 years</p></div><div class="cell tb"><p class="v">₹3 Cr target today</p></div><div class="cell tb"><p class="v">Approx. ₹31.10 L needed today at 12%. With 6% inflation, future target may be ₹9.62 Cr and required lumpsum may be ₹99.74 L.</p></div>
+      <div class="cell tb"><p class="k">Child education in 10 years</p></div><div class="cell tb"><p class="v">₹20 L fees today</p></div><div class="cell tb"><p class="v">At 8% education inflation, future cost may be ₹43.18 L. Required lumpsum today at 12% may be ₹13.90 L.</p></div>
+      <div class="cell tb"><p class="k">Home down payment in 5 years</p></div><div class="cell tb"><p class="v">₹25 L target</p></div><div class="cell tb"><p class="v">Required lumpsum today at 10% may be ₹15.52 L.</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== Lumpsum vs SIP – Key Differences ===== -->
+  <section class="section stack sec-light" id="sec-vs-sip" data-section="vs-sip" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Lumpsum vs SIP – Key Differences</h2>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>Lumpsum</p></div><div class="cell th"><p>SIP</p></div>
+      <div class="cell tb"><p class="k">Investment style</p></div><div class="cell tb"><p class="v">One-time</p></div><div class="cell tb"><p class="v">Regular instalments</p></div>
+      <div class="cell tb"><p class="k">Market timing</p></div><div class="cell tb"><p class="v">More important</p></div><div class="cell tb"><p class="v">Less important</p></div>
+      <div class="cell tb"><p class="k">Rupee cost averaging</p></div><div class="cell tb"><p class="v">No</p></div><div class="cell tb"><p class="v">Yes</p></div>
+      <div class="cell tb"><p class="k">Minimum amount</p></div><div class="cell tb"><p class="v">Usually from ₹500</p></div><div class="cell tb"><p class="v">Often from ₹100/month</p></div>
+      <div class="cell tb"><p class="k">Ideal for</p></div><div class="cell tb"><p class="v">Bonus, windfall, surplus cash</p></div><div class="cell tb"><p class="v">Salaried monthly investors</p></div>
+      <div class="cell tb"><p class="k">Risk at entry</p></div><div class="cell tb"><p class="v">Higher</p></div><div class="cell tb"><p class="v">Spread over time</p></div>
+      <div class="cell tb"><p class="k">Best time</p></div><div class="cell tb"><p class="v">After correction or for long-term goals</p></div><div class="cell tb"><p class="v">Anytime with discipline</p></div>
+    </div></div>
+    <p class="sec-lead">Verdict: Lumpsum can work well for surplus money and long horizons. SIP is easier for regular income. If you are nervous about timing, use a staggered lumpsum or STP.</p>
+  </section>
+
+  <!-- ===== Types of Returns in Lumpsum Investment ===== -->
+  <section class="section stack sec-tint" id="sec-return-types" data-section="return-types" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Types of Returns in Lumpsum Investment</h2>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Return Type</p></div><div class="cell th"><p>Simple Meaning</p></div>
+      <div class="cell tb"><p class="k">Absolute return</p></div><div class="cell tb"><p class="v">Total percentage gain from start to finish.</p></div>
+      <div class="cell tb"><p class="k">CAGR</p></div><div class="cell tb"><p class="v">Annual growth rate that smooths returns over time.</p></div>
+      <div class="cell tb"><p class="k">Trailing return</p></div><div class="cell tb"><p class="v">Return over a recent fixed period, such as 1 year or 5 years.</p></div>
+      <div class="cell tb"><p class="k">Rolling return</p></div><div class="cell tb"><p class="v">Average return across many start dates. Useful for reducing timing bias.</p></div>
+      <div class="cell tb"><p class="k">Point-to-point return</p></div><div class="cell tb"><p class="v">Return between two exact dates.</p></div>
+      <div class="cell tb"><p class="k">Total return</p></div><div class="cell tb"><p class="v">Includes capital growth and payouts such as dividends, where applicable.</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== Tax on Lumpsum Mutual Fund Gains ===== -->
+  <section class="section stack sec-light" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Tax on Lumpsum Mutual Fund Gains</h2>
+      <p class="sec-lead">Tax depends on the fund type and how long you hold the investment. Add a “Last updated: Month Year” label before publishing.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:repeat(3,minmax(0,1fr));min-width:720px">
+      <div class="cell th"><p>Fund Type</p></div><div class="cell th"><p>Holding Period</p></div><div class="cell th"><p>Tax Treatment</p></div>
+      <div class="cell tb"><p class="k">Equity mutual fund</p></div><div class="cell tb"><p class="v">Less than 12 months</p></div><div class="cell tb"><p class="v">20% STCG, plus applicable surcharge and cess</p></div>
+      <div class="cell tb"><p class="k">Equity mutual fund</p></div><div class="cell tb"><p class="v">More than 12 months</p></div><div class="cell tb"><p class="v">12.5% LTCG on gains above ₹1.25 lakh</p></div>
+      <div class="cell tb"><p class="k">Debt mutual fund</p></div><div class="cell tb"><p class="v">Any period for newer debt fund rules</p></div><div class="cell tb"><p class="v">Generally taxed as per income tax slab</p></div>
+      <div class="cell tb"><p class="k">ELSS</p></div><div class="cell tb"><p class="v">3-year lock-in</p></div><div class="cell tb"><p class="v">Equity fund tax rules apply on redemption</p></div>
+      <div class="cell tb"><p class="k">Equity-oriented hybrid fund</p></div><div class="cell tb"><p class="v">Usually more than 12 months for LTCG</p></div><div class="cell tb"><p class="v">12.5% LTCG on gains above ₹1.25 lakh</p></div>
+    </div></div>
+    <p class="sec-lead">Important: Tax rules can change. Investors should consult a qualified tax professional before redeeming or filing returns.</p>
+  </section>
+
+  <!-- ===== What to Do After Investing in a Lumpsum Investment? ===== -->
+  <section class="section stack sec-tint" id="sec-after" data-section="after" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What to Do After Investing in a Lumpsum Investment?</h2>
+      <p class="sec-lead">Once your lumpsum is invested, the work is not over. Use these six steps to help you stay on track, avoid common mistakes, and make sure the investment actually delivers on its goal after your investment is complete.</p>
+    </div>
+    <ul class="bullets">
+      <li>Save your folio number and account statement.</li>
+      <li>Set a portfolio review reminder every 6 months.</li>
+      <li>Link the investment to a goal.</li>
+      <li>Add or update your nomination.</li>
+      <li>Check exit load and lock-in rules.</li>
+      <li>Decide your exit plan before the goal date.</li>
+    </ul>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -204,6 +378,34 @@ const seo = {
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ===== Related Calculators ===== -->
+  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+    <h2 class="sec-title">Related Calculators</h2>
+    <div class="explore-grid" data-reveal-row>
+      <a class="xcard" href="/sip-calculator/">
+        <span class="xc-title">SIP Calculator</span>
+        <span class="xc-desc">Estimate returns from monthly investments.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/swp-calculator/">
+        <span class="xc-title">SWP Calculator</span>
+        <span class="xc-desc">Plan regular withdrawals from your corpus.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/nps-calculator/">
+        <span class="xc-title">NPS Calculator</span>
+        <span class="xc-desc">Estimate retirement corpus from NPS.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/fd-calculator/">
+        <span class="xc-title">FD Calculator</span>
+        <span class="xc-desc">Calculate fixed deposit maturity value.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+    </div>
+    <a class="btn-gold" href="/calculators/" style="align-self:center">Explore All Calculators</a>
   </section>
 </BaseLayout>
 

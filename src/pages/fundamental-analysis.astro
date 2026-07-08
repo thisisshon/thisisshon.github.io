@@ -1,69 +1,53 @@
 ---
 /**
- * Fundamental Analysis - /fundamental-analysis/
- * Research-Centre content page on Shriram's Fundamental Research offering.
- * Root route → BaseLayout / component imports at ../ depth. Rendered entirely
- * in the shared design system: the standardised olive hero (rule 7), shared
- * section / card / .approaches / feature-grid / FAQ / CTA components, with
- * page-local styles ONLY for the icon feature grid. Every value binds to a
- * token (rule 9); the grids are data-driven so the same templates scale to
- * thousands of instances - the scale North Star.
+ * Fundamental Research - /fundamental-analysis/
+ * Research sub-page (root route → BaseLayout / component imports at ../ depth).
+ * Body content is the compliance-approved "Fundamental Research Page Content"
+ * doc, implemented word-for-word in the shared design system: the standardised
+ * olive hero (rule 7), shared section / card / check-list / gated-note / unlock
+ * band / FAQ / CTA components (mirrors technical-analysis.astro). Every value
+ * binds to a token (rule 9).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// "Our Research Process" - four pillars of a fundamental deep-dive. Each `icon`
-// maps to an inline <svg> in the ICON defs below (rule 4: real SVGs only).
-const PROCESS = [
-  { icon: 'ledger', title: 'Company Financials', body: 'We read the numbers line by line - revenue quality, margin trend, cash flow, debt and return ratios across multiple quarters, not just the latest print.' },
-  { icon: 'scale', title: 'Valuation', body: 'DCF, relative multiples and scenario models to estimate a stock’s intrinsic worth - so you know whether the price already reflects the story.' },
-  { icon: 'users', title: 'Management Quality', body: 'Capital allocation record, promoter holding, governance and what management actually said on the concall - read against what the business delivered.' },
-  { icon: 'globe', title: 'Industry Outlook', body: 'Where the sector sits in its cycle, the competitive moat, regulation and the structural tailwinds or headwinds shaping the next few years.' },
+// "What Fundamental Research Contains" - the checklist (doc verbatim).
+const CONTAINS = [
+  'Quarterly earnings reviews with our take on revenue growth, margins and management’s guidance',
+  'Stock-specific notes with a fair value range, target price and the holding period we have in mind',
+  'Sector and thematic reports comparing companies on growth, debt and return ratios',
+  'Mutual fund and portfolio reviews for investors who’d rather hold a basket than pick single names',
+  'A clearly stated risk - the one thing that, if it happens, changes our call',
 ];
 
-// "What You Get" - the deliverables of the coverage. Same feature-card template.
-const DELIVER = [
-  { icon: 'book', title: 'Full research reports', body: 'Initiating-coverage notes and quarterly earnings reviews - with the thesis, the numbers and the risks laid out in a downloadable PDF.' },
-  { icon: 'target', title: 'Target prices & ratings', body: 'A clear stance - Buy, Accumulate, Hold or Reduce - with a 12-month target price and the level that would make us change our mind.' },
-  { icon: 'grid', title: 'Coverage universe', body: 'A followed list of companies tracked across quarters and sectors, so the view stays current as the business evolves.' },
-];
-
-// "Who It's For" - the checklist (verbatim tone from the reference pages).
-const AUDIENCE = [
-  'Long-term investors who want to own quality businesses, not just tickers',
-  'SIP and portfolio investors sizing positions around fair value',
-  'Anyone who reads the annual report before the price chart',
-  'Investors who want a second, SEBI-registered opinion before they buy',
-  'Clients building conviction to hold through the noise of a full cycle',
-];
-
-// Frequently Asked Questions - first item open (site convention).
+// Frequently Asked Questions (doc verbatim; first item open). The rendered
+// header stays "General Questions" (project rule 13).
 const FAQS = [
   {
-    q: 'What is fundamental analysis?',
-    a: 'Fundamental analysis is the study of a company’s intrinsic worth - its financial statements, valuation, management quality and industry position - to decide whether a stock is worth owning and at what price. It answers what to buy and what it is really worth, rather than when to trade it.',
+    q: 'What is fundamental research?',
+    a: 'Fundamental research looks at a company’s actual business — its earnings, debt, margins and growth — to work out what the stock is worth, rather than reading price charts. It’s the analysis behind a buy, hold or sell call.',
   },
   {
-    q: 'How is fundamental research different from technical research?',
-    a: 'Fundamental research reads the business - earnings, cash flow, valuation and the sector cycle - to judge long-term value. Technical research reads the chart - price, volume and levels - to time entries and exits. They are complementary: fundamentals tell you what to own, technicals help you decide when.',
+    q: 'How is this different from technical research?',
+    a: 'Technical research tells you when a stock might move, based on price and volume patterns. Fundamental research tells you whether the company is worth owning in the first place, based on its financials and business outlook. Most serious investors use both.',
   },
   {
-    q: 'What do the fundamental reports contain?',
-    a: 'Each report carries a clear rating and 12-month target price, a summary of the investment thesis, the key financials and valuation, management commentary from the latest concall, and the risks that would change the view - all in a downloadable PDF.',
-  },
-  {
-    q: 'Do I need to login to read the reports?',
-    a: 'Report titles and short overviews are open to everyone. Full reports - with detailed models, target prices, PDFs and data tables - unlock when you log in to the Antara app or open a Shriram demat account.',
+    q: 'Do I need to log in to read the reports?',
+    a: 'You can preview the headline and rating on every report without logging in. Reading the full note — including our target price, valuation working and risk view — needs a demat account with us.',
   },
   {
     q: 'How do I open a demat account to access research?',
-    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account - once verified, every fundamental report, valuation model and coverage note is unlocked in full.',
+    a: 'Tap \'Open Demat Account\' on this page and complete the KYC process online — it takes a few minutes with your PAN and Aadhaar. Once your account is active, every fundamental report unlocks automatically.',
   },
   {
     q: 'Is the research free for clients?',
-    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library - every fundamental report, earnings review and coverage note - at no extra charge.',
+    a: 'Yes. All fundamental and technical reports, sector notes, and mutual fund reviews are free for anyone with a Shriram demat account — there’s no separate subscription.',
+  },
+  {
+    q: 'How often are reports published?',
+    a: 'Technical research are more frequent than the Fundamental. Sector reports and mutual fund reviews are published monthly, and we flag any rating change the same day it happens.',
   },
 ];
 
@@ -77,88 +61,35 @@ const seo = {
 ---
 
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
-  <!-- Inline icon set - every glyph is a real <svg> (rule 4), sized 24. -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <g id="fi-ledger"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
-      <g id="fi-scale"><path d="M12 4v16M6 20h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 6 5 9m7-3 7 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3 12a2 2 0 0 0 4 0l-2-4-2 4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M17 12a2 2 0 0 0 4 0l-2-4-2 4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
-      <g id="fi-users"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 5.2A3.2 3.2 0 0 1 18 11m-.5 3.8c2.1.6 3.5 2.5 3.5 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
-      <g id="fi-globe"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.8 5.4 3.8 8.5S14.5 18.1 12 20.5C9.5 18.1 8.2 15.1 8.2 12S9.5 5.9 12 3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
-      <g id="fi-book"><path d="M6 4h9a3 3 0 0 1 3 3v13H8a2 2 0 0 0-2 2V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 20a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
-      <g id="fi-target"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></g>
-      <g id="fi-grid"><rect x="4" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/></g>
-    </defs>
-  </svg>
-
   <!-- ================= HERO (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Research Centre', href: '/research-hub/' }, { name: 'Fundamental Research' }]} />
     <div class="hero-inner" data-enter>
       <h1>Fundamental <span class="g">Research</span></h1>
-      <p class="lead">Own the business, not just the ticker. We read the financials, value the company and judge the management - so you know what a stock is really worth before you buy.</p>
+      <p class="lead">We look past the candle and into the company — earnings, debt, margins, and what management is actually telling shareholders.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered analysts</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Target prices &amp; ratings</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Coverage across quarters</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- ================= WHAT IS FUNDAMENTAL ANALYSIS ================= -->
+  <!-- ================= WHAT IS FUNDAMENTAL RESEARCH ================= -->
   <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is Fundamental Analysis</h2>
-      <p class="sec-lead">Fundamental analysis reads the business, not the chart - a company’s financial statements, its valuation, the quality of its management and the industry it competes in. The goal is to estimate a stock’s intrinsic worth: what the business is really worth, whether today’s price already reflects it, and whether it deserves a place in your portfolio for the long term. Where technical research answers when to trade, fundamental research answers what to own and at what price.</p>
+      <h2 class="sec-title">What is Fundamental Research</h2>
+      <p class="sec-lead">Fundamental Research is how we check whether a company is actually as good — or as cheap — as its share price suggests. We go through the balance sheet, the profit and loss account and the cash flow statement to see how the business is really doing, not just how the stock is trading. Ratios like price-to-earnings come into it too, alongside a look at the sector the company sits in and how it stacks up against peers.</p>
+      <p class="sec-lead">None of this is about predicting tomorrow’s price move. It’s about arriving at what a stock is genuinely worth — its intrinsic value — and comparing that to what the market is charging for it today. If the gap is wide enough, that’s a stock worth a second look, whether it’s trading above or below where the numbers say it should be.</p>
+      <p class="sec-lead">We publish that thinking as stock-specific notes, sector deep-dives and periodic portfolio reviews, written by SEBI-registered analysts who put a number on paper and stand behind it.</p>
     </div>
   </section>
 
-  <!-- ================= OUR RESEARCH PROCESS ================= -->
-  <section class="section stack sec-tint" id="sec-process" data-section="process" style="gap:56px">
+  <!-- ================= WHAT FUNDAMENTAL RESEARCH CONTAINS ================= -->
+  <section class="section stack sec-tint" id="sec-contains" data-section="contains" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Our Research Process</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Every coverage note is built the same way - four disciplines, each grounded in primary data and read against what the business actually delivered.</p>
-    </div>
-    <div class="feat-grid" data-reveal-row>
-      {PROCESS.map((c) => (
-        <article class="fcard">
-          <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#fi-${c.icon}`} /></svg></span>
-          <h3>{c.title}</h3>
-          <p>{c.body}</p>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <!-- ================= WHAT YOU GET ================= -->
-  <section class="section stack sec-light" id="sec-deliver" data-section="deliver" style="gap:56px">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What You Get</h2>
-      <p class="sec-lead">Research you can act on - a clear rating and target price, the full thesis in a downloadable report, and a coverage universe that stays current across quarters.</p>
-    </div>
-    <div class="feat-grid three" data-reveal-row>
-      {DELIVER.map((c) => (
-        <article class="fcard">
-          <span class="fic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><use href={`#fi-${c.icon}`} /></svg></span>
-          <h3>{c.title}</h3>
-          <p>{c.body}</p>
-        </article>
-      ))}
-    </div>
-    <div style="display:flex"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-  </section>
-
-  <!-- ================= WHO IT'S FOR ================= -->
-  <section class="section stack sec-tint" id="sec-audience" data-section="audience" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Who It’s For</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Fundamental research is for investors who buy businesses to hold - and want the numbers, the valuation and a second opinion before they commit capital.</p>
+      <h2 class="sec-title">What Fundamental Research Contains</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every fundamental note follows the same discipline — what changed, why it matters, and what we’d watch next. Here’s what you’ll find inside:</p>
     </div>
     <div class="card" style="display:flex;flex-direction:column">
       <div class="check-list">
-        {AUDIENCE.map((item, i) => (
+        {CONTAINS.map((item, i) => (
           <>
             {i > 0 && <div class="check-sep"></div>}
             <div class="check-row">
@@ -167,6 +98,43 @@ const seo = {
             </div>
           </>
         ))}
+      </div>
+    </div>
+    <div style="display:flex"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+  </section>
+
+  <!-- ================= TODAY'S FUNDAMENTAL NOTE - gated ================= -->
+  <section class="section stack sec-light" id="sec-note" data-section="note" style="gap:40px;align-items:center;justify-content:center">
+    <div class="card gate">
+      <span class="gate-ic" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      </span>
+      <h3>Today’s Fundamental Note is ready.</h3>
+      <p>Log in to read the full report and analyst rating, or open a demat account to get started.</p>
+      <div class="gate-cta">
+        <a class="btn-ghost" href="#">Login</a>
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ALL REPORTS IN ONE PLACE + UNLOCK BAND ================= -->
+  <section class="section stack sec-tint" id="sec-notes" data-section="notes" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px;align-items:center;text-align:center">
+      <h2 class="sec-title">Fundamental Research notes all you need in one place</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary);max-width:720px">Every report we publish, from single earnings note to a full sector study, lives here as soon as it’s out. Log in to read the full working, rating and target price.</p>
+    </div>
+
+    <!-- Unlock band - the doc's CTA, rendered in the site's dark focus-band
+         palette (parity with technical-analysis.astro's .unlock). -->
+    <div class="unlock">
+      <div class="unlock-tx">
+        <h3>Unlock All Reports + Stock Ratings</h3>
+        <p>Open your Demat account and get free, unlimited access to every fundamental report, analyst rating and model portfolio we publish.</p>
+      </div>
+      <div class="unlock-cta">
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
+        <a class="btn-outline" href="#">Login to Existing Account</a>
       </div>
     </div>
   </section>
@@ -193,24 +161,13 @@ const seo = {
       </div>
     </div>
   </section>
-
-  <!-- ================= FINAL CTA ================= -->
-  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
-    <div class="cta-box">
-      <div class="ct-tt">
-        <h3>Know What You Own, Before You Buy</h3>
-        <p class="ct-sub">Open your demat account in minutes and unlock every fundamental report, valuation model and coverage note.</p>
-      </div>
-      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
-    </div>
-  </section>
 </BaseLayout>
 
 <style>
-  /* ===== Fundamental Analysis - page-local components only. Every value binds
-     to a design token; the only genuinely-new block is the icon feature grid
-     (reused by the process + deliverables sections). Hero / section / card /
-     check-list / FAQ / CTA are all shared components from global.css. ===== */
+  /* ===== Fundamental Research - page-local components only. Every value binds
+     to a design token; the genuinely-new blocks are the gated note card and the
+     unlock band (mirrored from technical-analysis.astro). Section/hero/card/
+     check-list/FAQ are all shared components from global.css. ===== */
   .section,
   .cta-sec {
     scroll-margin-top: 96px;
@@ -222,33 +179,51 @@ const seo = {
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
   .faq-side { border: 1px solid var(--color-border-card); }
 
-  /* ===== Icon feature grid (PROCESS + DELIVER) ===== */
-  .feat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; width: 100%; }
-  .feat-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .fcard {
-    background: var(--color-surface-card); border: 1px solid var(--color-border-card);
-    border-radius: 24px; padding: var(--container-pad);
-    display: flex; flex-direction: column; gap: 16px;
-    transition: border-color 0.22s ease;
+  /* ===== Gated daily-note card ===== */
+  .gate {
+    max-width: 640px; width: 100%; display: flex; flex-direction: column;
+    align-items: center; text-align: center; gap: 8px;
+  }
+  .gate-ic {
+    width: 48px; height: 48px; flex: none; border-radius: 999px;
+    background: var(--color-text-heading-dark); color: var(--color-white);
+    display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;
+  }
+  .gate h3 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
+  .gate p { font-weight: 400; font-size: 14px; color: var(--color-text-muted); max-width: 400px; }
+  .gate-cta { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 24px; }
+
+  /* ===== Unlock band - dark focus band (parity with the site's .unlock pattern);
+     the doc's CTA banner is rendered in the olive focus palette so the page stays
+     inside the one token set. Solid hex only. ===== */
+  .unlock {
+    width: 100%; border-radius: 24px; padding: 48px var(--container-pad);
+    background: radial-gradient(125% 210% at 100% -8%, var(--color-olive-600) 0%, var(--color-olive-800) 50%, var(--color-charcoal-850) 100%);
+    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+  }
+  .unlock-tx { display: flex; flex-direction: column; gap: 12px; max-width: 640px; }
+  .unlock-tx h3 { font-weight: 500; font-size: 28px; color: var(--color-white); }
+  .unlock-tx p { font-weight: 400; font-size: 16px; color: var(--color-text-on-dark-lead); }
+  /* .unlock-cta buttons use the shared .btn-gold + .btn-outline (global.css). */
+  .unlock-cta { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  /* white-outline button on the dark band (matches the fill so it reads as an
+     outline). Auto width to fit the longer label. */
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 40px; padding: 8px 24px; border-radius: 4px;
+    background: transparent; border: 1px solid var(--color-white); color: var(--color-white);
+    font-weight: 500; font-size: 12px; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease;
   }
   @media (min-width: 1024px) and (hover: hover) {
-    .fcard:hover { border-color: var(--color-sage-450); }
+    .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
   }
-  /* icon tile - 48px container (8px grid), warm gold tint + olive brand icon */
-  .fic { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--color-gold-100); color: var(--color-text-heading-dark); display: inline-flex; align-items: center; justify-content: center; }
-  .fic svg { width: 24px; height: 24px; display: block; }
-  .fcard h3 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
-  .fcard p { font-weight: 400; font-size: 16px; color: var(--color-text-muted); }
 
   /* ===== responsive ===== */
-  @media (max-width: 1024px) {
-    .feat-grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
   @media (max-width: 768px) {
-    .fcard p { font-size: 14px; }
-  }
-  @media (max-width: 640px) {
-    .feat-grid,
-    .feat-grid.three { grid-template-columns: 1fr; }
+    .unlock-tx h3 { font-size: clamp(22px, 5.6vw, 28px); }
+    .unlock-cta { width: 100%; }
+    .unlock-cta .btn-gold, .unlock-cta .btn-outline { width: 100%; flex: 1 1 100%; }
+    .gate-cta .btn-ghost, .gate-cta .btn-gold { width: 100%; }
   }
 </style>

@@ -3,7 +3,7 @@
  * IPO - /ipo/
  * Long-form Initial Public Offering guide. Built entirely from the shared
  * design-system components in global.css (hero, .section/.sec-title, .card,
- * .product-page_table, .risks, .steps, .cat-grid, FaqAccordion, .cta-box).
+ * .product-page_table, .steps, .cat-grid, FaqAccordion, .cta-box).
  * The only page-scoped CSS is a token-bound glossary list (.gloss).
  * Nested route → BaseLayout / component imports at ../../ depth.
  */
@@ -12,128 +12,172 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// Issue-structure cards - two ways an IPO can be priced and two ways shares are sourced.
-const STRUCTURE = [
-  {
-    h: 'Fixed Price Issue',
-    p: 'The company sets a single, fixed price per share in the prospectus. Investors know exactly what they will pay, and demand is only known after the issue closes.',
-  },
-  {
-    h: 'Book Building Issue',
-    p: 'The company offers a price band (a floor and a cap). Investors bid within the band, and the final cut-off price is discovered from the demand generated across all bids.',
-  },
-  {
-    h: 'Fresh Issue',
-    p: 'The company creates and sells new shares to raise fresh capital. The money goes to the company, and the total number of outstanding shares increases.',
-  },
-  {
-    h: 'Offer for Sale (OFS)',
-    p: 'Existing shareholders - promoters or early investors - sell part of their holding to the public. The proceeds go to those selling shareholders, not the company.',
-  },
-];
-
-// How to apply - five-step ASBA/UPI flow through a broker or bank.
-const STEPS = [
-  { h: 'Pick an Open IPO', p: 'Browse live and upcoming IPOs, read the RHP and check the price band, lot size and issue dates.' },
-  { h: 'Place Your Bid', p: 'Apply through your broker or bank at cut-off or a chosen price within the band, in multiples of the lot size.' },
-  { h: 'Block Funds via UPI / ASBA', p: 'The application amount is blocked in your bank account through UPI or ASBA - it stays in your account until allotment.' },
-  { h: 'Allotment', p: 'On finalisation, shares are credited to your Demat account; if oversubscribed, allotment may be partial or by lottery.' },
-  { h: 'Listing Day', p: 'Blocked funds for un-allotted shares are released, and allotted shares begin trading on the NSE/BSE from the listing date.' },
-];
-
-// Key IPO terms - term + plain-language definition.
+// Key terms to know - term + plain-language definition.
 const TERMS = [
   {
     t: 'Price Band',
-    d: 'In a book-built issue, the range between a floor price and a cap price within which investors place their bids. The final price is set inside this band.',
+    d: 'The bidding price range, stretching from the minimum floor price to the maximum cap price.',
   },
   {
     t: 'Lot Size',
-    d: 'The minimum number of shares you can apply for, and the multiple in which you must bid. Retail applications start at one lot and are capped at ₹2 lakh.',
-  },
-  {
-    t: 'Cut-off Price',
-    d: 'An option for retail investors to bid at whatever final price the company sets within the band, ensuring the bid stays valid regardless of the discovered price.',
+    d: 'The minimum number of shares an investor must bid for in an IPO. Retail investors must apply for at least one lot.',
   },
   {
     t: 'Grey Market Premium (GMP)',
-    d: 'An unofficial, unregulated indicator of the premium at which IPO shares trade before listing. It signals sentiment but is not a reliable guide to listing gains.',
+    d: 'An unofficial indicator of investor demand, showing the premium at which IPO shares trade in the unregulated grey market before listing.',
   },
   {
-    t: 'ASBA',
-    d: 'Application Supported by Blocked Amount - the mandatory mechanism where your application money is blocked, not debited, until shares are allotted.',
+    t: 'Oversubscription',
+    d: 'When the total bids received exceed the shares available. usually triggering a lottery-based allotment for retail investors.',
   },
   {
-    t: 'RII / NII / QIB',
-    d: 'The three investor categories: Retail Individual Investors (up to ₹2 lakh), Non-Institutional Investors (above ₹2 lakh) and Qualified Institutional Buyers.',
+    t: 'Listing Date',
+    d: "The date the company's shares are officially listed and begin trading live on NSE/BSE.",
   },
 ];
 
-// Investor-category reservation cards.
-const CATEGORIES = [
-  { h: 'Retail (RII)', p: 'Individual investors applying for up to ₹2 lakh. A minimum 35% of a book-built issue is reserved for this category.' },
-  { h: 'Non-Institutional (NII)', p: 'Individuals, HUFs and bodies applying above ₹2 lakh. At least 15% of a book-built issue is reserved for NIIs.' },
-  { h: 'Qualified Institutional (QIB)', p: 'Mutual funds, banks, FPIs and insurers. Up to 50% of a book-built issue is allocated to this category.' },
-  { h: 'Anchor Investors', p: 'A sub-set of QIBs who commit ahead of the issue opening, lending confidence and helping anchor the price band.' },
-];
-
-// Allotment & listing rows - scenario / what happens.
-const ALLOT_ROWS = [
+// IPO Process in India - three-step overview.
+const PROCESS = [
   {
-    k: 'Under-subscribed',
-    m: 'Demand is below the shares on offer. All valid applicants typically receive a full allotment, subject to minimum-subscription rules.',
+    h: 'DRHP Filing & SEBI Approval',
+    p: 'The company files a Draft Red Herring Prospectus (DRHP) with SEBI covering financials, risks, and business details. SEBI reviews and approves it, typically within 30 days.',
   },
   {
-    k: 'Fully subscribed',
-    m: 'Demand roughly matches supply. Applicants generally receive the shares they applied for at the final issue price.',
+    h: 'Price Band & Subscription Window',
+    p: 'Post-approval, a price band is announced and the IPO opens for bidding — usually for 3 business days. Anchor investors are allotted shares a day before the public subscription opens.',
   },
   {
-    k: 'Over-subscribed (retail)',
-    m: 'Demand exceeds supply. Allotment is made by lottery in multiples of the lot size, so each successful applicant gets at least one lot.',
-  },
-  {
-    k: 'No allotment',
-    m: 'If your name is not drawn in the lottery, you receive no shares and the amount blocked in your account is released in full.',
+    h: 'Allotment & Listing',
+    p: 'After the subscription closes, shares are allotted — via lottery for retail investors, proportionally for HNIs and institutions. Listing on NSE or BSE happens within 6 business days.',
   },
 ];
 
-// Risks to weigh before applying.
+// Advantages of IPO - No. / Advantage / What It Means for You.
+const ADVANTAGES = [
+  { n: '1', a: 'Early-Stage Access', m: 'Invest at the issue price before the broader market sets its value — maximising potential for listing gains and long-term growth.' },
+  { n: '2', a: 'Listing Gain Potential', m: 'A fundamentally strong IPO at a reasonable valuation can deliver meaningful returns from Day 1 of listing.' },
+  { n: '3', a: 'Portfolio Diversification', m: 'Access sectors and companies not yet available in the secondary market, which expands your investment universe.' },
+  { n: '4', a: 'Transparent Disclosures', m: 'Every IPO comes with SEBI-mandated audited financials, peer comparisons, and a detailed risk register, so you invest with full information.' },
+  { n: '5', a: 'Access to Public Capital (for Companies)', m: 'Companies raise funds without taking on debt, signalling financial discipline and growth intent.' },
+  { n: '6', a: 'Brand & Talent Growth (for Companies)', m: 'Listing enhances brand credibility and enables Employee Stock Ownership Plan (ESOP), attracting better talent and institutional trust.' },
+  { n: '7', a: 'Promoter Monetisation', m: 'IPOs offer a structured, regulated exit path for early investors and promoters — a sign of business maturity.' },
+  { n: '8', a: 'Wealth Creation Potential', m: 'Fundamentally strong IPOs held beyond listing day have historically delivered significant long-term returns for patient investors.' },
+];
+
+// Drawbacks of IPO - No. / Risk-Demerit / What It Means for You.
+const DRAWBACKS = [
+  { n: '1', a: 'No Guaranteed Listing Gains', m: 'An aggressively priced IPO or one launched in weak market conditions can list below the issue price — listing-day losses are a real possibility.' },
+  { n: '2', a: 'Limited Price Discovery', m: 'Unlike listed stocks, there is no historical price data or mature analyst coverage to benchmark valuation — decisions rely heavily on prospectus disclosures.' },
+  { n: '3', a: 'Short-Term Volatility', m: 'Anchor investor lock-ins and the absence of trading history make new listings prone to sharp price swings in the early days post-listing.' },
+  { n: '4', a: 'Poor Post-Listing Liquidity (SME IPOs)', m: 'Secondary market volumes on SME counters can be very thin — making it difficult to exit at desired prices after listing.' },
+];
+
+// Who can apply - four investor categories across nine parameters (transposed table).
+const APPLY_ROWS = [
+  { k: 'Who Can Apply', rii: 'Individual investors', nii: 'Individuals & non-institutional entities', qib: 'Mutual funds, FIIs, insurance companies, banks', anchor: 'Large institutional investors (subset of QIB)' },
+  { k: 'Application Amount', rii: 'Up to ₹2 lakh', nii: 'Above ₹2 lakh (sHNI: ₹2L-10L bHNI: above ₹10L)', qib: 'No upper limit', anchor: 'No upper limit' },
+  { k: 'Minimum Application', rii: '1 lot (as per RHP)', nii: 'Above ₹2 lakh', qib: 'As per SEBI norms', anchor: 'As per SEBI norms' },
+  { k: 'IPO Quota (Mainboard)', rii: 'Minimum 35%', nii: 'Minimum 15%', qib: 'Minimum 50%', anchor: 'Up to 60% of the QIB portion' },
+  { k: 'Allotment Method', rii: 'Computer-based lottery in oversubscribed issues', nii: 'Proportional to application size', qib: 'Discretionary by book runner', anchor: 'Discretionary — allotted a day before public subscription opens' },
+  { k: 'Lock-in Period', rii: 'None', nii: 'None', qib: 'None', anchor: '30 days mandatory' },
+  { k: 'Key Advantage', rii: 'Equal chance for every applicant regardless of application size', nii: 'A larger application improves the allotment probability', qib: 'Priority access to large IPO allocations', anchor: 'First-mover allotment; signals institutional confidence' },
+  { k: 'Key Risk', rii: 'Lottery means no guaranteed allotment', nii: 'Larger capital needed for meaningful allotment', qib: 'Subject to SEBI eligibility criteria', anchor: 'Lock-in limits short-term exit flexibility' },
+];
+
+// How to Apply for an IPO - five-step flow via Shriram.
+const APPLY_STEPS = [
+  { h: 'Log In', p: 'Log in to your Shriram Financial Services trading account or Antara app.' },
+  { h: 'Select the Open IPO', p: 'Navigate to the IPO section and select the open IPO.' },
+  { h: 'Enter Your Bid', p: 'Enter bid quantity (in multiples of lot size) and select bid price (cut-off or specific price).' },
+  { h: 'Approve the UPI Mandate', p: 'Approve the UPI mandate on your UPI app to block funds via Application Supported by Blocked Amount (ASBA).' },
+  { h: 'Track Allotment', p: "Track allotment status on the registrar's website and your registered email id. Allotted shares are credited to the demat account on the listing eve." },
+];
+
+// How to Read an IPO Prospectus - what to pay attention to.
+const PROSPECTUS = [
+  { h: 'Objects of Issue and Use of Proceeds', p: 'This section reveals why the company is raising funds — whether for expansion, debt repayment, or working capital. Specific, quantifiable deployment plans signal strong management intent.' },
+  { h: 'Risk Factors and Promoter Background', p: "IPO risk factors disclose business, regulatory, and sectoral risks that the company itself has acknowledged. Check the promoter's background for any litigation, penalties, or related-party transactions that could signal conflicts of interest." },
+  { h: 'OFS Ratio and What It Signals', p: 'The Offer for Sale (OFS) component means existing shareholders — not the company — are receiving the proceeds. A high OFS ratio may indicate promoters are using the IPO as an exit opportunity. A higher fresh issue component is generally more favourable for new investors.' },
+];
+
+// IPO Allotment Process - key stages.
+const ALLOTMENT = [
+  { h: 'Verification of Applications', p: 'Invalid or incomplete applications are filtered out based on PAN, demat and payment details. Common rejection reasons include mismatched PAN details, incorrect UPI IDs, or bids outside the price band.' },
+  { h: 'Basis of Allotment', p: 'Shares are allotted as per SEBI rules, through a lottery in the retail category or by proportionate allotment in other categories. The registrar publishes a basis-of-allotment document publicly, so you can verify exactly how shares were distributed.' },
+  { h: 'Credit of Shares', p: "Allotted shares are credited to the investor's demat account before listing. This typically happens within T+5 business days of the IPO closing date, giving you confirmed holding status before trading begins on NSE or BSE." },
+  { h: 'Refund/Fund Release', p: "If shares are not allotted, the blocked amount is released back to the investor's bank account. Under the ASBA framework, this unblocking is automatic — no separate refund request is needed from the investor." },
+];
+
+// IPO Risks.
 const RISKS = [
-  { h: 'No Allotment Risk', p: 'A heavily oversubscribed IPO is allotted by lottery - applying is no guarantee you will receive any shares at all.' },
-  { h: 'Listing-Day Volatility', p: 'Prices can swing sharply on debut. A stock may list below its issue price, turning an anticipated gain into an immediate loss.' },
-  { h: 'Valuation Risk', p: 'IPOs are often priced to favour the seller. A rich valuation can limit upside and leave little margin of safety for new investors.' },
-  { h: 'Lock-in & Limited History', p: 'Anchor and promoter shares carry lock-ins that can pressure prices on release, and a newly listed company has a short public track record.' },
+  { h: 'Overvaluation Risk', p: 'Promoters have an incentive to price IPOs at a premium. Without price history or mature analyst coverage, assessing true value relies heavily on prospectus disclosures.' },
+  { h: 'SME IPO Liquidity Risk', p: 'Post-listing volumes on SME counters can be very thin, making it difficult to exit at desired prices.' },
+  { h: 'Lower Regulatory Scrutiny', p: 'SME IPOs are subject to lighter SEBI oversight compared to mainboard issues, increasing the importance of independent due diligence.' },
+  { h: 'Limited Analyst Coverage', p: 'Fewer analysts track SME-listed companies, making it harder to find reliable independent research to guide your investment decision.' },
 ];
 
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// How to Evaluate an IPO Before Investing - five parameters.
+const EVALUATE = [
+  { h: 'P/E Ratio vs. Sector Peers', p: "Compare the company's price-to-earnings multiple at the issue price against listed peers in the same sector. A premium valuation is only justified if the DRHP substantiates it with superior growth rates or stronger margins." },
+  { h: 'OFS vs. Fresh Issue', p: 'A higher fresh issue component means more capital flows into the business, a positive signal for long-term investors. A high OFS ratio means existing shareholders are cashing out, not that the company is growing.' },
+  { h: 'Business Model and Revenue Visibility', p: 'Does the company have a proven, scalable business model? Look for recurring revenues and a consistent growth trajectory over the last three to five years, not just a strong pre-IPO year.' },
+  { h: 'Fund Manager and AMC Credibility', p: "For ETF or mutual fund IPOs, evaluate the AMC's track record, fund management experience, expense ratios, and how the strategy differs from existing products in the market." },
+  { h: 'Anchor Investor Participation', p: 'Strong anchor investor participation, especially from domestic mutual funds and marquee FPIs, signals institutional conviction and adds credibility to the issue.' },
+];
+
+// IPO tax - STCG vs LTCG across parameters.
+const TAX_ROWS = [
+  { k: 'Holding Period', stcg: 'Shares sold within 12 months of allotment', ltcg: 'Shares held for more than 12 months before selling' },
+  { k: 'Tax Rate', stcg: '20% (revised in Union Budget 2024)', ltcg: '12.5% (post-Budget 2024)' },
+  { k: 'Tax Exemption Threshold', stcg: 'None — all gains are taxable', ltcg: 'Gains up to ₹1.25 lakh per financial year are exempt' },
+  { k: 'Indexation Benefit', stcg: 'Not applicable', ltcg: 'Not applicable for listed equity shares' },
+  { k: 'Applicable On', stcg: 'All listed IPO shares for which STT has been paid', ltcg: 'All listed IPO shares for which STT has been paid' },
+  { k: 'Applies To', stcg: 'Mainboard and SME IPO listings', ltcg: 'Mainboard and SME IPO listings' },
+  { k: 'Tax Slab Relevance', stcg: 'Not relevant — flat rate applies regardless of income', ltcg: 'Not relevant — flat rate applies regardless of income' },
+  { k: 'Investor Tip', stcg: 'Short holding periods attract higher tax — factor this into listing-day exit decisions', ltcg: 'Planning your exit beyond 12 months and within the ₹1.25 lakh threshold can meaningfully improve post-tax returns' },
+];
+
+// General Questions - doc "Got Questions?" verbatim, same order (first item open).
 const FAQS = [
   {
-    q: 'What is an IPO?',
-    a: 'An IPO, or Initial Public Offering, is the process through which a private company offers its shares to the public for the first time and gets listed on a stock exchange such as the NSE or BSE. It lets the company raise capital and gives investors a chance to own a part of the business.',
+    q: 'What is an IPO in simple terms?',
+    a: 'An IPO (Initial Public Offering) is when a private company sells shares to the public for the first time and lists on the NSE or BSE. Investors can buy at the issue price and later trade shares on the exchange.',
   },
   {
-    q: 'Do I need a Demat account to apply for an IPO?',
-    a: 'Yes. IPO shares are allotted only in electronic form, so a Demat account is mandatory to apply. You also need a bank account with UPI or ASBA to block the application amount, and a PAN linked to your Demat account.',
+    q: 'What is the minimum amount required to apply for an IPO in India?',
+    a: 'The minimum application amount varies by IPO and is determined by the lot size and price band. For mainboard IPOs, the minimum application value is approximately ₹10,000–₹15,000 in most issues. SME IPOs may have higher minimum lot sizes. The exact lot size is always disclosed in the Red Herring Prospectus.',
   },
   {
-    q: 'What is the difference between a fixed price and a book-building IPO?',
-    a: 'In a fixed-price issue the company sets one price per share upfront. In a book-building issue the company offers a price band, investors bid within it, and the final cut-off price is discovered from overall demand.',
+    q: 'Is investing in IPOs safe?',
+    a: "IPOs carry market risk. Listing gains are not guaranteed. Evaluate the company's fundamentals, valuation, and promoter background before applying. SEBI regulation provides disclosure safeguards, not return guarantees.",
   },
   {
-    q: 'How does IPO allotment work if the issue is oversubscribed?',
-    a: 'When retail demand exceeds the shares on offer, allotment is done by a computerised lottery in multiples of the lot size. Every successful applicant receives at least one lot, and applicants who are not drawn receive no shares - the blocked funds are then released.',
+    q: 'What is DRHP in IPO?',
+    a: 'The Draft Red Herring Prospectus is the detailed disclosure document filed with SEBI. It covers financials, risks, promoter background, and use of proceeds. Always read the DRHP before investing.',
   },
   {
-    q: 'What is ASBA and how does UPI fit in?',
-    a: 'ASBA stands for Application Supported by Blocked Amount. Your application money is blocked in your bank account rather than debited, and it is released or debited only after allotment. Retail investors can authorise this block through a UPI mandate when applying via a broker.',
+    q: 'Can NRIs apply for IPOs in India?',
+    a: 'Yes. Non-Resident Indians (NRIs) can apply for IPOs in India through their NRE or NRO Demat accounts linked to designated NRI bank accounts. NRIs must comply with applicable FEMA regulations and SEBI guidelines specific to non-resident investors.',
   },
   {
-    q: 'What is Grey Market Premium (GMP)?',
-    a: 'GMP is the premium at which IPO shares are traded unofficially before they list. It reflects market sentiment but is unregulated and unreliable, so it should not be treated as a guarantee of listing-day gains.',
+    q: 'How many days does IPO allotment take?',
+    a: "Under SEBI's revised timelines, the T+6 framework is the current standard — allotment and listing occur within six working days of the IPO close date. This includes allotment finalisation, ASBA unblocking, and share credit to your Demat account.",
   },
   {
-    q: 'Is there any fee to apply for an IPO?',
-    a: 'No. There is no application fee to apply for an IPO through Shriram. Your funds are simply blocked via UPI or ASBA until allotment, and standard charges apply only if and when you later sell the allotted shares.',
+    q: 'What is the difference between a Demat account and a trading account for IPO applications?',
+    a: 'A Demat account is required to hold shares in electronic form. A trading account is required to buy and sell shares on the exchange. For IPO applications, a Demat account is mandatory. A trading account is not required to apply for an IPO, but is needed to sell your allotted shares after listing.',
+  },
+  {
+    q: 'Is it possible to apply for an IPO without a broker?',
+    a: "Yes. You can apply through your bank's net banking portal if the bank is a self-certified syndicate bank (SCSB) registered with SEBI, using the ASBA facility directly.",
+  },
+  {
+    q: 'What happens if the IPO is oversubscribed?',
+    a: 'In the retail category, a lottery is conducted; in HNI, allotment is proportional; in QIB, allotment is managed by the book runner. Unallotted amounts are unblocked and returned to your bank account automatically.',
+  },
+  {
+    q: 'Are IPO listing gains taxable?',
+    a: 'Yes. Gains from selling IPO shares — whether on listing day or later — are subject to capital gains tax. STCG at 20% applies if sold within 12 months; LTCG at 12.5% applies beyond 12 months on gains exceeding ₹1.25 lakh in a financial year.',
   },
 ];
 
@@ -164,73 +208,161 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'IPO' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Invest in Companies at Their <span class="g">Public Debut</span></h1>
-      <p class="lead">Apply for Initial Public Offerings on the NSE and BSE - with UPI-backed applications, research-led insights and transparent, zero-fee guidance from Shriram.</p>
+      <h1>Explore IPOs. Invest with <span class="g">Confidence.</span></h1>
+      <p class="lead">Learn how IPOs work, how to apply online, how allotment happens, and what to check before investing in an IPO – all in one SEBI-regulated platform.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;UPI &amp; ASBA</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-regulated</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Zero application fee</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Research-led</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- ===== What Is an IPO ===== -->
+  <!-- ===== Initial Public Offering: Invest in Emerging Market Opportunities ===== -->
   <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is an IPO?</h2>
-      <p class="sec-lead">An Initial Public Offering, or IPO, is the process by which a privately held company offers its shares to the general public for the first time and lists them on a stock exchange such as the National Stock Exchange (NSE) or Bombay Stock Exchange (BSE). The company raises capital from a wide base of investors, while investors get the opportunity to own a stake in the business from the very start of its public life. Every IPO in India is regulated by the Securities and Exchange Board of India (SEBI), which reviews the offer document and protects investor interests.</p>
+      <h2 class="sec-title">Initial Public Offering: Invest in Emerging Market Opportunities</h2>
+      <p class="sec-lead">With Shriram Financial Services, applying for an Initial Public Offering (IPO) takes minutes. Pick the issue, place your bid and track allotment status without switching apps - backed by advisory insights that help you evaluate each issue before you commit. From SME issues to mainboard listings, our platform is built to keep pace with market momentum, giving both first time applicants and seasoned bidders a cleaner, faster route into a company's opening day on the exchange. New listings move fast. So, apply for IPOs with Shriram Financial Services and get in before the opening bell.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Why Companies Go Public</h3>
-        <p class="sub-lead">Listing on an exchange serves the company and its early backers in a few distinct ways.</p>
+        <h3 class="sub-title">Key terms to know:</h3>
       </div>
-      <div class="row-2" data-reveal-row>
-        <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">Raise Growth Capital</h4>
-          <p class="card-p">A fresh issue of shares brings new money into the company to fund expansion, repay debt or invest in operations - without the fixed obligations of a loan.</p>
-        </div>
-        <div class="card" style="border-color:var(--color-border-card)">
-          <h4 class="card-h">Provide an Exit &amp; Liquidity</h4>
-          <p class="card-p">Listing lets early investors and promoters sell part of their holding, and gives all shareholders a transparent, exchange-traded market to buy and sell shares.</p>
-        </div>
+      <div class="card">
+        <dl class="gloss">
+          {TERMS.map((t) => (
+            <div><dt>{t.t}</dt><dd>{t.d}</dd></div>
+          ))}
+        </dl>
       </div>
     </div>
   </section>
 
-  <!-- ===== IPO Types & Structure ===== -->
+  <!-- ===== Types of IPOs in India ===== -->
   <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">IPO Types &amp; Structure</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Every IPO is defined by two choices - how the shares are priced, and where the shares being sold come from.</p>
+      <h2 class="sec-title">Types of IPOs in India</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">There are two ways to classify Initial Public Offerings in India — by company size and by pricing method.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Pricing &amp; Share Source</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Fixed-price versus book-building sets the price; fresh issue versus offer for sale sets who receives the money.</p>
+        <h3 class="sub-title">By Size:</h3>
       </div>
       <div class="row-2" data-reveal-row>
-        {STRUCTURE.map((c) => (
-          <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
+        <div class="card"><h4 class="card-h">Mainboard IPO</h4><p class="card-p">For large, established companies listed on the NSE or BSE main boards. These IPOs meet higher SEBI financial thresholds and attract retail, High Net Worth Individual (HNI), and institutional investors.</p></div>
+        <div class="card"><h4 class="card-h">SME IPO</h4><p class="card-p">For small and medium businesses listed on BSE SME or NSE Emerge. Entry requirements are lower, but post-listing liquidity can be limited — making due diligence especially important.</p></div>
+      </div>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">By Pricing Method:</h3>
+      </div>
+      <div class="row-2" data-reveal-row>
+        <div class="card"><h4 class="card-h">Book-building IPO</h4><p class="card-p">Investors bid within a SEBI-approved price band. The final issue price is determined by market demand, making it the preferred method for price discovery in India.</p></div>
+        <div class="card"><h4 class="card-h">Fixed Price IPO</h4><p class="card-p">The company sets the issue price before the subscription opens. Investors apply at this known price with no bidding involved — simpler, but with less flexibility.</p></div>
+      </div>
+    </div>
+    <div class="stack" style="gap:16px">
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Most IPOs in India today follow the book-building method for better price discovery and broader investor participation. Choosing between these types has direct implications on allotment probability, liquidity post-listing, minimum investment amount, and the level of SEBI oversight applied to the prospectus.</p>
+    </div>
+  </section>
+
+  <!-- ===== IPO Process in India: How It Works? ===== -->
+  <section class="section stack sec-light" id="sec-process" data-section="process" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">IPO Process in India: How It Works?</h2>
+      <p class="sec-lead">Understanding the IPO process helps investors participate with confidence. Here's a simplified step-by-step overview:</p>
+    </div>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="steps" data-reveal-row>
+        {PROCESS.map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 1}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
+          </>
         ))}
       </div>
     </div>
     <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
-  <!-- ===== How to Apply for an IPO ===== -->
-  <section class="section stack sec-light" id="sec-apply" data-section="apply" style="gap:56px;justify-content:center">
+  <!-- ===== Advantages of IPO ===== -->
+  <section class="section stack sec-tint" id="sec-advantages" data-section="advantages" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">How to Apply for an IPO</h2>
-      <p class="sec-lead">From picking an open issue to listing day, applying for an IPO through Shriram takes just a few guided steps.</p>
+      <h2 class="sec-title">Advantages of IPO</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Investing in an Initial Public Offering in India carries a distinctive set of advantages, which are:</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:64px minmax(0,1fr) minmax(0,2fr);min-width:640px">
+      <div class="cell th"><p>No.</p></div><div class="cell th"><p>Advantage</p></div><div class="cell th"><p>What It Means for You</p></div>
+      {ADVANTAGES.map((r) => (
+        <>
+          <div class="cell tb"><p class="k">{r.n}</p></div>
+          <div class="cell tb"><p class="v">{r.a}</p></div>
+          <div class="cell tb"><p class="v">{r.m}</p></div>
+        </>
+      ))}
+    </div></div>
+  </section>
+
+  <!-- ===== Drawbacks of IPO ===== -->
+  <section class="section stack sec-light" id="sec-drawbacks" data-section="drawbacks" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Drawbacks of IPO</h2>
+      <p class="sec-lead">The drawbacks of an IPO are equally important to understand; here are a few:</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="grid-template-columns:64px minmax(0,1fr) minmax(0,2fr);min-width:640px">
+      <div class="cell th"><p>No.</p></div><div class="cell th"><p>Risk / Demerit</p></div><div class="cell th"><p>What It Means for You</p></div>
+      {DRAWBACKS.map((r) => (
+        <>
+          <div class="cell tb"><p class="k">{r.n}</p></div>
+          <div class="cell tb"><p class="v">{r.a}</p></div>
+          <div class="cell tb"><p class="v">{r.m}</p></div>
+        </>
+      ))}
+    </div></div>
+  </section>
+
+  <!-- ===== Who can apply for an IPO? ===== -->
+  <section class="section stack sec-tint" id="sec-who" data-section="who" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Who can apply for an IPO?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">SEBI mandates that every mainboard Initial Public Offering reservation is divided across the four IPO investor categories in India, each with distinct eligibility criteria, quota allocations, and allotment mechanisms, as highlighted below:</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table bordered" style="grid-template-columns:repeat(5,minmax(0,1fr));min-width:960px">
+      <div class="cell th"><p>Parameter</p></div>
+      <div class="cell th"><p>Retail Individual Investors (RII)</p></div>
+      <div class="cell th"><p>HNI/Non-Institutional Investors (NII)</p></div>
+      <div class="cell th"><p>Qualified Institutional Buyers (QIB)</p></div>
+      <div class="cell th"><p>Anchor Investors</p></div>
+      {APPLY_ROWS.map((r) => (
+        <>
+          <div class="cell tb"><p class="k">{r.k}</p></div>
+          <div class="cell tb"><p class="v">{r.rii}</p></div>
+          <div class="cell tb"><p class="v">{r.nii}</p></div>
+          <div class="cell tb"><p class="v">{r.qib}</p></div>
+          <div class="cell tb"><p class="v">{r.anchor}</p></div>
+        </>
+      ))}
+    </div></div>
+  </section>
+
+  <!-- ===== What is the Grey Market Premium in an IPO? ===== -->
+  <section class="section stack sec-light" id="sec-gmp" data-section="gmp" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What is the Grey Market Premium in an IPO?</h2>
+      <p class="sec-lead">Grey Market Premium (GMP) is the unofficial price at which IPO shares are traded before the stock is officially listed on NSE or BSE.</p>
+      <p class="sec-lead">For example, if an IPO is priced at ₹500 and the GMP is ₹80, the implied listing price is ₹580.</p>
+      <p class="sec-lead">A rising GMP signals strong investor demand; a declining GMP may indicate fading interest.</p>
+      <p class="sec-lead">Since GMP operates outside SEBI's regulatory framework, it is susceptible to manipulation and reflects sentiment, not fundamentals.</p>
+      <p class="sec-lead">Note: Use it as a reference point — never as the sole basis for an investment decision.</p>
+    </div>
+  </section>
+
+  <!-- ===== How to Apply for an IPO? ===== -->
+  <section class="section stack sec-tint" id="sec-apply" data-section="apply" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How to Apply for an IPO?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Here are the steps to apply for an Initial Public Offering via Shriram Financial Services:</p>
     </div>
     <div class="stack" style="gap:32px;width:100%">
       <div class="steps" data-reveal-row>
-        {STEPS.slice(0, 3).map((s, i) => (
+        {APPLY_STEPS.slice(0, 3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
             <div class="step"><div class="num">{i + 1}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
@@ -238,7 +370,7 @@ const seo = {
         ))}
       </div>
       <div class="steps" data-reveal-row>
-        {STEPS.slice(3).map((s, i) => (
+        {APPLY_STEPS.slice(3).map((s, i) => (
           <>
             {i > 0 && <div class="step-div" />}
             <div class="step"><div class="num">{i + 4}</div><div class="st-body"><h4>{s.h}</h4><p>{s.p}</p></div></div>
@@ -246,65 +378,84 @@ const seo = {
         ))}
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
   </section>
 
-  <!-- ===== Key IPO Terms ===== -->
-  <section class="section stack sec-tint" id="sec-terms" data-section="terms" style="gap:56px;justify-content:center">
+  <!-- ===== How to Read an IPO Prospectus (DRHP/RHP)? ===== -->
+  <section class="section stack sec-light" id="sec-prospectus" data-section="prospectus" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Key IPO Terms</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">The core vocabulary that appears in every offer document - worth understanding before you place a bid.</p>
+      <h2 class="sec-title">How to Read an IPO Prospectus (DRHP/RHP)?</h2>
+      <p class="sec-lead">Draft Red Herring Prospectus (DRHP) and the final Red Herring Prospectus (RHP) are the primary documents any IPO investor should read. It explains the company's business model, financial position, risks and the purpose of the issue, helping investors assess whether the Initial Public Offering matches their investment approach. To evaluate an IPO effectively, pay close attention to:</p>
     </div>
-    <div class="card">
-      <dl class="gloss">
-        {TERMS.map((t) => (
-          <div><dt>{t.t}</dt><dd>{t.d}</dd></div>
-        ))}
-      </dl>
+    <div class="cat-grid" data-reveal-row>
+      {PROSPECTUS.map((c) => (
+        <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
+      ))}
+    </div>
+    <div class="stack" style="gap:16px">
+      <p class="sec-lead">Reading the IPO prospectus gives investors an analytical edge over investors who rely solely on news summaries or grey market buzz.</p>
+    </div>
+  </section>
+
+  <!-- ===== What is the IPO Allotment Process? ===== -->
+  <section class="section stack sec-tint" id="sec-allotment" data-section="allotment" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What is the IPO Allotment Process?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The IPO allotment process is the method through which shares are distributed to investors after an IPO closes. Once the subscription period ends, all valid applications are reviewed, and shares are allotted based on the demand in each investor category. If the IPO is oversubscribed, retail investors may receive shares through a lottery-based allotment system, while institutional and non-institutional allotment is generally done on a proportionate basis.</p>
     </div>
     <div class="stack" style="gap:32px">
       <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Investor Categories &amp; Reservation</h3>
-        <p class="sub-lead" style="color:var(--color-text-secondary)">Every book-built issue reserves portions of the offer for different classes of investor.</p>
+        <h3 class="sub-title" style="color:var(--color-text-primary)">Key stages in the IPO allotment process in India include:</h3>
       </div>
       <div class="cat-grid" data-reveal-row>
-        {CATEGORIES.map((c) => (
+        {ALLOTMENT.map((c) => (
           <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ===== Allotment & Listing ===== -->
-  <section class="section stack sec-light" id="sec-allotment" data-section="allotment" style="gap:56px;justify-content:center">
+  <!-- ===== What are the IPO Risks? ===== -->
+  <section class="section stack sec-light" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Allotment &amp; Listing</h2>
-      <p class="sec-lead">How shares are allotted depends entirely on demand. Whatever the outcome, any money blocked for shares you do not receive is released back to your account.</p>
-    </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Subscription Scenario</p></div><div class="cell th"><p>What Happens to Allotment</p></div><div class="cell th"><p>Blocked Funds</p></div>
-      {ALLOT_ROWS.map((r) => (
-        <>
-          <div class="cell tb"><p class="k">{r.k}</p></div>
-          <div class="cell tb"><p class="v">{r.m}</p></div>
-          <div class="cell tb"><p class="v">Debited only for shares allotted; the balance is released.</p></div>
-        </>
-      ))}
-    </div></div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
-  </section>
-
-  <!-- ===== Risks to Weigh ===== -->
-  <section class="section stack sec-tint" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Risks to Weigh</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">An IPO is an investment, not a guaranteed gain. Understand what can move against you before you apply.</p>
+      <h2 class="sec-title">What are the IPO Risks?</h2>
+      <p class="sec-lead">Understanding IPO risks is what separates informed investors from speculative ones. Here are a few:</p>
     </div>
     <div class="risks" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}
     </div>
+  </section>
+
+  <!-- ===== How to Evaluate an IPO Before Investing? ===== -->
+  <section class="section stack sec-tint" id="sec-evaluate" data-section="evaluate" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How to Evaluate an IPO Before Investing?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Five parameters form the core of any rigorous pre-investment assessment, which are:</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      {EVALUATE.map((c) => (
+        <div class="cat"><h4>{c.h}</h4><p>{c.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== How are IPO Gains Taxed in India? ===== -->
+  <section class="section stack sec-light" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How are IPO Gains Taxed in India?</h2>
+      <p class="sec-lead">Understanding IPO tax in India for 2026 is essential to calculate your actual post-tax returns and to ensure full compliance with your income tax obligations. Investors are required to disclose all equity capital gains, including those from IPO share sales, in their Income Tax Return.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>Short-Term Capital Gains (STCG)</p></div><div class="cell th"><p>Long-Term Capital Gains (LTCG)</p></div>
+      {TAX_ROWS.map((r) => (
+        <>
+          <div class="cell tb"><p class="k">{r.k}</p></div>
+          <div class="cell tb"><p class="v">{r.stcg}</p></div>
+          <div class="cell tb"><p class="v">{r.ltcg}</p></div>
+        </>
+      ))}
+    </div></div>
   </section>
 
   <!-- ===== General Questions ===== -->

@@ -1,94 +1,69 @@
 ---
 /**
  * FD - /fixed-deposit/
- * Long-form Fixed Deposit guide. Built entirely from the shared design-system
- * components in global.css (hero, .section/.sec-title, .card, .cat-grid,
- * .product-page_table, .risks, FaqAccordion, .cta-box). The only page-scoped
- * CSS is a generic responsive card grid (.fd-cards), token-bound.
- * Nested route → BaseLayout / component imports at ../../ depth.
+ * Long-form Fixed Deposit product page. Content is the compliance-approved
+ * doc (FD_Product Page, 3rd July) rendered verbatim with the shared
+ * design-system components in global.css (hero, .section/.sec-title, .card,
+ * .cat-grid, .steps, .check-card, .product-page_table, FaqAccordion, .cta-box).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
-// Types of fixed deposit - payout / structure differences.
-const TYPES = [
-  {
-    h: 'Cumulative FD',
-    p: 'Interest is compounded and paid together with the principal at maturity. Best suited to investors who want their money to grow rather than draw a regular payout.',
-  },
-  {
-    h: 'Non-Cumulative FD',
-    p: 'Interest is paid out at regular intervals - monthly, quarterly, half-yearly or annually - making it useful for those who need a steady income stream.',
-  },
-  {
-    h: 'Tax-Saver FD',
-    p: 'A 5-year lock-in deposit that qualifies for a deduction of up to ₹1.5 lakh under Section 80C. Premature withdrawal is not permitted during the lock-in.',
-  },
-  {
-    h: 'Senior Citizen FD',
-    p: 'Offered to investors aged 60 and above, typically with an additional interest rate of 0.25%–0.75% over the standard published rates.',
-  },
-  {
-    h: 'Bank FD',
-    p: 'Opened with a scheduled bank and covered by DICGC deposit insurance up to ₹5 lakh per depositor per bank, making it among the safest FD options.',
-  },
-  {
-    h: 'Corporate / Company FD',
-    p: 'Issued by companies and NBFCs, often at higher rates than bank FDs - but they are not DICGC-insured, so check the issuer’s credit rating first.',
-  },
-];
-
-// Things to consider / risks with FDs.
-const RISKS = [
-  {
-    h: 'Premature Withdrawal Penalty',
-    p: 'Breaking an FD before maturity usually attracts a penalty of 0.5%–1% on the applicable interest rate, reducing your effective return.',
-  },
-  {
-    h: 'Reinvestment Risk',
-    p: 'When an FD matures in a low-rate environment, you may have to reinvest the proceeds at a lower interest rate than you originally earned.',
-  },
-  {
-    h: 'Inflation Risk',
-    p: 'If the FD rate is lower than inflation, the real (inflation-adjusted) value of your returns can erode over the deposit tenure.',
-  },
-  {
-    h: 'DICGC Cover Limit',
-    p: 'Bank deposits are insured only up to ₹5 lakh per depositor per bank. Corporate FDs carry no such cover and depend on the issuer’s creditworthiness.',
-  },
-];
-
-// General Questions - plain-text answers, shared with the FAQPage schema.
+// General Questions - doc content verbatim, same order (first item open).
 const FAQS = [
   {
-    q: 'What is a Fixed Deposit?',
-    a: 'A Fixed Deposit (FD) is an investment where you place a lump sum with a bank or company for a fixed tenure at an assured rate of interest. The rate is locked in at the time of booking, so your returns are predictable regardless of how market interest rates move afterwards.',
+    q: 'What is a Fixed Deposit (FD)?',
+    a: 'A Fixed Deposit is a savings and investment instrument offered by banks and NBFCs in India where you deposit a lump sum for a fixed tenure at a predetermined interest rate. The rate is guaranteed and does not change during the deposit period, regardless of market conditions.',
   },
   {
-    q: 'What is the difference between a cumulative and non-cumulative FD?',
-    a: 'In a cumulative FD, interest is compounded and paid out along with the principal at maturity, so the corpus grows. In a non-cumulative FD, interest is paid out at regular intervals - monthly, quarterly, half-yearly or annually - which suits investors who want a steady income.',
+    q: 'What is the minimum amount to open a Shriram Finance FD?',
+    a: 'The minimum investment in Shriram Unnati Fixed Deposit is ₹5,000. Additional investments must be in multiples of ₹1,000. There is no maximum investment limit.',
   },
   {
-    q: 'How is FD interest taxed?',
-    a: 'Interest earned on a fixed deposit is added to your total income and taxed at your applicable income-tax slab rate. There is no special or concessional rate for FD interest - it is treated as “income from other sources”.',
+    q: 'How is FD interest calculated?',
+    a: 'For Cumulative FDs, interest is compounded monthly and paid at maturity. For Non-Cumulative FDs, interest is calculated and paid at the chosen payout frequency. Use the Shriram Finance FD Calculator for exact maturity amounts.',
   },
   {
-    q: 'When is TDS deducted on FD interest?',
-    a: 'Banks deduct TDS at 10% once the interest across your deposits with that bank exceeds ₹40,000 in a financial year (₹50,000 for senior citizens). If your total income is below the taxable limit, you can submit Form 15G (or Form 15H for senior citizens) to avoid TDS.',
+    q: 'Is Shriram Finance FD safe?',
+    a: 'Yes. Shriram Finance FDs are rated FAAA/Stable by CRISIL and MAA+ by ICRA — indicating the highest safety and high credit quality for an NBFC in India. The company has been operational since 1974 and has a Pan-India presence with over 2,900 branches.',
   },
   {
-    q: 'Do FDs offer any tax benefit?',
-    a: 'Yes - a 5-year Tax-Saver FD qualifies for a deduction of up to ₹1.5 lakh under Section 80C. Note that the interest it earns is still taxable, and the deposit carries a 5-year lock-in with no premature withdrawal.',
+    q: 'Can I break my FD before maturity?',
+    a: 'Yes. Shriram Finance allows premature withdrawal. If withdrawn before 3 months, no interest is paid. Withdrawal after 3 months but before 6 months: no interest paid. After 6 months: interest paid at contracted rate minus 2% penalty.',
   },
   {
-    q: 'Do senior citizens get higher FD rates?',
-    a: 'Yes. Most banks and companies offer senior citizens (aged 60 and above) an additional interest rate of roughly 0.25% to 0.75% over the standard published rates, across most tenures.',
+    q: 'What is a cumulative vs non-cumulative FD?',
+    a: 'In a Cumulative FD, interest is compounded and paid at maturity — ideal for wealth creation. In a Non-Cumulative FD, interest is paid at regular intervals (monthly, quarterly, half-yearly, or yearly) — ideal for regular income needs.',
   },
   {
-    q: 'Are fixed deposits safe?',
-    a: 'Bank FDs are among the safest investments - deposits are insured by DICGC up to ₹5 lakh per depositor per bank. Corporate or company FDs may offer higher rates but are not DICGC-insured, so their safety depends on the issuer’s credit rating and financial strength.',
+    q: 'Can senior citizens get a higher FD rate at Shriram Finance?',
+    a: 'Yes. Senior citizens (aged 60 and above) receive an additional 0.50%* p.a. over the standard FD rate. Women depositors also receive an additional 0.05%* p.a.',
+  },
+  {
+    q: 'Can I get a loan against my Shriram Finance FD?',
+    a: 'Yes. Shriram Finance offers an overdraft or loan facility against your FD. This means you can access funds without breaking your FD — your FD continues to earn interest while you repay the loan amount.',
+  },
+  {
+    q: 'What is the tenure range for Shriram Finance FD?',
+    a: 'For regular depositors: 12 to 60 months (1 to 5 years). For NRI depositors: 12 to 36 months.',
+  },
+  {
+    q: 'How is TDS deducted on FD interest?',
+    a: 'If your total FD interest in a financial year exceeds ₹40,000 (₹50,000 for senior citizens), TDS is deducted at 10% if PAN is provided. Without PAN, TDS is 20%. Submit Form 15G or 15H if your income is below the taxable limit to avoid TDS.',
+  },
+  {
+    q: 'Can I open a Shriram Finance FD online?',
+    a: 'Yes. The entire process is 100% digital — visit shriramfinance.in or use the Shriram One App. Complete Aadhaar-based e-KYC and make payment via Net Banking, UPI, or NEFT/RTGS. Your FD is booked instantly and the receipt is delivered digitally.',
+  },
+  {
+    q: 'Does Shriram Finance offer auto-renewal?',
+    a: 'Yes. You can opt for auto-renewal at the time of booking. Your FD will automatically renew at the prevailing rate on the maturity date. You can also choose auto-refund if you prefer the maturity amount credited to your bank account.',
+  },
+  {
+    q: 'What is a Tax-Saving FD?',
+    a: 'A Tax-Saving FD has a mandatory 5-year lock-in period and qualifies for deduction under Section 80C of the Income Tax Act — up to ₹1.5 lakh per financial year. Premature withdrawal is not allowed. The interest earned is still taxable at your income tax slab rate.',
   },
 ];
 
@@ -119,103 +94,209 @@ const seo = {
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Fixed Deposit' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Grow Your Savings Safely With a <span class="g">Fixed Deposit</span></h1>
-      <p class="lead">Lock in a lump sum for a fixed tenure at an assured rate of interest - with predictable, market-independent returns, flexible payouts and DICGC-insured bank deposits.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Account</a></div>
+      <h1>Fixed Deposit in India - Earn Up to 7.80%* p.a. with Shriram Unnati <span class="g">Fixed Deposit</span></h1>
+      <p class="lead">Enjoy the stability of guaranteed returns, flexible tenures (12 to 60 months), and a 100% digital investment experience. Choose Fixed Deposits designed to help you achieve your financial goals.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open FD</a></div>
       <div class="hero-feats">
         <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Assured returns</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Senior-citizen rates</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;DICGC insured</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Flexible tenure</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;RBI Registered NBFC</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;CRISIL Rated FAAA/Stable</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;ICRA Rated MAA+</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Trusted by millions</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== What Is a Fixed Deposit ===== -->
-  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is a Fixed Deposit?</h2>
-      <p class="sec-lead">A Fixed Deposit is a low-risk investment in which you place a lump sum with a bank or company for a fixed tenure at an assured rate of interest. The rate is locked in when you book the deposit, so your returns stay predictable regardless of how market interest rates move afterwards. In return for committing your money for a set period, you earn a higher rate than an ordinary savings account - and with bank FDs, your deposit is insured by DICGC up to ₹5 lakh per depositor per bank.</p>
+  <!-- ===== Hero highlights ===== -->
+  <section class="section stack sec-light" id="sec-highlights" data-section="highlights" style="gap:56px;justify-content:center" data-enter="2">
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Highest Safety</h4><p>FAAA / MAA+ Rated</p></div>
+      <div class="cat"><h4>Guaranteed Returns</h4><p>Up to 7.80%* p.a.</p></div>
+      <div class="cat"><h4>Senior Citizen Benefit</h4><p>Additional 0.50%* p.a.</p></div>
+      <div class="cat"><h4>Open FD Online</h4><p>100% Digital Process</p></div>
     </div>
   </section>
 
-  <!-- ===== Types of FDs ===== -->
-  <section class="section stack sec-tint" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
+  <!-- ===== Secure Savings, Steady Returns ===== -->
+  <section class="section stack sec-tint" id="sec-about" data-section="about" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Types of Fixed Deposits</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">FDs come in several variants that differ by payout structure, tenure, tax treatment and issuer. Choosing the right one depends on your income needs and goals.</p>
+      <h2 class="sec-title">Fixed Deposits: Secure Savings, Steady Returns</h2>
+      <p class="sec-lead">Earn competitive interest rates with Shriram Fixed Deposit, along with flexible tenure options and multiple payout choices. Whether you're building a steady income stream or saving for future milestones, Shriram Fixed Deposit combines attractive returns, safety, and a hassle-free online investment journey to help you grow your wealth effortlessly.</p>
     </div>
-    <div class="fd-cards" data-reveal-row>
-      {TYPES.map((t) => (
-        <div class="card"><h4 class="card-h">{t.h}</h4><p class="card-p">{t.p}</p></div>
-      ))}
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Example</h3>
+        <p class="sub-lead">Suppose you invest ₹1,00,000 in an FD at 7.80% per annum for 3 years under the cumulative scheme. Interest is compounded monthly and added to your principal.</p>
+        <p class="sub-lead">At the end of 3 years, your investment will grow, providing higher returns than a standard savings account.</p>
+      </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Account</a>
   </section>
 
-  <!-- ===== Interest Rates & Tenure ===== -->
-  <section class="section stack sec-light" id="sec-rates" data-section="rates" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Interest Rates &amp; Tenure</h2>
-      <p class="sec-lead">FD rates generally rise with tenure, and senior citizens earn a bonus over the standard rate. The rates below are indicative - actual rates vary by issuer and change periodically.</p>
-    </div>
-    <div class="t-scroll"><div class="product-page_table t3 bordered">
-      <div class="cell th"><p>Tenure Band</p></div><div class="cell th"><p>Indicative Rate (General)</p></div><div class="cell th"><p>Senior Citizen Rate</p></div>
-      <div class="cell tb"><p class="k">7 days – 6 months</p></div><div class="cell tb"><p class="v">3.00% – 5.50%</p></div><div class="cell tb"><p class="v">3.50% – 6.00%</p></div>
-      <div class="cell tb"><p class="k">6 months – 1 year</p></div><div class="cell tb"><p class="v">5.50% – 6.75%</p></div><div class="cell tb"><p class="v">6.00% – 7.25%</p></div>
-      <div class="cell tb"><p class="k">1 – 3 years</p></div><div class="cell tb"><p class="v">6.75% – 7.25%</p></div><div class="cell tb"><p class="v">7.25% – 7.75%</p></div>
-      <div class="cell tb"><p class="k">3 – 5 years</p></div><div class="cell tb"><p class="v">6.75% – 7.00%</p></div><div class="cell tb"><p class="v">7.25% – 7.50%</p></div>
-      <div class="cell tb"><p class="k">5 years &amp; above</p></div><div class="cell tb"><p class="v">6.50% – 7.00%</p></div><div class="cell tb"><p class="v">7.00% – 7.50%</p></div>
-    </div></div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Account</a>
-  </section>
-
-  <!-- ===== Taxation ===== -->
-  <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Taxation of Fixed Deposits</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">FD interest is fully taxable as income. Understanding TDS thresholds and the forms available can help you plan and avoid over-deduction.</p>
-    </div>
-    <div class="t-scroll"><div class="product-page_table t3">
-      <div class="cell th"><p>Aspect</p></div><div class="cell th"><p>How It Works</p></div><div class="cell th"><p>Key Point</p></div>
-      <div class="cell tb"><p class="k">Interest Taxation</p></div><div class="cell tb"><p class="v">Added to income under “income from other sources”</p></div><div class="cell tb"><p class="v">Taxed at your applicable slab rate</p></div>
-      <div class="cell tb"><p class="k">TDS Threshold</p></div><div class="cell tb"><p class="v">10% TDS once interest crosses the annual limit at a bank</p></div><div class="cell tb"><p class="v">₹40,000 general / ₹50,000 for senior citizens</p></div>
-      <div class="cell tb"><p class="k">Form 15G / 15H</p></div><div class="cell tb"><p class="v">Self-declaration to avoid TDS when income is below the taxable limit</p></div><div class="cell tb"><p class="v">15G for general, 15H for senior citizens</p></div>
-      <div class="cell tb"><p class="k">Section 80C</p></div><div class="cell tb"><p class="v">Applies only to 5-year Tax-Saver FDs</p></div><div class="cell tb"><p class="v">Deduction up to ₹1.5 lakh; interest still taxable</p></div>
-    </div></div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Account</a>
-  </section>
-
-  <!-- ===== FD vs Other Options ===== -->
+  <!-- ===== FD vs Savings vs RD ===== -->
   <section class="section stack sec-light" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">FD vs Other Options</h2>
-      <p class="sec-lead">See how a fixed deposit compares with a debt mutual fund and a savings account across the factors that matter most.</p>
+      <h2 class="sec-title">FD vs Savings Account Vs Recurring Deposit — Key Differences</h2>
+      <p class="sec-lead">A Fixed Deposit offers higher, locked-in returns compared to a savings account, while a Recurring Deposit suits investors who prefer saving in monthly instalments. Here is a side-by-side comparison:</p>
     </div>
     <div class="t-scroll"><div class="product-page_table t4 bordered">
-      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Fixed Deposit</p></div><div class="cell th"><p>Debt Mutual Fund</p></div><div class="cell th"><p>Savings Account</p></div>
-      <div class="cell tb"><p class="k">Returns</p></div><div class="cell tb"><p class="v">Assured, fixed at booking</p></div><div class="cell tb"><p class="v">Market-linked, not guaranteed</p></div><div class="cell tb"><p class="v">Low, variable</p></div>
-      <div class="cell tb"><p class="k">Risk</p></div><div class="cell tb"><p class="v">Very low (DICGC-insured banks)</p></div><div class="cell tb"><p class="v">Low to moderate (rate &amp; credit risk)</p></div><div class="cell tb"><p class="v">Very low</p></div>
-      <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">Locked; penalty on early exit</p></div><div class="cell tb"><p class="v">Redeem anytime (T+1 to T+3)</p></div><div class="cell tb"><p class="v">Instant, fully liquid</p></div>
-      <div class="cell tb"><p class="k">Taxation</p></div><div class="cell tb"><p class="v">Interest taxed at slab rate</p></div><div class="cell tb"><p class="v">Gains taxed at slab rate (post-2023)</p></div><div class="cell tb"><p class="v">Interest taxed at slab rate</p></div>
+      <div class="cell th"><p>Feature</p></div><div class="cell th"><p>Fixed Deposit (FD)</p></div><div class="cell th"><p>Savings Account</p></div><div class="cell th"><p>Recurring Deposit (RD)</p></div>
+      <div class="cell tb"><p class="k">Investment Type</p></div><div class="cell tb"><p class="v">One-time lump sum</p></div><div class="cell tb"><p class="v">Flexible deposits</p></div><div class="cell tb"><p class="v">Monthly instalments</p></div>
+      <div class="cell tb"><p class="k">Interest Rate</p></div><div class="cell tb"><p class="v">Fixed (locked in)</p></div><div class="cell tb"><p class="v">Variable (changes with policy)</p></div><div class="cell tb"><p class="v">Fixed (per deposit)</p></div>
+      <div class="cell tb"><p class="k">Typical Returns</p></div><div class="cell tb"><p class="v">6.5–8.1% p.a.</p></div><div class="cell tb"><p class="v">2.5–4% p.a.</p></div><div class="cell tb"><p class="v">5.5–7.5% p.a.</p></div>
+      <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">Low (premature exit penalty)</p></div><div class="cell tb"><p class="v">High (withdraw anytime)</p></div><div class="cell tb"><p class="v">Low (premature exit penalty)</p></div>
+      <div class="cell tb"><p class="k">Best For</p></div><div class="cell tb"><p class="v">Lump sum growth / income</p></div><div class="cell tb"><p class="v">Everyday spending</p></div><div class="cell tb"><p class="v">Regular monthly savings</p></div>
     </div></div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Account</a>
   </section>
 
-  <!-- ===== Things to Consider / Risks ===== -->
-  <section class="section stack sec-tint" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
+  <!-- ===== How Fixed Deposits Work ===== -->
+  <section class="section stack sec-tint" id="sec-how-work" data-section="how-work" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How Fixed Deposits Work?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Opening a fixed deposit with Shriram Finance is an easy 5-step process — from choosing your investment to receiving your maturity amount in your bank account:</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Choose Your Investment Amount</h4><p>Decide how much you want to invest. With Shriram Unnati FD, the minimum is just ₹5,000 and you can invest in multiples of ₹1,000. There is no upper cap, making it suitable for both small savers and large corpus investors.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Select Your Tenure</h4><p>Pick a tenure between 12 months and 60 months (1 to 5 years). Longer tenures generally earn higher interest. For NRI depositors, tenures range from 12 to 36 months.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Choose Your Scheme Type (Cumulative or Non-Cumulative)</h4><p>In a cumulative FD, interest is compounded monthly and paid at maturity — ideal for wealth-building. In a non-cumulative FD, interest is paid monthly, quarterly, half-yearly, or annually — perfect if you need regular income.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Complete KYC &amp; Book Your FD</h4><p>Submit your PAN, Aadhaar, and bank details. The entire process is 100% digital on the Shriram Finance app or website — no branch visit required.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Receive Your Maturity Amount</h4><p>On the maturity date, your principal + accumulated interest is credited directly to your registered bank account. You can also choose to auto-renew.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Types of Fixed Deposits ===== -->
+  <section class="section stack sec-light" id="sec-types" data-section="types" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Things to Consider</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Fixed deposits are safe, but they are not risk-free. Weigh these factors before you commit your money for a fixed term.</p>
+      <h2 class="sec-title">Types of Fixed Deposits in India</h2>
+      <p class="sec-lead">Depending on your financial goal — whether it's growing wealth, generating monthly income, saving on taxes, or planning for retirement — there is a specific type of FD for you. Here are the most important ones:</p>
     </div>
-    <div class="risks" data-reveal-row>
-      {RISKS.map((r) => (
-        <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
-      ))}
+    <div class="fd-cards" data-reveal-row>
+      <div class="card"><h4 class="card-h">Cumulative Fixed Deposit</h4><p class="card-p">A Cumulative Fixed Deposit is ideal for investors looking to grow their savings over time. The interest earned is reinvested throughout the tenure, helping your investment benefit from compounding and resulting in a higher maturity amount.</p></div>
+      <div class="card"><h4 class="card-h">Non-Cumulative Fixed Deposit</h4><p class="card-p">A Non-Cumulative Fixed Deposit pays interest at regular intervals—monthly, quarterly, half-yearly, or annually. It is well-suited for individuals seeking a steady income stream while keeping their principal investment secure.</p></div>
+      <div class="card"><h4 class="card-h">Senior Citizen Fixed Deposit</h4><p class="card-p">Senior Citizen Fixed Deposits are designed for investors aged 60 years and above, offering preferential interest rates over standard FD schemes. They provide a reliable way to earn stable returns while preserving capital during retirement.</p></div>
+      <div class="card"><h4 class="card-h">Tax Saving Fixed Deposit</h4><p class="card-p">A Tax Saving Fixed Deposit helps investors save tax while earning fixed returns. Investments qualify for deductions under Section 80C of the Income Tax Act, subject to prevailing tax regulations, and come with a mandatory lock-in period of five years.</p></div>
+      <div class="card"><h4 class="card-h">NRI Fixed Deposit</h4><p class="card-p">NRI Fixed Deposits enable Non-Resident Indians to invest in India and earn attractive returns on their savings. These deposits offer a secure investment avenue with flexible tenure options, helping NRIs manage and grow their funds efficiently.</p></div>
     </div>
-    <p class="sec-lead" style="color:var(--color-text-secondary)">Used well, an FD is a dependable anchor for the low-risk part of a portfolio - pair it with the right tenure, ladder your deposits to manage reinvestment risk, and keep bank deposits within the DICGC cover where safety is the priority.</p>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">A simple table to understand the types of Fixed Deposits:</h3>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t5 bordered" style="grid-template-columns:repeat(5,minmax(0,1fr));min-width:720px">
+        <div class="cell th"><p>FD Type</p></div><div class="cell th"><p>Interest Pay-out</p></div><div class="cell th"><p>Tenure</p></div><div class="cell th"><p>Tax Benefit</p></div><div class="cell th"><p>Best suited For</p></div>
+        <div class="cell tb"><p class="k">Cumulative FD</p></div><div class="cell tb"><p class="v">At Maturity</p></div><div class="cell tb"><p class="v">Flexible</p></div><div class="cell tb"><p class="v">No</p></div><div class="cell tb"><p class="v">Wealth Creation</p></div>
+        <div class="cell tb"><p class="k">Non-Cumulative FD</p></div><div class="cell tb"><p class="v">Monthly/Quarterly</p></div><div class="cell tb"><p class="v">Flexible</p></div><div class="cell tb"><p class="v">No</p></div><div class="cell tb"><p class="v">Regular Income</p></div>
+        <div class="cell tb"><p class="k">Senior Citizen FD</p></div><div class="cell tb"><p class="v">Higher Rate</p></div><div class="cell tb"><p class="v">Flexible</p></div><div class="cell tb"><p class="v">No</p></div><div class="cell tb"><p class="v">Retirees</p></div>
+        <div class="cell tb"><p class="k">Tax Saving FD</p></div><div class="cell tb"><p class="v">At Maturity</p></div><div class="cell tb"><p class="v">5 Years</p></div><div class="cell tb"><p class="v">Eligible under 80C</p></div><div class="cell tb"><p class="v">Tax Planning</p></div>
+        <div class="cell tb"><p class="k">NRI FD</p></div><div class="cell tb"><p class="v">As per Scheme</p></div><div class="cell tb"><p class="v">Flexible</p></div><div class="cell tb"><p class="v">Depends</p></div><div class="cell tb"><p class="v">NRIs</p></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ===== Fixed Deposit Calculator ===== -->
+  <section class="section stack sec-tint" id="sec-calculator" data-section="calculator" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Fixed Deposit Calculator</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Understanding how your FD interest is calculated helps you make smarter choices about tenure and scheme type.</p>
+    </div>
+    <a class="btn-gold" href="/fd-calculator/" style="align-self:center">Open FD Account</a>
+  </section>
+
+  <!-- ===== Benefits and Features ===== -->
+  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Fixed Deposit - Benefits and Features</h2>
+      <p class="sec-lead">Fixed Deposits remain one of India's most preferred investment options because they combine safety, simplicity, and stable returns. Shriram Finance FDs are rated CRISIL FAAA/Stable and ICRA MAA+ — the highest safety ratings for an NBFC in India.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="card check-card">
+        <h4 class="ch-title">Here are the Key Benefits:</h4>
+        <div class="check-list">
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Guaranteed and predictable returns</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Lower risk compared to market-linked investments</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Flexible investment tenures</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Multiple pay-out options</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Loan facility against FD</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Premature withdrawal option</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Easy nomination facility</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Suitable for conservative investors</p></div>
+          <div class="check-sep"></div>
+          <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Additional interest benefits for senior citizens and females</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Premature Withdrawal and Loan Against FD ===== -->
+  <section class="section stack sec-tint" id="sec-liquidity" data-section="liquidity" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Premature Withdrawal and Loan Against Fixed Deposit</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Financial needs can arise unexpectedly. Fixed Deposits offer liquidity options without necessarily redeeming the investment completely.</p>
+    </div>
+    <div class="row-2">
+      <div class="card"><h4 class="card-h">Premature Withdrawal</h4><p class="card-p">While Fixed Deposits are designed to help you stay invested until maturity, unforeseen financial needs may arise. Most FD schemes offer a premature withdrawal facility, allowing you to access your funds before the tenure ends, subject to applicable terms, conditions, and penalty charges.</p></div>
+      <div class="card"><h4 class="card-h">Loan/Overdraft Against FD</h4><p class="card-p">Instead of breaking your FD, you may choose to avail a loan or overdraft against your deposit. This enables you to meet short-term liquidity requirements while your FD continues to earn interest, making it a convenient way to access funds without disrupting your investment goals.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== How to Open a Fixed Deposit Online ===== -->
+  <section class="section stack sec-light" id="sec-open-online" data-section="open-online" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Open a Fixed Deposit Online?</h2>
+      <p class="sec-lead">Open your Fixed Deposit online in just 5 simple steps and start growing your savings with confidence.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Visit the Website or App</h4><p>Go to the Shriram Finance website or download the Shriram One App. Navigate to the Fixed Deposit section and click on 'Open Fixed Deposit'.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Verify Your Mobile Number</h4><p>Enter your registered mobile number and complete OTP verification to begin the application process securely.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Choose Your Investment Details</h4><p>Enter your investment amount (starting from ₹5,000), select your preferred tenure, and choose an interest payout option—Cumulative or Non-Cumulative (Monthly, Quarterly, Half-Yearly, or Yearly).</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Complete KYC Verification</h4><p>Complete your KYC using Aadhaar-based e-KYC. Existing Shriram Finance customers can proceed using their existing KYC details. Keep your PAN card, identity proof, and bank account details handy.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Make Payment and Receive Confirmation</h4><p>Fund your FD through Net Banking, UPI, NEFT, or RTGS. Once the payment is successful, your Fixed Deposit is created instantly and the FD receipt is shared digitally for your records.</p></div>
+      </div>
+    </div>
+    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open FD</a>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -235,17 +316,6 @@ const seo = {
           <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== Final CTA ===== -->
-  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
-    <div class="cta-box">
-      <div class="ct-tt">
-        <h3>Start Earning Assured Returns Today</h3>
-        <p class="ct-sub">Open your account in minutes and book a fixed deposit with zero paperwork.</p>
-      </div>
-      <a class="btn-gold" href="/open-demat-account/">Open Account</a>
     </div>
   </section>
 </BaseLayout>

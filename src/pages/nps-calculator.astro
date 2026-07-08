@@ -1,39 +1,64 @@
 ---
 /**
  * NPS Calculator - /nps-calculator/
- * Projects the National Pension System corpus at retirement (age 60), the
- * lump-sum you can withdraw and the monthly pension from the annuitised
- * portion. Built on the shared calculator UI in global.css; page carries
- * content + maths. (The NPS *product* page lives at /nps/.)
+ * Projects the National Pension System corpus at retirement, the lump-sum you
+ * can withdraw and the monthly pension from the annuitised portion. Built on
+ * the shared calculator UI in global.css; page carries content + maths.
+ * (The NPS *product* page lives at /nps/.)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
-import { otherCalculators, calcHref } from '../data/calculators';
-
-const MORE = otherCalculators('nps');
 
 const FAQS = [
   {
-    q: 'How does this NPS calculator project my corpus?',
-    a: 'It treats your monthly NPS contribution like a SIP that runs until your chosen retirement age. Each contribution compounds at your expected annual rate of return, and the calculator sums them to project the total corpus at retirement, then splits it into a tax-free lump sum and the annuitised portion that funds your pension.',
+    q: 'What is an NPS Calculator?',
+    a: 'It is an online tool that estimates your NPS corpus, lump sum withdrawal, annuity amount and monthly pension.',
   },
   {
-    q: 'Why must part of the corpus be used for an annuity?',
-    a: 'Under current NPS rules, at retirement you can withdraw up to 60% of your corpus as a tax-free lump sum, but at least 40% must be used to buy an annuity that pays you a regular pension for life. This calculator lets you set the annuitised share (from 40% upward) and estimates the resulting monthly pension.',
+    q: 'Is NPS safe for retirement savings?',
+    a: 'NPS is regulated by the Pension Fund Regulatory and Development Authority (PFRDA) and designed for long-term retirement savings. Returns are market-linked, so they are not guaranteed.',
   },
   {
-    q: 'What annuity rate does the monthly pension assume?',
-    a: 'The pension estimate assumes the annuitised amount earns roughly 6% per annum, paid monthly - a typical assumption for illustration. Your actual pension depends on the annuity plan and rates available from the insurer at the time you retire, so treat this figure as an indicative guide.',
+    q: 'What is the minimum NPS contribution?',
+    a: 'For Tier I, the minimum initial contribution is generally ₹500 and the minimum annual contribution is ₹1,000.',
   },
   {
-    q: 'What rate of return should I expect from NPS?',
-    a: 'NPS returns depend on your asset allocation across equity, corporate bonds and government securities. Long-term blended returns have historically fallen in the 8–11% range, but they are market-linked and not guaranteed. Running the calculator with a conservative and an optimistic rate shows the range of possible outcomes.',
+    q: 'What is the maximum age to open an NPS account?',
+    a: 'NPS entry age is generally 18 to 70 years for eligible Indian citizens.',
   },
   {
-    q: 'What are the tax benefits of NPS?',
-    a: 'NPS contributions qualify for deductions under Section 80C and an additional dedicated deduction under Section 80CCD(1B), subject to prevailing limits. At retirement the lump-sum withdrawal is tax-free within the allowed share, while the pension income is taxed as per your slab in the year you receive it.',
+    q: 'What return rate should I assume?',
+    a: 'Use a realistic long-term rate based on your asset allocation. Avoid assuming very high returns.',
+  },
+  {
+    q: 'How much corpus can I withdraw as lump sum?',
+    a: 'The lump sum amount depends on exit rules, corpus size and subscriber category. Check the latest PFRDA rules before exit.',
+  },
+  {
+    q: 'Is NPS annuity income taxable?',
+    a: 'Yes. Monthly pension from annuity is generally taxed as income in the year of receipt.',
+  },
+  {
+    q: 'Can I change my asset allocation later?',
+    a: 'Yes, NPS allows changes to pension fund and asset allocation within applicable limits.',
+  },
+  {
+    q: 'What happens if I switch jobs?',
+    a: 'Even if you switch jobs, your PRAN remains the same. NPS is portable across jobs, cities and sectors.',
+  },
+  {
+    q: 'How is NPS different from EPF?',
+    a: "Employees' Provident Fund (EPF) is mainly salary-linked and focused on fixed-income savings. National Pension System (NPS) is market-linked and designed to help you build a retirement pension.",
+  },
+  {
+    q: 'Can I increase my contribution later?',
+    a: 'Yes. You can increase your NPS contribution based on your income and retirement goal.',
+  },
+  {
+    q: 'How much should I invest for ₹50,000 pension?',
+    a: 'It depends on your age, tenure, expected return, annuity percentage and annuity rate. Use the NPS calculator to estimate it.',
   },
 ];
 
@@ -51,8 +76,16 @@ const seo = {
   <section class="hero hero-compact" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators/' }, { name: 'NPS Calculator' }]} />
     <div class="hero-inner" data-enter>
-      <h1>Plan Your Retirement With The <span class="g">NPS Calculator</span></h1>
-      <p class="lead">Project the corpus you'll build by 60, the lump-sum you can withdraw and the monthly pension your annuity could pay.</p>
+      <h1>NPS Calculator – Estimate Your <span class="g">Retirement Corpus &amp; Monthly Pension</span></h1>
+      <p class="lead">Plan your retirement with a quick estimate of your NPS returns.</p>
+      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open NPS Account Now</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;PFRDA-regulated</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Government-backed retirement scheme</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;2.25 Cr. NPS subscribers</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -148,7 +181,7 @@ const seo = {
 
           <div class="bar-div" role="presentation"></div>
 
-          <p class="bar-note">A two-stage estimate: the corpus accumulates monthly, then the annuitised portion converts to pension. The lump sum (up to 60%) is tax-free; pension income is taxable.</p>
+          <p class="bar-note">Results are estimates. Actual returns, annuity rates and tax rules may vary.</p>
         </div>
 
         <div class="ready-bar">
@@ -161,55 +194,239 @@ const seo = {
     <p class="sr-only" id="sr-summary" aria-live="polite"></p>
   </section>
 
-  <!-- ===== What Is An NPS Calculator ===== -->
-  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:24px">
-    <h2 class="sec-title">What Is An NPS Calculator?</h2>
-    <p class="sec-lead">An NPS calculator is a free online tool that projects the retirement corpus you can build through the National Pension System. By entering your current and retirement age, your monthly contribution, an expected annual rate of return, the share of the corpus you plan to annuitise and the annuity rate, it estimates the total corpus at retirement, the lump sum you can withdraw and the monthly pension your annuity could provide. It turns decades of contributions into a clear, single-screen picture of your retirement.</p>
+  <!-- ===== What Is an NPS Calculator? ===== -->
+  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is an NPS Calculator?</h2>
+      <p class="sec-lead">An NPS Calculator is an online tool that estimates how much retirement corpus you may build through the National Pension System. It also shows how much of the corpus may be available as lump sum and how much monthly pension you may receive through annuity.</p>
+    </div>
+
+    <div class="stack" style="gap:16px">
+      <h3 class="sub-title">Why use it?</h3>
+      <ul class="bullets">
+        <li>Estimate your retirement corpus in seconds.</li>
+        <li>See your likely lump sum and monthly pension.</li>
+        <li>Plan how much to invest every month.</li>
+        <li>Compare different return and annuity assumptions.</li>
+        <li>Use it anytime, without login.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="align-self:flex-start">
+      <h4 class="card-h">Good to know</h4>
+      <p class="card-p">NPS is regulated by the Pension Fund Regulatory and Development Authority (PFRDA). The scheme is designed for long-term retirement savings, not short-term investing.</p>
+    </div>
   </section>
 
-  <!-- ===== How An NPS Calculator Helps You ===== -->
-  <section class="section stack sec-light" id="sec-help" data-section="help" style="gap:24px">
-    <h2 class="sec-title">How An NPS Calculator Helps You</h2>
-    <p class="sec-lead">Retirement is decades away and easy to under-plan. The calculator makes the long horizon tangible:</p>
-    <ul class="bullets">
-      <li>See the corpus your monthly contribution could grow into by the time you retire.</li>
-      <li>Understand how much you can take as a lump sum versus what funds your pension.</li>
-      <li>Estimate your monthly pension so you can judge whether it meets your retirement needs.</li>
-      <li>Test how starting earlier or contributing more changes the outcome - the earlier the bigger.</li>
-    </ul>
+  <!-- ===== How Does the NPS Calculator Work? ===== -->
+  <section class="section stack sec-light" id="sec-work" data-section="work" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Does the NPS Calculator Work?</h2>
+      <p class="sec-lead">The calculator works in two simple stages.</p>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Stage 1: Corpus accumulation</h3>
+        <p class="sub-lead">Your monthly contributions are compounded until retirement. The calculator uses this formula:</p>
+        <p class="sub-lead">A = P × [(1 + r/12)^(nt) – 1] / (r/12) × (1 + r/12)</p>
+      </div>
+      <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="cell th"><p>Variable</p></div><div class="cell th"><p>Meaning</p></div>
+        <div class="cell tb"><p class="k">A</p></div><div class="cell tb"><p class="v">Estimated corpus at retirement</p></div>
+        <div class="cell tb"><p class="k">P</p></div><div class="cell tb"><p class="v">Monthly contribution</p></div>
+        <div class="cell tb"><p class="k">r</p></div><div class="cell tb"><p class="v">Expected annual return</p></div>
+        <div class="cell tb"><p class="k">n</p></div><div class="cell tb"><p class="v">Compounding frequency, usually 12 for monthly</p></div>
+        <div class="cell tb"><p class="k">t</p></div><div class="cell tb"><p class="v">Investment tenure in years</p></div>
+      </div></div>
+    </div>
+
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Stage 2: Pension conversion</h3>
+        <p class="sub-lead">A chosen part of the corpus is used to buy an annuity. This annuity gives regular pension income.</p>
+        <p class="sub-lead">Monthly Pension = (Annuity Corpus × Annuity Rate) / 12</p>
+      </div>
+      <div class="card" style="align-self:flex-start">
+        <h4 class="card-h">Example</h4>
+        <p class="card-p">If you invest ₹5,000 per month for 30 years at 10% p.a., the estimated corpus is about ₹1.14 crore. If 40% is used for annuity at 6%, the estimated monthly pension is about ₹22,793.</p>
+      </div>
+    </div>
   </section>
 
-  <!-- ===== How Does An NPS Calculator Work ===== -->
-  <section class="section stack sec-tint" id="sec-work" data-section="work" style="gap:24px">
-    <h2 class="sec-title">How Does An NPS Calculator Work?</h2>
-    <p class="sec-lead">The calculator first works out how many months remain until your retirement age and compounds each monthly contribution at your expected rate of return over that period - the same future-value logic as a SIP - to arrive at your corpus. It then applies your chosen annuitisation share: the annuitised portion is converted into a lifelong monthly pension at your chosen annuity rate, and the remainder is your tax-free lump-sum withdrawal.</p>
+  <!-- ===== How to Use the NPS Calculator ===== -->
+  <section class="section stack sec-tint" id="sec-how-to-use" data-section="how-to-use" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Use the NPS Calculator</h2>
+      <p class="sec-lead">Use the NPS Calculator to estimate your retirement corpus and potential pension by entering your age, contribution amount, expected returns, and annuity preferences.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Step 1</h4><p>Enter your current age.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Step 2</h4><p>Add your monthly NPS contribution.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Step 3</h4><p>Choose your planned retirement age.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Step 4</h4><p>Enter your expected annual return.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Step 5</h4><p>Select your annuity percentage and expected annuity rate.</p></div>
+      </div>
+    </div>
+    <p class="sec-lead" style="width:100%">The calculator will instantly show your total investment, retirement corpus, lump sum amount, annuity corpus and estimated monthly pension.</p>
+    <div class="card" style="align-self:flex-start">
+      <h4 class="card-h">Pro tip</h4>
+      <p class="card-p">Do not use very high return assumptions. A balanced NPS allocation may include equity, corporate debt and government securities.</p>
+    </div>
   </section>
 
-  <!-- ===== Advantages Of An NPS Calculator ===== -->
-  <section class="section stack sec-light" id="sec-adv" data-section="adv" style="gap:24px">
-    <h2 class="sec-title">Advantages Of An NPS Calculator</h2>
-    <p class="sec-lead">For a decades-long commitment like NPS, seeing the end result in advance changes how you plan:</p>
-    <ul class="bullets">
-      <li>Instant projection of corpus, lump sum and pension from a single set of inputs.</li>
-      <li>Completely free to use, with no sign-up required and results delivered in real time.</li>
-      <li>Helps you pick a contribution and annuitisation mix that matches your retirement goals.</li>
-      <li>Makes the reward of starting early and staying invested impossible to ignore.</li>
-    </ul>
+  <!-- ===== Pension Adequacy Indicator ===== -->
+  <section class="section stack sec-light" id="sec-adequacy" data-section="adequacy" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Pension Adequacy Indicator</h2>
+      <p class="sec-lead">Your pension number is useful only when it is compared with your future lifestyle cost. The Pension Adequacy Indicator helps you check whether the estimated monthly pension may be enough.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Signal</p></div><div class="cell th"><p>Meaning</p></div>
+      <div class="cell tb"><p class="k">Green</p></div><div class="cell tb"><p class="v">Estimated pension covers 75% or more of your current monthly expenses.</p></div>
+      <div class="cell tb"><p class="k">Amber</p></div><div class="cell tb"><p class="v">Estimated pension covers 40% to 75% of your current monthly expenses.</p></div>
+      <div class="cell tb"><p class="k">Red</p></div><div class="cell tb"><p class="v">Estimated pension covers less than 40% of your current monthly expenses. You may need to invest more.</p></div>
+    </div></div>
   </section>
 
-  <!-- ===== Explore More ===== -->
-  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
-    <h2 class="sec-title">Explore More</h2>
-    <div class="explore-grid" data-reveal-row>
-      {
-        MORE.map((c) => (
-          <a class="xcard" href={calcHref(c.slug)}>
-            <span class="xc-title">{c.title}</span>
-            <span class="xc-desc">{c.desc}</span>
-            <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
-          </a>
-        ))
-      }
+  <!-- ===== Benefits of NPS for Retirement Planning ===== -->
+  <section class="section stack sec-tint" id="sec-benefits" data-section="benefits" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Benefits of NPS for Retirement Planning</h2>
+      <p class="sec-lead">Explore the key benefits of NPS for retirement planning, including tax advantages, market-linked growth, low costs, portability, withdrawal flexibility, and pension income.</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Tax benefits</h4><p>NPS may provide deductions under Section 80CCD, depending on your tax regime and contribution type.</p></div>
+      <div class="cat"><h4>Market-linked growth</h4><p>Your money is invested across approved asset classes such as equity, corporate debt and government securities.</p></div>
+      <div class="cat"><h4>Low-cost structure</h4><p>NPS is known for a cost-efficient structure compared with many long-term market-linked products.</p></div>
+      <div class="cat"><h4>Portable account</h4><p>Your Permanent Retirement Account Number (PRAN) stays with you even if you change jobs, cities or sectors.</p></div>
+      <div class="cat"><h4>Partial withdrawal flexibility</h4><p>Limited withdrawals may be allowed for specified needs, subject to rules.</p></div>
+      <div class="cat"><h4>Lifetime pension option</h4><p>The annuity portion can provide regular pension income after retirement.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== NPS Pension Adequacy Planner ===== -->
+  <section class="section stack sec-light" id="sec-planner" data-section="planner" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">NPS Pension Adequacy Planner: Will Your Pension Be Enough?</h2>
+      <p class="sec-lead">A future pension can look large, but inflation reduces its value. This planner shows the estimated pension in today’s money.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="grid-template-columns:repeat(4,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Monthly contribution</p></div><div class="cell th"><p>Tenure</p></div><div class="cell th"><p>Future monthly pension</p></div><div class="cell th"><p>Value in today’s money*</p></div>
+      <div class="cell tb"><p class="k">₹5,000</p></div><div class="cell tb"><p class="v">30 years</p></div><div class="cell tb"><p class="v">₹22,600</p></div><div class="cell tb"><p class="v">₹5,230</p></div>
+      <div class="cell tb"><p class="k">₹10,000</p></div><div class="cell tb"><p class="v">30 years</p></div><div class="cell tb"><p class="v">₹45,200</p></div><div class="cell tb"><p class="v">₹10,460</p></div>
+      <div class="cell tb"><p class="k">₹15,000</p></div><div class="cell tb"><p class="v">25 years</p></div><div class="cell tb"><p class="v">₹52,800</p></div><div class="cell tb"><p class="v">₹15,580</p></div>
+      <div class="cell tb"><p class="k">₹25,000</p></div><div class="cell tb"><p class="v">20 years</p></div><div class="cell tb"><p class="v">₹68,900</p></div><div class="cell tb"><p class="v">₹25,960</p></div>
+    </div></div>
+    <div class="card" style="align-self:flex-start">
+      <h4 class="card-h">Reality check</h4>
+      <p class="card-p">A monthly pension of ₹45,000 after 30 years may feel like roughly ₹10,500 today, assuming 5% annual inflation. Plan with real value, not only future value.</p>
+    </div>
+    <p class="sec-lead">*Illustrative values. Actual inflation and annuity rates may vary.</p>
+  </section>
+
+  <!-- ===== Tax Benefits and Taxation on NPS ===== -->
+  <section class="section stack sec-tint" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Tax Benefits and Taxation on NPS</h2>
+      <p class="sec-lead">NPS tax treatment can differ by contribution type, tax regime and withdrawal stage. Use this as a simple guide and check with a tax adviser before investing.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Stage</p></div><div class="cell th"><p>Treatment</p></div><div class="cell th"><p>Simple rule</p></div>
+      <div class="cell tb"><p class="k">Self contribution</p></div><div class="cell tb"><p class="v">Deduction</p></div><div class="cell tb"><p class="v">Up to ₹1.5 lakh under Section 80CCD(1), within the overall 80C limit, generally under the old tax regime.</p></div>
+      <div class="cell tb"><p class="k">Additional self contribution</p></div><div class="cell tb"><p class="v">Deduction</p></div><div class="cell tb"><p class="v">Extra deduction up to ₹50,000 under Section 80CCD(1B), generally under the old tax regime.</p></div>
+      <div class="cell tb"><p class="k">Employer contribution</p></div><div class="cell tb"><p class="v">Deduction</p></div><div class="cell tb"><p class="v">Available under Section 80CCD(2), subject to salary-based limits.</p></div>
+      <div class="cell tb"><p class="k">Lump sum at retirement</p></div><div class="cell tb"><p class="v">Tax treatment</p></div><div class="cell tb"><p class="v">The eligible lump sum withdrawal is generally tax-free, subject to applicable rules.</p></div>
+      <div class="cell tb"><p class="k">Annuity purchase</p></div><div class="cell tb"><p class="v">Tax treatment</p></div><div class="cell tb"><p class="v">The amount used to buy annuity is not taxed at purchase.</p></div>
+      <div class="cell tb"><p class="k">Monthly pension</p></div><div class="cell tb"><p class="v">Taxable income</p></div><div class="cell tb"><p class="v">Annuity pension is added to income and taxed as per the applicable slab.</p></div>
+    </div></div>
+    <div class="card" style="align-self:flex-start">
+      <h4 class="card-h">Important</h4>
+      <p class="card-p">The lump sum withdrawal and the monthly pension are not taxed in the same way. Pension from annuity is taxable as income.</p>
+    </div>
+  </section>
+
+  <!-- ===== Who Should Invest in NPS? ===== -->
+  <section class="section stack sec-light" id="sec-who" data-section="who" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Who Should Invest in NPS?</h2>
+    </div>
+    <div class="cat-grid" data-reveal-row style="grid-template-columns:repeat(2,1fr)">
+      <div class="cat"><h4>Salaried employees</h4><p>Useful as an extra retirement layer alongside EPF. Employer contribution may also improve tax efficiency.</p></div>
+      <div class="cat"><h4>Government employees</h4><p>NPS is a core retirement asset for many government employees. Employer contribution can be a major benefit.</p></div>
+      <div class="cat"><h4>Self-employed people</h4><p>Helpful for disciplined retirement saving when there is no employer-backed pension plan.</p></div>
+      <div class="cat"><h4>Young investors</h4><p>Starting early gives contributions more time to compound. A longer tenure can make a meaningful difference.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== NPS Withdrawal and Exit Rules ===== -->
+  <section class="section stack sec-tint" id="sec-exit" data-section="exit" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">NPS Withdrawal and Exit Rules</h2>
+      <p class="sec-lead">NPS withdrawal rules depend on the subscriber category, exit age, corpus size and latest PFRDA rules. The table below is a simple content format for the page.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Scenario</p></div><div class="cell th"><p>Lump sum</p></div><div class="cell th"><p>Annuity / condition</p></div>
+      <div class="cell tb"><p class="k">At retirement</p></div><div class="cell tb"><p class="v">A portion may be withdrawn as lump sum.</p></div><div class="cell tb"><p class="v">A minimum portion is usually used to buy annuity, unless small-corpus rules apply.</p></div>
+      <div class="cell tb"><p class="k">Before retirement</p></div><div class="cell tb"><p class="v">A smaller lump sum may be allowed.</p></div><div class="cell tb"><p class="v">A larger portion may need to be used for annuity.</p></div>
+      <div class="cell tb"><p class="k">Partial withdrawal</p></div><div class="cell tb"><p class="v">Limited withdrawals may be allowed.</p></div><div class="cell tb"><p class="v">Usually for specified purposes such as education, illness, marriage or home purchase.</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== How to Open an NPS Account Online ===== -->
+  <section class="section stack sec-light" id="sec-open" data-section="open" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Open an NPS Account Online</h2>
+      <p class="sec-lead">Open an NPS account online by following these simple steps.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Step 1</h4><p>Visit the NPS portal on the Shriram Financial Services website.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Step 2</h4><p>Choose the subscriber type: individual or corporate.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Step 3</h4><p>Choose between NSDL or Kfintech</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Step 4</h4><p>Complete KYC with PAN, Aadhaar and bank details.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Step 5</h4><p>Select your Pension Fund Manager and asset allocation.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">6</div>
+        <div class="st-body"><h4>Step 6</h4><p>Make your first contribution and receive your PRAN.</p></div>
+      </div>
     </div>
   </section>
 
@@ -231,6 +448,34 @@ const seo = {
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ===== Related Calculators ===== -->
+  <section class="section stack sec-tint" id="sec-explore" data-section="explore" style="gap:40px">
+    <h2 class="sec-title">Related Calculators</h2>
+    <div class="explore-grid" data-reveal-row>
+      <a class="xcard" href="/sip-calculator/">
+        <span class="xc-title">SIP Calculator</span>
+        <span class="xc-desc">Estimate wealth from monthly mutual fund investments.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/swp-calculator/">
+        <span class="xc-title">SWP Calculator</span>
+        <span class="xc-desc">Check long-term savings under PPF.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/lumpsum-calculator/">
+        <span class="xc-title">Lumpsum Calculator</span>
+        <span class="xc-desc">Estimate your employee provident fund corpus.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/fd-calculator/">
+        <span class="xc-title">FD Calculator</span>
+        <span class="xc-desc">Calculate fixed deposit maturity value.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+    </div>
+    <a class="btn-gold" href="/calculators/" style="align-self:center">Explore All Calculators</a>
   </section>
 </BaseLayout>
 

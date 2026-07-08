@@ -1,12 +1,12 @@
 ---
 /**
  * Technical Research - /technical-analysis/
- * Research sub-page (nested route → imports at ../../ depth). Built to the
- * Figma "Technical Research" wireframe (V4, node 977-6333) but rendered
- * entirely in the shared design system: the standardised olive hero (rule 7),
- * shared section / card / check-list / FAQ components, and page-local styles
- * ONLY for the two genuinely-new blocks - the gated "note" card and the
- * research-report card grid. Every value binds to a token (rule 9).
+ * Body content is the compliance-approved "Technical Research Page Content"
+ * doc, implemented word-for-word in the shared design system: the standardised
+ * olive hero (rule 7), shared section / check-list / table / FAQ / CTA
+ * components, and page-local styles ONLY for the gated "note" card and the
+ * research-report card grid (the interactive/gated element, preserved). Every
+ * value binds to a token (rule 9).
  *
  * The report grid is DATA-DRIVEN (src-of-truth: REPORTS below) so the same
  * template scales to thousands of report instances - the scale North Star.
@@ -16,76 +16,78 @@ import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { faqPageSchema } from '../lib/seo';
 
-// Research reports - verbatim from the wireframe. `kind` maps to a badge tint;
-// `locked` gates the card (skeleton + lock overlay + unlock bar); unlocked
-// cards show the publisher header + a PDF download instead.
-const REPORTS = [
-  {
-    badge: 'Cautious', kind: 'warn', date: '19 May 2026', pages: '3 pages',
-    title: 'Daily EQ Trend - Nifty Recovers from Demand Zone; 24,000 Remains Key Trigger',
-    tags: 'Equity | Index', author: 'Brijesh Ail, AVP Research', locked: false,
-  },
-  {
-    badge: 'Positive', kind: 'pos', date: '19 May 2026', pages: '3 pages',
-    title: 'Daily Commodity Trend - Gold near 10 DEMA Support; Crude Momentum Positive',
-    tags: 'Commodity | MCX', author: 'Brijesh Ail, AVP Research', locked: false,
-  },
-  {
-    badge: 'Range-Bound', kind: 'warn', date: '16 May 2026', pages: '4 pages',
-    title: 'Bank Nifty Weekly - 61.8% Fib Support Held; Breakout Above 54,800 Awaited',
-    tags: 'Equity | Banking', author: 'Brijesh Ail, AVP Research', locked: true,
-  },
-  {
-    badge: 'Buy', kind: 'info', date: '15 May 2026', pages: '3 pages',
-    title: 'MCX Zinc & Crude Oil Trading Strategy - Entry Levels and Stop Loss Zones',
-    tags: 'Commodity | Strategy', author: 'Brijesh Ail, AVP Research', locked: true,
-  },
-  {
-    badge: 'Data Report', kind: 'info', date: '14 May 2026', pages: '2 pages',
-    title: 'Nifty 50 Pivot Table - Full S1 S2 R1 R2 Levels for All 50 Constituents',
-    tags: 'Equity | Pivot Data', author: 'Research Desk', locked: true,
-  },
-  {
-    badge: 'Accumulate', kind: 'pos', date: '13 May 2026', pages: '5 pages',
-    title: 'IT Sector Breakout Watch - TechM +4.85%, Infosys +2.38% Lead Sectoral Rally',
-    tags: 'Equity | Sectoral', author: 'Brijesh Ail, AVP Research', locked: true,
-  },
-];
-
-// What Technical Research contains - the checklist (wireframe, verbatim).
+// SECTION 3 - "What Technical Research Contains" checklist (doc [TABLE], verbatim).
 const CONTAINS = [
   'Daily support, resistance and pivot levels for key indices and commodities',
-  'Candlestick and pattern reads - rounding tops, trend reversals, breakouts',
+  'Candlestick and pattern reads — rounding tops, trend reversals, breakouts',
   'Derivatives strategy notes built for F&O traders',
   'Intraday and positional trade ideas, with entry, target and stop-loss',
-  'A level that would make us review the call - stated upfront, not after',
+  'A level that would make us review the call — stated upfront, not after',
 ];
 
-// Frequently Asked Questions - first item open (site convention).
+// SECTION 5 - "Sample Report Types" (doc [TABLE], verbatim title + description).
+// `locked` gates the card (skeleton + lock overlay + unlock bar) - the
+// interactive element, preserved. Content is doc-faithful; the first note is
+// left open as the live "today's" preview, the rest gated.
+const REPORTS = [
+  {
+    title: 'Daily Nifty Trend Note',
+    body: 'Nifty recovers from demand zone; 24,000 remains key trigger. Entry, target and stop-loss levels included. Published daily before market open.',
+    locked: false,
+  },
+  {
+    title: 'Daily Commodity Trend Note',
+    body: 'Gold near 93 DMA, crude oil momentum turns positive. Covers MCX Gold, Silver, Crude, and base metals with specific trade levels.',
+    locked: false,
+  },
+  {
+    title: 'Bank Nifty Weekly F&O Note',
+    body: '41,800 support holds; breakout above 54,800 awaited. Derivatives positioning, OI analysis, and weekly options strategy for active traders.',
+    locked: true,
+  },
+  {
+    title: 'MCX Zinc & Crude Oil Trading Strategy',
+    body: 'Entry levels and stop-loss zones for MCX commodity traders. Published on momentum triggers with clear invalidation levels.',
+    locked: true,
+  },
+  {
+    title: 'Nifty 50 Pivot Table',
+    body: 'Full S1–S3 / R1–R3 pivot levels for all 50 Nifty constituents. Updated daily. Useful for intraday traders managing multiple positions.',
+    locked: true,
+  },
+  {
+    title: 'IT Sector Breakout Watch',
+    body: 'TechM +4.80%, Infosys +2.99% — sector rotation watch with individual stock setups. Published on breakout triggers across key NSE sectors.',
+    locked: true,
+  },
+];
+
+// SECTION 7 - Frequently Asked Questions (doc verbatim; first item open). The
+// rendered header stays "General Questions" (project rule 13).
 const FAQS = [
   {
     q: 'What is Shriram Research?',
-    a: 'Shriram Research is the equity and commodity research division of Shriram Financial Services. We publish daily technical trend reports, fundamental stock analysis, and monthly mutual fund industry reviews - all produced by SEBI-registered analysts.',
+    a: 'Shriram Research is the equity and commodity research division of Shriram Financial Services. We publish daily technical research notes, fundamental stock analysis, and monthly mutual fund industry reviews — all produced by SEBI-registered analysts and available free to Shriram demat account holders.',
   },
   {
     q: 'What types of research reports are available?',
-    a: 'Technical Research covers daily index and commodity trend notes, weekly derivatives and F&O strategies, pivot tables with support and resistance levels, and sector breakout watches. Each report carries a clear stance, the levels that matter and the trigger that would change the view.',
+    a: 'Technical Research covers daily index trend notes (Nifty, Bank Nifty, Sensex), commodity trading strategies (MCX Gold, Crude, Zinc), F&O derivatives notes, individual stock setups, sector rotation watches, and full pivot tables for Nifty 50 constituents. Fundamental and mutual fund research are available on separate report hubs.',
   },
   {
-    q: 'Do I need to login to read the reports?',
-    a: 'A short preview of every report is open to everyone. Full reports - with detailed levels, entry, target and stop-loss - unlock when you log in to the Antara app or open a Shriram demat account.',
+    q: 'Do I need to log in to read the reports?',
+    a: "Full reports — including trade levels, stop-loss zones, and analyst commentary — require a Shriram demat account login. If you don't have one, you can open an account digitally.",
   },
   {
     q: 'How do I open a demat account to access research?',
-    a: 'Opening a Shriram demat account takes only a few minutes online. Submit your PAN, complete KYC with Aadhaar and link your bank account - once verified, every research PDF, pivot table and trade idea is unlocked in full.',
+    a: "Click 'Open Demat Account' on this page and complete your KYC digitally using your PAN, Aadhaar, and bank details. Once your account is active, you'll have free, unlimited access to all research PDFs and trade ideas published by Shriram Research.",
   },
   {
     q: 'Is the research free for clients?',
-    a: 'Yes. Once you hold a Shriram demat account you get unlimited access to the full research library - all technical notes, pivot tables and trading ideas - at no extra charge.',
+    a: 'Yes. All research — technical, fundamental, and mutual fund — is free for Shriram demat account holders. There are no subscription fees, no tiered plans, and no pay-per-report charges. Open an account once; access everything.',
   },
   {
     q: 'How often are reports published?',
-    a: 'Daily trend notes for indices and commodities go out before the market opens on every trading day. Weekly derivatives strategies, pivot tables and sector watches are published on a fixed schedule through the week.',
+    a: 'Technical notes are published every trading day. Commodity and derivatives notes are published on a daily or as-needed basis depending on market triggers. Fundamental stock reports are published quarterly or on event triggers (earnings, corporate actions). Mutual fund reviews are published monthly.',
   },
 ];
 
@@ -99,38 +101,34 @@ const seo = {
 ---
 
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
-  <!-- ================= HERO (standardised, rule 7) ================= -->
+  <!-- ================= SECTION 1 - HERO (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
     <Breadcrumb trail={[{ name: 'Research Centre', href: '/research-hub/' }, { name: 'Technical Research' }]} />
     <div class="hero-inner" data-enter>
       <h1>Technical <span class="g">Research</span></h1>
-      <p class="lead">Where price is the only fundamental that matters today. We read the chart - support, resistance and the level that would change the view.</p>
+      <p class="lead">Where price is the only fundamental that matters today.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;SEBI-registered analysts</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Daily support &amp; resistance</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">&nbsp;Entry, target &amp; stop-loss</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
-  <!-- ================= WHAT IS TECHNICAL RESEARCH ================= -->
+  <!-- ================= SECTION 2 - WHAT IS TECHNICAL RESEARCH? ================= -->
   <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px;justify-content:center" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">What Is Technical Research</h2>
-      <p class="sec-lead">Technical Research reads the chart, not the balance sheet - price action, volume, moving averages and the patterns they form, across equity indices, individual stocks, currencies and commodities. The output is short and dated: today's support and resistance, the level that would change the view, and what we're watching the chart for next.</p>
+      <h2 class="sec-title">What Is Technical Research?</h2>
+      <p class="sec-lead">Most research starts with balance sheets and earnings calls. Technical Research starts with the chart. Price, volume, moving averages, chart patterns — these are the inputs. The output is specific, time-stamped, and actionable: today's support and resistance levels, the exact level that would change the view, and what the analyst is watching for next.</p>
+      <p class="sec-lead">Technical Research covers equity indices, individual stocks, currencies, and commodities. It doesn't deal in vague sentiment or broad market commentary. Every note has a level — a price where the analysis is right, and a price where it's wrong. That's the discipline that separates it from opinion.</p>
+      <p class="sec-lead">If you've ever read a market report that told you a stock was 'looking positive' without telling you at what price that changes — Technical Research is the antidote.</p>
     </div>
   </section>
 
-  <!-- ================= WHAT IT CONTAINS ================= -->
+  <!-- ================= SECTION 3 - WHAT TECHNICAL RESEARCH CONTAINS ================= -->
   <section class="section stack sec-tint" id="sec-contains" data-section="contains" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">What Technical Research Contains</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">Every desk note is built the same way - actionable levels, the pattern behind them, and the risk stated upfront. Here's what lands in your inbox each trading day.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Each Technical Research note is built around one principle: give traders exactly what they need, nothing they don't. Here's what you'll find inside every report.</p>
     </div>
-    <div class="card" style="display:flex;flex-direction:column">
+    <div class="card check-card">
+      <h4 class="ch-title">What's Covered in Every Note</h4>
       <div class="check-list">
         {CONTAINS.map((item, i) => (
           <>
@@ -143,17 +141,17 @@ const seo = {
         ))}
       </div>
     </div>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">The derivatives notes, in particular, go beyond the spot chart. They factor in open interest shifts, options data, and the positioning that often drives price before it shows up in the headline index. If you trade Nifty, Bank Nifty, or stock F&O, these notes are written specifically for that.</p>
   </section>
 
-  <!-- ================= OPEN DEMAT ACCOUNT - gated daily note ================= -->
+  <!-- ================= SECTION 4 - CTA BLOCK (gated daily note) ================= -->
   <section class="section stack sec-light" id="sec-note" data-section="note" style="gap:40px;align-items:center;justify-content:center">
-    <h2 class="sec-title" style="text-align:center">Open Demat Account</h2>
     <div class="card gate">
       <span class="gate-ic" aria-hidden="true">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
       </span>
-      <h3>Today's Technical Note is ready.</h3>
-      <p>Log in to read live levels and trade ideas, or open a demat account to get started.</p>
+      <h3>Today's Technical Note Is Ready.</h3>
+      <p>Log in to read live levels and trade ideas, or open a Shriram demat account to get started.</p>
       <div class="gate-cta">
         <a class="btn-ghost" href="#">Login</a>
         <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
@@ -161,11 +159,11 @@ const seo = {
     </div>
   </section>
 
-  <!-- ================= REPORT GRID ================= -->
+  <!-- ================= SECTION 5 - TECHNICAL RESEARCH NOTES: ALL YOU NEED IN ONE PLACE ================= -->
   <section class="section stack sec-tint" id="sec-notes" data-section="notes" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px;align-items:center;text-align:center">
-      <h2 class="sec-title">Technical Research Notes All You Need In One Place</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary);max-width:720px">Daily trend notes, pivot tables and strategy calls - each with a clear stance and the levels that matter. Preview any report; unlock the full PDF with a demat account.</p>
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Technical Research Notes — All You Need in One Place</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Shriram Research publishes technical notes across asset classes every trading day. Below is a snapshot of what's available — from daily Nifty trend calls to commodity trading strategies and sector rotation watches.</p>
     </div>
 
     <div class="notes-grid" data-reveal-row>
@@ -188,20 +186,12 @@ const seo = {
                 <span class="lock-tx">Login to Access</span>
               </div>
             )}
-            <span class="rcard-pages"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l4 4v14H7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg>{r.pages}</span>
           </div>
 
           <div class="rcard-body">
-            <div class="rcard-meta">
-              <span class={`rbadge rbadge--${r.kind}`}>{r.badge}</span>
-              <span class="rcard-date">{r.date}</span>
-            </div>
             <h3 class="rcard-title">{r.title}</h3>
+            <p class="rcard-desc">{r.body}</p>
             <div class="rcard-foot">
-              <span class="rcard-by">
-                <span class="rcard-tags">{r.tags}</span>
-                <span class="rcard-author">{r.author}</span>
-              </span>
               {r.locked ? (
                 <a class="rcard-link" href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5"></circle></svg>Preview</a>
               ) : (
@@ -221,25 +211,29 @@ const seo = {
       ))}
     </div>
 
-    <!-- Unlock band - the wireframe's blue CTA, rendered in the site's dark
-         focus-band palette (blue is functional-only in the token system). -->
+    <p class="sec-lead" style="color:var(--color-text-secondary);text-align:center">Full reports are accessible to Shriram demat account holders. Log in or open a account to read all notes.</p>
+  </section>
+
+  <!-- ================= SECTION 6 - UNLOCK ALL REPORTS CTA ================= -->
+  <section class="section stack sec-light" id="sec-unlock" data-section="unlock" style="gap:0;align-items:center;justify-content:center">
     <div class="unlock">
       <div class="unlock-tx">
         <h3>Unlock All Reports + Trading Ideas</h3>
-        <p>Open your Shriram demat account and get free, unlimited access to all research PDFs, pivot tables, analyst webinars and model portfolios.</p>
+        <p>Open your Shriram demat account and get free, unlimited access to all research PDFs, pivot tables, analyst webinars, and model portfolios — all produced by SEBI-registered analysts.</p>
       </div>
       <div class="unlock-cta">
-        <a class="btn-gold" href="/open-demat-account/">Open Demat Account - Free</a>
+        <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
         <a class="btn-outline" href="#">Login to Existing Account</a>
       </div>
     </div>
   </section>
 
-  <!-- ================= FREQUENTLY ASKED QUESTIONS ================= -->
-  <!-- Its OWN section, on the lighter surface so it reads as distinct from the
-       (tinted) notes section above. Site-standard two-column FAQ: accordion
-       left + discovery-call side card right (shared components). -->
-  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+  <!-- ================= SECTION 7 - FREQUENTLY ASKED QUESTIONS ================= -->
+  <!-- Rendered header stays "General Questions" (project rule 13); the doc's
+       "Frequently Asked Questions" wording is intentionally not adopted. Shared
+       two-column FAQ: accordion left + advisory side card right (no doc source;
+       retained structurally so layout holds). -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">General Questions</h2>
@@ -257,17 +251,6 @@ const seo = {
       </div>
     </div>
   </section>
-
-  <!-- ================= FINAL CTA ================= -->
-  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
-    <div class="cta-box">
-      <div class="ct-tt">
-        <h3>Read the Chart With Us</h3>
-        <p class="ct-sub">Open your demat account in minutes and unlock every technical note, pivot table and trade idea.</p>
-      </div>
-      <a class="btn-gold" href="/open-demat-account/">Open Demat Account</a>
-    </div>
-  </section>
 </BaseLayout>
 
 <style>
@@ -275,14 +258,12 @@ const seo = {
      to a design token; the two genuinely-new blocks are the gated note card
      and the research-report grid. Section/hero/card/check-list/FAQ/CTA are all
      shared components from global.css. ===== */
-  .section,
-  .cta-sec {
+  .section {
     scroll-margin-top: 96px;
   }
 
-  /* The FAQ sits on --sec-light, so the block needs a defined edge: stroke the
-     accordion AND the helper side card together (background-dependent rule -
-     same as /calculators/sip/). */
+  /* The FAQ sits on --sec-tint here, but the accordion still needs a defined
+     edge; stroke the accordion AND the helper side card together. */
   .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
   .faq-side { border: 1px solid var(--color-border-card); }
 
@@ -309,7 +290,7 @@ const seo = {
   }
 
   /* preview pane (publisher header + skeleton, or lock overlay when gated) */
-  .rcard-preview { position: relative; height: 184px; padding: 24px; overflow: hidden; }
+  .rcard-preview { position: relative; height: 160px; padding: 24px; overflow: hidden; }
   .rcard-skel { display: flex; flex-direction: column; gap: 12px; }
   .rcard.locked .rcard-skel { opacity: 0.45; } /* state dim - sanctioned opacity use (rule 5) */
   .rcard-pub { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -332,24 +313,11 @@ const seo = {
   .rcard-lock .lock-ic { width: 40px; height: 40px; border-radius: 999px; background: var(--color-link); color: var(--color-white); display: inline-flex; align-items: center; justify-content: center; }
   .rcard-lock .lock-tx { font-weight: 600; font-size: 14px; color: var(--color-link); }
 
-  .rcard-pages { position: absolute; right: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid var(--color-border-card); border-radius: 999px; background: var(--color-surface-card); font-weight: 400; font-size: 12px; color: var(--color-text-muted); }
-  .rcard-pages svg { width: 16px; height: 16px; flex: none; }
-
   /* body */
-  .rcard-body { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 24px; border-top: 1px solid var(--color-border-hairline); }
-  .rcard-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .rbadge { padding: 4px 8px; border-radius: 999px; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
-  /* badge tints - all bind to tokens (rule 9). The blue tint is the shared
-     --color-surface-info-tint (was a page-local literal). */
-  .rbadge--pos { background: var(--color-success-tint); color: var(--color-success-strong); }
-  .rbadge--warn { background: var(--color-gold-100); color: var(--color-gold-950); }
-  .rbadge--info { background: var(--color-surface-info-tint); color: var(--color-link); }
-  .rcard-date { font-weight: 400; font-size: 12px; color: var(--color-text-tertiary); white-space: nowrap; }
+  .rcard-body { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 24px; border-top: 1px solid var(--color-border-hairline); }
   .rcard-title { font-weight: 500; font-size: 18px; color: var(--color-text-primary); }
-  .rcard-foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
-  .rcard-by { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .rcard-tags { font-weight: 400; font-size: 12px; color: var(--color-text-tertiary); }
-  .rcard-author { font-weight: 400; font-size: 12px; color: var(--color-text-muted); }
+  .rcard-desc { font-weight: 400; font-size: 14px; color: var(--color-text-muted); }
+  .rcard-foot { margin-top: auto; padding-top: 8px; display: flex; align-items: flex-end; justify-content: flex-end; gap: 16px; }
   .rcard-link { display: inline-flex; align-items: center; gap: 8px; flex: none; font-weight: 500; font-size: 12px; color: var(--color-link); }
   .rcard-link svg { width: 16px; height: 16px; }
   @media (min-width: 1024px) and (hover: hover) {
@@ -379,6 +347,18 @@ const seo = {
   /* .unlock-cta buttons use the shared .btn-gold + .btn-outline (global.css);
      both already size to var(--cta-w), so no width rule is needed here. */
   .unlock-cta { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  /* white-outline button on the dark unlock band (matches the fill so it reads
+     as an outline). */
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 40px; padding: 8px 24px; border-radius: 4px;
+    background: transparent; border: 1px solid var(--color-white); color: var(--color-white);
+    font-weight: 500; font-size: 12px; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease;
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
+  }
 
   /* ===== responsive ===== */
   @media (max-width: 1024px) {
