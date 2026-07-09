@@ -48,18 +48,18 @@ const seo = {
   title: 'Currency Trading - Forex Pairs',
   description:
     'Trade USD/INR, EUR/INR & other currency pairs online with competitive spreads and real-time insights from Shriram Financial Services. Start today.',
-  path: '/currency/',
+  path: '/currency',
   jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
 };
 ---
 
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Currency' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Currency' }]} />
     <div class="hero-inner" data-enter>
       <h1>Currency Trading in India</h1>
       <p class="lead">Shriram Financial Services offers SEBI‑regulated access to currency derivatives on NSE/BSE. Trade major currency pairs — USD/INR, EUR/INR, GBP/INR, and JPY/INR — with transparent pricing, low margins, and trusted settlement.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
     </div>
   </section>
 
@@ -157,7 +157,7 @@ const seo = {
       <p class="sub-lead" style="color:var(--color-text-secondary)">A Call Option gives the buyer the right to buy a currency pair at a predetermined strike price before expiry, while a Put Option gives the right to sell. Traders buy calls when they expect the currency pair to rise. Traders buy puts when they expect the pair to fall.</p>
       <p class="sub-lead" style="color:var(--color-text-secondary)">As expiry approaches, options can lose value due to time decay, making option buying and option selling suitable for different risk and reward objectives. Option buyers benefit from early directional moves; option sellers profit from time decay when markets stay range-bound.</p>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Options Trading</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Options Trading</a>
   </section>
 
   <!-- ===== Is Currency Trading Legal in India? ===== -->
@@ -165,12 +165,6 @@ const seo = {
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Is Currency Trading Legal in India?</h2>
       <p class="sec-lead">Yes, currency trading is legal in India if it is regulated and permitted through recognised exchanges and authorised intermediaries. Understanding the legal framework can help traders participate confidently while avoiding unregulated forex platforms.</p>
-      <p class="sec-lead">Currency derivatives trading is governed by:</p>
-    </div>
-    <div class="cat-grid" data-reveal-row>
-      <div class="cat"><h4>Securities and Exchange Board of India (SEBI)</h4><p>Regulates brokers, stock exchanges, and currency derivative trading activities to ensure transparent market practices and investor protection.</p></div>
-      <div class="cat"><h4>Reserve Bank of India (RBI)</h4><p>Oversees India's foreign exchange framework under FEMA and plays a key role in currency market regulation and exchange rate management.</p></div>
-      <div class="cat"><h4>Foreign Exchange Management Act (FEMA)</h4><p>Provides the legal framework governing foreign exchange transactions and defines the permitted currency trading activities for Indian residents and businesses.</p></div>
     </div>
     <div class="row-2" data-reveal-row>
       <div class="card">
@@ -180,6 +174,14 @@ const seo = {
       <div class="card">
         <span class="stat no">Restricted Currency Trading Activities</span>
         <p class="card-p">Trading forex through offshore or unregulated platforms is not permitted under Indian regulations. Under FEMA guidelines, currency transactions are allowed only within the prescribed regulatory framework, and speculative forex trading through overseas brokers is generally restricted.</p>
+      </div>
+    </div>
+    <div class="stack" style="gap:24px">
+      <p class="sec-lead">Currency derivatives trading is governed by:</p>
+      <div class="cat-grid cat-grid-3" data-reveal-row>
+        <div class="cat"><h4>Securities and Exchange Board of India (SEBI)</h4><p>Regulates brokers, stock exchanges, and currency derivative trading activities to ensure transparent market practices and investor protection.</p></div>
+        <div class="cat"><h4>Reserve Bank of India (RBI)</h4><p>Oversees India's foreign exchange framework under FEMA and plays a key role in currency market regulation and exchange rate management.</p></div>
+        <div class="cat"><h4>Foreign Exchange Management Act (FEMA)</h4><p>Provides the legal framework governing foreign exchange transactions and defines the permitted currency trading activities for Indian residents and businesses.</p></div>
       </div>
     </div>
   </section>
@@ -226,7 +228,7 @@ const seo = {
         </div>
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Currency Trading</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Currency Trading</a>
   </section>
 
   <!-- ===== Currency Trading Strategies for Beginners ===== -->
@@ -296,7 +298,7 @@ const seo = {
             <h3>Need A Clearer Direction? </h3>
             <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

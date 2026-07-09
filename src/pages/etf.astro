@@ -46,7 +46,7 @@ const seo = {
   title: 'ETF Investing - Exchange Funds',
   description:
     'Diversify your portfolio with ETFs tracking indices, sectors & commodities. Trade with low expense ratios via Shriram Financial Services.',
-  path: '/etf/',
+  path: '/etf',
   jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
 };
 ---
@@ -54,11 +54,11 @@ const seo = {
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ================= HERO (standardised, rule 7) ================= -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'ETFs' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'ETFs' }]} />
     <div class="hero-inner" data-enter>
       <h1>ETF in India — Trade Smarter, Invest Wiser</h1>
       <p class="lead">Invest in ETFs across equity, gold, debt, and thematic categories, with live prices, zero account-opening charges, and expert support from Shriram Financial Services. Whether you are just starting or scaling a portfolio, your ETF journey begins here.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Investing</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Start Investing</a></div>
     </div>
   </section>
 
@@ -206,7 +206,7 @@ const seo = {
       </div>
     </div>
     <p class="sec-lead" style="width:100%">For regular investors, Shriram Financial Services supports a manual ETF SIP mechanism (predefined ETF basket), enabling you to schedule recurring purchases aligned with your investment cadence.</p>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Buying ETFs</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Buying ETFs</a>
   </section>
 
   <!-- ================= SIP IN ETFs ================= -->
@@ -259,7 +259,7 @@ const seo = {
       <div class="cell tb"><p class="k">International ETF</p></div><div class="cell tb"><p class="v">Treated as debt funds for tax (post-Apr 2023 Finance Act)</p></div><div class="cell tb"><p class="v">Income slab rate — regardless of holding period</p></div><div class="cell tb"><p class="v">No LTCG benefit post-Apr 2023</p></div>
     </div></div>
     <p class="sec-lead" style="color:var(--color-text-secondary)">Note: Tax rates cited are for FY 2025-26 as per Budget 2024. Rates are subject to change. Consult a SEBI-registered tax advisor for personalised guidance.</p>
-    <a class="btn-gold" href="/contact-us/" style="align-self:flex-start">Speak to our Advisor/RM</a>
+    <a class="btn-gold" href="/contactus" style="align-self:flex-start">Speak to our Advisor/RM</a>
   </section>
 
   <!-- ================= TOP ETFs TO CONSIDER ================= -->
@@ -277,7 +277,7 @@ const seo = {
       <div class="cell tb"><p class="k">IT ETF</p></div><div class="cell tb"><p class="v">Tracks the Nifty IT index</p></div><div class="cell tb"><p class="v">Moderate AUM · Low expense ratio</p></div>
     </div></div>
     <p class="sec-lead">Before investing in any ETF, we recommend reviewing the scheme's factsheet for current AUM, tracking error, and portfolio composition.</p>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:flex-start">Invest in ETFs</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:flex-start">Invest in ETFs</a>
   </section>
 
   <!-- ================= HOW TO BUILD AN ETF PORTFOLIO ================= -->
@@ -329,7 +329,7 @@ const seo = {
     </div>
     <p class="sec-lead" style="color:var(--color-text-secondary);width:100%">Regardless of which model you start with, the core principle of ETF portfolio construction is consistency over complexity: choose low-cost, high-AUM ETFs, invest regularly via a disciplined SIP cadence, and review allocations annually (or after major life events) rather than reacting to short-term market movements.</p>
     <p class="sec-lead" style="color:var(--color-text-secondary);width:100%">Note: The ETF portfolio strategies shared above are for informational purposes only, intended to help investors understand different approaches to portfolio building, and do not assure any specific outcome. Investors should evaluate their financial goals, risk appetite, and investment horizon before making any investment decision.</p>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Build Your Portfolio</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Build Your Portfolio</a>
   </section>
 
   <!-- ================= RISKS OF INVESTING IN ETFs ================= -->
@@ -388,7 +388,7 @@ const seo = {
         <li><strong>Minors:</strong> They can invest through a guardian-operated account.</li>
       </ul>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Invest in ETF</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Invest in ETF</a>
   </section>
 
   <!-- ================= FAQ (Got Questions?) ================= -->
@@ -405,7 +405,7 @@ const seo = {
             <h3>Need A Clearer Direction? </h3>
             <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

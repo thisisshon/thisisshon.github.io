@@ -1,0 +1,1285 @@
+---
+/**
+ * Design System - "What is suggested" · /designsystem/proposed
+ * THE Figma artifact. The consolidated, duplication-proofed system, rendered
+ * LIVE from the tokens in styles.css. Every colour chip / type specimen / spacing
+ * bar / component below reads its value from a `var(--token)` - so this doc can
+ * never drift from the stylesheet. Internal tooling docs (noindex).
+ *
+ * INVARIANT: chips MUST use live tokens (style={`background: var(--...)`}) - never
+ * a hardcoded hex. Token NAMES + roles below are transcribed from global.css.
+ * Values that Tailwind currently tree-shakes out of :root carry a var() FALLBACK
+ * via cv() so the live token always wins when present (see the FALLBACK note).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Design System - What Is Suggested (Live Token Reference)',
+  description:
+    'The consolidated Shriram design system rendered live from styles.css: primitive → semantic → component colour tokens, the type scale, 8px spacing + radii, shadows, motion and a component gallery - structured to map 1:1 onto Figma variables.',
+  path: '/designsystem/proposed',
+  noindex: true,
+};
+
+/* Tokens global.css does not yet reference get tree-shaken out of :root by
+   Tailwind v4, so `var(--token)` would resolve empty. FALLBACK gives those the
+   audited literal as a var() fallback - the LIVE token still wins whenever it
+   is present, so nothing is hardcoded in place of a live value. Tokens absent
+   from this map are live-retained and need no fallback.
+   `cv(token)` → `var(--token[, literal])`. */
+const FALLBACK: Record<string, string> = {
+  // colour primitives global.css doesn't currently paint with
+  'color-olive-500': '#4d6710',
+  'color-charcoal-825': '#202318',
+  'color-gray-250': '#dddddd',
+  'color-cream-150': '#fefaf0',
+  'color-cream-450': '#fdf4dc',
+  // semantic roles not yet painted
+  'color-surface-footer-home': '#0a0b07',
+  'color-text-on-dark': '#ffffff',
+  'color-action-primary-hover': '#d4982a',
+  'color-success-tint': '#dbf0e2',
+  'color-danger': '#ff3236',
+  // type scale (global.css uses raw px in its component layer)
+  'text-2xs': '10px', 'text-xs': '12px', 'text-sm': '14px', 'text-base': '16px',
+  'text-lg': '18px', 'text-xl': '20px', 'text-2xl': '24px', 'text-3xl': '28px',
+  'text-4xl': '32px', 'text-5xl': '40px',
+  // weights
+  'font-weight-light': '300', 'font-weight-normal': '400', 'font-weight-medium': '500',
+  'font-weight-semibold': '600', 'font-weight-bold': '700', 'font-weight-extrabold': '800',
+  // radii
+  'radius-xs': '2px', 'radius-sm': '4px', 'radius-md': '8px', 'radius-lg': '12px',
+  'radius-xl': '16px', 'radius-2xl': '20px', 'radius-3xl': '24px', 'radius-full': '999px',
+  // shadows
+  'shadow-control': '0 1px 4px rgba(0,0,0,0.18)',
+  'shadow-glow-gold': '0 18px 40px -12px rgba(243,184,63,0.3)',
+  'shadow-ring-gold': '0 0 0 4px rgba(224,168,46,0.18)',
+  'shadow-glass': '0 8px 40px rgba(0,0,0,0.08), inset 0 1px rgba(255,255,255,0.6)',
+};
+const cv = (token: string): string =>
+  FALLBACK[token] ? `var(--${token}, ${FALLBACK[token]})` : `var(--${token})`;
+
+/* ---- Primitive colour families. `token` renders LIVE via var(--token). ---- */
+type Tok = { token: string; role: string };
+
+const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
+  {
+    name: 'Gold - brand primary',
+    toks: [
+      { token: 'color-gold-100', role: 'warm chip / step-pill bg' },
+      { token: 'color-gold-200', role: 'slider accent (sip)' },
+      { token: 'color-gold-300', role: 'input focus border (field-bd-active)' },
+      { token: 'color-gold-400', role: 'THE brand gold - CTAs, highlights. Absorbs #f2b83f' },
+      { token: 'color-gold-500', role: 'step numbers, gradient stop (legacy --gold)' },
+      { token: 'color-gold-600', role: 'gold hover. Absorbs #c79a38' },
+      { token: 'color-gold-950', role: 'legacy --gold-ink' },
+    ],
+  },
+  {
+    name: 'Olive - brand secondary',
+    toks: [
+      { token: 'color-olive-950', role: 'deep olive - dark cards, .to-top. Absorbs #1a2010' },
+      { token: 'color-olive-925', role: 'dark-card hover bg' },
+      { token: 'color-olive-900', role: 'THE brand olive - titles, button ink, icons. Absorbs #2d3813' },
+      { token: 'color-olive-800', role: 'hero / sidebar gradient middle stop' },
+      { token: 'color-olive-700', role: 'dark-card hover border' },
+      { token: 'color-olive-600', role: 'hero gradient start, sip invested' },
+      { token: 'color-olive-500', role: 'index detail accent' },
+      { token: 'color-olive-400', role: 'about muted text / hero-stat dividers' },
+    ],
+  },
+  {
+    name: 'Charcoal - dark neutrals ⚠ 12 steps (Tier-2: → ~4)',
+    toks: [
+      { token: 'color-charcoal-950', role: 'homepage footer bg (home fork)' },
+      { token: 'color-charcoal-925', role: 'filled input text (field-ink)' },
+      { token: 'color-charcoal-900', role: 'site footer bg' },
+      { token: 'color-charcoal-875', role: 'body ink (legacy --ink)' },
+      { token: 'color-charcoal-850', role: 'hero gradient end, theme-color' },
+      { token: 'color-charcoal-825', role: 'gold-button ink (home fork)' },
+      { token: 'color-charcoal-800', role: 'FAQ side text' },
+      { token: 'color-charcoal-775', role: 'footer bottom border' },
+      { token: 'color-charcoal-750', role: '.btn-ghost bg' },
+      { token: 'color-charcoal-700', role: 'nav ink, .btn-dark bg, FAQ q' },
+      { token: 'color-charcoal-650', role: '.btn-ghost hover bg' },
+      { token: 'color-charcoal-600', role: 'icon strokes, FAQ answers' },
+    ],
+  },
+  {
+    name: 'Sage - gray-greens',
+    toks: [
+      { token: 'color-sage-900', role: 'overlay headings / view-all. Absorbs 3 near-dupes' },
+      { token: 'color-sage-800', role: 'legacy --ink-2' },
+      { token: 'color-sage-700', role: 'secondary text. Absorbs #6d6e6a' },
+      { token: 'color-sage-600', role: 'card body text (legacy --muted)' },
+      { token: 'color-sage-500', role: 'footer copyright' },
+      { token: 'color-sage-450', role: '.appr index, breadcrumb sep. Absorbs #8d8e84' },
+      { token: 'color-sage-400', role: 'footer links (legacy --muted-2)' },
+      { token: 'color-sage-300', role: 'footer contact / socials' },
+      { token: 'color-sage-250', role: 'disabled field ink' },
+      { token: 'color-sage-200', role: 'body text on dark cards' },
+      { token: 'color-sage-100', role: 'hero lead, breadcrumb links. Absorbs 2 near-dupes' },
+    ],
+  },
+  {
+    name: 'Gray - pure neutrals',
+    toks: [
+      { token: 'color-gray-700', role: 'leads (legacy --ink-3)' },
+      { token: 'color-gray-650', role: 'home muted (fork of sage-600)' },
+      { token: 'color-gray-500', role: '.btn-ghost border' },
+      { token: 'color-gray-450', role: 'floating field label' },
+      { token: 'color-gray-400', role: 'input placeholder' },
+      { token: 'color-gray-300', role: 'input border' },
+      { token: 'color-gray-250', role: 'home hero-card divider' },
+      { token: 'color-gray-200', role: 'disabled field border. Absorbs #e0e0e0' },
+      { token: 'color-gray-150', role: 'mobile-menu dividers. Absorbs #ededec' },
+      { token: 'color-gray-100', role: 'segmented-control bg (sip)' },
+      { token: 'color-gray-75', role: 'disabled field bg' },
+      { token: 'color-gray-50', role: 'home n100' },
+    ],
+  },
+  {
+    name: 'Warm gray - hairlines on cream',
+    tint: true,
+    toks: [
+      { token: 'color-warmgray-300', role: 'overlay divider' },
+      { token: 'color-warmgray-200', role: 'card border (also border-soft)' },
+      { token: 'color-warmgray-100', role: 'row hairline (legacy --row-line)' },
+    ],
+  },
+  {
+    name: 'Cream - light surfaces ⚠ 9 steps (Tier-2: → ~5)',
+    tint: true,
+    toks: [
+      { token: 'color-cream-50', role: 'card surface (legacy --card)' },
+      { token: 'color-cream-100', role: 'homepage body bg (home fork ≠ page bg)' },
+      { token: 'color-cream-150', role: 'home brand-pale' },
+      { token: 'color-cream-200', role: 'site page bg (legacy --page)' },
+      { token: 'color-cream-250', role: 'light section bg (legacy --sec-light)' },
+      { token: 'color-cream-300', role: 'product-card hover (legacy --pcard-hover)' },
+      { token: 'color-cream-350', role: 'home FAQ / advisory card bg' },
+      { token: 'color-cream-400', role: 'tinted section bg (legacy --sec-tint)' },
+      { token: 'color-cream-450', role: 'home brand-light' },
+    ],
+  },
+  {
+    name: 'Tan - warm borders / accents',
+    tint: true,
+    toks: [
+      { token: 'color-tan-200', role: 'product-card border, overlay gradient start' },
+      { token: 'color-tan-300', role: 'home warm border' },
+      { token: 'color-tan-400', role: 'product-card hover border' },
+      { token: 'color-tan-500', role: 'overlay idle item' },
+    ],
+  },
+  {
+    name: 'Functional',
+    toks: [
+      { token: 'color-white', role: 'white' },
+      { token: 'color-blue-500', role: 'login link / verify' },
+      { token: 'color-blue-600', role: 'link hover' },
+      { token: 'color-green-500', role: 'check ticks / verified (legacy --green)' },
+      { token: 'color-green-600', role: 'form success state' },
+      { token: 'color-green-100', role: 'success tint bg. Absorbs #daead7' },
+      { token: 'color-red-500', role: 'field error (legacy --field-error)' },
+    ],
+  },
+];
+
+/* ---- Semantic tokens (role → primitive). Chip renders the ROLE token live. ---- */
+const semantic: { group: string; rows: { role: string; points: string }[] }[] = [
+  {
+    group: 'Surface',
+    rows: [
+      { role: 'color-surface-page', points: 'cream-200' },
+      { role: 'color-surface-card', points: 'cream-50' },
+      { role: 'color-surface-section-light', points: 'cream-250' },
+      { role: 'color-surface-section-tint', points: 'cream-400' },
+      { role: 'color-surface-footer', points: 'charcoal-950 (V4 footer; was charcoal-900)' },
+      { role: 'color-surface-dark-card', points: 'olive-950' },
+      { role: 'color-surface-page-home', points: 'cream-100 (home fork)' },
+      { role: 'color-surface-footer-home', points: 'charcoal-950 (home fork)' },
+    ],
+  },
+  {
+    group: 'Text',
+    rows: [
+      { role: 'color-text-primary', points: 'charcoal-875' },
+      { role: 'color-text-heading-dark', points: 'olive-900' },
+      { role: 'color-text-secondary', points: 'sage-800' },
+      { role: 'color-text-tertiary', points: 'gray-700' },
+      { role: 'color-text-muted', points: 'sage-600' },
+      { role: 'color-text-faint', points: 'sage-400' },
+      { role: 'color-text-on-dark', points: 'white' },
+      { role: 'color-text-on-dark-body', points: 'sage-200' },
+      { role: 'color-text-on-dark-lead', points: 'sage-100' },
+    ],
+  },
+  {
+    group: 'Border',
+    rows: [
+      { role: 'color-border-card', points: 'warmgray-200' },
+      { role: 'color-border-hairline', points: 'warmgray-100' },
+      { role: 'color-border-divider', points: 'warmgray-300' },
+      { role: 'color-border-product-card', points: 'tan-200' },
+    ],
+  },
+  {
+    group: 'Action',
+    rows: [
+      { role: 'color-action-primary', points: 'gold-400' },
+      { role: 'color-action-primary-hover', points: 'gold-600' },
+      { role: 'color-action-primary-ink', points: 'olive-900' },
+      { role: 'color-action-dark', points: 'charcoal-700' },
+      { role: 'color-link', points: 'blue-500' },
+      { role: 'color-link-hover', points: 'blue-600' },
+    ],
+  },
+  {
+    group: 'State',
+    rows: [
+      { role: 'color-success', points: 'green-500' },
+      { role: 'color-success-strong', points: 'green-600' },
+      { role: 'color-success-tint', points: 'green-100' },
+      { role: 'color-danger', points: 'red-500' },
+    ],
+  },
+  {
+    group: 'Field (.hf-*)',
+    rows: [
+      { role: 'color-field-border', points: 'gray-300' },
+      { role: 'color-field-border-active', points: 'gold-300' },
+      { role: 'color-field-error', points: 'red-500' },
+      { role: 'color-field-label', points: 'gray-450' },
+      { role: 'color-field-ink', points: 'charcoal-925' },
+      { role: 'color-field-placeholder', points: 'gray-400' },
+      { role: 'color-field-disabled-bg', points: 'gray-75' },
+      { role: 'color-field-disabled-border', points: 'gray-200' },
+      { role: 'color-field-disabled-ink', points: 'sage-250' },
+    ],
+  },
+];
+
+/* ---- Type scale - rendered live at real size via var(--text-*) ---- */
+const typeScale: { token: string; px: string; use: string }[] = [
+  { token: 'text-5xl', px: '40px', use: 'section titles, hero H1' },
+  { token: 'text-4xl', px: '32px', use: 'step numbers, overlay headings, home hero title' },
+  { token: 'text-3xl', px: '28px', use: 'sip total, mobile-H1 clamp min' },
+  { token: 'text-2xl', px: '24px', use: 'sub-titles, overlay items' },
+  { token: 'text-xl', px: '20px', use: 'card headings' },
+  { token: 'text-lg', px: '18px', use: 'hero lead, cta sub' },
+  { token: 'text-base', px: '16px', use: 'body copy' },
+  { token: 'text-sm', px: '14px', use: 'nav links, FAQ, footer links, inputs' },
+  { token: 'text-xs', px: '12px', use: 'button labels, errors, meta' },
+  { token: 'text-2xs', px: '10px', use: 'floating field label, eyebrows' },
+];
+
+const weights: { token: string; w: string; use: string }[] = [
+  { token: 'font-weight-light', w: '300', use: 'overlay sidebar items only' },
+  { token: 'font-weight-normal', w: '400', use: 'body / leads' },
+  { token: 'font-weight-medium', w: '500', use: 'headings, labels, CTAs' },
+  { token: 'font-weight-semibold', w: '600', use: 'table keys, emphasis' },
+  { token: 'font-weight-bold', w: '700', use: 'footer / group headings' },
+  { token: 'font-weight-extrabold', w: '800', use: 'loaded, currently unused' },
+];
+
+/* ---- Spacing (8px) + radii ---- */
+const spacing = ['4px', '8px', '12px', '16px', '24px', '32px', '40px', '48px', '56px', '64px', '72px', '80px', '96px', '144px'];
+const radii: { token: string; px: string; use: string }[] = [
+  { token: 'radius-xs', px: '2px', use: '' },
+  { token: 'radius-sm', px: '4px', use: 'buttons' },
+  { token: 'radius-md', px: '8px', use: 'inputs, small tiles' },
+  { token: 'radius-lg', px: '12px', use: '' },
+  { token: 'radius-xl', px: '16px', use: 'icon tiles' },
+  { token: 'radius-2xl', px: '20px', use: '' },
+  { token: 'radius-3xl', px: '24px', use: 'THE card radius' },
+];
+
+/* ---- Shadows + motion ---- */
+const shadows: { token: string; use: string }[] = [
+  { token: 'shadow-fab', use: '.to-top FAB' },
+  { token: 'shadow-control', use: 'sip controls' },
+  { token: 'shadow-glow-gold', use: 'index card glow' },
+  { token: 'shadow-ring-gold', use: 'about timeline ring' },
+  { token: 'shadow-glass', use: 'home hero card' },
+];
+const eases = ['--ease-standard · cubic-bezier(0.4,0,0.2,1) - overlay, FAQ, reveals', '--ease-spring · cubic-bezier(0.22,1,0.36,1) - index cards', '--ease-reveal · cubic-bezier(0.2,0.6,0.2,1) - scroll reveal'];
+const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-overlay 0.48s', '--dur-reveal 0.6s'];
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <p class="ds-eyebrow">Doc 2 · the Figma artifact</p>
+        <h1>What Is <span class="g">Suggested</span></h1>
+        <p class="lead">
+          The consolidated, duplication-proofed design system. Every value below is a
+          <b>live token</b> from <code>styles.css</code> - structured to map 1:1 onto Figma
+          variables (primitive → semantic → component) for the round-trip.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TOKEN TIERS ================= -->
+  <section class="section sec-light" id="sec-tiers" data-section="tiers">
+    <h2 class="sec-title">How the tokens are structured</h2>
+    <div class="tier-cards">
+      <div class="tier-card">
+        <span class="tier-n">01</span>
+        <h3>Primitive</h3>
+        <p>Raw palette values - <code>--color-gold-400</code>, <code>--text-5xl</code>. Named by family + numeric step. Nothing binds to a hex directly.</p>
+      </div>
+      <div class="tier-card">
+        <span class="tier-n">02</span>
+        <h3>Semantic</h3>
+        <p>Role names that point at a primitive - <code>--color-action-primary</code> → <code>gold-400</code>. The layer components bind to.</p>
+      </div>
+      <div class="tier-card">
+        <span class="tier-n">03</span>
+        <h3>Component</h3>
+        <p>Shared classes (<code>.btn-gold</code>, <code>.hf-field</code>) read semantic tokens only. When values return from Figma, only the primitives change.</p>
+      </div>
+    </div>
+    <div class="policy-note">
+      <p>
+        <b>Merge policy.</b> <b>Tier 1 (applied):</b> near-duplicates ≤2 RGB points apart are already
+        collapsed - imperceptible. <b>Tier 2 (proposed, awaiting sign-off):</b> visible unifications
+        the audit flags but this system keeps for pixel parity - the 12→4 charcoal collapse, 15→5
+        creams, the button-spec fork, the footer fork, the 4 hero gradients. Steps marked ⚠ are the
+        honest current count.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= COLOUR - PRIMITIVES ================= -->
+  <section class="section" id="sec-primitives" data-section="primitives">
+    <h2 class="sec-title">Colour tokens - primitives</h2>
+    <p class="sec-lead ds-section-lead">
+      Each chip’s background is the <b>live token</b> (<code>var(--color-…)</code>), so a swatch can
+      never disagree with the stylesheet. Labelled with token name + role and what legacy near-dupes
+      it absorbed.
+    </p>
+
+    <div class="fam-list">
+      {families.map((f) => (
+        <div class="fam">
+          <h3 class="ds-group-h">{f.name}</h3>
+          <div class="tok-grid">
+            {f.toks.map((t) => (
+              <div class="tok">
+                <span class={`tok-chip${f.tint ? ' tok-chip--bordered' : ''}`} style={`background: ${cv(t.token)}`}></span>
+                <div class="tok-meta">
+                  <code class="tok-name">--{t.token}</code>
+                  <span class="tok-role">{t.role}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= COLOUR - SEMANTIC ================= -->
+  <section class="section sec-tint" id="sec-semantic" data-section="semantic">
+    <h2 class="sec-title">Colour tokens - semantic</h2>
+    <p class="sec-lead ds-section-lead">
+      Role → primitive. The chip renders the <b>semantic token itself</b> live - proving the pointer
+      resolves. Components bind here, never to a primitive or a hex.
+    </p>
+
+    <div class="sem-grid">
+      {semantic.map((g) => (
+        <div class="sem-block">
+          <h3 class="sem-h">{g.group}</h3>
+          <div class="t-scroll">
+            <table class="ds-table ds-table--compact">
+              <thead><tr><th></th><th>Role token</th><th>→ primitive</th></tr></thead>
+              <tbody>
+                {g.rows.map((r) => (
+                  <tr>
+                    <td class="sem-swatch-cell">
+                      <span class="sem-swatch" style={`background: ${cv(r.role)}`}></span>
+                    </td>
+                    <td><code class="ds-k">--{r.role}</code></td>
+                    <td>{r.points}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= TYPOGRAPHY ================= -->
+  <section class="section" id="sec-type" data-section="type">
+    <h2 class="sec-title">Typography</h2>
+    <p class="sec-lead ds-section-lead">
+      One typeface - <b>Outfit</b>, site-wide, no exceptions - and every text element renders at
+      <b>line-height 1.5</b>. Each specimen below is set at its real <code>var(--text-*)</code> size.
+    </p>
+
+    <div class="type-list">
+      {typeScale.map((t) => (
+        <div class="type-row">
+          <div class="type-tag">
+            <code>--{t.token}</code>
+            <span>{t.px}</span>
+          </div>
+          <p class="type-specimen" style={`font-size: ${cv(t.token)}`}>
+            Shriram Financial Services
+          </p>
+          <span class="type-use">{t.use}</span>
+        </div>
+      ))}
+    </div>
+
+    <h3 class="ds-group-h ds-mt">Weights (Outfit 300–800)</h3>
+    <div class="weight-grid">
+      {weights.map((w) => (
+        <div class="weight-cell">
+          <span class="weight-spec" style={`font-weight: ${cv(w.token)}`}>Aa</span>
+          <code>--{w.token}</code>
+          <span class="weight-n">{w.w}</span>
+          <span class="weight-use">{w.use}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ================= SPACING & RADII ================= -->
+  <section class="section sec-light" id="sec-space" data-section="space">
+    <h2 class="sec-title">Spacing &amp; radii</h2>
+    <p class="sec-lead ds-section-lead">
+      Every gap / padding / margin sits on the <b>8px grid</b> (4px worst case). Radii climb to the
+      canonical 24px card.
+    </p>
+
+    <div class="ds-facts">
+      <div class="fact-col">
+        <h3 class="ds-group-h">8px spacing scale</h3>
+        <div class="space-scale">
+          {spacing.map((s) => (
+            <div class="space-row">
+              <span class="space-label">{s}</span>
+              <span class="space-bar" style={`width:${s}`}></span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="fact-col">
+        <h3 class="ds-group-h">Radius scale</h3>
+        <div class="radii-grid">
+          {radii.map((r) => (
+            <div class="radius-cell">
+              <span class="radius-box" style={`border-radius: ${cv(r.token)}`}></span>
+              <code>--{r.token}</code>
+              <span class="radius-px">{r.px}{r.use ? ` · ${r.use}` : ''}</span>
+            </div>
+          ))}
+          <div class="radius-cell">
+            <span class="radius-box radius-box--pill" style={`border-radius: ${cv('radius-full')}`}></span>
+            <code>--radius-full</code>
+            <span class="radius-px">999px · pills</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SHADOWS & MOTION ================= -->
+  <section class="section" id="sec-fx" data-section="fx">
+    <h2 class="sec-title">Shadows &amp; motion</h2>
+    <p class="sec-lead ds-section-lead">
+      Shadows are the sanctioned translucency. Each card below carries its real
+      <code>var(--shadow-*)</code>.
+    </p>
+
+    <div class="shadow-grid">
+      {shadows.map((s) => (
+        <div class="shadow-card" style={`box-shadow: ${cv(s.token)}`}>
+          <code>--{s.token}</code>
+          <span>{s.use}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="motion-note">
+      <div>
+        <h4>Easings</h4>
+        <ul>{eases.map((e) => <li><code>{e}</code></li>)}</ul>
+      </div>
+      <div>
+        <h4>Durations (canonical set for new work)</h4>
+        <div class="ds-chips">{durs.map((d) => <span class="ds-pill">{d}</span>)}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COMPONENT GALLERY ================= -->
+  <section class="section sec-tint" id="sec-gallery" data-section="gallery">
+    <h2 class="sec-title">Component gallery</h2>
+    <p class="sec-lead ds-section-lead">
+      The real shared components, rendered live from <code>global.css</code> - the same classes every
+      page uses. Interactive states are shown statically by adding the state class.
+    </p>
+
+    <!-- Buttons -->
+    <div class="gal-block">
+      <h3 class="ds-group-h">Buttons</h3>
+      <div class="gal-row gal-row--dark">
+        <div class="gal-item">
+          <button class="btn-gold" type="button">Open Account</button>
+          <span class="gal-cap"><code>.btn-gold</code> · primary CTA</span>
+        </div>
+        <div class="gal-item">
+          <button class="btn-dark" type="button">Sign In</button>
+          <span class="gal-cap"><code>.btn-dark</code> · dark action</span>
+        </div>
+        <div class="gal-item">
+          <button class="btn-ghost" type="button">Learn More</button>
+          <span class="gal-cap"><code>.btn-ghost</code> · ghost on dark</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form field states -->
+    <div class="gal-block">
+      <h3 class="ds-group-h">Input field <span>· the one <code>.hf-field</code> component</span></h3>
+      <div class="gal-fields">
+        <div class="hf-unit">
+          <div class="hf-field">
+            <div class="hf-field-in">
+              <label for="ds-f1">Full name</label>
+              <input id="ds-f1" type="text" value="Priya Sharma" readonly />
+            </div>
+          </div>
+          <span class="gal-cap">Filled</span>
+        </div>
+
+        <div class="hf-unit">
+          <div class="hf-field invalid">
+            <div class="hf-field-in">
+              <label for="ds-f2">PAN</label>
+              <input id="ds-f2" type="text" value="ABCD" readonly />
+            </div>
+          </div>
+          <div class="hf-foot">
+            <span class="hf-err show">Enter a valid 10-character PAN.</span>
+          </div>
+          <span class="gal-cap"><code>.invalid</code> · error</span>
+        </div>
+
+        <div class="hf-unit">
+          <div class="hf-field">
+            <div class="hf-field-in">
+              <label for="ds-f3">Mobile number</label>
+              <input id="ds-f3" type="text" value="98765 43210" readonly />
+            </div>
+            <span class="hf-verified"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 12.5 10 16l8-8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>Verified</span>
+          </div>
+          <span class="gal-cap">Filled + Verified affordance</span>
+        </div>
+
+        <div class="hf-unit">
+          <div class="hf-field disabled">
+            <div class="hf-field-in">
+              <label for="ds-f4">Referral code</label>
+              <input id="ds-f4" type="text" value="Not applicable" disabled />
+            </div>
+          </div>
+          <span class="gal-cap"><code>.disabled</code></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="gal-block">
+      <h3 class="ds-group-h">Cards &amp; tiles</h3>
+      <div class="gal-cards">
+        <div class="card">
+          <h3 class="card-h">Zero-cost Demat</h3>
+          <p class="card-p">Open a Demat account with no annual maintenance charge in the first year.</p>
+          <span class="gal-cap"><code>.card</code> · <code>.card-h</code> / <code>.card-p</code></span>
+        </div>
+
+        <a class="pcard" href="#" onclick="return false">
+          <div class="pcard-tx">
+            <h4>Equity Trading</h4>
+            <p>Invest in stocks across NSE &amp; BSE.</p>
+          </div>
+          <span class="pcard-arr"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <span class="gal-cap"><code>.pcard</code> · product card (hover to reveal arrow)</span>
+        </a>
+
+        <div class="doc-card">
+          <h3 class="nm">Risk Disclosure Document (RDD)</h3>
+          <span class="upd">PDF<span class="sep">·</span>Updated Jul 2026</span>
+          <div class="doc-links">
+            <a class="doc-dl" href="#" onclick="return false">View</a>
+            <a class="doc-dl" href="#" onclick="return false">Download</a>
+          </div>
+          <span class="gal-cap"><code>.doc-card</code> · view/download document card (in <code>.doc-grid</code>; used by /regulatorydocuments/investorcharter &amp; /regulatorydocuments/mandatorymemberdetails)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category tile + FAQ -->
+    <div class="gal-block">
+      <h3 class="ds-group-h">Category tile &amp; FAQ item</h3>
+      <div class="gal-cards">
+        <div class="cat gal-cat">
+          <h4>Mutual Funds</h4>
+          <p>Curated SIPs and lump-sum plans across fund houses.</p>
+          <span class="gal-cap"><code>.cat</code> · category tile</span>
+        </div>
+
+        <div class="gal-faq">
+          <div class="faq-acc">
+            <div class="faq-item open">
+              <button class="faq-q" type="button" aria-expanded="true">
+                <span class="qt">How long does account opening take?</span>
+                <span class="faq-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path class="v" d="M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+              </button>
+              <div class="qa-wrap"><div class="qa"><p>Most Demat accounts are activated within 24 hours of a completed KYC.</p></div></div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-q" type="button" aria-expanded="false">
+                <span class="qt">Is there a maintenance charge?</span>
+                <span class="faq-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path class="v" d="M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+              </button>
+            </div>
+          </div>
+          <span class="gal-cap"><code>.faq-acc</code> / <code>.faq-item.open</code> · accordion</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NAMING & USAGE RULES ================= -->
+  <section class="section" id="sec-rules" data-section="rules">
+    <h2 class="sec-title">Naming conventions &amp; usage rules</h2>
+    <div class="rules-grid">
+      <div class="rule">
+        <h3>Token naming</h3>
+        <p>Primitives are <code>--color-&lt;family&gt;-&lt;step&gt;</code> / <code>--text-&lt;size&gt;</code>. Semantic tokens are <code>--color-&lt;role&gt;</code> (surface / text / border / action / state / field).</p>
+      </div>
+      <div class="rule">
+        <h3>Binding direction</h3>
+        <p>Components bind to <b>semantic</b>; semantic binds to <b>primitive</b>. Never bind a component to a raw hex or primitive.</p>
+      </div>
+      <div class="rule">
+        <h3>8px grid</h3>
+        <p>Every gap / padding / margin / box size is a multiple of 8px (4px worst case). No off-grid 6 / 10 / 14 / 18.</p>
+      </div>
+      <div class="rule">
+        <h3>Solid hex only</h3>
+        <p>Every fill / stroke / border is a solid hex. Translucency is allowed only for <code>box-shadow</code>, frosted <code>backdrop-filter</code>, and the <code>opacity</code> property in motion.</p>
+      </div>
+      <div class="rule">
+        <h3>One font</h3>
+        <p>Outfit only, site-wide - no second family. Form controls force-inherit it. Every text element renders at line-height 1.5.</p>
+      </div>
+      <div class="rule">
+        <h3>Icon sizes</h3>
+        <p>Icons are real <code>&lt;svg&gt;</code>s - never text glyphs - sized <b>16 / 20 / 24 / 32px</b> only, chosen from context.</p>
+      </div>
+      <div class="rule">
+        <h3>Hero - standard &amp; calculator variant</h3>
+        <p>Every page uses the shared <code>.hero</code>: one radial-gradient band, <code>min-height: clamp(440px, 29vw, 552px)</code>, breadcrumb + content vertically centred by auto-margins. <b>Calculator detail pages</b> use the <code>.hero.hero-compact</code> variant - it drops the tall band (<code>min-height: 0</code>) and the auto-margin centring so the band <b>hugs</b> its breadcrumb + H1 + lead (no CTA) on a small explicit padding, deliberately shorter than the product hero. Padding (above breadcrumb · breadcrumb→H1 · below lead): desktop <b>40 / 24 / 40</b>, mobile <b>32 / 16 / 32</b>. One modifier class, applied to all five calculators.</p>
+      </div>
+      <div class="rule">
+        <h3>Heading alignment</h3>
+        <p>The hero H1, every <code>.sec-title</code> and every <code>.sub-title</code> (with their leads) are <b>left-aligned</b> - never centred, no <code>max-width</code> cap on the lead. The only centred text is the promotional bands (<code>.cta-box</code> and dark CTA / access bands). Reference: <code>products/equity.astro</code>.</p>
+      </div>
+      <div class="rule">
+        <h3>Mobile tap targets</h3>
+        <p>Every tappable control presents a <b>≥44px</b> touch area on mobile - the site standard is <b>48px</b> (on the 8px grid, matching <code>.hf-field</code> and <code>.to-top</code>). <b>Pad out the hit area</b>, never enlarge the icon: the glyph stays on its 16/20/24/32 scale while the container / <code>min-width</code> / <code>min-height</code> grows to 48px. See footer <code>.socials a</code> and <code>.nav-toggle</code>. This governs tap area, not font size - micro-labels (the <code>.hf-field</code> floating label ~10px) are a sanctioned exception.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Doc 2 - LIVE token reference. Chips read var(--token); nothing here
+     hardcodes a hex. Chrome uses the same semantic tokens as the site.
+
+     Tailwind v4 tree-shakes @theme tokens that global.css never references
+     (its component layer uses raw px for type/radius/weight and a few unused
+     colour steps), so a handful of var(--…) would resolve empty. Every live
+     reference below therefore carries a var(--token, <literal>) FALLBACK: the
+     token stays authoritative and auto-updates the moment global.css uses it;
+     until then it degrades to the audited literal instead of rendering blank.
+     No value is hardcoded IN PLACE OF a live token - the token always wins. ===== */
+  .ds-eyebrow {
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-gold-400);
+    margin-bottom: 16px;
+  }
+  code {
+    font-weight: 600;
+  }
+  .hero code {
+    color: var(--color-gold-200);
+  }
+  .hero .lead b {
+    color: var(--color-white);
+    font-weight: 600;
+  }
+
+  .ds-section-lead {
+    margin-top: 12px;
+    margin-bottom: 40px;
+    max-width: 800px;
+  }
+  .ds-section-lead b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  .ds-section-lead code {
+    color: var(--color-text-heading-dark);
+  }
+  .ds-group-h {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-heading-dark);
+    margin-bottom: 24px;
+  }
+  .ds-group-h span {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+  .ds-group-h span code {
+    color: var(--color-text-muted);
+  }
+  .ds-mt {
+    margin-top: 56px;
+  }
+
+  /* ---- token tiers ---- */
+  .tier-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .tier-card {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tier-n {
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--color-gold-600);
+  }
+  .tier-card h3 {
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--color-text-heading-dark);
+  }
+  .tier-card p {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-tertiary);
+  }
+  .tier-card p code {
+    color: var(--color-text-primary);
+  }
+  .policy-note {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    padding: 24px 32px;
+  }
+  .policy-note p {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-tertiary);
+  }
+  .policy-note b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  /* ---- primitives ---- */
+  .fam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .tok-grid {
+    display: grid;
+    /* min(280px,100%) so a track never exceeds a narrow (<312px) viewport */
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: 16px;
+  }
+  .tok {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .tok-chip {
+    width: 56px;
+    height: 56px;
+    flex: none;
+    border-radius: 8px;
+  }
+  .tok-chip--bordered {
+    border: 1px solid var(--color-border-card);
+  }
+  .tok-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding-top: 2px;
+  }
+  .tok-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-primary);
+  }
+  .tok-role {
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ---- semantic ---- */
+  .sem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+    align-items: start;
+  }
+  /* let the grid item shrink so its inner .t-scroll table scrolls instead of
+     forcing the (1fr = minmax(auto,1fr)) column to the table's 431px width */
+  .sem-block {
+    min-width: 0;
+  }
+  .sem-h {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-heading-dark);
+    margin-bottom: 12px;
+  }
+  .sem-swatch-cell {
+    width: 1px;
+    white-space: nowrap;
+  }
+  .sem-swatch {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-card);
+  }
+
+  /* ---- shared tables ---- */
+  .ds-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .ds-table th,
+  .ds-table td {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--color-border-hairline);
+    vertical-align: middle;
+  }
+  .ds-table th {
+    background: var(--color-olive-900);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .ds-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .ds-table td {
+    font-weight: 400;
+    color: var(--color-text-tertiary);
+  }
+  .ds-table .ds-k {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  /* ---- typography specimens ---- */
+  .type-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--color-surface-card);
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 220px;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--color-border-hairline);
+  }
+  .type-row:last-child {
+    border-bottom: 0;
+  }
+  .type-tag {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .type-tag code {
+    font-size: 13px;
+    color: var(--color-text-primary);
+  }
+  .type-tag span {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+  .type-specimen {
+    font-weight: 500;
+    color: var(--color-text-heading-dark);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .type-use {
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+    text-align: right;
+  }
+
+  .weight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .weight-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .weight-spec {
+    font-size: 40px;
+    color: var(--color-text-heading-dark);
+    margin-bottom: 8px;
+  }
+  .weight-cell code {
+    font-size: 12px;
+    color: var(--color-text-primary);
+  }
+  .weight-n {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-gold-600);
+  }
+  .weight-use {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+
+  /* ---- spacing + radii ---- */
+  .ds-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px;
+    align-items: start;
+  }
+  .space-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .space-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .space-label {
+    flex: none;
+    width: 56px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text-primary);
+  }
+  .space-bar {
+    height: 24px;
+    background: var(--color-gold-400);
+    border-radius: 4px;
+    flex: none;
+  }
+  .radii-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .radius-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .radius-box {
+    width: 64px;
+    height: 64px;
+    background: var(--color-olive-900);
+  }
+  .radius-box--pill {
+    width: 100%;
+    height: 32px;
+  }
+  .radius-cell code {
+    font-size: 12px;
+    color: var(--color-text-primary);
+  }
+  .radius-px {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+
+  /* ---- shadows + motion ---- */
+  .shadow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 32px;
+    margin-bottom: 48px;
+  }
+  .shadow-card {
+    background: var(--color-surface-card);
+    border-radius: 16px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .shadow-card code {
+    font-size: 13px;
+    color: var(--color-text-primary);
+  }
+  .shadow-card span {
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+  .motion-note {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .motion-note h4 {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-heading-dark);
+    margin-bottom: 16px;
+  }
+  .motion-note ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .motion-note li code {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+  }
+
+  .ds-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ds-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: var(--color-surface-page);
+    border: 1px solid var(--color-border-card);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ---- component gallery ---- */
+  .gal-block {
+    margin-bottom: 48px;
+  }
+  .gal-block:last-child {
+    margin-bottom: 0;
+  }
+  .gal-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  .gal-row--dark {
+    background: var(--color-surface-dark-card);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .gal-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .gal-cap {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+  .gal-row--dark .gal-cap {
+    color: var(--color-sage-200);
+  }
+  .gal-cap code {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .gal-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+  .gal-fields .hf-unit {
+    gap: 8px;
+  }
+
+  .gal-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+    align-items: start;
+  }
+  .gal-cards .card,
+  .gal-cat {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gal-cat {
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+  }
+  .pcard {
+    position: relative;
+  }
+  .gal-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gal-faq .faq-acc {
+    border: 1px solid var(--color-border-card);
+  }
+
+  /* ---- rules ---- */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .rule {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .rule h3 {
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--color-text-heading-dark);
+  }
+  .rule p {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-tertiary);
+  }
+  .rule p b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  .rule p code {
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 900px) {
+    .tier-cards,
+    .rules-grid {
+      grid-template-columns: 1fr;
+    }
+    .sem-grid,
+    .ds-facts,
+    .gal-cards,
+    .motion-note {
+      grid-template-columns: 1fr;
+    }
+    .type-row {
+      grid-template-columns: 120px 1fr;
+    }
+    .type-use {
+      display: none;
+    }
+  }
+  @media (max-width: 768px) {
+    .type-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .type-tag {
+      flex-direction: row;
+      gap: 8px;
+      align-items: baseline;
+    }
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+/**
+ * StepFlow - a numbered process rendered as an icon-chip timeline.
+ *
+ * The visual from the homepage <HowSoon> band, extracted as a standalone,
+ * content-only stepper: NO rocket, NO lead, NO CTA - drop it inside any
+ * existing section (keep that section's own heading + lead).
+ *
+ *   - Desktop (>=1024px): chips sit in a row, evenly spaced, joined by a
+ *     horizontal dashed connector; title + centred description below each.
+ *   - mweb (<1024px): chips stack into a vertical dashed spine; title +
+ *     left-aligned description to the right of each chip.
+ *
+ * Column count is derived from `steps.length` (via --sf-cols), so it is NOT
+ * locked to five the way <HowSoon> is - 3, 4 or 5 steps all close cleanly.
+ *
+ * Icons are real inline <svg>s (rule 4), 24px, currentColor, in a 40px round
+ * chip (8px grid). Add to ICONS to extend the set for other pages' steps.
+ */
+interface Step {
+  /** key into ICONS below */
+  icon: string;
+  title: string;
+  desc: string;
+}
+interface Props {
+  steps: Step[];
+}
+const { steps } = Astro.props;
+
+// Inline SVG icon set - 24px, stroke: currentColor. Repurpose across pages.
+const ICONS: Record<string, string> = {
+  account:
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="8" r="3.4" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 19.5c0-3.2 2.5-5.5 5.5-5.5 1.3 0 2.4.4 3.4 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 14.5v6M15 17.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  kyc:
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="11" r="2" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 10h4M13.5 13.5h4M5.6 15.6c.5-1.5 1.6-2.1 2.9-2.1s2.4.6 2.9 2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  analyse:
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="M15.4 15.4 21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 12v-1.6M10.5 12V8.6M13 12v-2.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  trade:
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 15.5 9 10.5l3 3 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 5.5h5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+---
+
+<div class="stepflow" style={`--sf-cols:${steps.length}`}>
+  <div class="sf-line" aria-hidden="true"></div>
+  <div class="sf-track" data-reveal-row>
+    {
+      steps.map((s) => (
+        <div class="sf-item">
+          <div class="sf-chip"><Fragment set:html={ICONS[s.icon] ?? ''} /></div>
+          <div class="sf-tx">
+            <p class="sf-title">{s.title}</p>
+            <p class="sf-desc">{s.desc}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .stepflow { position: relative; width: 100%; }
+
+  /* ---- base = mweb: vertical dashed spine ---- */
+  .sf-line { display: none; }
+  .sf-track { display: flex; flex-direction: column; }
+  .sf-item { position: relative; display: flex; align-items: flex-start; gap: 16px; padding-bottom: 32px; }
+  .sf-item:last-child { padding-bottom: 0; }
+  /* spine: this chip's centre → the next chip's centre (mweb 56px chip) */
+  .sf-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 27px; /* 56px chip centre (28) − 1px for the 2px line */
+    top: 56px;
+    bottom: -8px;
+    width: 2px;
+    background-image: repeating-linear-gradient(180deg, var(--color-tan-200) 0 7px, transparent 7px 14px);
+    z-index: 0;
+  }
+
+  .sf-chip {
+    position: relative;
+    z-index: 1;
+    width: 56px; /* mweb chip; desktop drops to 40px below */
+    height: 56px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-gold-100);
+    color: var(--color-olive-900);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sf-chip :global(svg) { display: block; width: 24px; height: 24px; }
+
+  .sf-tx { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; }
+  .sf-title { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
+  .sf-desc { font-weight: 400; font-size: 14px; color: var(--color-text-tertiary); }
+
+  /* ---- desktop: horizontal chips + dashed connector ---- */
+  @media (min-width: 1024px) {
+    /* Desktop chip = the homepage <HowSoon> container (.steps-box-9): a gold
+       rounded-square/pill, 64px tall, border-radius 24px, 32px inline padding.
+       (mweb keeps the 56px circle - the homepage is a circle on mweb too.) */
+    .sf-chip { width: auto; height: 64px; padding-inline: 32px; border-radius: 24px; }
+    .sf-track {
+      display: grid;
+      grid-template-columns: repeat(var(--sf-cols), minmax(0, 1fr));
+      column-gap: 24px;
+    }
+    .sf-item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 24px;
+      padding-bottom: 0;
+    }
+    .sf-item::before { display: none; }
+    .sf-tx { align-items: center; padding-top: 0; }
+    .sf-desc { max-width: 234px; margin-inline: auto; }
+    /* connector spans from the first chip centre to the last chip centre */
+    .sf-line {
+      display: block;
+      position: absolute;
+      top: 31px; /* 64px chip centre (32) − 1px */
+      left: calc(50% / var(--sf-cols));
+      right: calc(50% / var(--sf-cols));
+      height: 2px;
+      background-image: repeating-linear-gradient(90deg, var(--color-tan-200) 0 7px, transparent 7px 14px);
+      z-index: 0;
+    }
+  }
+</style>

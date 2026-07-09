@@ -1,0 +1,1085 @@
+---
+/**
+ * Become a Partner - /becomeapartner
+ * Largest flat marketing page: rhombille-pattern hero, metrics band,
+ * benefits grid, who-can-partner cat-grid, how-it-works steps, tabbed
+ * product portfolio, full-viewport eligibility checker (dark band),
+ * registration form (shared .hf-*) and General Questions FAQ.
+ * Pixel parity with legacy become-a-partner.html.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// General Questions - compliance-approved doc content verbatim, same order.
+const FAQS = [
+  {
+    q: 'Who can become a Partner?',
+    a: "Anyone who's an Indian citizen, 18 or older, with a valid PAN and a bank account in their name. You could be in finance already, or simply someone with a strong network looking for a new income stream — both fit.",
+  },
+  {
+    q: 'What is the commission structure?',
+    a: 'You can earn a very reasonable revenue sharing on every trade made by the clients you refer, with no cap on what you can take home. It’s a lifetime model: as long as your referred clients stay active, you keep earning from them. The actual sharing percentage can be decided at the time of partnership onboarding process.',
+  },
+  {
+    q: 'Do I need a SEBI registration?',
+    a: 'No — that’s handled on our end. You can begin referring clients and earning commissions without dealing with regulatory registration yourself.',
+  },
+];
+
+const seo = {
+  title: 'Become a Partner Today',
+  description:
+    'Partner with Shriram Financial Services and earn by helping investors trade and invest. Explore our franchise and referral partner program.',
+  path: '/becomeapartner',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Become a Partner' }]} />
+    <div class="hero-inner" data-enter>
+      <h1>Partner with Us. <span class="g">Your Network. Our Products. Unlimited Earning Potential.</span></h1>
+      <p class="lead">Join India's fastest-growing financial partner network and turn your contacts, your community, or your client base into a steady, scalable income stream — with zero investment and full support from day one.</p>
+      <div class="cta">
+        <a class="btn-gold" href="#sec-apply">Learn More</a>
+      </div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Reasonable/Optimum Revenue Sharing</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Zero Investment</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Research and Advisory support</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Dedicated Franchisee help desk</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Training support</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Multi Product offering</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BENEFITS THAT SETS US APART ================= -->
+  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px" data-enter="2">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Benefits That Sets Us Apart</h2>
+      <h3 class="sub-title">Build Your Business with a Trusted Financial Partner</h3>
+      <p class="sec-lead">At Shriram Financial Services, we empower our partners with the right combination of brand strength, technology, research, product diversity, and dedicated support to help them grow sustainably in a competitive financial services landscape.</p>
+    </div>
+    <h3 class="sub-title">Key Advantages</h3>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat">
+        <h4>Trusted Brand &amp; Strong Legacy</h4>
+        <p>Partner with a well-established financial services institution backed by decades of experience, strong governance, and a customer-first approach that enhances your market credibility.</p>
+      </div>
+      <div class="cat">
+        <h4>Actionable Market Research</h4>
+        <p>Gain access to timely market insights, research reports, investment recommendations, and expert analysis to help you make informed decisions and serve your clients better.</p>
+      </div>
+      <div class="cat">
+        <h4>Comprehensive Product Portfolio</h4>
+        <p>Offer a wide range of financial products, including Equities, Derivatives, Commodities, Currencies, Mutual Funds, IPOs, Bonds, Fixed Deposits, Insurance, National Pension System (NPS), and Demat &amp; Trading Accounts—all under one roof.</p>
+      </div>
+      <div class="cat">
+        <h4>Dedicated Business &amp; Operational Support</h4>
+        <p>Benefit from end-to-end operational assistance, onboarding support, compliance guidance, and technology-enabled processes designed to ensure smooth business operations.</p>
+      </div>
+      <div class="cat">
+        <h4>Training &amp; Knowledge Enhancement</h4>
+        <p>Stay ahead with regular training programs, product workshops, market updates, and business development sessions that enhance your team's knowledge and capabilities.</p>
+      </div>
+      <div class="cat">
+        <h4>Marketing &amp; Growth Support</h4>
+        <p>Accelerate business growth with marketing collateral, digital campaigns, promotional initiatives, and partner engagement programs that help you acquire and retain customers effectively.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section class="section stack sec-tint" id="sec-steps" data-section="steps" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How It Works</h2>
+      <p class="sec-lead">Four steps stand between you and your first commission:</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step"><span class="num">01</span><div class="st-body"><h4>Register Online</h4><p>Share your basic details through a short sign-up form Our team will reach out to you.</p></div></div>
+      <div class="step-div" aria-hidden="true"></div>
+      <div class="step"><span class="num">02</span><div class="st-body"><h4>Document Verification</h4><p>Submit your KYC documents — our team clears them within 48 hours.</p></div></div>
+      <div class="step-div" aria-hidden="true"></div>
+      <div class="step"><span class="num">03</span><div class="st-body"><h4>Get Activated</h4><p>Receive your Partner ID and step into the partner portal, where you'll track every referral and every rupee earned.</p></div></div>
+      <div class="step-div" aria-hidden="true"></div>
+      <div class="step"><span class="num">04</span><div class="st-body"><h4>Start Earning</h4><p>Refer clients, and earn commission every time they trade. Grow your network, and your income grows alongside it.</p></div></div>
+    </div>
+    <div class="cta-center"><a class="btn-gold" href="#sec-eligibility">Check Eligibility</a></div>
+  </section>
+
+  <!-- ================= PRODUCT PORTFOLIO ================= -->
+  <section class="section stack sec-light" id="sec-portfolio" data-section="portfolio" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Product Portfolio</h2>
+      <p class="sec-lead">A single partnership opens up five different revenue streams. You're never limited to pitching one product to a client who needs something else:</p>
+    </div>
+    <div class="port-card">
+      <div class="port-tabs" role="tablist" aria-label="Revenue streams">
+        <button class="port-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="port-trading" id="tab-trading" data-tab="trading" data-label="Trading"><span class="tab-lbl">Trading</span></button>
+        <button class="port-tab" type="button" role="tab" aria-selected="false" aria-controls="port-investment" id="tab-investment" data-tab="investment" data-label="Investment"><span class="tab-lbl">Investment</span></button>
+        <button class="port-tab" type="button" role="tab" aria-selected="false" aria-controls="port-pms" id="tab-pms" data-tab="pms" data-label="PMS"><span class="tab-lbl">PMS</span></button>
+        <button class="port-tab" type="button" role="tab" aria-selected="false" aria-controls="port-loans" id="tab-loans" data-tab="loans" data-label="Loans"><span class="tab-lbl">Loans</span></button>
+      </div>
+      <ul class="port-cols port-panel is-active" id="port-trading" role="tabpanel" aria-labelledby="tab-trading" data-panel="trading">
+        <li>Trading — for clients active in equity, derivatives, and commodities</li>
+      </ul>
+      <ul class="port-cols port-panel" id="port-investment" role="tabpanel" aria-labelledby="tab-investment" data-panel="investment" hidden>
+        <li>Investment — mutual funds and long-term wealth-building products</li>
+      </ul>
+      <ul class="port-cols port-panel" id="port-pms" role="tabpanel" aria-labelledby="tab-pms" data-panel="pms" hidden>
+        <li>PMS — Portfolio Management Services for your higher-value relationships</li>
+      </ul>
+      <ul class="port-cols port-panel" id="port-loans" role="tabpanel" aria-labelledby="tab-loans" data-panel="loans" hidden>
+        <li>Loans — including Loan Against Mutual Funds and Loan Against Securities</li>
+      </ul>
+    </div>
+    <p class="sec-lead">Different clients have different needs at different times. The wider your offering, the fewer reasons they have to look elsewhere.</p>
+  </section>
+
+  <!-- ================= ELIGIBILITY ================= -->
+  <section class="section stack" id="sec-eligibility" data-section="eligibility" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Eligibility Criteria</h2>
+      <p class="sec-lead">We've deliberately kept this list short. We're looking for people willing to build something, not people with a particular résumé:</p>
+    </div>
+    <div class="elig-grid">
+      <div class="elig-check" id="eligCheck">
+        <p class="ec-prompt">Please tick the boxes that applies to you - when all three are checked, you're ready to move forward:</p>
+        <label class="ec-item">
+          <input type="checkbox" class="ec-req" />
+          <span class="ec-box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <span class="ec-tx">I am 18 years of age or older</span>
+        </label>
+        <div class="ec-sep" aria-hidden="true"></div>
+        <label class="ec-item">
+          <input type="checkbox" class="ec-req" />
+          <span class="ec-box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <span class="ec-tx">I have a valid PAN card in my name</span>
+        </label>
+        <div class="ec-sep" aria-hidden="true"></div>
+        <label class="ec-item">
+          <input type="checkbox" class="ec-req" />
+          <span class="ec-box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <span class="ec-tx">I have an active bank account (savings or current)</span>
+        </label>
+        <div class="ec-sep" aria-hidden="true"></div>
+        <div class="ec-foot">
+          <span class="ec-status" id="ecStatus" role="status" aria-live="polite">
+            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+            <span class="ec-label">0 of 3 - Please tick what's valid to you:</span>
+          </span>
+          <a class="btn-gold" href="#sec-apply" id="ecCta" aria-disabled="true">Become a Partner</a>
+        </div>
+      </div>
+      <div class="elig-div" aria-hidden="true"></div>
+      <div class="elig-benefits">
+        <h3 class="pb-title">Eligibility Criteria</h3>
+        <ul class="pb-list">
+          <li class="pb-item"><span class="pb-ck" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Indian citizen, 18 years or above</span></li>
+          <li class="pb-item"><span class="pb-ck" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Must be 10th pass.</span></li>
+          <li class="pb-item"><span class="pb-ck" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>A valid PAN card and a bank account in your own name</span></li>
+          <li class="pb-item"><span class="pb-ck" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Basic understanding of financial markets helps, but isn't required — that's what the training is for</span></li>
+          <li class="pb-item"><span class="pb-ck" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>No SEBI registration needed on your part; we manage the compliance side</span></li>
+          <li class="pb-item"><span class="pb-ck" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>A genuine interest in growing with the program — that matters to us more than your background</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= APPLY - registration form (shared .hf-*) ================= -->
+  <section class="section stack sec-light" id="sec-apply" data-section="apply" style="gap:56px">
+    <div class="apply-head">
+      <h2 class="sec-title apply-title">Partner Registration within minutes</h2>
+      <p class="sec-lead apply-lead">Step 1 of 3 — “What should we call you?”</p>
+    </div>
+    <form class="apply-form" aria-label="Register as a partner" novalidate>
+      <div class="apply-row">
+        <div class="hf-unit">
+          <div class="hf-field">
+            <div class="hf-field-in">
+              <label for="ap-name">Name</label>
+              <input id="ap-name" name="name" type="text" autocomplete="name" placeholder="Your full name" aria-describedby="err-name" required />
+            </div>
+          </div>
+          <p class="hf-err" id="err-name">Please enter your name.</p>
+        </div>
+        <div class="hf-unit">
+          <div class="hf-field">
+            <div class="hf-field-in">
+              <label for="ap-mobile">Mobile Number</label>
+              <input id="ap-mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="+91 00000 00000" aria-describedby="err-mobile" required />
+            </div>
+          </div>
+          <p class="hf-err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
+        </div>
+        <div class="hf-unit">
+          <div class="hf-field sel">
+            <div class="hf-field-in">
+              <label for="ap-city">City</label>
+              <select id="ap-city" name="city" aria-describedby="err-city" required>
+                <option value="">Select city</option>
+                <option>Bengaluru</option>
+                <option>Chennai</option>
+                <option>Coimbatore</option>
+                <option>Hyderabad</option>
+                <option>Kolkata</option>
+                <option>Madurai</option>
+                <option>Mumbai</option>
+                <option>New Delhi</option>
+                <option>Surat</option>
+                <option>Trichy</option>
+                <option>Vijayawada</option>
+                <option>Visakhapatnam</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <p class="hf-err" id="err-city">Please select your city.</p>
+        </div>
+      </div>
+      <div class="hf-actions">
+        <div class="cta-actions">
+          <button class="btn-ghost" type="button" disabled>Back</button>
+          <button class="btn-gold" type="submit">Next</button>
+        </div>
+      </div>
+      <div class="hf-success" role="status" aria-live="polite">
+        <span class="ok" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        <h3>Registration received</h3>
+        <p class="hf-msg">Thanks - our partner team will reach out to you shortly.</p>
+      </div>
+    </form>
+  </section>
+
+  <!-- ================= HEAR FROM OUR PARTNERS ================= -->
+  <section class="section stack sec-tint" id="sec-testimonials" data-section="testimonials" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Hear from Our Partners</h2>
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">Got Questions?</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Have More Questions?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer anything about the Partner Program. Our team will walk you through earnings, onboarding and the Antara dashboard.</p>
+          </div>
+          <a class="btn-gold" href="#sec-apply">Talk to Our Team</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Become a Partner - page-specific components. Values reuse the
+     shared design tokens; page-local literals flagged inline. ===== */
+
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* ---------- HERO PATTERN - STAGING (this page only). A seamless striped-cube
+     (rhombille) mesh laid over the radial gradient; content sits above it. ---------- */
+  .hero {
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url('/assets/hero-pattern.svg');
+    background-repeat: repeat;
+    background-size: 95px 165px;
+  }
+  .hero > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---------- hero: single-column, dual CTA ---------- */
+  .hero .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  /* ---------- metrics band - 3 headline numbers ---------- */
+  .stat-band {
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--color-surface-card);
+  }
+  .stat-cell {
+    padding: var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-right: 1px solid var(--color-border-card);
+  }
+  .stat-cell:last-child {
+    border-right: 0;
+  }
+  .stat-num {
+    font-weight: 500;
+    font-size: 40px;
+    color: var(--color-text-heading-dark);
+  }
+  .stat-lb {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- benefits - 3-col bordered grid with icon ---------- */
+  /* "Why partner?" benefit grid uses the shared .encl-grid / .encl-cell (global.css). */
+
+  /* ---------- partner types - 6-item category grid, 3 columns (3→2→1).
+     Overrides the shared 4-col cat-grid above 1024px; at ≤1024 the shared
+     2-col resets already suit a 6-cell grid, so no extra override there. ---------- */
+  @media (min-width: 1025px) {
+    .cat-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .cat-grid .cat {
+      border-right: 1px solid var(--color-border-card);
+      border-bottom: 1px solid var(--color-border-card);
+    }
+    .cat-grid .cat:nth-child(3n) {
+      border-right: 0;
+    } /* strip right on the last column (3, 6) */
+    .cat-grid .cat:nth-child(n + 4) {
+      border-bottom: 0;
+    } /* strip bottom on the last row (4, 5, 6) */
+  }
+
+  /* ---------- product portfolio - tabbed card (Trading / Loans / Insurance) ---------- */
+  .port-card {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    padding: var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .port-tabs {
+    display: flex;
+    gap: 36px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border-card);
+  }
+  .port-tab {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0 8px 16px;
+    margin-bottom: -1px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--color-text-tertiary);
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  /* fixed width: a hidden bold ghost reserves the active (semibold) width so
+     switching tabs never nudges the row - see DESIGN-SYSTEM §4.16 (Tabs) */
+  .port-tab::after {
+    content: attr(data-label);
+    font-weight: 600;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .port-tab .tab-lbl {
+    white-space: nowrap;
+  }
+  .port-tab .port-count {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .port-tab:hover {
+    color: var(--color-text-heading-dark);
+  }
+  }
+  .port-tab.is-active {
+    color: var(--color-text-heading-dark);
+    font-weight: 600;
+    border-bottom-color: var(--color-gold-400);
+  }
+  .port-tab:focus-visible {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .port-cols {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 32px;
+  }
+  .port-cols.port-panel[hidden] {
+    display: none;
+  }
+  .port-cols li {
+    position: relative;
+    padding-left: 20px;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+  }
+  .port-cols li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text-heading-dark);
+  }
+
+  /* ---------- eligibility - interactive checker: tick the essentials, the
+     status flips to "eligible" and the CTA activates ---------- */
+  /* full-viewport section: the checker fills the user's screen, content centered */
+  #sec-eligibility {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  /* two-column: checker card (left) | Partnership Benefits (right), then a trust bar */
+  .elig-grid {
+    display: flex;
+    align-items: center;
+    gap: 56px;
+  }
+  .elig-div {
+    flex: none;
+    width: 1px;
+    align-self: center;
+    height: 146px;
+    background: #454a3a; /* page-local divider on gradient - Tier-2 candidate */
+  }
+  .elig-check {
+    flex: 1 1 0;
+    min-width: 0;
+    background: var(--color-surface-section-light);
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    padding: var(--container-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .ec-prompt {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-primary);
+  }
+  .elig-benefits {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .pb-title {
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--color-white);
+  }
+  .pb-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .pb-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: #3b402f; /* page-local dark-olive chip on gradient - Tier-2 candidate */
+    border-radius: 24px;
+    padding: 16px;
+    font-weight: 400;
+    font-size: 16px;
+    color: #f8f4e8; /* page-local off-white on dark - Tier-2 candidate (cream-350) */
+  }
+  .pb-ck {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-success);
+  }
+  .pb-ck svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+  .elig-trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    font-weight: 700;
+    font-size: 16px;
+    color: #f8f4e8; /* page-local off-white on dark - Tier-2 candidate (cream-350) */
+  }
+  .elig-trust .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #ccc; /* page-local trust-bar dot - Tier-2 candidate */
+    flex: none;
+  }
+  .ec-item {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    cursor: pointer;
+  }
+  .ec-item input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .ec-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid #c9c6ba; /* page-local checkbox border - Tier-2 candidate */
+    flex: none;
+    background: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .ec-box svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-white);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .ec-item input:checked + .ec-box {
+    background: var(--color-success);
+    border-color: var(--color-success);
+  }
+  .ec-item input:checked + .ec-box svg {
+    opacity: 1;
+    transform: none;
+  }
+  .ec-item input:focus-visible + .ec-box {
+    outline: 2px solid var(--color-gold-400);
+    outline-offset: 2px;
+  }
+  .ec-tx {
+    flex: 1 0 0;
+    min-width: 0;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-primary);
+  }
+  .ec-sep {
+    height: 1px;
+    background: var(--color-border-hairline);
+  }
+  .ec-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .ec-status {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* off-grid, kept for parity (Tier-2: 8px) */
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--color-text-muted);
+  }
+  .ec-status .ico {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f0ede3; /* page-local idle-status disc - Tier-2 candidate */
+    color: #9a9a8e; /* page-local idle-status tick - Tier-2 candidate */
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .ec-status .ico svg {
+    width: 16px;
+    height: 16px;
+  }
+  .elig-check.ready .ec-status {
+    color: var(--color-success-strong); /* #067a45 */
+  }
+  .elig-check.ready .ec-status .ico {
+    background: var(--color-green-100); /* #dbf0e2 */
+    color: var(--color-success-strong); /* #067a45 */
+  }
+  .elig-check .btn-gold {
+    width: 220px;
+    opacity: 0.45; /* decorative dim of disabled CTA - legacy rule-5 violation, kept verbatim */
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .elig-check.ready .btn-gold {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* dark band: the eligibility section sits on the hero gradient; heading + lead
+     go off-white while the checker card stays light (per Figma 726:29376) */
+  #sec-eligibility {
+    background: radial-gradient(
+      125% 210% at 100% -8%,
+      var(--color-olive-600) 0%,
+      var(--color-olive-800) 50%,
+      var(--color-charcoal-850) 100%
+    );
+  }
+  #sec-eligibility .sec-title,
+  #sec-eligibility .sec-lead {
+    color: #fffcf3; /* page-local off-white on gradient - Tier-2 candidate (cream-100) */
+  }
+
+  /* ---------- apply section - centered heading + single-row registration form.
+     Reuses the shared .hf-* input-field component (DESIGN-SYSTEM §4.15). ---------- */
+  .apply-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .apply-title {
+    text-align: center;
+  }
+  .apply-lead {
+    text-align: center;
+    max-width: 760px;
+  }
+  .apply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .apply-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+  .apply-row .hf-unit {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .hf-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  /* .hf-note - shared-extraction candidate (form-consent caption) */
+  .hf-note {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--color-sage-700); /* #6b6f5e */
+    text-align: center;
+    max-width: 640px;
+  }
+  .apply-form .btn-gold {
+    width: 220px;
+    height: 48px;
+  }
+  /* success state - .hf-success shared-extraction candidate (form done panel) */
+  .hf-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .apply-form.done .apply-row,
+  .apply-form.done .hf-actions {
+    display: none;
+  }
+  .apply-form.done .hf-success {
+    display: flex;
+  }
+  .hf-success .ok {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-green-100); /* #daead7 (Tier-1: absorbed by green-100) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hf-success .ok svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-success-strong); /* #067a45 */
+  }
+  .hf-success h3 {
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--color-text-heading-dark); /* #2e3914 */
+  }
+  .hf-success p {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-sage-700); /* #6b6f5e */
+  }
+
+  /* ---------- centered standalone section CTA ---------- */
+  .cta-center {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ---------- final CTA (dark) ---------- */
+  .cta-box.dark {
+    background: var(--color-olive-950);
+  }
+  .cta-box.dark .ct-tt {
+    color: var(--color-white);
+  }
+  .cta-box.dark h3 .g {
+    color: var(--color-gold-400);
+  }
+  .cta-box.dark .ct-sub {
+    color: #bfc1bc; /* page-local dark-card sub - Tier-2 candidate (sage-200) */
+  }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+  .cta-actions .btn-gold,
+  .cta-actions .btn-ghost {
+    transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-gold:hover {
+    filter: brightness(0.96);
+  }
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .cta-actions .btn-ghost:hover {
+    background: #383838; /* page-local ghost-hover - Tier-2 candidate (charcoal-650) */
+    border-color: var(--color-white);
+  }
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1024px) {
+    /* 6-item cat-grid at 2 cols (3 rows): shared strips bottom on cells 7-8, so
+       re-strip the real last row (5, 6) here. Right borders (2n) handled by shared. */
+    .cat-grid .cat:nth-child(n + 5) {
+      border-bottom: 0;
+    }
+  }
+  @media (max-width: 1024px) {
+    .port-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 900px) {
+    .stat-band {
+      grid-template-columns: 1fr;
+    }
+    .stat-cell {
+      border-right: 0;
+      border-bottom: 1px solid var(--color-border-card);
+    }
+    .stat-cell:last-child {
+      border-bottom: 0;
+    }
+    /* eligibility stacks: checker above the benefits list */
+    .elig-grid {
+      flex-direction: column;
+      gap: 40px;
+    }
+    .elig-div {
+      display: none;
+    }
+    .pb-list {
+      justify-content: flex-start;
+    }
+    /* apply fields reflow to two per row */
+    .apply-row {
+      flex-wrap: wrap;
+    }
+    .apply-row .hf-unit {
+      flex: 1 1 calc(50% - 20px);
+    }
+  }
+  @media (max-width: 768px) {
+    .fcell p {
+      font-size: 14px;
+    }
+    .stat-lb,
+    .port-cols li {
+      font-size: 14px;
+    }
+    .port-cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ec-foot {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .elig-check .btn-gold {
+      width: 100%;
+    }
+    /* Three nowrap tabs don't fit ~375px wide - let the rail scroll
+       horizontally in its own container so no tab is clipped/unreachable
+       (the page body itself never scrolls sideways). */
+    .port-tabs {
+      gap: 20px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .port-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .port-tab {
+      font-size: 16px;
+      flex: none;
+    }
+    .stat-num {
+      font-size: clamp(28px, 7vw, 40px);
+    }
+  }
+  @media (max-width: 560px) {
+    .cat-grid .cat:last-child {
+      border-bottom: 0 !important;
+    }
+    .port-cols {
+      grid-template-columns: 1fr;
+    }
+    .apply-row {
+      flex-direction: column;
+    }
+    .apply-row .hf-unit {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  /* ---- Become a Partner: in-page anchor smooth-scroll + eligibility checker +
+         product-portfolio tabs + registration form (mobile grouping, validation,
+         inline errors, success state - same pattern as the legacy Contact form).
+         Scroll-reveal and back-to-top are owned by BaseLayout / Footer. ---- */
+  (function () {
+    'use strict';
+
+    /* smooth-scroll for in-page anchor CTAs. Honours prefers-reduced-motion →
+       instant jump. scroll-margin-top:96px on the sections keeps the target
+       clear of the sticky nav. */
+    const anchors = Array.prototype.slice.call(
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
+    );
+    anchors.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        const id = a.getAttribute('href');
+        if (!id || id.length < 2) return; /* skip bare "#" links */
+        const target = document.querySelector(id);
+        if (!target) return;
+        e.preventDefault();
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+
+    /* eligibility checker - tick all essentials → status flips to "eligible" and CTA activates */
+    const eligWrap = document.getElementById('eligCheck');
+    if (eligWrap) {
+      const eligBoxes = Array.prototype.slice.call(
+        eligWrap.querySelectorAll<HTMLInputElement>('.ec-req')
+      );
+      const eligLabel = eligWrap.querySelector('#ecStatus .ec-label');
+      const eligCta = document.getElementById('ecCta');
+      const updateElig = function () {
+        const n = eligBoxes.filter(function (b: HTMLInputElement) {
+          return b.checked;
+        }).length;
+        const ready = n === eligBoxes.length;
+        eligWrap.classList.toggle('ready', ready);
+        if (eligCta) eligCta.setAttribute('aria-disabled', ready ? 'false' : 'true');
+        if (eligLabel)
+          eligLabel.textContent = ready
+            ? 'You’re eligible - Let’s get you started!'
+            : n + ' of ' + eligBoxes.length + " - Please tick what's valid to you:";
+      };
+      eligBoxes.forEach(function (b: HTMLInputElement) {
+        b.addEventListener('change', updateElig);
+      });
+      updateElig();
+    }
+
+    /* product portfolio - tabbed product families (Trading / Loans / Insurance) */
+    const portTabs = Array.prototype.slice.call(
+      document.querySelectorAll<HTMLElement>('.port-tab')
+    );
+    const portPanels = Array.prototype.slice.call(
+      document.querySelectorAll<HTMLElement>('.port-panel')
+    );
+    if (portTabs.length) {
+      const selectPort = function (key: string | null) {
+        portTabs.forEach(function (t: HTMLElement) {
+          const on = t.getAttribute('data-tab') === key;
+          t.classList.toggle('is-active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        portPanels.forEach(function (p: HTMLElement) {
+          (p as HTMLElement & { hidden: boolean }).hidden = p.getAttribute('data-panel') !== key;
+        });
+      };
+      portTabs.forEach(function (t: HTMLElement) {
+        t.addEventListener('click', function () {
+          selectPort(t.getAttribute('data-tab'));
+        });
+      });
+    }
+
+    /* mobile field - keep a +91 prefix and group the 10 digits as "##### #####" */
+    const mob = document.getElementById('ap-mobile') as HTMLInputElement | null;
+    if (mob) {
+      mob.addEventListener('input', function () {
+        /* strip our own "+91 " prefix and a 91 country code on a full 12-digit paste,
+           but never a leading 91 that's part of a real 10-digit number */
+        let raw = mob.value.replace(/^\+91\s*/, '').replace(/\D/g, '');
+        if (raw.length === 12 && raw.slice(0, 2) === '91') {
+          raw = raw.slice(2);
+        }
+        const d = raw.slice(0, 10);
+        mob.value = d ? '+91 ' + (d.length > 5 ? d.slice(0, 5) + ' ' + d.slice(5) : d) : '';
+      });
+    }
+
+    /* registration: validation + inline errors + success state */
+    const form = document.querySelector('.apply-form') as HTMLFormElement | null;
+    if (form) {
+      const fields = [
+        {
+          id: 'ap-name',
+          err: 'err-name',
+          test: function (v: string) {
+            return v.trim().length >= 2;
+          },
+        },
+        {
+          id: 'ap-mobile',
+          err: 'err-mobile',
+          test: function (v: string) {
+            let d = v.replace(/^\+91\s*/, '').replace(/\D/g, '');
+            if (d.length === 12 && d.slice(0, 2) === '91') {
+              d = d.slice(2);
+            }
+            return d.length === 10;
+          },
+        },
+        {
+          id: 'ap-city',
+          err: 'err-city',
+          test: function (v: string) {
+            return !!v;
+          },
+        },
+      ];
+      function check(f: { id: string; err: string; test: (v: string) => boolean }, showErr: boolean) {
+        const input = document.getElementById(f.id) as HTMLInputElement;
+        const errEl = document.getElementById(f.err);
+        const ok = f.test(input.value);
+        input.closest('.hf-field')!.classList.toggle('invalid', showErr && !ok);
+        if (errEl) errEl.classList.toggle('show', showErr && !ok);
+        input.setAttribute('aria-invalid', showErr && !ok ? 'true' : 'false');
+        return ok;
+      }
+      fields.forEach(function (f) {
+        const input = document.getElementById(f.id) as HTMLInputElement;
+        input.addEventListener('input', function () {
+          if (input.closest('.hf-field')!.classList.contains('invalid')) check(f, true);
+        });
+        input.addEventListener('change', function () {
+          check(f, true);
+        });
+      });
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        let firstBad: (typeof fields)[number] | null = null;
+        let allOk = true;
+        fields.forEach(function (f) {
+          const ok = check(f, true);
+          if (!ok && !firstBad) {
+            firstBad = f;
+          }
+          if (!ok) {
+            allOk = false;
+          }
+        });
+        if (!allOk) {
+          if (firstBad) {
+            document.getElementById((firstBad as (typeof fields)[number]).id)!.focus();
+          }
+          return;
+        }
+        const name = ((document.getElementById('ap-name') as HTMLInputElement).value || '')
+          .trim()
+          .split(' ')[0];
+        const msg = form.querySelector('.hf-msg');
+        if (name && msg) {
+          msg.textContent = 'Thanks, ' + name + ' - our partner team will reach out to you shortly.';
+        }
+        form.classList.add('done');
+      });
+    }
+  })();
+</script>

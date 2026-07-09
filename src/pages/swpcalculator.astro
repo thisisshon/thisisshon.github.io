@@ -1,0 +1,620 @@
+---
+/**
+ * SWP Calculator - /swpcalculator
+ * Systematic Withdrawal Plan: simulates a lumpsum that grows while you draw a
+ * fixed amount each month, month by month (so depletion is handled exactly).
+ * Built on the shared calculator UI in global.css; page carries content + maths.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
+const FAQS = [
+  {
+    q: 'What is an SWP calculator?',
+    a: 'An SWP calculator is a tool that estimates regular mutual fund withdrawals and the corpus that may remain after a selected period.',
+  },
+  {
+    q: 'Is SWP safe for retirement?',
+    a: 'SWP is market-linked and can support retirement income. Please note that returns and corpus value are not guaranteed.',
+  },
+  {
+    q: 'What is the minimum SWP amount in India?',
+    a: 'The minimum SWP amount in India varies by AMC and scheme. Many schemes may allow small monthly withdrawals, but investors should check current scheme rules to verify.',
+  },
+  {
+    q: 'Can I change my SWP amount?',
+    a: 'Yes, most platforms allow you to modify your SWP. However, some may require you to cancel the existing instruction and start a new one.',
+  },
+  {
+    q: 'What return should I assume?',
+    a: 'Use conservative return assumptions and test multiple cases. Do not rely only on high-return scenarios.',
+  },
+  {
+    q: 'How is SWP different from dividend plans?',
+    a: 'SWP redeems units to pay you. Dividend or IDCW payouts depend on distributable surplus and are not assured.',
+  },
+];
+
+const seo = {
+  title: 'SWP Calculator - Withdrawal',
+  description:
+    'Plan your regular mutual fund withdrawals and estimate your remaining corpus with the free SWP calculator from Shriram Financial Services.',
+  path: '/swpcalculator',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
+  <!-- ================= HERO ================= -->
+  <section class="hero hero-compact" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Calculators', href: '/calculators' }, { name: 'SWP Calculator' }]} />
+    <div class="hero-inner" data-enter>
+      <h1>SWP Calculator – Plan Your <span class="g">Monthly Withdrawals Instantly</span></h1>
+      <p class="lead">Find out how much you can withdraw while keeping your investments growing with Shriram Financial Services.</p>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Pan-India Presence</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered: [Registration Number]</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;AMFI-compliant platform</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SWP Calculator ===== -->
+  <section class="section stack sec-light" id="sec-calc" data-section="calc" style="gap:24px" data-enter="2">
+    <h2 class="sec-title">SWP Calculator</h2>
+    <p class="calc-hint">Drag the sliders or type your own numbers - results update instantly.</p>
+
+    <div class="calc-row">
+      <!-- inputs -->
+      <div class="card calc-panel">
+        <div class="fields">
+          <div class="field">
+            <div class="field-top">
+              <label for="amt">Initial Corpus</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="amt" type="text" inputmode="numeric" value="20,00,000" aria-label="Initial corpus in rupees" /></div>
+            </div>
+            <input class="slider" id="amtR" type="range" min="10000" max="100000000" step="10000" value="2000000" aria-label="Initial corpus" />
+            <div class="slider-scale"><span>₹10,000</span><span>₹10,00,00,000</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="wd">Monthly Withdrawal</label>
+              <div class="field-val"><span class="pfx">₹</span><input id="wd" type="text" inputmode="numeric" value="20,000" aria-label="Monthly withdrawal amount in rupees" /></div>
+            </div>
+            <input class="slider" id="wdR" type="range" min="1000" max="500000" step="500" value="20000" aria-label="Monthly withdrawal amount" />
+            <div class="slider-scale"><span>₹1,000</span><span>₹5,00,000</span></div>
+          </div>
+
+          <div class="field">
+            <div class="field-top">
+              <label for="rate">Expected Return (% p.a.)</label>
+              <div class="field-val"><input id="rate" type="text" inputmode="decimal" value="8" aria-label="Expected annual rate of return in percent" /><span class="sfx">%</span></div>
+            </div>
+            <input class="slider" id="rateR" type="range" min="1" max="20" step="0.5" value="8" aria-label="Expected annual rate of return in percent" />
+            <div class="slider-scale"><span>1%</span><span>20%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- results -->
+      <div class="calc-results">
+        <div class="bar-wrap">
+          <div class="bar-top">
+            <div class="bar-head">
+              <span class="bar-cap">How Long It Lasts</span>
+              <span class="bar-tot" id="d-tot">13.8 yrs</span>
+            </div>
+            <div class="stack-bar" role="img" aria-label="Share of the corpus withdrawn versus remaining">
+              <div class="seg seg-inv" id="seg-inv" style="width:100%"></div>
+              <div class="seg seg-ret" id="seg-ret" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="res-cards" data-reveal-row>
+            <div class="res-card">
+              <div class="res-top"><span class="dot" style="background:var(--c-inv)"></span>Total Withdrawn</div>
+              <div class="res-val" id="r-wd">₹33,20,000</div>
+            </div>
+            <div class="res-card">
+              <div class="res-top"><span class="dot" style="background:var(--c-ret)"></span>Remaining Corpus</div>
+              <div class="res-val" id="r-rem">₹0</div>
+            </div>
+          </div>
+
+          <div class="bar-div" role="presentation"></div>
+
+          <p class="bar-note" id="bar-note">Each month your corpus earns a return, then your withdrawal is deducted. If monthly returns exceed your withdrawal, the corpus can last indefinitely (shown as 50+ yrs).</p>
+        </div>
+
+        <div class="ready-bar">
+          <p class="ready-text">Put your plan into action - <b>open a free Demat account</b></p>
+          <a class="ready-btn" href="/opendemataccount">Open Demat Account</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="sr-only" id="sr-summary" aria-live="polite"></p>
+  </section>
+
+  <!-- ===== What Is an SWP Calculator? ===== -->
+  <section class="section stack sec-tint" id="sec-what" data-section="what" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Is an SWP Calculator?</h2>
+      <p class="sec-lead">A Systematic Withdrawal Plan (SWP) Calculator is a tool that helps you estimate how your mutual fund investment may perform while you withdraw a fixed amount at regular intervals over a chosen period.</p>
+      <p class="sec-lead">You can use the calculator to:</p>
+    </div>
+    <ul class="bullets">
+      <li>Plan monthly income from a lump-sum investment.</li>
+      <li>Check if a withdrawal amount looks sustainable.</li>
+      <li>Compare different return and tenure scenarios.</li>
+      <li>Avoid manual formula-based calculations.</li>
+      <li>Review retirement income options at any time.</li>
+    </ul>
+  </section>
+
+  <!-- ===== How Does the SWP Calculator Work? ===== -->
+  <section class="section stack sec-light" id="sec-work" data-section="work" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Does the SWP Calculator Work?</h2>
+      <p class="sec-lead">The calculator applies monthly compounding and subtracts the selected withdrawal at regular intervals. The result is an estimate, not a guarantee.</p>
+      <p class="sec-lead">Formula used: A = P(1 + r/n)^(nt) – PMT × [((1 + r/n)^(nt) – 1) / (r/n)]</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Variable</p></div><div class="cell th"><p>Meaning</p></div>
+      <div class="cell tb"><p class="k">P</p></div><div class="cell tb"><p class="v">Initial investment</p></div>
+      <div class="cell tb"><p class="k">r</p></div><div class="cell tb"><p class="v">Annual expected return</p></div>
+      <div class="cell tb"><p class="k">n</p></div><div class="cell tb"><p class="v">Compounding frequency</p></div>
+      <div class="cell tb"><p class="k">t</p></div><div class="cell tb"><p class="v">Tenure in years</p></div>
+      <div class="cell tb"><p class="k">PMT</p></div><div class="cell tb"><p class="v">Monthly withdrawal</p></div>
+      <div class="cell tb"><p class="k">A</p></div><div class="cell tb"><p class="v">Estimated final corpus</p></div>
+    </div></div>
+    <div class="card"><p class="card-p">Example: ₹10,00,000 invested, ₹8,000 monthly withdrawal, 8% annual return and 15-year tenure may leave about ₹5.39 lakh. The calculator does this in seconds.</p></div>
+  </section>
+
+  <!-- ===== SWP Withdrawal Scenarios ===== -->
+  <section class="section stack sec-tint" id="sec-scenarios" data-section="scenarios" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">SWP Withdrawal Scenarios</h2>
+      <p class="sec-lead">These examples show how different corpus sizes and withdrawals may affect the final balance.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table bordered" style="grid-template-columns:repeat(6,minmax(0,1fr));min-width:720px">
+      <div class="cell th"><p>Investment</p></div><div class="cell th"><p>Monthly withdrawal</p></div><div class="cell th"><p>Return</p></div><div class="cell th"><p>Tenure</p></div><div class="cell th"><p>Estimated final value</p></div><div class="cell th"><p>Action</p></div>
+      <div class="cell tb"><p class="k">₹5,00,000</p></div><div class="cell tb"><p class="v">₹3,000</p></div><div class="cell tb"><p class="v">8%</p></div><div class="cell tb"><p class="v">10 years</p></div><div class="cell tb"><p class="v">₹5,60,982</p></div><div class="cell tb"><p class="v">Calculate</p></div>
+      <div class="cell tb"><p class="k">₹10,00,000</p></div><div class="cell tb"><p class="v">₹8,000</p></div><div class="cell tb"><p class="v">8%</p></div><div class="cell tb"><p class="v">15 years</p></div><div class="cell tb"><p class="v">₹5,38,616</p></div><div class="cell tb"><p class="v">Calculate</p></div>
+      <div class="cell tb"><p class="k">₹25,00,000</p></div><div class="cell tb"><p class="v">₹15,000</p></div><div class="cell tb"><p class="v">10%</p></div><div class="cell tb"><p class="v">20 years</p></div><div class="cell tb"><p class="v">₹69,29,652</p></div><div class="cell tb"><p class="v">Calculate</p></div>
+      <div class="cell tb"><p class="k">₹50,00,000</p></div><div class="cell tb"><p class="v">₹30,000</p></div><div class="cell tb"><p class="v">10%</p></div><div class="cell tb"><p class="v">20 years</p></div><div class="cell tb"><p class="v">₹1,38,59,303</p></div><div class="cell tb"><p class="v">Calculate</p></div>
+      <div class="cell tb"><p class="k">₹1,00,00,000</p></div><div class="cell tb"><p class="v">₹50,000</p></div><div class="cell tb"><p class="v">10%</p></div><div class="cell tb"><p class="v">25 years</p></div><div class="cell tb"><p class="v">₹5,42,27,780</p></div><div class="cell tb"><p class="v">Calculate</p></div>
+    </div></div>
+    <p class="sec-lead">Disclaimer: These values are illustrative. Actual returns can be higher or lower.</p>
+  </section>
+
+  <!-- ===== How to Use the SWP Calculator ===== -->
+  <section class="section stack sec-light" id="sec-how-to-use" data-section="how-to-use" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Use the SWP Calculator</h2>
+      <p class="sec-lead">Using the SWP Calculator takes under a minute. Follow the four steps below and the calculator will instantly display your estimated final corpus, total withdrawal amount, and a sustainability signal.</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Step 1</h4><p>Enter your total mutual fund investment amount.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Step 2</h4><p>Add the monthly amount you want to withdraw.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Step 3</h4><p>Select an expected annual return.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Step 4</h4><p>Choose the withdrawal tenure in years.</p></div>
+      </div>
+    </div>
+    <p class="sec-lead" style="width:100%">The calculator then shows total withdrawal, final corpus and a sustainability signal.</p>
+    <div class="t-scroll" style="width:100%"><div class="product-page_table t2 bordered" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="cell th"><p>Signal</p></div><div class="cell th"><p>Meaning</p></div>
+      <div class="cell tb"><p class="k">Green</p></div><div class="cell tb"><p class="v">Corpus may grow or remain steady.</p></div>
+      <div class="cell tb"><p class="k">Amber</p></div><div class="cell tb"><p class="v">Corpus may reduce slowly.</p></div>
+      <div class="cell tb"><p class="k">Red</p></div><div class="cell tb"><p class="v">Corpus may run out before the selected tenure.</p></div>
+    </div></div>
+    <div class="card" style="width:100%"><p class="card-p">Pro tip: For planning, avoid very optimistic return assumptions. Use a conservative range and test multiple scenarios.</p></div>
+  </section>
+
+  <!-- ===== What is the Difference Between SWP and SIP? ===== -->
+  <section class="section stack sec-tint" id="sec-vs-sip" data-section="vs-sip" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What is the Difference Between SWP and SIP?</h2>
+      <p class="sec-lead">Refer to the below table to get a clear idea about the differences between an SWP and a SIP calculator.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>SIP</p></div><div class="cell th"><p>SWP</p></div>
+      <div class="cell tb"><p class="k">Purpose</p></div><div class="cell tb"><p class="v">Build wealth over time</p></div><div class="cell tb"><p class="v">Create regular income</p></div>
+      <div class="cell tb"><p class="k">Cash flow</p></div><div class="cell tb"><p class="v">Money goes into the fund</p></div><div class="cell tb"><p class="v">Money comes out of the fund</p></div>
+      <div class="cell tb"><p class="k">Best suited for</p></div><div class="cell tb"><p class="v">Earners and long-term investors</p></div><div class="cell tb"><p class="v">Retirees and income seekers</p></div>
+      <div class="cell tb"><p class="k">Starting point</p></div><div class="cell tb"><p class="v">Monthly investment</p></div><div class="cell tb"><p class="v">Existing corpus</p></div>
+      <div class="cell tb"><p class="k">Main risk</p></div><div class="cell tb"><p class="v">Market volatility</p></div><div class="cell tb"><p class="v">Corpus depletion</p></div>
+      <div class="cell tb"><p class="k">Tax point</p></div><div class="cell tb"><p class="v">On redemption</p></div><div class="cell tb"><p class="v">Every withdrawal is a partial redemption</p></div>
+    </div></div>
+    <p class="sec-lead">SIP helps build a corpus. SWP helps withdraw from that corpus. Many investors use SIP during earning years and SWP during retirement.</p>
+  </section>
+
+  <!-- ===== Benefits of Using SWP for Retirement Income ===== -->
+  <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Benefits of Using SWP for Retirement Income</h2>
+      <p class="sec-lead">A Systematic Withdrawal Plan can be an effective retirement income strategy. It lets you withdraw a fixed amount while keeping the remaining corpus invested in a SEBI-regulated mutual fund, giving it the potential to grow with market returns.</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Regular income stream</h4><p>Set a monthly payout to support household expenses.</p></div>
+      <div class="cat"><h4>Corpus continues to earn</h4><p>The unredeemed units remain invested and may grow.</p></div>
+      <div class="cat"><h4>Potential tax efficiency</h4><p>Only the gain component of each withdrawal is taxed, subject to fund type and holding period.</p></div>
+      <div class="cat"><h4>Flexible withdrawals</h4><p>Change, pause or stop withdrawals as per platform and AMC rules.</p></div>
+      <div class="cat"><h4>No fixed lock-in</h4><p>Most open-ended mutual funds allow redemption, subject to scheme terms.</p></div>
+      <div class="cat"><h4>Inflation planning</h4><p>Step-up SWP can increase withdrawals over time.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== How Long Will My SWP Sustain? ===== -->
+  <section class="section stack sec-tint" id="sec-sustain" data-section="sustain" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How Long Will My SWP Sustain?</h2>
+      <p class="sec-lead">The biggest retirement question is simple: will the money last? The sustainability planner helps estimate how long a corpus may support monthly withdrawals.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="grid-template-columns:repeat(4,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Corpus</p></div><div class="cell th"><p>Monthly withdrawal</p></div><div class="cell th"><p>Return</p></div><div class="cell th"><p>Corpus may last</p></div>
+      <div class="cell tb"><p class="k">₹25 lakh</p></div><div class="cell tb"><p class="v">₹10,000</p></div><div class="cell tb"><p class="v">8%</p></div><div class="cell tb"><p class="v">35+ years*</p></div>
+      <div class="cell tb"><p class="k">₹25 lakh</p></div><div class="cell tb"><p class="v">₹15,000</p></div><div class="cell tb"><p class="v">8%</p></div><div class="cell tb"><p class="v">35+ years*</p></div>
+      <div class="cell tb"><p class="k">₹50 lakh</p></div><div class="cell tb"><p class="v">₹20,000</p></div><div class="cell tb"><p class="v">8%</p></div><div class="cell tb"><p class="v">35+ years*</p></div>
+      <div class="cell tb"><p class="k">₹50 lakh</p></div><div class="cell tb"><p class="v">₹30,000</p></div><div class="cell tb"><p class="v">8%</p></div><div class="cell tb"><p class="v">35+ years*</p></div>
+      <div class="cell tb"><p class="k">₹1 crore</p></div><div class="cell tb"><p class="v">₹50,000</p></div><div class="cell tb"><p class="v">10%</p></div><div class="cell tb"><p class="v">35+ years*</p></div>
+    </div></div>
+    <p class="sec-lead">*Based on the stated return assumption and nominal values. Lower returns, market falls or higher withdrawals can reduce sustainability.</p>
+    <div class="card"><p class="card-p">Rule of thumb: Keep annual withdrawals within a sensible range. Many retirees test 6–8% of corpus per year, then adjust for risk, tax and inflation.</p></div>
+  </section>
+
+  <!-- ===== Tax on SWP Withdrawals ===== -->
+  <section class="section stack sec-light" id="sec-tax" data-section="tax" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Tax on SWP Withdrawals</h2>
+      <p class="sec-lead">Each SWP instalment is treated as a partial redemption of mutual fund units. Tax applies only to the capital gain portion, not the full payout.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered" style="min-width:640px">
+      <div class="cell th"><p>Fund type</p></div><div class="cell th"><p>Holding period</p></div><div class="cell th"><p>Indicative tax treatment</p></div>
+      <div class="cell tb"><p class="k">Equity-oriented fund</p></div><div class="cell tb"><p class="v">12 months or less</p></div><div class="cell tb"><p class="v">Short-term capital gains generally taxed at 20%.</p></div>
+      <div class="cell tb"><p class="k">Equity-oriented fund</p></div><div class="cell tb"><p class="v">More than 12 months</p></div><div class="cell tb"><p class="v">Long-term capital gains generally taxed at 12.5% above the annual exemption limit.</p></div>
+      <div class="cell tb"><p class="k">Debt-oriented fund</p></div><div class="cell tb"><p class="v">Units bought on/after 1 April 2023</p></div><div class="cell tb"><p class="v">Gains generally taxed as per the investor’s income slab.</p></div>
+      <div class="cell tb"><p class="k">Hybrid fund</p></div><div class="cell tb"><p class="v">Depends on equity allocation</p></div><div class="cell tb"><p class="v">Tax treatment depends on scheme classification.</p></div>
+    </div></div>
+    <div class="card"><p class="card-p">Important: SWP redemptions usually follow FIFO: the oldest units are redeemed first. Always consult a tax adviser before acting.</p></div>
+  </section>
+
+  <!-- ===== SWP vs FD vs Annuity: Which is Better? ===== -->
+  <section class="section stack sec-tint" id="sec-vs-fd" data-section="vs-fd" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">SWP vs FD vs Annuity: Which is Better?</h2>
+      <p class="sec-lead">Retirees in India generally rely on three income options: a Systematic Withdrawal Plan (SWP) from a mutual fund, a Fixed Deposit, or an Annuity. Each makes a different trade-off between flexibility and certainty, between growth potential and guaranteed income and between liquidity and lock-in. The right fit depends on your risk appetite, monthly income needs, and how long you need the money to last.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="grid-template-columns:repeat(4,minmax(0,1fr));min-width:720px">
+      <div class="cell th"><p>Parameter</p></div><div class="cell th"><p>SWP</p></div><div class="cell th"><p>Fixed deposit</p></div><div class="cell th"><p>Annuity / pension plan</p></div>
+      <div class="cell tb"><p class="k">Income</p></div><div class="cell tb"><p class="v">Flexible</p></div><div class="cell tb"><p class="v">Fixed</p></div><div class="cell tb"><p class="v">Fixed</p></div>
+      <div class="cell tb"><p class="k">Return</p></div><div class="cell tb"><p class="v">Market-linked</p></div><div class="cell tb"><p class="v">Fixed</p></div><div class="cell tb"><p class="v">Fixed</p></div>
+      <div class="cell tb"><p class="k">Taxation</p></div><div class="cell tb"><p class="v">Capital gains on redemption</p></div><div class="cell tb"><p class="v">Interest taxed as per slab</p></div><div class="cell tb"><p class="v">Income usually taxed as per slab</p></div>
+      <div class="cell tb"><p class="k">Liquidity</p></div><div class="cell tb"><p class="v">High, subject to scheme terms</p></div><div class="cell tb"><p class="v">Premature withdrawal may attract penalty</p></div><div class="cell tb"><p class="v">Usually low</p></div>
+      <div class="cell tb"><p class="k">Inflation hedge</p></div><div class="cell tb"><p class="v">Possible through equity exposure</p></div><div class="cell tb"><p class="v">Limited</p></div><div class="cell tb"><p class="v">Limited</p></div>
+      <div class="cell tb"><p class="k">Corpus access</p></div><div class="cell tb"><p class="v">Usually available</p></div><div class="cell tb"><p class="v">Available with conditions</p></div><div class="cell tb"><p class="v">Often limited or not available</p></div>
+    </div></div>
+    <div class="card"><p class="card-p">Balanced view: SWP can suit retirees who want flexibility and growth potential. It is not risk-free and should be planned conservatively.</p></div>
+  </section>
+
+  <!-- ===== Who Should Consider Investing in SWP? ===== -->
+  <section class="section stack sec-light" id="sec-who" data-section="who" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Who Should Consider Investing in SWP?</h2>
+      <p class="sec-lead">SWP is not a one-size-fits-all solution. It works best when you already have a corpus and need to convert it into a regular income stream. Here are the four groups most likely to find it useful:</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Retirees</h4><p>Useful for pension supplement from PF, gratuity or savings corpus. They can consider hybrid or balanced advantage funds based on risk profile.</p></div>
+      <div class="cat"><h4>Early retirees</h4><p>Useful for FIRE-style income planning. Needs conservative assumptions and a longer sustainability check.</p></div>
+      <div class="cat"><h4>Non-working spouse</h4><p>Can support household cash flow from an inherited or gifted corpus. However, tax and ownership rules should be reviewed.</p></div>
+      <div class="cat"><h4>Passive income seekers</h4><p>Can create planned cash flow while keeping the remaining corpus invested.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Step-Up SWP – Inflation-Adjusted Withdrawals ===== -->
+  <section class="section stack sec-tint" id="sec-stepup" data-section="stepup" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Step-Up SWP – Inflation-Adjusted Withdrawals</h2>
+      <p class="sec-lead">A step-up SWP is a variant of a Systematic Withdrawal Plan that increases the withdrawal amount every year by a fixed percentage. It can help you keep up with inflation and maintain your purchasing power over time, especially during retirement.</p>
+    </div>
+    <div class="card"><p class="card-p">Inflation problem: At 5% inflation, ₹10,000 today may feel like only about ₹6,100 after 10 years. A step-up SWP helps plan for this gap.</p></div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="grid-template-columns:repeat(4,minmax(0,1fr));min-width:640px">
+      <div class="cell th"><p>Option</p></div><div class="cell th"><p>Starting withdrawal</p></div><div class="cell th"><p>Annual increase</p></div><div class="cell th"><p>Use case</p></div>
+      <div class="cell tb"><p class="k">Flat SWP</p></div><div class="cell tb"><p class="v">₹10,000 per month</p></div><div class="cell tb"><p class="v">0%</p></div><div class="cell tb"><p class="v">Simple monthly income</p></div>
+      <div class="cell tb"><p class="k">Step-up SWP</p></div><div class="cell tb"><p class="v">₹10,000 per month</p></div><div class="cell tb"><p class="v">5%</p></div><div class="cell tb"><p class="v">Inflation-aware income planning</p></div>
+    </div></div>
+  </section>
+
+  <!-- ===== How to Start an SWP ===== -->
+  <section class="section stack sec-light" id="sec-start" data-section="start" style="gap:56px;align-items:center;justify-content:center">
+    <div class="stack" style="gap:16px;width:100%">
+      <h2 class="sec-title">How to Start an SWP</h2>
+      <p class="sec-lead">Setting up a Systematic Withdrawal Plan (SWP) is quick and straightforward if you already have an active mutual fund investment in your folio or Demat account. Simply follow these six steps to get started:</p>
+    </div>
+    <div class="steps" data-reveal-row>
+      <div class="step">
+        <div class="num">1</div>
+        <div class="st-body"><h4>Step 1</h4><p>Choose a suitable mutual fund and invest a lump sum.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="st-body"><h4>Step 2</h4><p>Complete KYC, if not already done.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">3</div>
+        <div class="st-body"><h4>Step 3</h4><p>Log in to the AMC, distributor or investment platform.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">4</div>
+        <div class="st-body"><h4>Step 4</h4><p>Select the SWP option.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">5</div>
+        <div class="st-body"><h4>Step 5</h4><p>Enter amount, frequency, date and tenure.</p></div>
+      </div>
+      <div class="step-div"></div>
+      <div class="step">
+        <div class="num">6</div>
+        <div class="st-body"><h4>Step 6</h4><p>Confirm the bank account for credit.</p></div>
+      </div>
+    </div>
+    <div class="card" style="width:100%"><p class="card-p">Note: Minimum SWP amounts vary by AMC and scheme. Check the latest scheme terms before setting up withdrawals.</p></div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">Got Questions?</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
+          </div>
+          <a class="btn-gold" href="#">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Related Calculators ===== -->
+  <section class="section stack sec-light" id="sec-explore" data-section="explore" style="gap:40px">
+    <h2 class="sec-title">Related Calculators</h2>
+    <div class="explore-grid" data-reveal-row>
+      <a class="xcard" href="/sipcalculator">
+        <span class="xc-title">SIP Calculator</span>
+        <span class="xc-desc">Plan monthly investments.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/lumpsumcalculator">
+        <span class="xc-title">Lumpsum Calculator</span>
+        <span class="xc-desc">Estimate one-time investment growth.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/npscalculator">
+        <span class="xc-title">NPS Calculator</span>
+        <span class="xc-desc">Plan retirement savings.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+      <a class="xcard" href="/fdcalculator">
+        <span class="xc-title">FD Calculator</span>
+        <span class="xc-desc">Check fixed deposit maturity value.</span>
+        <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+      </a>
+    </div>
+    <a class="btn-gold" href="/calculators" style="align-self:center">Explore All Calculators</a>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="section stack sec-tint" id="sec-final" data-section="final" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Start Your SWP in Under 5 Minutes with Shriram Financial Services</h2>
+    </div>
+    <div class="card check-card" style="align-self:flex-start">
+      <div class="check-list">
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">SEBI-registered and AMFI-compliant platform</p></div>
+        <div class="check-sep"></div>
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Access to a wide range of mutual funds</p></div>
+        <div class="check-sep"></div>
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">100% paperless process</p></div>
+        <div class="check-sep"></div>
+        <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Zero commission platform</p></div>
+      </div>
+    </div>
+    <div class="cta" style="align-self:flex-start"><a class="btn-gold" href="/opendemataccount">Start SWP Now</a></div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* SWP calculator - calculator UI is shared in global.css. Page-local:
+     General Questions sits on --sec-light, so the accordion + helper side card
+     need a defined edge. */
+  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
+  .faq-side { border: 1px solid var(--color-border-card); }
+</style>
+
+<script>
+  // SWP calculator - month-by-month drawdown of a growing lumpsum.
+  const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const amt = document.getElementById('amt') as HTMLInputElement;
+  const amtR = document.getElementById('amtR') as HTMLInputElement;
+  const wd = document.getElementById('wd') as HTMLInputElement;
+  const wdR = document.getElementById('wdR') as HTMLInputElement;
+  const rate = document.getElementById('rate') as HTMLInputElement;
+  const rateR = document.getElementById('rateR') as HTMLInputElement;
+
+  const segInv = document.getElementById('seg-inv') as HTMLElement;
+  const segRet = document.getElementById('seg-ret') as HTMLElement;
+  let last = { wd: 0, rem: 0 };
+
+  function digits(s: string) {
+    return String(s).replace(/[^0-9.]/g, '');
+  }
+  function clamp(v: number, mn: number, mx: number) {
+    return Math.max(mn, Math.min(mx, v));
+  }
+  function fillSlider(sl: HTMLInputElement) {
+    const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
+    sl.style.background =
+      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
+  }
+  function countTo(el: HTMLElement, from: number, to: number, fn: (n: number) => string) {
+    if (reduce || from === to) {
+      el.textContent = fn(to);
+      return;
+    }
+    let t0: number | null = null;
+    const d = 350;
+    function tick(ts: number) {
+      if (t0 === null) t0 = ts;
+      const t = Math.min(1, (ts - t0) / d);
+      const e = 1 - Math.pow(1 - t, 3);
+      el.textContent = fn(from + (to - from) * e);
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* month-by-month drawdown until the corpus empties, capped at 50 years. Each
+     month the balance earns a return, then the withdrawal is taken. If monthly
+     growth outpaces the withdrawal the corpus survives the cap (lasts indefinitely). */
+  const CAP_MONTHS = 600; // 50-year horizon
+  function compute(corpus: number, monthly: number, ratePct: number) {
+    const i = ratePct / 100 / 12;
+    let balance = corpus;
+    let withdrawn = 0;
+    let months = 0;
+    for (let m = 1; m <= CAP_MONTHS; m++) {
+      balance = balance * (1 + i);
+      months = m;
+      if (balance >= monthly) {
+        balance -= monthly;
+        withdrawn += monthly;
+      } else {
+        withdrawn += balance; // partial final withdrawal empties the corpus
+        balance = 0;
+        break;
+      }
+    }
+    const indefinite = balance > 0; // still solvent at the cap
+    return { months: months, withdrawn: withdrawn, remaining: balance, indefinite: indefinite };
+  }
+
+  function render(animate: boolean) {
+    const corpus = clamp(parseFloat(digits(amt.value)) || 0, +amtR.min, +amtR.max);
+    const monthly = clamp(parseFloat(digits(wd.value)) || 0, +wdR.min, +wdR.max);
+    const ratePct = clamp(parseFloat(digits(rate.value)) || 0, +rateR.min, +rateR.max);
+
+    const r = compute(corpus, monthly, ratePct);
+    const rupee = (v: number) => '₹' + fmt.format(Math.round(v));
+    const durText = r.indefinite ? '50+ yrs' : (r.months / 12).toFixed(1) + ' yrs';
+
+    // headline is a formatted duration string, not a running number
+    (document.getElementById('d-tot') as HTMLElement).textContent = durText;
+
+    if (animate) {
+      countTo(document.getElementById('r-wd') as HTMLElement, last.wd, r.withdrawn, rupee);
+      countTo(document.getElementById('r-rem') as HTMLElement, last.rem, r.remaining, rupee);
+    } else {
+      (document.getElementById('r-wd') as HTMLElement).textContent = rupee(r.withdrawn);
+      (document.getElementById('r-rem') as HTMLElement).textContent = rupee(r.remaining);
+    }
+    last = { wd: r.withdrawn, rem: r.remaining };
+
+    // dark = share withdrawn, gold = share remaining (fully dark once depleted)
+    const total = r.withdrawn + r.remaining;
+    const wdPct = total > 0 ? (r.withdrawn / total) * 100 : 100;
+    segInv.style.width = wdPct + '%';
+    segRet.style.width = 100 - wdPct + '%';
+
+    (document.getElementById('sr-summary') as HTMLElement).textContent =
+      'A ₹' + fmt.format(corpus) + ' corpus with ₹' + fmt.format(monthly) + ' monthly withdrawals lasts ' + durText + ', withdrawing ' + rupee(r.withdrawn) + ' in total.';
+
+    updateUrl(corpus, monthly, ratePct);
+    amtR.setAttribute('aria-valuetext', '₹' + fmt.format(corpus));
+    wdR.setAttribute('aria-valuetext', '₹' + fmt.format(monthly));
+    rateR.setAttribute('aria-valuetext', ratePct + ' percent');
+  }
+
+  function updateUrl(corpus: number, monthly: number, ratePct: number) {
+    const q = '?amt=' + corpus + '&wd=' + monthly + '&rate=' + ratePct;
+    try {
+      history.replaceState(null, '', q);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function pairNumberAndSlider(numEl: HTMLInputElement, slEl: HTMLInputElement, group: boolean) {
+    slEl.addEventListener('input', function () {
+      numEl.value = group ? fmt.format(+slEl.value) : slEl.value;
+      fillSlider(slEl);
+      render(false);
+    });
+    numEl.addEventListener('input', function () {
+      const raw = parseFloat(digits(numEl.value)) || 0;
+      if (group) numEl.value = raw ? fmt.format(raw) : '';
+      slEl.value = String(clamp(raw, +slEl.min, +slEl.max));
+      fillSlider(slEl);
+      render(false);
+    });
+    numEl.addEventListener('change', function () {
+      const v = clamp(parseFloat(digits(numEl.value)) || +slEl.min, +slEl.min, +slEl.max);
+      numEl.value = group ? fmt.format(v) : String(v);
+      slEl.value = String(v);
+      fillSlider(slEl);
+      render(true);
+    });
+  }
+  pairNumberAndSlider(amt, amtR, true);
+  pairNumberAndSlider(wd, wdR, true);
+  pairNumberAndSlider(rate, rateR, false);
+
+  (function initFromUrl() {
+    const p = new URLSearchParams(location.search);
+    function setNum(el: HTMLInputElement, sl: HTMLInputElement, key: string, group: boolean) {
+      if (!p.has(key)) return;
+      const v = clamp(parseFloat(p.get(key) || '') || +sl.min, +sl.min, +sl.max);
+      sl.value = String(v);
+      el.value = group ? fmt.format(v) : String(v);
+    }
+    setNum(amt, amtR, 'amt', true);
+    setNum(wd, wdR, 'wd', true);
+    setNum(rate, rateR, 'rate', false);
+  })();
+
+  [amtR, wdR, rateR].forEach(fillSlider);
+  render(true);
+</script>

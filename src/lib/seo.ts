@@ -78,7 +78,7 @@ export function organizationSchema(site: string): Record<string, unknown> {
     '@type': 'FinancialService',
     name: SITE_NAME,
     url: site,
-    logo: new URL('/assets/logo.png', site).href,
+    logo: new URL('/assets/logo.svg', site).href,
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Shriram House, No. 4, Burkit Road, T. Nagar',

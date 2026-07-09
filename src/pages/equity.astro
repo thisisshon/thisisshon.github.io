@@ -7,6 +7,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import StepFlow from '../components/sections/StepFlow.astro';
 import { faqPageSchema, breadcrumbSchema } from '../lib/seo';
 
 // Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
@@ -45,14 +46,14 @@ const seo = {
   title: 'Buy Equity Stocks - NSE & BSE',
   description:
     'Buy equity stocks online on NSE & BSE with SEBI-registered research, real-time market data & expert insights from Shriram Financial Services.',
-  path: '/equity/',
+  path: '/equity',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products/' },
-        { name: 'Equity', path: '/equity/' },
+        { name: 'Products', path: '/products' },
+        { name: 'Equity', path: '/equity' },
       ],
       site
     ),
@@ -62,11 +63,11 @@ const seo = {
 
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Equity' }]} />
     <div class="hero-inner" data-enter>
       <h1>Equity Investing &amp; Trading Made Simpler, Smart, and Secure</h1>
       <p class="lead">Own a part of India's leading companies and grow wealth over time. Invest in equity stocks with Shriram Financial Services, a SEBI-registered broker trusted by clients for 25+ years.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
     </div>
   </section>
 
@@ -133,7 +134,7 @@ const seo = {
         <div class="cat"><h4>Penny Stocks</h4><p>Low-priced, small company shares. High risk and high reward — for experienced traders only.</p></div>
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== How to Start Investing ===== -->
@@ -142,35 +143,25 @@ const seo = {
       <h2 class="sec-title">How to Start Investing</h2>
       <p class="sec-lead">Get started in just four simple steps—from account setup to placing your first trade.</p>
     </div>
-    <div class="steps" data-reveal-row>
-      <div class="step">
-        <div class="num">1</div>
-        <div class="st-body"><h4>Open Demat + Trading Account</h4><p>Register online with Shriram platform and link your existing Demat account or open a new one— quick and paperless.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">2</div>
-        <div class="st-body"><h4>Complete PAN / KYC / Bank Linking</h4><p>Submit PAN, complete e-KYC via Aadhaar OTP, and link your bank account.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">3</div>
-        <div class="st-body"><h4>Search &amp; Analyse Stocks</h4><p>Use our research tools and SEBI-registered analyst insights.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">4</div>
-        <div class="st-body"><h4>Buy, Hold, Sell &amp; Track</h4><p>Trade on NSE/BSE and monitor your portfolio in real time via the Antara app.</p></div>
-      </div>
+    <StepFlow
+      steps={[
+        { icon: 'account', title: 'Open Demat + Trading Account', desc: 'Register online with Shriram platform and link your existing Demat account or open a new one— quick and paperless.' },
+        { icon: 'kyc', title: 'Complete PAN / KYC / Bank Linking', desc: 'Submit PAN, complete e-KYC via Aadhaar OTP, and link your bank account.' },
+        { icon: 'analyse', title: 'Search & Analyse Stocks', desc: 'Use our research tools and SEBI-registered analyst insights.' },
+        { icon: 'trade', title: 'Buy, Hold, Sell & Track', desc: 'Trade on NSE/BSE and monitor your portfolio in real time via the Antara app.' },
+      ]}
+    />
+  </section>
+
+  <!-- ===== Who Can Invest in Equity Stocks in India? ===== -->
+  <section class="section stack sec-tint" id="sec-eligibility" data-section="eligibility" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Who Can Invest in Equity Stocks in India?</h2>
+      <p class="sec-lead">To invest in equity stocks India, you just need to check the eligibility criteria and keep a few documents ready.</p>
     </div>
-    <div class="stack" style="gap:32px;width:100%">
-      <div class="stack" style="gap:16px">
-        <h3 class="sub-title">Who Can Invest in Equity Stocks in India?</h3>
-        <p class="sub-lead">To invest in equity stocks India, you just need to check the eligibility criteria and keep a few documents ready.</p>
-      </div>
-      <div class="row-2">
-        <div class="card check-card">
-          <h4 class="ch-title">Eligibility Criteria</h4>
+    <div class="row-2">
+      <div class="card check-card">
+        <h4 class="ch-title">Eligibility Criteria</h4>
           <div class="check-list">
             <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Must be an Indian resident aged 18+.</p></div>
             <div class="check-sep"></div>
@@ -194,12 +185,11 @@ const seo = {
           </div>
         </div>
       </div>
-    </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== Costs & Taxes ===== -->
-  <section class="section stack sec-tint" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
+  <section class="section stack sec-light" id="sec-costs" data-section="costs" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Costs &amp; Taxes</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">What you pay to trade, and how your gains are taxed — with no hidden costs.</p>
@@ -236,7 +226,7 @@ const seo = {
   </section>
 
   <!-- ===== Analyse and Decide ===== -->
-  <section class="section stack sec-light" id="sec-analyse" data-section="analyse" style="gap:56px;justify-content:center">
+  <section class="section stack sec-tint" id="sec-analyse" data-section="analyse" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Analyse and Decide</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">How to research a stock, choose a strategy, compare your options and weigh the risks?</p>
@@ -248,14 +238,14 @@ const seo = {
         <p class="sub-lead" style="color:var(--color-text-secondary)">Two complementary approaches, backed by data-driven insights and research-led ideas.</p>
       </div>
       <div class="approaches">
-        <a class="appr" href="/fundamental-analysis/">
+        <a class="appr" href="/fundamentalanalysis">
           <div class="appr-main">
             <p class="idx">Approach 01</p>
             <div class="appr-tt"><h4>Fundamental Research</h4><p>In-depth company analysis, financial modelling, and valuation reports to help you pick stocks with strong long-term potential.</p></div>
           </div>
           <div class="explore"><span>Explore&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
         </a>
-        <a class="appr" href="/technical-analysis/">
+        <a class="appr" href="/technicalanalysis">
           <div class="appr-main">
             <p class="idx">Approach 02</p>
             <div class="appr-tt"><h4>Technical Research</h4><p>Chart patterns, price action, and technical indicators to identify optimal entry and exit points for your trades.</p></div>
@@ -313,7 +303,7 @@ const seo = {
   </section>
 
   <!-- ===== General Questions ===== -->
-  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+  <section class="faq-wrap sec-light" id="sec-faq" data-section="faq">
     <div class="faq-cols">
       <div class="faq-left">
         <h2 class="faq-title">Got Questions?</h2>
@@ -333,13 +323,13 @@ const seo = {
   </section>
 
   <!-- ===== Final CTA ===== -->
-  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+  <section class="cta-sec sec-tint" id="sec-final-cta" data-section="final-cta">
     <div class="cta-box">
       <div class="ct-tt">
         <h3>Open Your Demat Account in Minutes</h3>
         <p class="ct-sub">100% digital, paperless, and SEBI-compliant. Start investing in equities with expert advisory from day one.</p>
       </div>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Get Started →</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Get Started →</a></div>
     </div>
   </section>
 </BaseLayout>

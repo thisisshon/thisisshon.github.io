@@ -1,0 +1,374 @@
+---
+/**
+ * Loan Against Mutual Funds (LAMF) - /loanagainstmutualfund
+ * Long-form product page. Built entirely from the shared design-system
+ * components in global.css (hero, .section/.sec-title, .card, .steps,
+ * .product-page_table, .check-card, .risks, .bullets, FaqAccordion, .cta-box).
+ * Content is the compliance-approved LAMF doc, word-for-word.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
+
+// How does LAMF Work? - nine steps, doc verbatim.
+const STEPS = [
+  { p: 'Check your eligibility, credit limit, and interest rates' },
+  { p: 'Select mutual fund units to pledge' },
+  { p: 'Complete your KYC verification' },
+  { p: 'Pledge your selected mutual fund units' },
+  { p: 'Your loan amount is approved, and a Sanction Letter with Key Fact Statement (KFS) is issued' },
+  { p: 'e-Sign the loan agreement' },
+  { p: 'Your loan account is ready to use' },
+  { p: 'Withdraw funds as needed' },
+  { p: 'Repay the loan at your convenience and regain complete control of your mutual fund holdings' },
+];
+
+// LAMF, Personal Loan, and Selling Mutual Funds - comparison, doc verbatim.
+const COMPARE = [
+  { k: 'Investment Continuity', l: 'Fully maintained — units stay invested', pl: 'No investment disruption', s: 'Investment permanently liquidated' },
+  { k: 'Interest Rate', l: 'Lower — secured facility 12%', pl: 'Higher — unsecured (12%–24% p.a.)', s: 'Not applicable' },
+  { k: 'Capital Gains Tax', l: 'Not triggered - no redemption', pl: 'Not applicable', s: 'STCG/LTCG applicable at redemption' },
+  { k: 'Approval Basis', l: 'Portfolio value & eligibility', pl: 'Income, credit score, employment', s: 'No approval needed' },
+  { k: 'Processing Time', l: 'Fast & 100% digital', pl: '2–5 business days typically', s: 'T+2 or T+3 days for credit' },
+  { k: 'End-Use Restriction', l: 'None', pl: 'None', s: 'None' },
+  { k: 'Impact on Financial Goals', l: 'None — goals remain on track', pl: 'None', s: 'Long-term compounding disrupted' },
+  { k: 'Prepayment Charges', l: 'Nil after the first 3 months', pl: 'Often applicable', s: 'Not applicable' },
+  { k: 'Documentation', l: 'Minimal — PAN-based digital process', pl: 'High — income, employment, and other proofs', s: 'Minimal — KYC only' },
+];
+
+// When to Choose Loan Against Mutual Fund? - five scenarios, doc verbatim.
+const SCENARIOS = [
+  { h: 'Medical Emergency', p: "Healthcare costs don't follow a schedule. LAMF delivers fast liquidity without dismantling an investment portfolio you may have built over years, ensuring you meet the medical need without a long-term financial setback." },
+  { h: 'Education Fees', p: 'University admissions, overseas programme deposits, and semester fees often come with rigid deadlines. LAMF provides access to funds so no educational opportunity is missed, while your investments continue to work toward future goals.' },
+  { h: 'Home Renovation or Down Payment', p: 'Whether you are remodelling your home or arranging a down payment for a property purchase, LAMF gives you a cost-effective credit line that is faster and cheaper than a personal loan or top-up home loan.' },
+  { h: 'Wedding or Milestone Event', p: "Life's big moments should not be funded by breaking long-term investments. You can utilise LAMF to manage wedding expenses or other family celebrations and repay without disrupting wealth creation." },
+  { h: 'Travel or International Expenses', p: 'Visa deposits, foreign currency needs, or international trip costs are handled smoothly via LAMF, without selling units at an inopportune market moment.' },
+];
+
+// Risks to Consider Before Applying for LAMF - seven items, doc verbatim.
+const RISKS = [
+  { h: 'Market Volatility', p: 'A decline in the value of your mutual fund investments may reduce the available collateral value.' },
+  { h: 'Margin Calls', p: 'If your portfolio value falls below the required Loan-to-Value (LTV) threshold, you will be asked to pledge additional units or partially repay the outstanding loan.' },
+  { h: 'Forced Redemption in Extreme Cases', p: 'Your pledged units may be partially redeemed to recover outstanding dues if an LTV breach goes uncured — a protective last resort, not a routine action. Hence, plan your repayments with market volatility in mind.' },
+  { h: 'Restricted Transactions', p: 'Mutual fund units under lien cannot be redeemed, switched, or transferred until the outstanding loan amount is repaid and the lien is removed.' },
+  { h: 'Pre-Closure Within 3 Months Attracts a Charge', p: 'Repaying your entire LAMF within 3 months of the first withdrawal attracts a pre-closure charge of 3% on the total outstanding loan amount. No penalty applies after 3 months.' },
+  { h: 'Floating Interest Rates', p: 'Interest rates may change during the loan tenure based on market conditions or our applicable benchmark.' },
+  { h: 'Repayment Discipline', p: 'Timely repayment helps maintain your loan account and prevents additional charges or enforcement of security, where applicable.' },
+];
+
+// Got Questions? - the first 6 FAQs from the compliance doc (display cap; the
+// remainder was stripped and can be restored from the doc if needed). Feeds both
+// the accordion and the FAQPage JSON-LD, so markup and schema cannot drift.
+const FAQS = [
+  {
+    q: 'What is a Loan Against Mutual Fund (LAMF)?',
+    a: 'A Loan Against Mutual Fund is a secured credit facility where you pledge your mutual fund units as collateral with a lender, without redeeming them. The lender marks a lien on these units via CAMS or KFintech and grants you a loan or overdraft limit based on the current NAV of your portfolio. Your units remain invested and keep earning returns throughout the loan tenure.',
+  },
+  {
+    q: 'Is a Loan Against Mutual Fund better than a personal loan?',
+    a: 'If you already own eligible mutual fund investments, a Loan Against Mutual Fund offers advantages such as competitive interest rates, continued investment ownership, and flexible repayment options compared to many unsecured personal loans.',
+  },
+  {
+    q: 'Can I apply for a Loan Against Mutual Fund online?',
+    a: 'Yes. We offer an easy digital application journey, allowing eligible customers to apply online, complete verification, pledge mutual fund units, and receive funds with zero paperwork.',
+  },
+  {
+    q: 'Can I continue to earn returns on pledged mutual fund units?',
+    a: 'Yes. Lien marking does not affect the economic returns of your investments. NAV appreciation, dividends, and bonus units continue to accrue to your folio while the lien is active. What changes is your ability to redeem or transfer those units; this is restored once the loan is repaid and the lien is released.',
+  },
+  {
+    q: 'What is the maximum loan amount I can get under LAMF?',
+    a: 'The maximum loan amount is determined by the LTV ratio applicable to the fund category you pledge. For equity mutual funds, you can borrow up to 50% of NAV; for debt mutual funds, up to 70%. The actual amount sanctioned also depends on the total eligible portfolio value and our internal credit assessment.',
+  },
+  {
+    q: 'Are there any pre-payment charges on LAMF?',
+    a: 'Yes. A 3% per annum (over and above the Regular ROI) pre-closure charge applies if the loan is fully repaid within the first 3 months, but after 3 months there are no foreclosure charges.',
+  },
+];
+
+const site = Astro.site!.href;
+
+const seo = {
+  title: 'Loan Against Mutual Funds',
+  description:
+    'Get instant loans against your mutual fund holdings without redeeming investments. Quick, collateral-based LAMF from Shriram Financial Services.',
+  path: '/loanagainstmutualfund',
+  jsonLd: [
+    faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
+    breadcrumbSchema(
+      [
+        { name: 'Home', path: '/' },
+        { name: 'Products', path: '/products' },
+        { name: 'Loan Against Mutual Funds', path: '/loanagainstmutualfund' },
+      ],
+      site
+    ),
+    organizationSchema(site),
+  ],
+};
+---
+
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
+  <!-- ===== Hero ===== -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Loan Against Mutual Funds' }]} />
+    <div class="hero-inner" data-enter>
+      <h1>Loan Against Mutual Fund: Unlock the Value of Your Mutual Fund Portfolio</h1>
+      <p class="lead">Get quick access to funds by leveraging your mutual fund portfolio while your investments remain intact.</p>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Check Eligibility</a></div>
+    </div>
+  </section>
+
+  <!-- ===== Access Funds While Your Investments Grow ===== -->
+  <section class="section stack sec-light" id="sec-about" data-section="about" style="gap:56px;justify-content:center" data-enter="2">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Loan Against Mutual Fund: Access Funds While Your Investments Grow</h2>
+      <p class="sec-lead">Unexpected expenses don't always have to disrupt your investment journey. Get a Loan Against Mutual Fund with Shriram Financial Services and unlock liquidity without touching your investments. Pledge eligible mutual fund units as collateral, apply online and get your funds, while your investments remain invested. Shriram Financial Services provides a fast, transparent, and fully digital LAMF experience with a simple online application process.</p>
+    </div>
+  </section>
+
+  <!-- ===== How does LAMF Work? ===== -->
+  <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">How does LAMF Work?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Here is a step-by-step breakdown of how your mutual fund portfolio provides you access to quick funds:</p>
+    </div>
+    <div class="stack" style="gap:32px;width:100%">
+      <div class="steps" data-reveal-row>
+        {STEPS.slice(0, 3).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 1}</div><div class="st-body"><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+      <div class="steps" data-reveal-row>
+        {STEPS.slice(3, 6).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 4}</div><div class="st-body"><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+      <div class="steps" data-reveal-row>
+        {STEPS.slice(6).map((s, i) => (
+          <>
+            {i > 0 && <div class="step-div" />}
+            <div class="step"><div class="num">{i + 7}</div><div class="st-body"><p>{s.p}</p></div></div>
+          </>
+        ))}
+      </div>
+    </div>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Apply Now</a>
+  </section>
+
+  <!-- ===== Interest Rates for Loan Against Mutual Fund ===== -->
+  <section class="section stack sec-light" id="sec-rates" data-section="rates" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Interest Rates for Loan Against Mutual Fund</h2>
+      <p class="sec-lead">One of the most compelling reasons to choose LAMF over a personal loan or credit card rollover is the significant interest rate advantage of LAMF. Because your mutual fund portfolio backs the loan as collateral, lenders price the risk lower, and you benefit directly from that reduced risk premium.</p>
+      <p class="sec-lead">Our LAMF interest rates are structured transparently, with rates calibrated against the loan slab and the type of mutual fund pledged. The indicative interest rates are:</p>
+      <p class="sec-lead">For equity and debt mutual funds, an interest rate of 12% is applicable for the loan slab of ₹25,000 to 2 Crore.</p>
+    </div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">What Determines Your LAMF Interest Rate?</h3>
+      </div>
+      <ul class="bullets">
+        <li>Type of mutual fund pledged (equity or debt)</li>
+        <li>Loan-to-Value (LTV) ratio selected</li>
+        <li>Total loan amount and overdraft utilisation</li>
+        <li>Market lending benchmarks</li>
+        <li>Borrower's credit profile</li>
+      </ul>
+      <p class="sec-lead">Note: Rates are indicative and subject to periodic revision. All rates are annualised at monthly rests. Interest is levied only on the drawn overdraft amount and not on the full sanctioned limit. Actual rate offered may vary based on various factors.</p>
+    </div>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Apply Now</a>
+  </section>
+
+  <!-- ===== LAMF Eligibility Criteria ===== -->
+  <section class="section stack sec-tint" id="sec-eligibility" data-section="eligibility" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">LAMF Eligibility Criteria</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Our Loan Against Mutual Fund is designed for Indian investors. If you hold eligible mutual fund units and meet the following criteria, you can apply:</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table bordered" style="grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);min-width:560px">
+      <div class="cell th"><p>Eligibility Parameter</p></div><div class="cell th"><p>Requirement</p></div>
+      <div class="cell tb"><p class="k">Residential Status</p></div><div class="cell tb"><p class="v">Resident Indian (Individual)</p></div>
+      <div class="cell tb"><p class="k">Applicant Type</p></div><div class="cell tb"><p class="v">Salaried Individual</p></div>
+      <div class="cell tb"><p class="k">Age</p></div><div class="cell tb"><p class="v">18 years to 70 years.</p></div>
+      <div class="cell tb"><p class="k">KYC Compliance</p></div><div class="cell tb"><p class="v">Valid KYC is mandatory. PAN is compulsory for portfolio fetching.</p></div>
+      <div class="cell tb"><p class="k">Minimum Portfolio Value</p></div><div class="cell tb"><p class="v">Mutual fund holdings must meet our minimum eligible threshold.</p></div>
+      <div class="cell tb"><p class="k">Fund Eligibility</p></div><div class="cell tb"><p class="v">Only schemes on our approved fund list qualify. ELSS and close-ended funds, and any fund which has underlying assets such as Gold/Silver, are not eligible.</p></div>
+    </div></div>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Apply Now</a>
+  </section>
+
+  <!-- ===== Documents Required for Loan Against Mutual Fund ===== -->
+  <section class="section stack sec-light" id="sec-documents" data-section="documents" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Documents Required for Loan Against Mutual Fund</h2>
+      <p class="sec-lead">Our Loan Against Mutual Fund facility is built for a fast and paperless experience. Mutual Funds' portfolios are fetched directly from CAMS and KFintech using your PAN. You only need to keep the following essentials handy:</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table bordered" style="grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);min-width:560px">
+      <div class="cell th"><p>Documents</p></div><div class="cell th"><p>Details</p></div>
+      <div class="cell tb"><p class="k">PAN Card</p></div><div class="cell tb"><p class="v">Mandatory — used for KYC verification and portfolio fetching from CAMS / KFintech</p></div>
+      <div class="cell tb"><p class="k">Aadhaar Card</p></div><div class="cell tb"><p class="v">For identity and address verification</p></div>
+      <div class="cell tb"><p class="k">Bank Account Proof</p></div><div class="cell tb"><p class="v">Cancelled cheque, bank passbook, or net banking statement for disbursal account verification</p></div>
+      <div class="cell tb"><p class="k">Mutual Fund Folio Details</p></div><div class="cell tb"><p class="v">Auto-fetched via PAN — no physical statement required in most cases</p></div>
+    </div></div>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Apply Now</a>
+  </section>
+
+  <!-- ===== What is the Loan-to-Value Ratio and How Much Can You Borrow? ===== -->
+  <section class="section stack sec-tint" id="sec-ltv" data-section="ltv" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What is the Loan-to-Value Ratio and How Much Can You Borrow?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The Loan-to-Value (LTV) Ratio indicates the maximum percentage of your eligible mutual fund portfolio that can be availed as a loan. The sanctioned amount depends on the type of mutual fund, the current market value of your investments, lender policies, and internal risk assessment.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Mutual Fund Category</p></div><div class="cell th"><p>Max LTV Ratio</p></div><div class="cell th"><p>Illustration (₹10L portfolio)</p></div>
+      <div class="cell tb"><p class="k">Equity Mutual Funds</p></div><div class="cell tb"><p class="v">Up to 50%</p></div><div class="cell tb"><p class="v">Borrow up to ₹5 Lakh</p></div>
+      <div class="cell tb"><p class="k">Debt Mutual Funds</p></div><div class="cell tb"><p class="v">Up to 70%</p></div><div class="cell tb"><p class="v">Borrow up to ₹8 Lakh</p></div>
+    </div></div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">Why is the LTV Different for Equity and Debt Funds?</h3>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Equity mutual funds are subject to higher market volatility, and their NAV can swing significantly based on stock market movements. To protect both the borrower and the lender from a sudden drop in collateral value triggering a forced margin call, lenders apply a more conservative LTV cap on equity funds.</p>
+        <p class="sub-lead" style="color:var(--color-text-secondary)">Debt mutual funds invest in fixed-income instruments like government bonds and corporate paper. Their NAV is relatively stable, which allows lenders to extend a higher LTV without disproportionate collateral risk.</p>
+      </div>
+    </div>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Apply Now</a>
+  </section>
+
+  <!-- ===== Mutual Funds Eligible for LAMF ===== -->
+  <section class="section stack sec-light" id="sec-eligible-funds" data-section="eligible-funds" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Mutual Funds Eligible for LAMF</h2>
+      <p class="sec-lead">Most investors can avail a Loan Against Mutual Fund using a wide range of eligible schemes. The final list of accepted mutual funds depends on the lender's approved universe and prevailing lending policies. We accept pledges against a vetted list of approved schemes registered with CAMS and KFintech across the following fund categories:</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t3 bordered">
+      <div class="cell th"><p>Fund Category</p></div><div class="cell th"><p>Eligible?</p></div><div class="cell th"><p>LTV Applied</p></div>
+      <div class="cell tb"><p class="k">Equity Mutual Funds (open-ended only)</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-success)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span> Eligible</p></div><div class="cell tb"><p class="v">50%</p></div>
+      <div class="cell tb"><p class="k">Debt Mutual Funds</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-success)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span> Eligible</p></div><div class="cell tb"><p class="v">70%</p></div>
+      <div class="cell tb"><p class="k">ELSS — post 3-year lock-in</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-success)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span> Eligible (partial – only free units)</p></div><div class="cell tb"><p class="v">50%</p></div>
+      <div class="cell tb"><p class="k">Index Funds (equity)</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-success)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span> Eligible</p></div><div class="cell tb"><p class="v">50%</p></div>
+      <div class="cell tb"><p class="k">Fund of Funds (FoFs)</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-success)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span> Eligible</p></div><div class="cell tb"><p class="v">70%</p></div>
+      <div class="cell tb"><p class="k">Fixed Maturity Plans (FMP)</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-danger)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span> Not Eligible</p></div><div class="cell tb"><p class="v">N/A</p></div>
+      <div class="cell tb"><p class="k">Closed-Ended MF Schemes</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-danger)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span> Not Eligible</p></div><div class="cell tb"><p class="v">N/A</p></div>
+      <div class="cell tb"><p class="k">ELSS — within 3-year lock-in</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-danger)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span> Not Eligible</p></div><div class="cell tb"><p class="v">N/A</p></div>
+      <div class="cell tb"><p class="k">Gold ETFs & Silver ETFs</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-danger)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span> Not Eligible</p></div><div class="cell tb"><p class="v">N/A</p></div>
+      <div class="cell tb"><p class="k">Gold Savings Funds/Silver Fund of Funds</p></div><div class="cell tb"><p class="v"><span style="color:var(--color-danger)"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span> Not Eligible</p></div><div class="cell tb"><p class="v">N/A</p></div>
+    </div></div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">How are Fund Eligibilities Determined?</h3>
+        <p class="sub-lead">Eligible funds are those listed on Shriram Financial Services' approved scheme list, which is reviewed and updated periodically in line with AMC updates, market liquidity assessments, and RBI directives. Portfolio details are auto-fetched via CAMS and KFintech using your PAN — you simply select the units you want to pledge from your live portfolio on screen.</p>
+        <p class="sub-lead">If you are unsure whether your investments qualify, simply apply online, and our team will help you verify the eligibility of your mutual fund portfolio.</p>
+      </div>
+    </div>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Apply Now</a>
+  </section>
+
+  <!-- ===== What are the Benefits of Loan Against Mutual Fund? ===== -->
+  <section class="section stack sec-tint" id="sec-benefits" data-section="benefits" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What are the Benefits of Loan Against Mutual Fund?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Here are the benefits of Loan Against Mutual Fund and why discerning investors consistently opt for LAMF when they need liquidity:</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>Competitive Interest Rates</h4><p>Since LAMF is a secured loan backed by your mutual fund investments, it generally offers lower interest rates than unsecured loans such as personal loans or credit cards.</p></div>
+      <div class="cat"><h4>Your Portfolio Keeps Compounding</h4><p>Pledging does not mean pausing your wealth journey. Pledged mutual fund units remain invested and active. NAV appreciation, dividend payouts, and bonus units continue accruing to your account throughout the loan tenure.</p></div>
+      <div class="cat"><h4>Access Funds Quickly</h4><p>With a streamlined digital application process and minimal documentation, eligible applicants can receive faster approvals and disbursements than many conventional borrowing options.</p></div>
+      <div class="cat"><h4>Pay for Only What You Use</h4><p>LAMF is offered as an overdraft facility, allowing you to withdraw funds from your sanctioned limit whenever needed. Interest is charged only on the amount you utilise, not on the entire sanctioned limit.</p></div>
+      <div class="cat"><h4>No Need to Liquidate Investments</h4><p>Avoid redeeming your mutual fund units and the potential impact on your long-term wealth creation goals.</p></div>
+      <div class="cat"><h4>Zero Capital Gains Tax</h4><p>Redeeming mutual funds triggers Capital Gains tax depending on the holding period and fund type. With LAMF, no units are sold. No tax event is created.</p></div>
+      <div class="cat"><h4>Simple Digital Process</h4><p>From application and approval to loan disbursal, the journey is designed to be fast, secure, and paperless.</p></div>
+      <div class="cat"><h4>Suitable for Multiple Financial Needs</h4><p>Use the loan amount for medical emergencies, education expenses, home renovation, travel, or other personal financial needs, subject to the lender's terms.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== LAMF, Personal Loan, and Selling Mutual Funds – A Comparison ===== -->
+  <section class="section stack sec-light" id="sec-compare" data-section="compare" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">10. LAMF, Personal Loan, and Selling Mutual Funds – A Comparison</h2>
+      <p class="sec-lead">When a financial need arises, customers typically have three options:- take a personal loan, redeem their mutual funds, or use Loan Against Mutual Fund. The differences across these three options are stark, and understanding them can save you a significant amount of money, time, and long-term wealth.</p>
+    </div>
+    <div class="t-scroll"><div class="product-page_table t4 bordered" style="min-width:820px">
+      <div class="cell th"><p>Comparison Parameter</p></div><div class="cell th"><p>Shriram Financial Services' LAMF</p></div><div class="cell th"><p>Personal Loan</p></div><div class="cell th"><p>Selling Mutual Funds</p></div>
+      {COMPARE.map((c) => (
+        <>
+          <div class="cell tb"><p class="k">{c.k}</p></div>
+          <div class="cell tb"><p class="v">{c.l}</p></div>
+          <div class="cell tb"><p class="v">{c.pl}</p></div>
+          <div class="cell tb"><p class="v">{c.s}</p></div>
+        </>
+      ))}
+    </div></div>
+    <div class="stack" style="gap:32px">
+      <div class="stack" style="gap:16px">
+        <h3 class="sub-title">The Verdict</h3>
+        <p class="sub-lead">If you hold a mutual fund portfolio and require short-to-medium-term liquidity, LAMF is almost always the most financially sound choice. It preserves your wealth compounding, avoids a tax event, costs less in interest, and is faster to access than most traditional loan products.</p>
+        <p class="sub-lead">Our LAMF is specifically designed to make this smart choice accessible, affordable, and fast for Indian investors at every portfolio size.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== When to Choose Loan Against Mutual Fund? ===== -->
+  <section class="section stack sec-tint" id="sec-when" data-section="when" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">When to Choose Loan Against Mutual Fund?</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">The flexibility offered by Loan Against Mutual Fund makes it the right financial tool across a wide range of real-life situations. Here are a few common scenarios where investors choose LAMF over personal loans or fund redemption:</p>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      {SCENARIOS.map((s) => (
+        <div class="cat"><h4>{s.h}</h4><p>{s.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== Risks to Consider Before Applying for LAMF ===== -->
+  <section class="section stack sec-light" id="sec-risks" data-section="risks" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Risks to Consider Before Applying for LAMF</h2>
+      <p class="sec-lead">While a Loan Against Mutual Fund offers several advantages, it is important to understand the associated risks and responsibilities before applying.</p>
+    </div>
+    <div class="risks" data-reveal-row>
+      {RISKS.map((r) => (
+        <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== General Questions ===== -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">Got Questions?</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction?</h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help you weigh a pledge against redeeming and show what a dedicated, research-led plan would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Loan Against Mutual Fund: Access Funds While Your Investments Grow</h3>
+        <p class="ct-sub">Pledge eligible mutual fund units as collateral, apply online and get your funds, while your investments remain invested.</p>
+      </div>
+      <a class="btn-gold" href="/opendemataccount">Apply for LAMF in 2 Mins</a>
+    </div>
+  </section>
+</BaseLayout>

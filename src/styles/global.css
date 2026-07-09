@@ -17,7 +17,7 @@
      audit (docs/legacy-style-audit.md) and which near-duplicates it absorbed.
    • Merge policy (pixel parity):
        Tier 1 - applied: near-duplicates ≤2 RGB points apart (imperceptible).
-       Tier 2 - NOT applied, documented in /design-system/proposed/:
+       Tier 2 - NOT applied, documented in /designsystem/proposed:
                 visible unifications (button specs, footer fork, cream
                 collapse, ink merges) awaiting sign-off.
    • Single-use page-local colors stay literal in their page/component CSS
@@ -393,8 +393,8 @@
   /* ===== document card (shared "view / download" card) =====
      One canonical card for document/download listings: a name, an optional meta
      line, and one or two underlined action links. Used by
-     /regulatory-documents/investor-charter/, /regulatory-documents/mandatory-member-details/
-     and /contact-us/ (Downloads) - all via the shared filter toolbar below.
+     /regulatorydocuments/investorcharter, /regulatorydocuments/mandatorymemberdetails
+     and /contactus (Downloads) - all via the shared filter toolbar below.
      Consolidates the former page-local .ch-card dupe (rule 2). */
   .doc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; }
   .doc-card {
@@ -427,7 +427,7 @@
   }
 
   /* Document filter toolbar - search field + category chips + grouped grids +
-     empty state. Shared by /regulatory-documents/investor-charter/ and /contact-us/
+     empty state. Shared by /regulatorydocuments/investorcharter and /contactus
      (Downloads); the per-page script toggles `.hide` on cards/groups and `.show` on the empty note. */
   .doc-group { display: flex; flex-direction: column; }
   .doc-cat {
@@ -480,7 +480,10 @@
   .nav-logo-link { display: inline-flex; text-decoration: none; }
   .logo-box { background: var(--color-white); border-radius: 4px; padding: 4px 0; display: flex; align-items: center; justify-content: center; }
   .logo-crop { width: 128px; height: 56px; position: relative; overflow: hidden; }
-  .logo-crop img { position: absolute; width: 131.54%; height: 155.15%; left: -15.77%; top: -27.58%; max-width: none; }
+  /* Vector logo (logo.svg) sits on its own baseline - fit it whole to the box.
+     (The former absolute-position crop numbers were tuned to logo.png's raster
+     bleed and mangle the SVG; see the compare shots when this was swapped.) */
+  .logo-crop img { width: 100%; height: 100%; object-fit: contain; }
   .nav-links { display: flex; gap: 24px; align-items: center; height: 36px; }
   .nav-link { display: flex; gap: 4px; align-items: center; padding: 4px 12px; border-radius: 8px; }
   .nav-link span { font-weight: 500; font-size: 14px; color: var(--color-charcoal-700); white-space: nowrap; }
@@ -764,9 +767,13 @@
   .faq-icon svg .v { transform-box: fill-box; transform-origin: center; transition: transform 0.38s var(--ease-standard), opacity 0.38s ease; }
   .faq-item.open .faq-icon svg .v { transform: scaleY(0); opacity: 0; }
 
-  /* .faq-side stroke is background-dependent: strokeless by default (on
-     --sec-tint); light-background pages add the 1px card border on
-     .faq-acc AND .faq-side together. */
+  /* .faq stroke is background-dependent: strokeless by default (the near-white
+     card reads against the --sec-tint band), but on a light FAQ band the card and
+     section are both near-white, so stroke the accordion AND the side card. Keyed
+     on `.faq-wrap.sec-light` so it's automatic per section tone - no per-page
+     scoping (which can't reach .faq-acc inside the FaqAccordion component anyway). */
+  .faq-wrap.sec-light .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
+  .faq-wrap.sec-light .faq-side { border: 1px solid var(--color-border-card); }
   .faq-side { width: 464px; flex: none; background: var(--color-surface-card); border-radius: 24px; padding: var(--container-pad); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 40px; justify-content: flex-end; }
   .faq-side .usr { position: absolute; left: var(--container-pad); top: 64px; width: 128px; height: 144px; opacity: 0.1; } /* watermark dim - sanctioned opacity use */
   .faq-side .usr img { width: 100%; height: 100%; display: block; }
@@ -1201,8 +1208,19 @@
 
 /* Collapse the desktop nav into a hamburger */
 @media (max-width: 1300px) {
-  .nav-links, .nav-right { display: none; }
+  .nav-links { display: none; }
   .nav-toggle { display: flex; }
+  /* mweb header (Figma 1154:3221): hamburger far left, logo beside it, the
+     "Open A Demat Account" CTA far right. Reordered with flex `order` - no markup
+     change. The hamburger's own -8px margins already offset it 8px into the pad,
+     matching Figma; margin-left:24px sets the hamburger→logo gap; margin-right:auto
+     pushes the CTA to the far edge. Login is dropped on mweb (lives in the menu). */
+  .nav-toggle { order: -1; }
+  .nav-left { margin-left: 24px; margin-right: auto; }
+  .nav-right { display: flex; gap: 0; }
+  .nav-actions { gap: 0; }
+  .nav-actions .login-wrap { display: none; }
+  .nav-actions .btn-dark { width: auto; } /* hug the label (~165px, Figma) */
   /* Full-screen menu - fills the viewport below the 80px header, fades in as one
      surface while its rows stagger up. Frosted white layer (sanctioned translucency). */
   .mobile-menu {
@@ -1318,7 +1336,12 @@
   .sec-title, .faq-title { font-size: clamp(28px, 7vw, 40px); }
   .sub-title { font-size: clamp(20px, 5.4vw, 24px); }
 
-  .row-2 { flex-direction: column; }
+  /* mweb: separated-container card rows tighten to a 24px gap once stacked
+     (the 32px desktop gap reads as too loose on a narrow column). Applies only
+     to gap-separated card boxes - the unified .cat-grid / .steps / tables keep
+     their internal dividers untouched. Promoted from the equity-only trial. */
+  .row-2 { flex-direction: column; gap: 24px; }
+  .pcard-grid { gap: 24px; }
   .hf-row { flex-direction: column; gap: 24px; }
   .check-list { gap: 16px; }
 
@@ -1385,6 +1408,15 @@
   .field-val input { width: 56px; }
   .ready-bar { flex-direction: column; align-items: stretch; gap: 14px; } /* off-grid - Tier-2 */
   .ready-btn { width: 100%; }
+}
+
+/* Small phones: the mweb header's 128px logo + full "Open A Demat Account" CTA
+   can't both stay Figma-size below ~440px, so the CTA would touch the logo and
+   spill into the pad. Trim the logo and the hamburger→logo gap; the Figma layout
+   stays exact at its 517px design width. Header-only - footer logo untouched. */
+@media (max-width: 440px) {
+  .nav-left { margin-left: 16px; }
+  .nav .logo-crop { width: 104px; height: 46px; }
 }
 
 /* Respect reduced-motion everywhere */

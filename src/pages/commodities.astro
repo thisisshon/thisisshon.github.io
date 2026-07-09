@@ -47,14 +47,14 @@ const seo = {
   title: 'Commodity Trading - MCX',
   description:
     'Trade gold, silver & crude oil on MCX with live commodity prices, expert insights and secure execution with Shriram Financial Services',
-  path: '/commodities/',
+  path: '/commodities',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products/' },
-        { name: 'Commodities', path: '/commodities/' },
+        { name: 'Products', path: '/products' },
+        { name: 'Commodities', path: '/commodities' },
       ],
       site
     ),
@@ -66,11 +66,11 @@ const seo = {
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Commodities' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Commodities' }]} />
     <div class="hero-inner" data-enter>
       <h1>Trade Commodities with Confidence — Gold, Silver, Crude &amp; More</h1>
       <p class="lead">Trade India's top commodities like gold, silver, crude oil, and other products on trusted MCX exchanges — diversify your portfolio, hedge inflation, and capture market opportunities.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
     </div>
   </section>
 
@@ -127,7 +127,7 @@ const seo = {
       <div class="cat"><h4>Leverage Efficiency</h4><p>Use margin to control larger positions with smaller capital, enhancing potential returns.</p></div>
       <div class="cat"><h4>Risk Balancing</h4><p>Commodities can offset losses in other asset classes during uncertain market conditions.</p></div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Commodity Trading Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Commodity Trading Account</a>
   </section>
 
   <!-- ===== Advantages of Commodity Trading ===== -->
@@ -144,7 +144,7 @@ const seo = {
       <div class="cat"><h4>Wide Market Access</h4><p>Trade a wide range of commodities across reputable exchanges such as MCX.</p></div>
       <div class="cat"><h4>Regulated Trading</h4><p>Trading on regulated exchanges ensures safety, compliance, and transparency.</p></div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Commodity Trading</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Commodity Trading</a>
   </section>
 
   <!-- ===== Disadvantages of Commodity Trading ===== -->
@@ -232,7 +232,7 @@ const seo = {
         <div class="st-body"><h4>Place First Trade</h4><p>Search for a commodity contract, check margin requirements, and place a buy or sell futures order.</p></div>
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== SEBI Rules & Regulations ===== -->
@@ -379,7 +379,7 @@ const seo = {
             <h3>Need A Clearer Direction?</h3>
             <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated, research-led plan would do differently.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

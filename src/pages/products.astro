@@ -1,0 +1,251 @@
+---
+/**
+ * Product Suite / Product Hub - /products
+ * Body rebuilt to the compliance-approved
+ * Product Hub doc (V4; June 22), rendered with the shared design system:
+ * .pgroup / .pcard-grid / .pcard product grids, .bullets, .cta-box, and the
+ * standard hero + FaqAccordion. Invents no CSS.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// General Questions - doc "Got Questions?" verbatim, same order (first item open).
+const FAQS = [
+  {
+    q: 'What products can I access through Shriram Financial Services?',
+    a: 'Shriram Financial Services offers a wide range of financial products, including Equity, Derivatives, commodities, mutual funds, IPOs, fixed deposits, bonds, ETFs, NPS, loan against securities, and loan against mutual funds — all at one place.',
+  },
+  {
+    q: 'Is Shriram Financial Services suitable for both new and experienced investors?',
+    a: 'Yes. Whether you are beginning your investment journey or actively managing a portfolio, Shriram Financial Services offers solutions designed for different investment needs and financial goals.',
+  },
+  {
+    q: 'Can I trade delivery, intraday, and F&O on a single platform?',
+    a: 'Yes. A single Shriram Financial Services account gives you access to multiple trading opportunities, helping you manage products conveniently.',
+  },
+  {
+    q: 'I am a first-time investor. Where should I begin on Shriram Financial Services?',
+    a: 'Start by opening a Demat and trading account online in under 15 minutes. Once your account is active, you can explore our curated investment options, begin a SIP in mutual funds, or speak with our Relationship Manager, who will guide you based on your financial goals.',
+  },
+  {
+    q: 'How fast can I complete onboarding and begin accessing the markets?',
+    a: 'Our digital onboarding sequence is completely paperless and 100% digital. By utilizing secure Aadhaar OTP-based eKYC, you can complete your profile verification, upload basic bank proofs, and activate your account parameters in roughly 15 minutes without ever needing to visit a branch.',
+  },
+  {
+    q: 'Does Shriram Financial Services only offer trading products?',
+    a: 'No. Beyond trading, Shriram Financial Services provides investment solutions, fixed-income products, retirement planning options, portfolio-building opportunities, and financing against eligible investments.',
+  },
+  {
+    q: 'What is the minimum amount needed to start trading on Shriram Financial Services?',
+    a: 'For equity trading, you can start with the amount required to purchase a single share. There is no minimum balance requirement to maintain a Demat account.',
+  },
+  {
+    q: 'How does Shriram Financial Services help me invest without selling my existing investments when I need funds?',
+    a: 'Through our Loan Against Shares and Loan Against Mutual Funds products, you can pledge your holdings as collateral and access a credit line — without redeeming your investments. Your portfolio continues to remain invested and generate returns while your liquidity needs are addressed.',
+  },
+  {
+    q: 'Are retirement and long-term wealth solutions available?',
+    a: 'Yes. Products such as NPS, mutual funds, ETFs, and fixed-income options can support long-term financial planning and wealth creation.',
+  },
+  {
+    q: 'Why choose Shriram Financial Services for trading and investments?',
+    a: 'Shriram Financial Services brings together trading, investing, borrowing, and wealth solutions through one platform — supported by research, guidance, and a customer-focused approach.',
+  },
+];
+
+const seo = {
+  title: 'Investment Products & Trading',
+  description:
+    'Explore equity, derivatives, mutual funds, IPO, NPS, ETF, bonds & Loan Against Mutual Fund - all investment products from Shriram Financial Services in one place.',
+  path: '/products',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo}>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <div class="hero-inner">
+      <h1>Trade, Invest &amp; Grow with Shriram Financial Services — One Platform, Every Goal</h1>
+      <p class="lead">Trade and invest in Equities and Derivatives, create wealth with mutual funds, discover IPOs, access portfolio solutions, and manage financial opportunities in a secure investment platform.</p>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
+    </div>
+  </section>
+
+  <!-- ================= INTRO ================= -->
+  <section class="section stack sec-light" id="sec-intro" data-section="intro" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Intro About the Product Hub Page</h2>
+      <p class="sec-lead">Welcome to the Shriram Financial Services product ecosystem — the capital markets arm of the Shriram Group. From trading and investments to wealth-building and financing against eligible holdings, explore a comprehensive range of solutions on a single, SEBI-regulated platform, designed to support every stage of your financial journey.</p>
+    </div>
+  </section>
+
+  <!-- ================= OUR INVESTMENT OFFERINGS ================= -->
+  <section class="section stack sec-tint" id="sec-offerings" data-section="offerings" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Our Investment Offerings</h2>
+      <p class="sec-lead">One platform for every stage/aspect of your financial life — trading, investing, earning, and borrowing, all in one place.</p>
+    </div>
+    <ul class="bullets">
+      <li>TRADE – Capitalize on market opportunities across Equity, Derivatives, and Commodity segments.</li>
+      <li>INVEST – Establish long-term positions via Equity, Mutual Funds, tactical IPOs, secondary Bonds, and fixed-yield FDs.</li>
+      <li>SAVINGS – Grow your wealth steadily with diversified ETFs and tax-smart retirement planning through NPS.</li>
+      <li>EARN – Build a steady income through Fixed Deposits (FD) interest and periodic yield distributions.</li>
+      <li>BORROW – Access immediate cash credit lines against your holdings with premium LAS and digital LAMF services.</li>
+    </ul>
+  </section>
+
+  <!-- ================= PRODUCT GROUPS ================= -->
+  <section class="section stack sec-light" id="sec-products" data-section="products" style="gap:56px">
+    <!-- Group 1 - Trading -->
+    <div class="pgroup" id="pg-trading">
+      <div class="pgroup-head">
+        <h3>Trading</h3>
+        <p>Unlock stock market opportunities and seamlessly trade equities, derivatives, commodities, and more across all major exchanges (NSE, BSE, and MCX) — all from one powerful platform. Experience cutting-edge real-time data, advanced charting, and seamless, reliable order execution designed to keep you ahead of the curve.</p>
+      </div>
+      <div class="pcard-grid" data-reveal-row>
+        <a class="pcard" href="/equity">
+          <div class="pcard-tx"><h4>Equity</h4><p>Trade intraday or invest in long-term shares on NSE and BSE with advanced data and high-speed execution</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/derivatives">
+          <div class="pcard-tx"><h4>Derivatives</h4><p>Trade Futures and Options on indices and stocks with strategic tools to manage risk and return</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/commodities">
+          <div class="pcard-tx"><h4>Commodities</h4><p>Diversify your portfolio by trading futures in gold, silver, crude oil, and major metallic assets via MCX.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/mtf">
+          <div class="pcard-tx"><h4>MTF (Margin Trade Facility)</h4><p>Amplify your purchasing power by buying up to 4x of stocks and carry your positions up to 90 days at competitive funding rates.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/currency">
+          <div class="pcard-tx"><h4>Currency</h4><p>Trade currency pairs and participate in forex-linked market movements.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+      </div>
+      <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Trading</a>
+    </div>
+
+    <!-- Group 2 - Investment & Wealth Products -->
+    <div class="pgroup" id="pg-invest">
+      <div class="pgroup-head">
+        <h3>Investment &amp; Wealth Products</h3>
+        <p>Explore investment opportunities and build long-term wealth through diversified financial instruments, secure fixed-income assets, and retirement planning tools. Choose from curated options tailored to your risk profile and financial goals.</p>
+      </div>
+      <div class="pcard-grid" data-reveal-row>
+        <a class="pcard" href="/mutualfunds">
+          <div class="pcard-tx"><h4>Mutual Funds</h4><p>Invest across equity, debt, and hybrid funds from leading AMCs, with goal-based Systematic Investment Plans (SIPs) starting at ₹100.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/nfo">
+          <div class="pcard-tx"><h4>NFO</h4><p>Explore newly launched mutual fund schemes before they open for ongoing subscription and invest at the start of their investment journey.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/etf">
+          <div class="pcard-tx"><h4>ETFs (Exchange Traded Funds)</h4><p>Invest in diversified, exchange-traded funds tracking indices, sectors, or asset classes at low cost.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/ipo">
+          <div class="pcard-tx"><h4>IPO</h4><p>Apply seamlessly for upcoming market listings and public offerings using instant, UPI-enabled applications with real-time allotment tracking.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/bonds">
+          <div class="pcard-tx"><h4>Bonds</h4><p>Invest in fixed-income instruments designed to provide regular income and help balance risk and return.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/fixeddeposit">
+          <div class="pcard-tx"><h4>Fixed Deposits (FD)</h4><p>Secure, assured, and steady returns with competitive interest rates on your savings, through our trusted partner network.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/nps">
+          <div class="pcard-tx"><h4>National Pension System (NPS)</h4><p>Build a disciplined retirement corpus with tax benefits under a government-regulated pension scheme.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/globalinvesting">
+          <div class="pcard-tx"><h4>Global Investing</h4><p>Diversify your portfolio beyond Indian markets by investing in international equities and ETFs.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+      </div>
+      <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Investing</a>
+    </div>
+
+    <!-- Group 3 - Loan Against Securities -->
+    <div class="pgroup" id="pg-loans">
+      <div class="pgroup-head">
+        <h3>Loan Against Securities</h3>
+        <p>Pledge eligible investments as collateral to access quick funds, without liquidating your portfolio. Enjoy uninterrupted compounding, fast processing, flexible repayment, and competitive interest rates with Loan Against Securities.</p>
+      </div>
+      <div class="pcard-grid" data-reveal-row>
+        <a class="pcard" href="/loanagainstshares">
+          <div class="pcard-tx"><h4>Loan Against Shares (LAS)</h4><p>Pledge your equity shares, bonds, or other approved securities as collateral and access a credit line without selling your holdings. Retain full ownership of your portfolio while meeting short-term financial needs.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+        <a class="pcard" href="/loanagainstmutualfund">
+          <div class="pcard-tx"><h4>Loan Against Mutual Fund (LAMF)</h4><p>Pledge your mutual fund units as collateral and access funds without redeeming your investments. Your units remain invested, continuing to generate returns, while you address immediate financial requirements. Along with LAS, it is another efficient way to meet your short-term liquidity needs without disrupting your long-term wealth creation.</p></div>
+          <span class="pcard-arr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+        </a>
+      </div>
+      <a class="btn-gold" href="/opendemataccount" style="align-self:center">Unlock Quick Funds</a>
+    </div>
+  </section>
+
+  <!-- ================= ANTARA BANNER ================= -->
+  <section class="cta-sec sec-tint" id="sec-antara" data-section="antara">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>One Platform for Your Investment Goals - Antara</h3>
+        <p class="ct-sub">Explore equity trading, IPOs, ETFs, portfolio solutions, and more — anytime, anywhere through the Antara app.</p>
+      </div>
+      <div class="cta"><a class="btn-gold" href="#">Download Antara Now</a></div>
+    </div>
+  </section>
+
+  <!-- ================= WHY INVESTORS CHOOSE ================= -->
+  <section class="section stack sec-light" id="sec-why" data-section="why" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Why Investors Choose Shriram Financial Services?</h2>
+    </div>
+    <div class="cat-grid" data-reveal-row>
+      <div class="cat"><h4>One Platform, Multiple Financial Opportunities</h4><p>Access a wide range of trading, investment, wealth-building, and financing solutions through one connected platform. Whether you are beginning your financial journey or expanding your portfolio, discover products designed to support evolving financial goals.</p></div>
+      <div class="cat"><h4>Regulated, Recognised, and Reliable</h4><p>Shriram Financial Services is a SEBI-registered stockbroker and an authorised member of NSE, BSE, and MCX. All client securities are held with CDSL and NSDL depositories, ensuring your investments are protected under SEBI's established investor protection framework.</p></div>
+      <div class="cat"><h4>Five Decades of Shriram Group Trust</h4><p>Backed by the Shriram Group - a diversified financial conglomerate with five decades of legacy across lending, investments, and insurance. Your investments are supported by institutional credibility, scale, and governance trusted by millions of Indians.</p></div>
+      <div class="cat"><h4>Bank-Grade Account Security</h4><p>Your account is protected with biometric login - fingerprint and Face ID — alongside two-factor authentication and end-to-end encryption. Shriram Financial Services treats the security of your financial data with the same rigour as a regulated banking institution.</p></div>
+      <div class="cat"><h4>Pricing You Can See, Costs You Can Plan</h4><p>No hidden charges. No surprises. Shriram Financial Services follows a transparent pricing structure across all products and transactions — so every rupee you invest works for you, not against you. Clear fee disclosures are available before you place a single order.</p></div>
+      <div class="cat"><h4>A Dashboard Built Around You</h4><p>Your Shriram Financial Services dashboard is fully customisable — giving you a consolidated view of your equity holdings, mutual fund portfolio, loan accounts, and research alerts, all in one place. Because your financial life is not one-dimensional, your dashboard should not be either.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= GENERAL QUESTIONS ================= -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">Got Questions?</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-Minute call where we would be able to answer any questions you may have. Our Advisor will additionally help map your wealth mix and demonstrate what a dedicated advisor would do differently.</p>
+          </div>
+          <a class="btn-gold" href="#">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STICKY BANNER (FINAL CTA) ================= -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Ready to Start Your Investment Journey?</h3>
+        <p class="ct-sub">Open your Demat and Trading Account with Shriram Financial Services - 100% online, SEBI-registered, backed by the trusted Shriram Group.</p>
+      </div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
+    </div>
+  </section>
+</BaseLayout>

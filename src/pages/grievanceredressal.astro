@@ -1,0 +1,247 @@
+---
+/**
+ * Grievance Redressal - /grievanceredressal
+ * Body rebuilt to the compliance-approved "Grievance Redressal" doc (word-for-word).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
+
+const seo = {
+  title: 'Grievance Redressal Process',
+  description:
+    'Learn how to raise and track a complaint through the Grievance Redressal Mechanism of Shriram Financial Services.',
+  path: '/grievanceredressal',
+  // Page-specific Organization/ContactPoint block (legacy inline JSON-LD).
+  jsonLd: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Shriram Financial Services',
+      url: 'https://www.shriramsec.in/',
+      contactPoint: [
+        {
+          '@type': 'ContactPoint',
+          telephone: '+91-1800-1234567',
+          contactType: 'customer support',
+          areaServed: 'IN',
+          availableLanguage: ['en', 'hi'],
+          email: 'support@shriramfs.in',
+        },
+      ],
+    },
+  ],
+};
+
+// Escalation Matrix & Contact Directory - doc TABLE, reproduced row-for-row.
+const ESCALATIONS = [
+  {
+    department: 'Customer Care',
+    person: 'Jeevana Santosh/Murali K',
+    address: '3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru-560 020',
+    phone: '080 - 4718 5579, 080- 4367 6869 Extn. 825/831',
+    email: 'support@shriramfs.com',
+    hours: 'Monday to Friday 9.30 am to 5.30 pm',
+  },
+  {
+    department: 'Head of Customer Care',
+    person: 'Arathinathan J M',
+    address: '3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru-560 020',
+    phone: '080 - 4367 6869 Extn. 805',
+    email: 'grievance@shriramfs.com.com',
+    hours: '',
+  },
+  {
+    department: 'Compliance Officer',
+    person: 'Sandhya',
+    address: '3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru-560 020',
+    phone: '080 - 4367 6869 Extn. 874',
+    email: 'compliance@shriramfs.com.com',
+    hours: '',
+  },
+  {
+    department: 'CEO',
+    person: 'Amit Golia',
+    address:
+      'DYNASTY BUSINESS PARK,1ST FLOOR, OFFICE NO.: 101-105,‘A’ WING,NEAR J B NAGAR METRO STATION,ANDHERI KURLA ROAD, ANDHERI EAST,MUMBAI – 400059.',
+    phone: '022 - 69032903',
+    email: 'ceo@shriramfs.com.com',
+    hours: '',
+  },
+];
+---
+
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Grievance Redressal' }]} />
+    <div class="hero-inner" data-enter>
+      <h1>Grievance Redressal Portal</h1>
+      <p class="lead">How can we help you?</p>
+      <p class="hero-subline">Reach our support team across multiple channels. We are here from Monday to Friday: 8:30 AM – 5:30 PM, Saturday:10 am to 1pm.<br />Closed on Public Holiday.</p>
+      <div class="hero-contacts">
+        <a class="ct-pill" href="tel:08047185579">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+          080-47185579 | 080-43676869 Extn.825/831
+        </a>
+        <a class="ct-pill" href="mailto:support@shriramfscom">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+          support@shriramfscom
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BODY ================= -->
+  <section class="section stack sec-light" id="sec-body" data-section="body" style="gap:56px;justify-content:center" data-enter="2">
+    <div class="stack" style="gap:16px">
+      <p class="policy-p">We are dedicated to maintaining the highest standard of integrity. This portal provides a formal, structured framework for clients and stakeholders to voice legitimate concerns regarding our products, services, or operational decisions. Every submission is handled with strict professional objectivity and escalated appropriately to ensure an impartial resolution.</p>
+    </div>
+  </section>
+
+  <!-- ================= ESCALATION MATRIX & CONTACT DIRECTORY ================= -->
+  <section class="section stack sec-tint" id="sec-escalations" data-section="escalations" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Escalation Matrix &amp; Contact Directory</h2>
+      <p class="sec-lead">If you are not satisfied with the initial response received, or if your grievance has not been addressed within the standard turnaround time, you may escalate the matter to our specialised compliance teams:</p>
+    </div>
+
+    <div class="policy-card">
+      <span class="policy-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 12v5m0 0 2.5-2.5M12 17l-2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+      <div class="policy-tx">
+        <h3>Grievance Redressal Policy Download</h3>
+      </div>
+      <a class="btn-gold" href="#" download>Download</a>
+    </div>
+
+    <div class="t-scroll">
+      <div class="product-page_table t6 bordered" style="grid-template-columns:repeat(6,minmax(0,1fr));min-width:1080px">
+        <div class="cell th"><p>Department</p></div>
+        <div class="cell th"><p>Designated Contact Person</p></div>
+        <div class="cell th"><p>Corporate Address</p></div>
+        <div class="cell th"><p>Contact No.</p></div>
+        <div class="cell th"><p>Email Id</p></div>
+        <div class="cell th"><p>Working Hours</p></div>
+        {
+          ESCALATIONS.map((e) => (
+            <>
+              <div class="cell tb"><p class="k">{e.department}</p></div>
+              <div class="cell tb"><p class="v">{e.person}</p></div>
+              <div class="cell tb"><p class="v">{e.address}</p></div>
+              <div class="cell tb"><p class="v">{e.phone}</p></div>
+              <div class="cell tb"><p class="v">{e.email}</p></div>
+              <div class="cell tb"><p class="v">{e.hours}</p></div>
+            </>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Grievance Redressal - page-specific components. Every value reuses the shared
+     design tokens, radii, container padding and 8px spacing grid. ===== */
+
+  .section {
+    scroll-margin-top: 96px;
+  }
+
+  /* ---------- hero subline + contact pills (mirrors the Contact page hero) ---------- */
+  .hero-subline {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+    max-width: var(--hero-text-w);
+  }
+  .hero-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid #55594e; /* page-local - Tier-2 */
+  }
+  .ct-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: var(--color-sage-900); /* #353731 (Tier-1: absorbed by sage-900) */
+    border: 1px solid #4a4c47; /* page-local - Tier-2 */
+    color: var(--color-white);
+    font-weight: 500;
+    font-size: 14px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  @media (min-width: 1024px) and (hover: hover) {
+    .ct-pill:hover {
+    background: #42443e; /* page-local - Tier-2 */
+    border-color: var(--color-sage-700); /* #6d6e6a (Tier-1: absorbed by sage-700) */
+  }
+  }
+  .ct-pill svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--color-gold-400);
+  }
+
+  /* ---------- body intro paragraph ---------- */
+  .policy-p {
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* ---------- policy download card ---------- */
+  .policy-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: 24px;
+    padding: var(--container-pad);
+  }
+  .policy-ico {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    border-radius: 12px;
+    background: var(--color-gold-100); /* #fff0d7 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .policy-ico svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-text-heading-dark);
+  }
+  .policy-tx {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .policy-tx h3 {
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--color-text-primary);
+  }
+  .policy-card .btn-gold {
+    flex: none;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 768px) {
+    .policy-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+</style>

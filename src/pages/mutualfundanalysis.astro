@@ -1,0 +1,165 @@
+---
+/**
+ * Mutual Fund Research - /mutualfundanalysis
+ * Research-Centre content page on Shriram's Mutual Fund Research offering.
+ * Body copy is the compliance-approved document, verbatim. Built entirely
+ * from the shared design system: standardised olive hero (rule 7), shared
+ * section / .bullets / CTA / FAQ components. Every value binds to a token
+ * (rule 9); the FAQ list is data-driven so the same template scales to
+ * thousands of instances - the scale North Star.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/site/Breadcrumb.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import { faqPageSchema } from '../lib/seo';
+
+// What Mutual Fund Research Contains - the fund-note checklist (doc bullets).
+const CONTAINS = [
+  'Fund reviews covering portfolio composition, expense ratio and fund manager track record',
+  'Category comparisons — large-cap, mid-cap, debt and hybrid funds benchmarked against their peers',
+  'Risk-adjusted return analysis, not just headline CAGR, across 1, 3 and 5-year periods',
+  'New Fund Offer (NFO) notes flagging what’s genuinely new versus repackaged',
+  'A clearly stated caution — the one thing that would make us downgrade or drop a fund from our list',
+];
+
+// Frequently Asked Questions - first item open (site convention). Rendered
+// under the "General Questions" header (project rule 13).
+const FAQS = [
+  {
+    q: 'What is mutual fund research?',
+    a: 'It’s an independent look at how a mutual fund is built and how it’s actually performed — what it holds, what it costs, and how consistent its returns have been against its category and benchmark, rather than just its latest return figure.',
+  },
+  {
+    q: 'How is this different from fundamental research?',
+    a: 'Fundamental research looks at individual companies and stocks. Mutual fund research looks at the funds themselves — a basket of those stocks or bonds — and how well the fund manager has put that basket together and managed it over time.',
+  },
+  {
+    q: 'Do I need to log in to read the reviews?',
+    a: 'Reading the full note — including portfolio breakdown, risk metrics and our view — needs a Demat account.',
+  },
+  {
+    q: 'How do I open an account to access research?',
+    a: 'Tap ‘Open Demat Account’ on this page and complete the KYC process online with your PAN and Aadhaar. Once your account is active, every fund review unlocks automatically.',
+  },
+  {
+    q: 'Is the research free for clients?',
+    a: 'Yes. All fund reviews, category comparisons and NFO notes are free for anyone with a demat account — there’s no separate subscription.',
+  },
+  {
+    q: 'How often are reports published?',
+    a: 'Category comparisons and fund reviews are published monthly, NFO notes go out as new funds launch, and we flag any rating change to an existing fund the same day it happens.',
+  },
+];
+
+const seo = {
+  title: 'Mutual Fund Research & Picks',
+  description:
+    'Discover mutual fund research and expert fund picks to build a well-diversified portfolio with Shriram Financial Services.',
+  path: '/mutualfundanalysis',
+  jsonLd: [faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a })))],
+};
+---
+
+<BaseLayout seo={seo} mainClass="rev-rise-scale">
+  <!-- ================= HERO (standardised, rule 7) ================= -->
+  <section class="hero" id="sec-hero" data-section="hero">
+    <Breadcrumb trail={[{ name: 'Research Centre', href: '/researchhub' }, { name: 'Mutual Fund Research' }]} />
+    <div class="hero-inner" data-enter>
+      <h1>Mutual Fund Research</h1>
+      <p class="lead">Picking a fund shouldn’t take longer than picking the stock it’s invested in.</p>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT IS MUTUAL FUND RESEARCH ================= -->
+  <section class="section stack sec-light" id="sec-what" data-section="what" style="gap:56px" data-enter="2">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What is Mutual Fund Research</h2>
+      <p class="sec-lead">Mutual fund research is the process of analysing a fund’s investment strategy, historical performance, risk-adjusted returns and underlying holdings to judge whether it’s actually built to deliver going forward, not just whether it did well last year. It helps you work out if a fund fits your goals, your risk appetite and how long you’re willing to stay invested.</p>
+      <p class="sec-lead">In practice, that means going through what a fund actually holds the sectors, the market-cap mix, how concentrated or spread out the bets are and weighing that against what it’s charging you to hold it. A fund that’s beaten its benchmark on the back of one lucky sector call gets read very differently from one that’s done it consistently, through a process you can rely on.</p>
+      <p class="sec-lead">All of that research fund reviews, category comparisons, periodic portfolio check-ins is published right here by our team. Get complete access to it by open a demat account.</p>
+    </div>
+  </section>
+
+  <!-- ================= WHAT MUTUAL FUND RESEARCH CONTAINS ================= -->
+  <section class="section stack sec-tint" id="sec-contains" data-section="contains" style="gap:56px;justify-content:center">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">What Mutual Fund Research Contains</h2>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every fund note follows the same checklist. What the fund holds, how it’s done, and what we’d watch before you commit money to it:</p>
+    </div>
+    <ul class="bullets">
+      {CONTAINS.map((item) => (<li>{item}</li>))}
+    </ul>
+  </section>
+
+  <!-- ================= CTA - OPEN INVESTMENT ACCOUNT ================= -->
+  <section class="cta-sec sec-light" id="sec-cta-review" data-section="cta-review">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>This Month’s Fund Review is ready.</h3>
+        <p class="ct-sub">Log in to read the full review and our category rating, or open an account to get started.</p>
+      </div>
+      <div class="cta">
+        <a class="btn-gold" href="#">Login</a>
+        <a class="btn-outline" href="/opendemataccount">Open Investment Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NOTES ALL IN ONE PLACE ================= -->
+  <section class="section stack sec-tint" id="sec-notes" data-section="notes" style="gap:56px">
+    <div class="stack" style="gap:16px">
+      <h2 class="sec-title">Mutual Fund Research notes all you need in one place</h2>
+      <p class="sec-lead">Every fund review we publish, from a single-category note to a full peer comparison, lives here as soon as it’s out. Log in to read the full rating and portfolio breakdown.</p>
+    </div>
+  </section>
+
+  <!-- ================= CTA - UNLOCK ALL REVIEWS ================= -->
+  <section class="cta-sec sec-light" id="sec-final-cta" data-section="final-cta">
+    <div class="cta-box">
+      <div class="ct-tt">
+        <h3>Unlock All Reviews + Fund Ratings</h3>
+        <p class="ct-sub">Open your demat account and get free, unlimited access to every fund review, category comparison and portfolio check-in we publish.</p>
+      </div>
+      <div class="cta">
+        <a class="btn-gold" href="/opendemataccount">Open Account</a>
+        <a class="btn-outline" href="#">Login to Existing Account</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GENERAL QUESTIONS ================= -->
+  <section class="faq-wrap sec-tint" id="sec-faq" data-section="faq">
+    <div class="faq-cols">
+      <div class="faq-left">
+        <h2 class="faq-title">Got Questions?</h2>
+        <FaqAccordion faqs={FAQS} />
+      </div>
+      <div class="faq-side">
+        <div class="usr"><img src="/assets/user.svg" alt="" /></div>
+        <div class="side-in">
+          <div class="side-tx">
+            <h3>Need A Clearer Direction? </h3>
+            <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show which funds fit your goals - and what a research-led, direct-plan portfolio would do differently.</p>
+          </div>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Mutual Fund Research - page-local styling only. Every value binds to
+     a design token; the shared hero/section/.bullets/CTA/FAQ all come from
+     global.css. No bespoke components on this page. ===== */
+  .section,
+  .cta-sec {
+    scroll-margin-top: 96px;
+  }
+
+  /* The FAQ sits on --sec-light, so stroke the accordion AND the side card
+     together (background-dependent rule - same as research-hub / technical). */
+  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
+  .faq-side { border: 1px solid var(--color-border-card); }
+</style>

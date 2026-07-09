@@ -47,14 +47,14 @@ const seo = {
   title: 'Margin Trading Facility (MTF)',
   description:
     'Get up to 4x buying power with Margin Trading Facility (MTF) from Shriram Financial Services - no overnight square-off, 500+ eligible stocks.',
-  path: '/mtf/',
+  path: '/mtf',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products/' },
-        { name: 'Margin Trading Facility', path: '/mtf/' },
+        { name: 'Products', path: '/products' },
+        { name: 'Margin Trading Facility', path: '/mtf' },
       ],
       site
     ),
@@ -66,11 +66,11 @@ const seo = {
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Margin Trading Facility' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Margin Trading Facility' }]} />
     <div class="hero-inner" data-enter>
       <h1>Margin Trading Facility in India — Buy 4X More Stocks with Less Capital</h1>
       <p class="lead">Amplify your buying power up to 4x leverage with Shriram Financial Services trusted MTF platform. Trade approved NSE/BSE stocks with low margins, transparent interest rates, and secure settlement.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account / Activate MTF</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account / Activate MTF</a></div>
     </div>
   </section>
 
@@ -120,7 +120,7 @@ const seo = {
         <div class="cell tb"><p class="k">MTF saving vs unsecured borrowing</p></div><div class="cell tb"><p class="v">~₹370 for this 90-day trade</p></div>
       </div></div>
     </div>
-    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/mtf/">Explore MTF</a></div>
+    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/mtf">Explore MTF</a></div>
   </section>
 
   <!-- ===== Key Benefits of MTF ===== -->
@@ -143,7 +143,7 @@ const seo = {
       <li>No Forced Square‑Off - Unlike intraday trading, there's no mandatory end‑of‑day closure, giving you flexibility to exit when market conditions suit you.</li>
       <li>Strategic Hedging - Investors can use MTF to hedge long‑term positions while maintaining liquidity for other opportunities.</li>
     </ul>
-    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/mtf/">Explore MTF</a></div>
+    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/mtf">Explore MTF</a></div>
   </section>
 
   <!-- ===== Disadvantages of Margin Trading Facility ===== -->
@@ -187,7 +187,7 @@ const seo = {
       </div></div>
     </div>
     <p class="sec-lead">Our MTF interest rates are among the most competitive in the market. Login to your account or contact support for your personalised MTF rate.</p>
-    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/mtf/">View MTF Charges</a></div>
+    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/mtf">View MTF Charges</a></div>
   </section>
 
   <!-- ===== MTF Eligible Stocks & Margin Requirements ===== -->
@@ -197,7 +197,7 @@ const seo = {
       <p class="sec-lead" style="color:var(--color-text-secondary)">Margin Trading Facility (MTF) is available only on SEBI‑approved NSE/BSE stocks that meet liquidity and compliance criteria. Brokers publish an updated list of eligible stocks along with margin requirements and haircut percentages.</p>
       <p class="sec-lead" style="color:var(--color-text-secondary)">The exact list of MTF-eligible stocks is updated periodically per SEBI/exchange guidelines. Log in to your account to view the complete, current MTF stock list with live margin requirements.</p>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== How to Activate MTF on Your Account ===== -->
@@ -218,7 +218,7 @@ const seo = {
         <div class="step"><div class="num">3</div><div class="st-body"><h4>Step 3 — Account Activation</h4><p>MTF segment is activated in your account by Shriram FS (usually within the same trading day for existing KYC-verified customers).</p></div></div>
       </div>
     </div>
-    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/open-demat-account/">Activate your MTF</a></div>
+    <div class="cta" style="justify-content:center"><a class="btn-gold" href="/opendemataccount">Activate your MTF</a></div>
   </section>
 
   <!-- ===== Risks of Investing in Margin Trading Facility ===== -->
@@ -256,7 +256,7 @@ const seo = {
       <div class="cell tb"><p class="k">Square‑Off Policy</p></div><div class="cell tb"><p class="v">No forced overnight exit</p></div><div class="cell tb"><p class="v">You decide when to exit — full flexibility</p></div>
       <div class="cell tb"><p class="k">MTF Activation</p></div><div class="cell tb"><p class="v">Free, one‑time digital setup</p></div><div class="cell tb"><p class="v">Complete activation within  minutes</p></div>
     </div></div>
-    <a class="btn-gold" href="/mtf/" style="align-self:center">View MTF Features</a>
+    <a class="btn-gold" href="/mtf" style="align-self:center">View MTF Features</a>
   </section>
 
   <!-- ===== MTF SEBI Regulations & Compliance ===== -->
@@ -291,7 +291,7 @@ const seo = {
             <h3>Need A Clearer Direction?</h3>
             <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will explain how margin funding, interest and square-off rules apply to your trades.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

@@ -44,7 +44,7 @@ off against each other:
    was chosen *because* it preserves the vanilla-static virtues (one cached stylesheet, static
    HTML, great SEO) while adding real components, typed data, and generated metadata - the
    things hand-authored HTML could not give us at 4,000-page scale.
-4. **The design system is documented for scale** - `/design-system/` (two live pages) + the
+4. **The design system is documented for scale** - `/designsystem` (two live pages) + the
    docs below plan components, tokens and conventions explicitly.
 
 ---
@@ -56,7 +56,7 @@ off against each other:
 | **`src/styles/global.css`** | **The design system - implementation** | The token architecture (`@theme` primitives → `@theme inline` semantic roles), base element rules (the global `line-height:1.5`, the one-font rule), and every shared component class. Editing it updates **every page at once**. |
 | **`src/components/` + `src/layouts/`** | **Components - implementation** | `BaseLayout` (templated `<head>`/SEO + chrome), site chrome (`Header`, `MobileMenu`, `MegaNav`, `Footer`), UI + section components (`FaqAccordion`, …). |
 | **`src/data/`** | **Content data** | Single-source structured content that feeds templates - `navigation.ts` (renders header, mega-nav, mobile menu **and** footer from one dataset). |
-| **`/design-system/` pages** | **The design system - documentation** | Two live pages: `/design-system/current/` ("what is used" - the legacy inventory) and `/design-system/proposed/` ("what is suggested" - the clean system, rendered live from the tokens). The **Figma round-trip artifact**. |
+| **`/designsystem` pages** | **The design system - documentation** | Two live pages: `/designsystem/current` ("what is used" - the legacy inventory) and `/designsystem/proposed` ("what is suggested" - the clean system, rendered live from the tokens). The **Figma round-trip artifact**. |
 | **`CLAUDE.md`** (this file) | **Rulebook / onboarding** | The conventions below - the first thing any builder (human or AI) reads. |
 
 ---
@@ -98,12 +98,12 @@ off against each other:
 7. **The hero is standardised across pages.** Same gradient, `min-height`, `.hero-inner` padding
    (`56px 0`), H1/lead font sizes and the two-column `gap:56px`. Only the text content changes.
    H1 and lead cap at `--hero-text-w` (600px); the two-column aside is always `--hero-aside-w`.
-   Defined once in `global.css`. **Two sanctioned variants:** the `/calculators/` hub `.calc-hero`,
+   Defined once in `global.css`. **Two sanctioned variants:** the `/calculators` hub `.calc-hero`,
    and `.hero.hero-compact` on the **calculator detail pages** - it drops the tall band
    (`min-height:0`) and the auto-margin centring so the hero *hugs* its breadcrumb + H1 + lead
    (no CTA) on a small explicit padding (desktop `40 / 24 / 40`, mobile `32 / 16 / 32` -
    above-breadcrumb / breadcrumb→H1 / below-lead), deliberately shorter than the product hero.
-   Documented in `/design-system/proposed/`.
+   Documented in `/designsystem/proposed`.
 
 8. **Every form field uses the shared input-field component.** There is **one** form field for
    the whole site - `.hf-field` (with `.hf-row`/`.hf-unit`/`.hf-field-in`/`.hf-err`), canonical
@@ -121,13 +121,13 @@ off against each other:
 10. **🟢 Merge policy - Tier-1 applied, Tier-2 documented.** Near-duplicate legacy values ≤2 RGB
     points apart are already merged (Tier-1, imperceptible). Larger *visible* unifications (the
     4 button specs, the divergent homepage footer, collapsing 15 creams → 5, ink merges) are
-    **documented in `/design-system/proposed/` but NOT applied** - they await sign-off after the
+    **documented in `/designsystem/proposed` but NOT applied** - they await sign-off after the
     Figma round-trip. When you see a `/* Tier-2 */` comment, that's a proposed-but-unapplied
     consolidation held for parity; leave the value, keep the note.
 
 11. **🟢 Design-guideline changes land in ALL THREE places.** When adding/changing a design
     guideline, update **all three** or it is not done:
-    - **`/design-system/` pages** - document the rule/direction.
+    - **`/designsystem` pages** - document the rule/direction.
     - **`global.css`** (and/or components) - implement it.
     - **`CLAUDE.md`** (this file) - reflect it in the rules if project-wide.
 
@@ -166,8 +166,13 @@ off against each other:
 
 - Install: `npm install`. Dev: `npm run dev` → `localhost:4321`. Build: `npm run build` →
   `./dist/`. Preview build: `npm run preview`.
-- Clean, directory-format URLs everywhere (`build.format: 'directory'`): a page at
-  `src/pages/equity.astro` serves at `/equity/`. The legacy reference site
+- Clean, **extensionless, no-trailing-slash** URLs everywhere (`build.format: 'file'` +
+  `trailingSlash: 'never'`): a page at `src/pages/equity.astro` serves at `/equity`.
+  **Slugs carry no hyphens** - multi-word names are concatenated (`Mutual Funds` →
+  `/mutualfunds`, `Open a Demat Account` → `/opendemataccount`). Hub pages are flat
+  files (`products.astro`, not `products/index.astro`) so GitHub Pages does not 301
+  them to a trailing slash; nested children live in a de-hyphenated folder
+  (`regulatorydocuments/investorcharter`). The legacy reference site
   (`../Project 1`) can run alongside for pixel comparison (`python3 ../Project\ 1/serve.py`,
   port 4178, or the `static` launch config).
 
@@ -192,79 +197,79 @@ docs/                   legacy-style-audit.md, porting-guide.md, and the build s
 
 ## 📄 Pages
 
-**44 pages total.** URLs are **flat/top-level** - product and calculator detail pages live directly at `src/pages/<slug>.astro` (root), NOT nested under `products/`/`calculators/`. The `products/` and `calculators/` folders keep only their **hub** `index.astro`. Detail pages are **template-driven** (`equity.astro` is the reference for product pages). Every FAQ block reads exactly **Got Questions?** (rule 13). Every `<title>` is normalised by `fullTitle()` to `<Page Title> | Shriram Financial Services` - page `seo.title` values carry **no** brand suffix. All heroes use the shared `.hero` except the `/calculators/` hub (documented `.calc-hero` variant) and the calculator **detail** pages (the `.hero.hero-compact` hug variant - see rule 7).
+**44 pages total.** URLs are **flat/top-level, extensionless, no-hyphen, no-trailing-slash** - product and calculator detail pages live directly at `src/pages/<slug>.astro` (root; the `<slug>` has no hyphens), NOT nested under `products/`/`calculators/`. The product and calculator **hubs are flat files** (`products.astro`, `calculators.astro`). Detail pages are **template-driven** (`equity.astro` is the reference for product pages). Every FAQ block reads exactly **Got Questions?** (rule 13). Every `<title>` is normalised by `fullTitle()` to `<Page Title> | Shriram Financial Services` - page `seo.title` values carry **no** brand suffix. All heroes use the shared `.hero` except the `/calculators` hub (documented `.calc-hero` variant) and the calculator **detail** pages (the `.hero.hero-compact` hug variant - see rule 7). *(URL scheme updated 2026-07-09: slugs de-hyphenated + trailing slashes dropped; `build.format: 'file'`, `trailingSlash: 'never'`.)*
 
 **Core & company**
 | URL | Source | Page |
 |---|---|---|
 | `/` | `pages/index.astro` | Homepage (video hero + glass Demat card, pinned "Why Shriram", advisory cards, dark product grid, steps, `<details>` FAQ). Unified shared `Footer`. |
-| `/about-us/` | `pages/about-us.astro` | About Us (stat hero, MVV, timeline). |
-| `/open-demat-account/` | `pages/open-demat-account.astro` | Open a Demat Account (two-column hero + lead-capture form, phone-flag decoration). |
-| `/become-a-partner/` | `pages/become-a-partner.astro` | Become a Partner (Apply form, eligibility checker, portfolio tabs). |
-| `/karnataka-bank-customers/` | `pages/karnataka-bank-customers.astro` | Karnataka Bank 3-in-1 (co-brand hero lockup + lead-capture form). |
-| `/antara/` | `pages/antara.astro` | Explore Antara (Shriram X platform - standardised hero, feature/cat grids, `.gate` locked card, FAQ). |
-| `/sitemap/` | `pages/sitemap.astro` | HTML sitemap (link index, built from `navigation.ts`). |
+| `/aboutus` | `pages/aboutus.astro` | About Us (stat hero, MVV, timeline). |
+| `/opendemataccount` | `pages/opendemataccount.astro` | Open a Demat Account (two-column hero + lead-capture form, phone-flag decoration). |
+| `/becomeapartner` | `pages/becomeapartner.astro` | Become a Partner (Apply form, eligibility checker, portfolio tabs). |
+| `/karnatakabankcustomers` | `pages/karnatakabankcustomers.astro` | Karnataka Bank 3-in-1 (co-brand hero lockup + lead-capture form). |
+| `/antara` | `pages/antara.astro` | Explore Antara (Shriram X platform - standardised hero, feature/cat grids, `.gate` locked card, FAQ). |
+| `/sitemap` | `pages/sitemap.astro` | HTML sitemap (link index, built from `navigation.ts`). |
 
-**Products** - flat at `pages/<slug>.astro` (template-driven; `equity` is the reference). Hub at `pages/products/index.astro`.
+**Products** - flat at `pages/<slug>.astro` (template-driven; `equity` is the reference). Hub at `pages/products.astro`.
 | URL | Page |
 |---|---|
-| `/products/` | Product Suite hub (breadcrumb hero, `.pgroup`/`.pcard` grids, orbit band). |
-| `/equity/` | Equity - **reference** product-page template. |
-| `/derivatives/` | Equity Derivatives (F&O). |
-| `/mtf/` | Margin Trading Facility (MTF). |
-| `/commodities/` | Commodity Trading (MCX/NCDEX). |
-| `/currency/` | Currency Trading. |
-| `/mutual-funds/` | Mutual Funds. |
-| `/etf/` | ETFs. |
-| `/ipo/` | IPO. |
-| `/nfo/` | New Fund Offers (NFO). |
-| `/nps/` | National Pension System (NPS). |
-| `/bonds/` | Bonds. |
-| `/fixed-deposit/` | Fixed Deposit (FD). |
-| `/loan-against-mutual-fund/` | Loan Against Mutual Funds (LAMF). |
-| `/loan-against-shares/` | Loan Against Securities (LAS). |
-| `/global-investing/` | Global Investing (US stocks & ETFs). |
+| `/products` | Product Suite hub (breadcrumb hero, `.pgroup`/`.pcard` grids, orbit band). |
+| `/equity` | Equity - **reference** product-page template. |
+| `/derivatives` | Equity Derivatives (F&O). |
+| `/mtf` | Margin Trading Facility (MTF). |
+| `/commodities` | Commodity Trading (MCX/NCDEX). |
+| `/currency` | Currency Trading. |
+| `/mutualfunds` | Mutual Funds. |
+| `/etf` | ETFs. |
+| `/ipo` | IPO. |
+| `/nfo` | New Fund Offers (NFO). |
+| `/nps` | National Pension System (NPS). |
+| `/bonds` | Bonds. |
+| `/fixeddeposit` | Fixed Deposit (FD). |
+| `/loanagainstmutualfund` | Loan Against Mutual Funds (LAMF). |
+| `/loanagainstshares` | Loan Against Securities (LAS). |
+| `/globalinvesting` | Global Investing (US stocks & ETFs). |
 
 **Research** - flat at `pages/<slug>.astro`
 | URL | Source | Page |
 |---|---|---|
-| `/research-hub/` | `pages/research-hub.astro` | Research Centre (hub hero, `.appr` cards, feature grid, dark access band, FAQ). |
-| `/technical-analysis/` | `pages/technical-analysis.astro` | Technical Research (gated daily note, research-report grid). |
-| `/fundamental-analysis/` | `pages/fundamental-analysis.astro` | Fundamental Research (process, coverage, FAQ). |
-| `/mutual-fund-analysis/` | `pages/mutual-fund-analysis.astro` | Mutual Fund Research (ratings, model portfolios, FAQ). |
+| `/researchhub` | `pages/researchhub.astro` | Research Centre (hub hero, `.appr` cards, feature grid, dark access band, FAQ). |
+| `/technicalanalysis` | `pages/technicalanalysis.astro` | Technical Research (gated daily note, research-report grid). |
+| `/fundamentalanalysis` | `pages/fundamentalanalysis.astro` | Fundamental Research (process, coverage, FAQ). |
+| `/mutualfundanalysis` | `pages/mutualfundanalysis.astro` | Mutual Fund Research (ratings, model portfolios, FAQ). |
 
-**Calculators** - detail pages flat at `pages/<slug>-calculator.astro` (`calcHref` in `data/calculators.ts` → `/<slug>-calculator/`). Hub at `pages/calculators/index.astro` (kept **isolated** for future calculators; `.calc-hero`).
+**Calculators** - detail pages flat at `pages/<slug>calculator.astro` (`calcHref` in `data/calculators.ts` → `/<slug>calculator`). Hub at `pages/calculators.astro` (kept **isolated** for future calculators; `.calc-hero`).
 | URL | Page |
 |---|---|
-| `/calculators/` | Calculators hub (**sanctioned** `.calc-hero`; isolated, not in primary nav flow). |
-| `/sip-calculator/` | SIP Calculator. |
-| `/lumpsum-calculator/` | Lumpsum Calculator. |
-| `/swp-calculator/` | SWP Calculator. |
-| `/nps-calculator/` | NPS Calculator. |
-| `/fd-calculator/` | Fixed Deposit Calculator. |
+| `/calculators` | Calculators hub (**sanctioned** `.calc-hero`; isolated, not in primary nav flow). |
+| `/sipcalculator` | SIP Calculator. |
+| `/lumpsumcalculator` | Lumpsum Calculator. |
+| `/swpcalculator` | SWP Calculator. |
+| `/npscalculator` | NPS Calculator. |
+| `/fdcalculator` | Fixed Deposit Calculator. |
 
 **Support**
 | URL | Source | Page |
 |---|---|---|
-| `/contact-us/` | `pages/contact-us.astro` | Contact/Support hub (tabbed: Customer Care / Branch Locator / Downloads). |
-| `/grievance-redressal/` | `pages/grievance-redressal.astro` | Grievance Redressal. |
+| `/contactus` | `pages/contactus.astro` | Contact/Support hub (tabbed: Customer Care / Branch Locator / Downloads). |
+| `/grievanceredressal` | `pages/grievanceredressal.astro` | Grievance Redressal. |
 
-**Legal & compliance** - regulatory docs nested under the `regulatory-documents/` hub.
+**Legal & compliance** - regulatory docs nested under the `regulatorydocuments/` hub.
 | URL | Source | Page |
 |---|---|---|
-| `/privacy-policy/` | `pages/privacy-policy.astro` | Privacy Policy. |
-| `/terms-and-conditions/` | `pages/terms-and-conditions.astro` | Terms & Conditions (legal long-form). |
-| `/terms-of-use-purse/` | `pages/terms-of-use-purse.astro` | Terms of Use - Purse mobile app. |
-| `/regulatory-documents/` | `pages/regulatory-documents/index.astro` | Regulatory Documents hub (`.doc-card` grid → the two docs below + SEBI/exchange disclosures). |
-| `/regulatory-documents/investor-charter/` | `pages/regulatory-documents/investor-charter.astro` | Investor Charter (shared `.doc-card` view/download grid). |
-| `/regulatory-documents/mandatory-member-details/` | `pages/regulatory-documents/mandatory-member-details.astro` | Mandatory Member Details (SEBI disclosures). |
+| `/privacypolicy` | `pages/privacypolicy.astro` | Privacy Policy. |
+| `/termsandconditions` | `pages/termsandconditions.astro` | Terms & Conditions (legal long-form). |
+| `/termsofusepurse` | `pages/termsofusepurse.astro` | Terms of Use - Purse mobile app. |
+| `/regulatorydocuments` | `pages/regulatorydocuments.astro` | Regulatory Documents hub (`.doc-card` grid → the two docs below + SEBI/exchange disclosures). |
+| `/regulatorydocuments/investorcharter` | `pages/regulatorydocuments/investorcharter.astro` | Investor Charter (shared `.doc-card` view/download grid). |
+| `/regulatorydocuments/mandatorymemberdetails` | `pages/regulatorydocuments/mandatorymemberdetails.astro` | Mandatory Member Details (SEBI disclosures). |
 
 **Design system** (noindex - the Figma artifact)
 | URL | Source | Page |
 |---|---|---|
-| `/design-system/` (+ `current/`, `proposed/`) | `pages/design-system/` | Design-system docs (noindex). |
+| `/designsystem` (+ `current/`, `proposed/`) | `pages/designsystem/` | Design-system docs (noindex). |
 
-> **Note:** `/antara/` (Shriram X platform) is now built (2026-07-08). The homepage "Explore Antara" hero link and the footer "Explore Antara" entry in `navigation.ts` point at it; the homepage login links remain inert `#` placeholders.
+> **Note:** `/antara` (Shriram X platform) is now built (2026-07-08). The homepage "Explore Antara" hero link and the footer "Explore Antara" entry in `navigation.ts` point at it; the homepage login links remain inert `#` placeholders.
 
 **Adding a new page:** create `src/pages/<path>.astro`, import `BaseLayout`, pass a `seo` object,
 and build from the shared component classes + tokens in `global.css`. Copy an existing page of a
@@ -273,7 +278,7 @@ data layer (`src/data/`) for anything repeated. Never fork `global.css`.
 
 ## 🔗 The Figma round-trip
 
-The plan: `/design-system/proposed/` is authored to map 1:1 onto Figma variables (primitive →
+The plan: `/designsystem/proposed` is authored to map 1:1 onto Figma variables (primitive →
 semantic → component). It gets exported into Figma → cleaned up and filled in with final values →
 returned here. **Implementing the returned system should mean updating token *values* in
 `global.css` (and resolving the documented Tier-2 items), never re-architecting components** -

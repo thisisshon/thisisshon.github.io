@@ -134,14 +134,14 @@ const seo = {
   title: 'New Fund Offer (NFO) Investing',
   description:
     'Get first-mover advantage on newly launched mutual fund schemes at initial NAV pricing. Explore active NFOs with Shriram Financial Services.',
-  path: '/nfo/',
+  path: '/nfo',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products/' },
-        { name: 'NFO', path: '/nfo/' },
+        { name: 'Products', path: '/products' },
+        { name: 'NFO', path: '/nfo' },
       ],
       site
     ),
@@ -153,11 +153,11 @@ const seo = {
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'NFO' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'NFO' }]} />
     <div class="hero-inner" data-enter>
       <h1>Explore the Latest NFOs and Discover Tomorrow's Investment Opportunities.</h1>
       <p class="lead">Whether you are a first-time investor curious about what an NFO is, or a seasoned market participant evaluating the next NFO mutual fund opportunity, this guide covers everything you need to know.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Investing</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Start Investing</a></div>
     </div>
   </section>
 
@@ -244,7 +244,7 @@ const seo = {
       ))}
     </div></div>
     <p class="sec-lead">Each type carries its own risk-reward equation, liquidity profile, and tax treatment. A thorough understanding of each is essential before you decide which type suits your investment thesis.</p>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Investing</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Investing</a>
   </section>
 
   <!-- ===== How to Invest in NFO? ===== -->
@@ -274,7 +274,7 @@ const seo = {
         ))}
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Investing</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Investing</a>
   </section>
 
   <!-- ===== What are the Benefits and Risks of an NFO? ===== -->
@@ -354,7 +354,7 @@ const seo = {
             <h3>Need A Clearer Direction?</h3>
             <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated, research-led plan would do differently.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

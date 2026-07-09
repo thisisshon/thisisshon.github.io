@@ -76,14 +76,14 @@ const seo = {
   title: 'F&O Trading - Futures & Options',
   description:
     'Trade futures & options (F&O) on NSE & BSE at flat Rs 100/lot. SEBI-registered F&O advisory and margin guidance from Shriram Financial Services.',
-  path: '/derivatives/',
+  path: '/derivatives',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products/' },
-        { name: 'Equity Derivatives', path: '/derivatives/' },
+        { name: 'Products', path: '/products' },
+        { name: 'Equity Derivatives', path: '/derivatives' },
       ],
       site
     ),
@@ -95,11 +95,11 @@ const seo = {
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Equity Derivatives' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Equity Derivatives' }]} />
     <div class="hero-inner" data-enter>
       <h1>Derivatives Trading in India — Futures &amp; Options Made Simple</h1>
       <p class="lead">Access real-time market data, advanced charts, Option Chain insights, and powerful trading tools to navigate the derivatives market with ease.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Start Trading Futures &amp; Options</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Start Trading Futures &amp; Options</a></div>
     </div>
   </section>
 
@@ -226,7 +226,7 @@ const seo = {
         <div class="st-body"><h4>Expiry &amp; Settlement</h4><p>In-the-money(ITM) options are settled on expiry. Futures can be rolled over or cash-settled for index contracts.</p></div>
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== Futures Vs Options Comparisons ===== -->
@@ -294,7 +294,7 @@ const seo = {
             <h3>Need A Clearer Direction?</h3>
             <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help you understand margins, expiry and risk management so you trade F&amp;O with a plan.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

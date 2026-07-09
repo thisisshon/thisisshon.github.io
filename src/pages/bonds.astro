@@ -222,14 +222,14 @@ const seo = {
   title: 'Invest in Bonds & Debentures',
   description:
     'Invest in government and corporate bonds for stable, predictable fixed-income returns with lower risk, via Shriram Financial Services.',
-  path: '/bonds/',
+  path: '/bonds',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Products', path: '/products/' },
-        { name: 'Bonds', path: '/bonds/' },
+        { name: 'Products', path: '/products' },
+        { name: 'Bonds', path: '/bonds' },
       ],
       site
     ),
@@ -241,11 +241,11 @@ const seo = {
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
   <!-- ===== Hero ===== -->
   <section class="hero" id="sec-hero" data-section="hero">
-    <Breadcrumb trail={[{ name: 'Products', href: '/products/' }, { name: 'Bonds' }]} />
+    <Breadcrumb trail={[{ name: 'Products', href: '/products' }, { name: 'Bonds' }]} />
     <div class="hero-inner" data-enter>
       <h1>Grow Your Wealth Steadily with <span class="g">Bonds</span></h1>
       <p class="lead">Understand bond types, returns, risks and investment strategies to make informed fixed-income decisions.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
     </div>
   </section>
 
@@ -280,7 +280,7 @@ const seo = {
         <div class="card"><h4 class="card-h">{c.h}</h4><p class="card-p">{c.p}</p></div>
       ))}
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Open Demat Account</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Open Demat Account</a>
   </section>
 
   <!-- ===== Risk Factors in Bonds ===== -->
@@ -338,7 +338,7 @@ const seo = {
         ))}
       </div>
     </div>
-    <a class="btn-gold" href="/open-demat-account/" style="align-self:center">Start Investing in Bonds</a>
+    <a class="btn-gold" href="/opendemataccount" style="align-self:center">Start Investing in Bonds</a>
   </section>
 
   <!-- ===== Bond Investment Strategies ===== -->
@@ -381,7 +381,7 @@ const seo = {
             <h3>Need A Clearer Direction?</h3>
             <p>Let's get in touch on a 15-minute call where we can answer any questions you may have. Our advisor will help map your wealth mix and show what a dedicated, research-led plan would do differently.</p>
           </div>
-          <a class="btn-gold" href="/contact-us/">Book A Discovery Call</a>
+          <a class="btn-gold" href="/contactus">Book A Discovery Call</a>
         </div>
       </div>
     </div>

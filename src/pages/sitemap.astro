@@ -36,9 +36,9 @@ const company: SmGroup = {
   blurb: 'Who we are and how to get started with Shriram.',
   links: [
     { label: 'Home', href: '/' },
-    { label: 'About Us', href: '/about-us/' },
-    { label: 'Open a Demat Account', href: '/open-demat-account/' },
-    { label: 'Become a Partner', href: '/become-a-partner/' },
+    { label: 'About Us', href: '/aboutus' },
+    { label: 'Open a Demat Account', href: '/opendemataccount' },
+    { label: 'Become a Partner', href: '/becomeapartner' },
   ],
 };
 
@@ -73,13 +73,13 @@ const legal: SmGroup = {
   title: 'Legal & Compliance',
   blurb: 'Policies, charters and regulatory disclosures.',
   links: [
-    { label: 'Regulatory Documents', href: '/regulatory-documents/' },
-    { label: 'Investor Charter', href: '/regulatory-documents/investor-charter/' },
-    { label: 'Mandatory Member Details', href: '/regulatory-documents/mandatory-member-details/' },
-    { label: 'Privacy Policy', href: '/privacy-policy/' },
-    { label: 'Terms & Conditions', href: '/terms-and-conditions/' },
-    { label: 'Terms of Use - Purse', href: '/terms-of-use-purse/' },
-    { label: 'Grievance Redressal', href: '/grievance-redressal/' },
+    { label: 'Regulatory Documents', href: '/regulatorydocuments' },
+    { label: 'Investor Charter', href: '/regulatorydocuments/investorcharter' },
+    { label: 'Mandatory Member Details', href: '/regulatorydocuments/mandatorymemberdetails' },
+    { label: 'Privacy Policy', href: '/privacypolicy' },
+    { label: 'Terms & Conditions', href: '/termsandconditions' },
+    { label: 'Terms of Use - Purse', href: '/termsofusepurse' },
+    { label: 'Grievance Redressal', href: '/grievanceredressal' },
     { label: 'SEBI SCORES', href: 'https://scores.sebi.gov.in' },
   ],
 };
@@ -90,12 +90,12 @@ const seo = {
   title: 'Sitemap - All Pages',
   description:
     'Browse the full site structure of Shriram Financial Services, covering all products, research tools, calculators and about pages.',
-  path: '/sitemap/',
+  path: '/sitemap',
   jsonLd: [
     breadcrumbSchema(
       [
         { name: 'Home', path: '/' },
-        { name: 'Sitemap', path: '/sitemap/' },
+        { name: 'Sitemap', path: '/sitemap' },
       ],
       'https://uat.shriramsecurities.com'
     ),
@@ -110,7 +110,7 @@ const seo = {
     <div class="hero-inner" data-enter>
       <h1>Find Your Way Around <span class="g">Our Site</span></h1>
       <p class="lead">A complete directory of everything on Shriram Financial Services - every product, research desk, calculator and support page, organised in one place.</p>
-      <div class="cta"><a class="btn-gold" href="/open-demat-account/">Open Demat Account</a></div>
+      <div class="cta"><a class="btn-gold" href="/opendemataccount">Open Demat Account</a></div>
     </div>
   </section>
 
@@ -150,7 +150,7 @@ const seo = {
         <h3>Didn't Find What You Were Looking For?</h3>
         <p class="ct-sub">Our team is ready to point you in the right direction - reach out any time.</p>
       </div>
-      <a class="btn-gold" href="/contact-us/">Contact Support</a>
+      <a class="btn-gold" href="/contactus">Contact Support</a>
     </div>
   </section>
 </BaseLayout>
