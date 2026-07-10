@@ -21,11 +21,11 @@ const seo = {
       contactPoint: [
         {
           '@type': 'ContactPoint',
-          telephone: '+91-1800-1234567',
+          telephone: '080-47185579 / 080-43676869',
           contactType: 'customer support',
           areaServed: 'IN',
           availableLanguage: ['en', 'hi'],
-          email: 'support@shriramfs.in',
+          email: 'support@shriramfs.com',
         },
       ],
     },
@@ -47,16 +47,16 @@ const ESCALATIONS = [
     person: 'Arathinathan J M',
     address: '3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru-560 020',
     phone: '080 - 4367 6869 Extn. 805',
-    email: 'grievance@shriramfs.com.com',
-    hours: '',
+    email: 'grievance@shriramfs.com',
+    hours: 'Monday to Friday 9.30 am to 5.30 pm',
   },
   {
     department: 'Compliance Officer',
     person: 'Sandhya',
     address: '3rd Floor, Rukmini Towers, #3/1, Sheshadripuram, Bengaluru-560 020',
     phone: '080 - 4367 6869 Extn. 874',
-    email: 'compliance@shriramfs.com.com',
-    hours: '',
+    email: 'compliance@shriramfs.com',
+    hours: 'Monday to Friday 9.30 am to 5.30 pm',
   },
   {
     department: 'CEO',
@@ -64,8 +64,8 @@ const ESCALATIONS = [
     address:
       'DYNASTY BUSINESS PARK,1ST FLOOR, OFFICE NO.: 101-105,‘A’ WING,NEAR J B NAGAR METRO STATION,ANDHERI KURLA ROAD, ANDHERI EAST,MUMBAI – 400059.',
     phone: '022 - 69032903',
-    email: 'ceo@shriramfs.com.com',
-    hours: '',
+    email: 'ceo@shriramfs.com',
+    hours: 'Monday to Friday 9.30 am to 5.30 pm',
   },
 ];
 ---
@@ -83,9 +83,9 @@ const ESCALATIONS = [
           <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
           080-47185579 | 080-43676869 Extn.825/831
         </a>
-        <a class="ct-pill" href="mailto:support@shriramfscom">
+        <a class="ct-pill" href="mailto:support@shriramfs.com">
           <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"></rect><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
-          support@shriramfscom
+          support@shriramfs.com
         </a>
       </div>
     </div>
@@ -175,7 +175,7 @@ const ESCALATIONS = [
     font-size: 14px;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .ct-pill:hover {
     background: #42443e; /* page-local - Tier-2 */
     border-color: var(--color-sage-700); /* #6d6e6a (Tier-1: absorbed by sage-700) */

@@ -295,11 +295,6 @@ const seo = {
     scroll-margin-top: 96px;
   }
 
-  /* The FAQ sits on --sec-light, so stroke the accordion AND the side card
-     together (background-dependent rule - same as research/technical/). */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-
   /* ===== Icon feature grid (DESK + WHY) ===== */
   .feat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; width: 100%; }
   .fcard {
@@ -308,7 +303,7 @@ const seo = {
     display: flex; flex-direction: column; gap: 16px;
     transition: border-color 0.22s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .fcard:hover { border-color: var(--color-sage-450); }
   }
   /* icon tile - 48px container (8px grid), warm gold tint + olive brand icon */
@@ -337,18 +332,6 @@ const seo = {
   .access-band p { font-weight: 400; font-size: 16px; color: var(--color-text-on-dark-lead); max-width: 640px; }
   .access-cta { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 24px; }
   .access-cta .btn-gold { width: auto; min-width: var(--cta-w); padding: 8px 24px; }
-
-  /* white-outline button on the dark bands (matches the fill so it reads as an
-     outline). Auto width to fit the longer label. */
-  .btn-outline {
-    display: inline-flex; align-items: center; justify-content: center;
-    height: 40px; padding: 8px 24px; border-radius: 4px;
-    background: transparent; border: 1px solid var(--color-white); color: var(--color-white);
-    font-weight: 500; font-size: 12px; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease;
-  }
-  @media (min-width: 1024px) and (hover: hover) {
-    .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
-  }
 
   /* ===== Market alerts / commentary columns ===== */
   .row-2 .card { display: flex; flex-direction: column; gap: 16px; }

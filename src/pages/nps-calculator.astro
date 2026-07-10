@@ -348,7 +348,7 @@ const seo = {
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Who Should Invest in NPS?</h2>
     </div>
-    <div class="cat-grid" data-reveal-row style="grid-template-columns:repeat(2,1fr)">
+    <div class="cat-grid cat-grid-2" data-reveal-row>
       <div class="cat"><h4>Salaried employees</h4><p>Useful as an extra retirement layer alongside EPF. Employer contribution may also improve tax efficiency.</p></div>
       <div class="cat"><h4>Government employees</h4><p>NPS is a core retirement asset for many government employees. Employer contribution can be a major benefit.</p></div>
       <div class="cat"><h4>Self-employed people</h4><p>Helpful for disciplined retirement saving when there is no employer-backed pension plan.</p></div>
@@ -459,12 +459,6 @@ const seo = {
 </BaseLayout>
 
 <style>
-  /* NPS calculator - calculator UI is shared in global.css. Page-local:
-     General Questions sits on --sec-light, so the accordion + helper side card
-     need a defined edge. */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-
   /* NPS has six inputs - lay the sliders out two-across (a 2-column grid) from
      tablet up; phones keep the single-column stack. NPS-only (page-scoped).
      The grid grows to fill the input card and distributes its three rows
@@ -520,7 +514,7 @@ const seo = {
   function fillSlider(sl: HTMLInputElement) {
     const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
     sl.style.background =
-      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
+      'linear-gradient(90deg, var(--color-olive-600) 0%, var(--color-olive-600) ' + p + '%, var(--color-gray-100) ' + p + '%, var(--color-gray-100) 100%)';
   }
 
   /* Re-targeting count animation. Reads the start value from what's CURRENTLY

@@ -314,35 +314,27 @@ const seo = {
     <div class="explore-grid" data-reveal-row>
       <a class="xcard" href="/swp-calculator">
         <span class="xc-title">SWP Calculator</span>
-        <span class="xc-desc">Check long-term savings under PPF.</span>
+        <span class="xc-desc">Plan a regular, steady income stream from your investments.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/sip-calculator">
         <span class="xc-title">SIP Calculator</span>
-        <span class="xc-desc">Estimate long-term mutual fund SIP growth.</span>
+        <span class="xc-desc">See how small monthly investments grow into big wealth.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/lumpsum-calculator">
         <span class="xc-title">Lumpsum Calculator</span>
-        <span class="xc-desc">Estimate growth from one-time investments.</span>
+        <span class="xc-desc">Project the future value of your one-time investment.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/nps-calculator">
         <span class="xc-title">NPS Calculator</span>
-        <span class="xc-desc">Plan retirement savings and pension corpus.</span>
+        <span class="xc-desc">Calculate your pension and secure your dream retirement.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  /* Fixed Deposit calculator - calculator UI is shared in global.css. Page-local:
-     General Questions sits on --sec-light, so the accordion + helper side card
-     need a defined edge. */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-</style>
 
 <script>
   // Fixed deposit calculator - compound interest with selectable frequency.
@@ -370,7 +362,7 @@ const seo = {
   function fillSlider(sl: HTMLInputElement) {
     const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
     sl.style.background =
-      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
+      'linear-gradient(90deg, var(--color-olive-600) 0%, var(--color-olive-600) ' + p + '%, var(--color-gray-100) ' + p + '%, var(--color-gray-100) 100%)';
   }
   function countTo(el: HTMLElement, from: number, to: number, fn: (n: number) => string) {
     if (reduce || from === to) {

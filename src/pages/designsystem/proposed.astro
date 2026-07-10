@@ -645,18 +645,18 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
             <div class="faq-item open">
               <button class="faq-q" type="button" aria-expanded="true">
                 <span class="qt">How long does account opening take?</span>
-                <span class="faq-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path class="v" d="M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+                <span class="faq-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12"></path><path class="v" d="M8 2v12"></path></svg></span>
               </button>
               <div class="qa-wrap"><div class="qa"><p>Most Demat accounts are activated within 24 hours of a completed KYC.</p></div></div>
             </div>
             <div class="faq-item">
               <button class="faq-q" type="button" aria-expanded="false">
                 <span class="qt">Is there a maintenance charge?</span>
-                <span class="faq-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path class="v" d="M12 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+                <span class="faq-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12"></path><path class="v" d="M8 2v12"></path></svg></span>
               </button>
             </div>
           </div>
-          <span class="gal-cap"><code>.faq-acc</code> / <code>.faq-item.open</code> · accordion</span>
+          <span class="gal-cap"><code>.faq-acc</code> / <code>.faq-item.open</code> · segmented accordion. Two band variants: <code>.faq-wrap.sec-light</code> fills cards <code>cream-400</code>, <code>.sec-tint</code> fills <code>cream-250</code> (the other band's colour); the side-card watermark takes the band's own colour. No strokes.</span>
         </div>
       </div>
     </div>
@@ -701,6 +701,10 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
       <div class="rule">
         <h3>Mobile tap targets</h3>
         <p>Every tappable control presents a <b>≥44px</b> touch area on mobile - the site standard is <b>48px</b> (on the 8px grid, matching <code>.hf-field</code> and <code>.to-top</code>). <b>Pad out the hit area</b>, never enlarge the icon: the glyph stays on its 16/20/24/32 scale while the container / <code>min-width</code> / <code>min-height</code> grows to 48px. See footer <code>.socials a</code> and <code>.nav-toggle</code>. This governs tap area, not font size - micro-labels (the <code>.hf-field</code> floating label ~10px) are a sanctioned exception.</p>
+      </div>
+      <div class="rule">
+        <h3>Hover states - desktop only, gated at 1200px</h3>
+        <p>Every hover affordance is wrapped in <code>@media (min-width: 1200px) and (hover: hover)</code> - one canonical gate, used site-wide. The <b>1200px</b> threshold matches the nav's desktop→hamburger switch (<code>max-width: 1199.98px</code>), so hover and the full desktop layout begin and end together: <b>at ≥1200px hover is active, below 1200px it never fires</b> (the layout is already the mobile hamburger). The <code>(hover: hover)</code> half additionally excludes touch pointers at any width. Never author a hover rule outside this gate.</p>
       </div>
     </div>
   </section>
@@ -1215,9 +1219,9 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
     display: flex;
     flex-direction: column;
     gap: 12px;
-  }
-  .gal-faq .faq-acc {
-    border: 1px solid var(--color-border-card);
+    /* Card fill is set per section band (the two sanctioned variants): the fill is the
+       OTHER band's colour. Here we preview the light-band variant -> cream-400. */
+    --faq-item-bg: var(--color-cream-400);
   }
 
   /* ---- rules ---- */

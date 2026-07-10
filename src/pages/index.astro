@@ -21,10 +21,11 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HowSoon from '../components/sections/HowSoon.astro';
+import FaqAccordion from '../components/sections/FaqAccordion.astro';
 import { organizationSchema, faqPageSchema } from '../lib/seo';
 
-// Homepage FAQ - verbatim from the 7 <details> below, same order. Drives the
-// FAQPage JSON-LD; the visible markup stays the native <details> list.
+// Homepage FAQ - feeds both the shared <FaqAccordion> below and the FAQPage
+// JSON-LD, so markup and schema never drift.
 const FAQS = [
   {
     q: 'What is a Demat Account?',
@@ -406,7 +407,8 @@ const seo = {
               </p>
             </div>
             <a href="/products" class="product-link">
-              View All Our Products →
+              View All Our Products
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="vertical-align:middle;margin-left:8px"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
           </div>
           <div class="product-box-4" id="products-grid">
@@ -987,152 +989,13 @@ const seo = {
     <section class="el-sec-2">
       <div class="advisory-box">
         <div class="faq-box">
-          <!-- FAQ list -->
-          <div>
+          <!-- FAQ list - shared FaqAccordion (segmented style, sitewide). Items render
+               cream-350 via --faq-item-bg set on .faq-box below. -->
+          <div class="faq-list-col">
             <h2 class="why-title" style="font-family:var(--font-sans);color:var(--color-olive-900)">
               Got <span class="faq-label">Questions?</span>
             </h2>
-            <!-- Figma 185:3779 - separate #f8f4e8 bars, plus/minus icons, one open at a time -->
-            <div class="faq-box-2" id="faq-accord">
-              <details class="group faq-box-3">
-                <summary class="faq-box-4">
-                  <span class="faq-label-2">What is a Demat Account?</span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    class="faq-box-5"
-                  >
-                    <path d="M2 8h12"></path>
-                    <path d="M8 2v12" class="faq-box-6"></path>
-                  </svg>
-                </summary>
-                <div class="faq-box-7">
-                  <p class="faq-text">
-                    A Demat Account holds your financial shares, mutual funds, and bonds safely in an
-                    electronic format. It is mandatory for trading in the Indian stock market.
-                  </p>
-                </div>
-              </details><details class="group faq-box-3">
-                <summary class="faq-box-4">
-                  <span class="faq-label-2">What are the benefits of a Demat Account?</span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    class="faq-box-5"
-                  >
-                    <path d="M2 8h12"></path>
-                    <path d="M8 2v12" class="faq-box-6"></path>
-                  </svg>
-                </summary>
-                <div class="faq-box-7">
-                  <p class="faq-text">
-                    A Demat account completely eliminates the risk of theft, loss, or damage to
-                    physical paper certificates. It enables instant, one-click online buying and
-                    selling of shares, reduces paperwork, and ensures all your investments are visible
-                    in one secure place.
-                  </p>
-                </div>
-              </details><details class="group faq-box-3">
-                <summary class="faq-box-4">
-                  <span class="faq-label-2"
-                    >What are the brokerage charges for options trading with Shriram Financial Services?</span
-                  >
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    class="faq-box-5"
-                  >
-                    <path d="M2 8h12"></path>
-                    <path d="M8 2v12" class="faq-box-6"></path>
-                  </svg>
-                </summary>
-                <div class="faq-box-7">
-                  <p class="faq-text">
-                    Brokerage charges for options trading are structured to be competitive and
-                    straightforward. Shriram Financial Services charges a flat fee of ₹25 per executed
-                    order for options trading. To further understand and calculate the total costs,
-                    including brokerage, taxes, and other fees, you can use the Brokerage Calculator.
-                    This tool helps you estimate the net profit or loss on your trades by accounting
-                    for all applicable charges.
-                  </p>
-                </div>
-              </details><details class="group faq-box-3">
-                <summary class="faq-box-4">
-                  <span class="faq-label-2">What is Intraday brokerage and Option brokerage?</span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    class="faq-box-5"
-                  >
-                    <path d="M2 8h12"></path>
-                    <path d="M8 2v12" class="faq-box-6"></path>
-                  </svg>
-                </summary>
-                <div class="faq-box-7">
-                  <p class="faq-text">
-                    Intraday brokerage is the small fee charged when you buy and sell a stock on the
-                    exact same day. Option brokerage is a fixed flat fee charged for trading in options
-                    contracts, regardless of how big or small the transaction volume is.
-                  </p>
-                </div>
-              </details><details class="group faq-box-3">
-                <summary class="faq-box-4">
-                  <span class="faq-label-2">Can I have multiple Demat Accounts?</span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    class="faq-box-5"
-                  >
-                    <path d="M2 8h12"></path>
-                    <path d="M8 2v12" class="faq-box-6"></path>
-                  </svg>
-                </summary>
-                <div class="faq-box-7">
-                  <p class="faq-text">
-                    Yes, absolutely! Legally, you can open more than one Demat account in India,
-                    provided they are opened with different stockbrokers. However, you can only link
-                    one Demat account to your primary trading account at a time.
-                  </p>
-                </div>
-              </details><details class="group faq-box-3">
-                <summary class="faq-box-4">
-                  <span class="faq-label-2">Is a Demat Account mandatory for applying for an IPO?</span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    class="faq-box-5"
-                  >
-                    <path d="M2 8h12"></path>
-                    <path d="M8 2v12" class="faq-box-6"></path>
-                  </svg>
-                </summary>
-                <div class="faq-box-7">
-                  <p class="faq-text">
-                    Yes. When a new company lists on the share market, its digital shares must be
-                    deposited directly into an electronic account. Therefore, you must have an active
-                    Demat account to apply for and receive shares in an IPO.
-                  </p>
-                </div>
-              </details>
-            </div>
+            <FaqAccordion faqs={FAQS} />
           </div>
           <!-- Olive CTA card -->
           <div class="faq-box-8">
@@ -1304,7 +1167,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .hero-link:hover {
       background-color: #1a2010; /* --color-olive-950 (#1b2010 absorbs #1a2010, Tier-1) */
     }
@@ -1452,7 +1315,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .hero-link-2:hover {
       background-color: #d4982a; /* --color-gold-600 */
     }
@@ -1465,7 +1328,7 @@ const seo = {
   .hero-link-3 {
     color: #2f7ef4; /* --color-blue-500 */
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .hero-link-3:hover {
       text-decoration-line: underline;
     }
@@ -1838,7 +1701,7 @@ const seo = {
     transition: background-color 0.15s, transform 0.15s;
     display: inline-flex;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .advisory-link-2:hover {
     background-color: #d4982a; /* --color-gold-600 (fork --color-brand-hover) */
     transform: translateY(-1px);
@@ -1906,7 +1769,7 @@ const seo = {
     font-weight: 600;
     color: #fdf4dc; /* --color-cream-450 (fork --color-brand-light) */
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link:hover {
       color: var(--color-white);
     }
@@ -1961,7 +1824,7 @@ const seo = {
     margin-top: 40px;
     transition: margin-top var(--pc-dur) var(--pc-ease);
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover .product-copy {
       margin-top: 32px; /* 8px tighter to the icon on hover */
     }
@@ -1972,7 +1835,7 @@ const seo = {
   .product-text-2 {
     color: #ffffff80; /* Tier-2: rule-5 (alpha) - parity-preserved (over dark card) */
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover .product-text-2 {
       color: #ffffffb3; /* Tier-2: rule-5 (alpha) - parity-preserved */
     }
@@ -1996,7 +1859,7 @@ const seo = {
     padding: 32px;
     background-color: #2e3914; /* --color-olive-900 (revealed base) */
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover {
       --pc-delay: 0.1s;
       background-color: #2e3914; /* --color-olive-900 */
@@ -2012,7 +1875,7 @@ const seo = {
     clip-path: circle(150% at calc(100% - 60px) 60px);
     transition: clip-path var(--pc-dur) var(--pc-ease);
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover::before {
       clip-path: circle(0% at calc(100% - 60px) 60px);
     }
@@ -2031,7 +1894,7 @@ const seo = {
     stroke: currentColor;
     transition: stroke-width var(--pc-dur) var(--pc-ease);
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover .product-img {
       transform: scale(1.2); /* 40px → 48px */
       color: var(--color-white);
@@ -2064,7 +1927,7 @@ const seo = {
     transition: opacity var(--pc-dur) var(--pc-ease), transform var(--pc-dur) var(--pc-ease),
       max-height var(--pc-dur) var(--pc-ease), margin-top var(--pc-dur) var(--pc-ease);
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover .product-label {
       margin-top: 40px;
       max-height: 24px;
@@ -2089,7 +1952,7 @@ const seo = {
     transform: scale(0.375); /* 24px at rest → 64px on hover */
     transition: opacity var(--pc-dur) var(--pc-ease), transform var(--pc-dur) var(--pc-ease);
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover .product-card-circle {
       opacity: 1;
       transform: scale(1);
@@ -2105,7 +1968,7 @@ const seo = {
     transform: rotate(45deg);
     transition: transform var(--pc-dur) var(--pc-ease);
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .product-link-2:hover .product-card-circle svg {
       transform: rotate(0deg);
     }
@@ -2147,7 +2010,7 @@ const seo = {
     .product-box-2 {
       padding: 48px 16px;
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       /* Remove the hover animation entirely on mweb - hold every layer at its
        resting value even while :hover matches (it does in a desktop browser at
        mobile width, which is why the animation still fired). No animation, no
@@ -2156,39 +2019,39 @@ const seo = {
       clip-path: circle(150% at calc(100% - 60px) 60px);
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-card-circle {
       opacity: 0;
       transform: scale(0.375);
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-card-circle svg {
       transform: rotate(45deg);
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-img {
       transform: none;
       color: #d7d7cd;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-img [stroke] {
       stroke-width: 2.5;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-copy {
       margin-top: 40px;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-label {
       margin-top: 16px;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-text-2 {
       color: #ffffff80; /* Tier-2: rule-5 (alpha) - parity-preserved (over dark card) */
     }
@@ -2336,85 +2199,20 @@ const seo = {
     letter-spacing: 0.01em;
   }
 
-  /* ---- FAQ (native <details> - mechanism kept verbatim) ---- */
-  #faq-accord details {
-    interpolate-size: allow-keywords;
-  }
-  #faq-accord details::details-content {
-    block-size: 0;
-    transition: block-size 0.3s ease-in-out, content-visibility 0.3s allow-discrete;
-    overflow: clip;
-  }
-  #faq-accord details[open]::details-content {
-    block-size: auto;
-  }
+  /* ---- FAQ (shared FaqAccordion; only the grid + side card are page-scoped) ---- */
   .faq-box {
     display: grid;
     gap: 48px;
+    /* homepage FAQ items: warm cream on the cream-100 band (matches Figma 185:3779) */
+    --faq-item-bg: var(--color-cream-350);
+  }
+  .faq-list-col {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
   }
   .faq-label {
     color: #4f583b; /* --color-olive-600 */
-  }
-  .faq-box-2 {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .faq-box-3 {
-    border-radius: 0;
-    background-color: #f8f4e8; /* --color-cream-350 */
-  }
-  .faq-box-3:first-child {
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-  }
-  .faq-box-3:last-child {
-    border-bottom-right-radius: 24px;
-    border-bottom-left-radius: 24px;
-  }
-  .faq-box-4 {
-    display: flex;
-    cursor: pointer;
-    list-style-type: none;
-    align-items: center;
-    justify-content: space-between;
-    padding-inline: 24px;
-    padding-block: 24px;
-    gap: 40px;
-  }
-  .faq-box-4::-webkit-details-marker {
-    display: none;
-  }
-  .faq-label-2 {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333; /* fork n900 */
-  }
-  .group[open] .faq-label-2 {
-    font-weight: 600;
-  }
-  .faq-box-5 {
-    height: 16px;
-    width: 16px;
-    flex-shrink: 0;
-    color: #333; /* fork n900 */
-  }
-  .faq-box-6 {
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 0.15s;
-  }
-  .group[open] .faq-box-6 {
-    opacity: 0;
-  }
-  .faq-box-7 {
-    padding-inline: 24px;
-    padding-bottom: 24px;
-  }
-  .faq-text {
-    font-size: 14px;
-    color: #666; /* --color-gray-650 (home muted) */
   }
   .faq-box-8 {
     display: flex;
@@ -2463,7 +2261,7 @@ const seo = {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .faq-link:hover {
       background-color: #d4982a; /* --color-gold-600 */
     }
@@ -2631,13 +2429,30 @@ const seo = {
     }
   }
 
-  @media (min-width: 1280px) {
+  /* Hero two-column: scale the text column proportionally so the Demat card never
+     starves between 1200-1440px. Legacy snapped the text column to a fixed 690px at
+     1280px, which crushed the card (heading wrapped, badges reflowed) until ~1440px.
+     Instead ramp the text max-width fluidly from its ~44% width at 1200px up to the
+     690px design width at 1440px - continuous at both ends - so the hero stays a
+     balanced horizontal rectangle across the whole range. Below 1200px the existing
+     44% rule governs; at/above 1440px the 690px design resumes.
+     Responsive fluid scaling: sanctioned exception to the 8px grid, same idiom as
+     the clamp()-based --pad / hero sizing. */
+  @media (min-width: 1200px) and (max-width: 1439.98px) {
+    .hero-box-3 {
+      max-width: clamp(465px, calc(93.75vw - 660px), 690px);
+    }
+  }
+  @media (min-width: 1440px) {
     .hero-box-3 {
       max-width: 690px;
     }
     .hero-box-8 {
       padding: 40px;
     }
+  }
+
+  @media (min-width: 1280px) {
     .why-box-6 {
       gap: 88px;
       padding-inline: 112px;
@@ -2760,29 +2575,29 @@ const seo = {
       color: var(--color-white);
       stroke: var(--color-white);
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       /* neutralise the desktop hover choreography on touch so a tap doesn't animate */
     .product-link-2:hover .product-img {
       transform: none;
       color: #d7d7cd;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-img [stroke] {
       stroke-width: 2.5;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-copy {
       margin-top: 0;
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-card-circle {
       transform: translateY(-50%);
     }
     }
-    @media (min-width: 1024px) and (hover: hover) {
+    @media (min-width: 1200px) and (hover: hover) {
       .product-link-2:hover .product-card-circle svg {
       transform: rotate(45deg);
     }
@@ -2976,15 +2791,4 @@ const seo = {
     );
     p.forEach((t) => e.observe(t));
   }
-
-  /* FAQ - single-open <details> accordion. Verbatim from legacy. */
-  const E = document.getElementById('faq-accord');
-  E?.querySelectorAll('details').forEach((el) => {
-    el.addEventListener('toggle', () => {
-      el.open &&
-        E.querySelectorAll('details').forEach((tt) => {
-          tt !== el && tt.removeAttribute('open');
-        });
-    });
-  });
 </script>

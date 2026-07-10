@@ -493,12 +493,12 @@ const seo = {
     <div class="explore-grid" data-reveal-row>
       <a class="xcard" href="/lumpsum-calculator">
         <span class="xc-title">Lumpsum Calculator</span>
-        <span class="xc-desc">Estimate returns on one-time mutual fund investments.</span>
+        <span class="xc-desc">Project the future value of your one-time investment.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/swp-calculator">
         <span class="xc-title">SWP Calculator</span>
-        <span class="xc-desc">Plan systematic withdrawals from mutual funds.</span>
+        <span class="xc-desc">Plan a regular, steady income stream from your investments.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/sip-calculator">
@@ -508,12 +508,12 @@ const seo = {
       </a>
       <a class="xcard" href="/nps-calculator">
         <span class="xc-title">NPS Calculator</span>
-        <span class="xc-desc">Estimate retirement corpus from NPS contributions.</span>
+        <span class="xc-desc">Calculate your pension and secure your dream retirement.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/fd-calculator">
         <span class="xc-title">FD Calculator</span>
-        <span class="xc-desc">Calculate maturity value of fixed deposits.</span>
+        <span class="xc-desc">Know your exact returns and maturity value instantly.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
     </div>
@@ -535,19 +535,10 @@ const seo = {
         <div class="check-row"><span class="ck" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><p class="tx">Secure investment tracking dashboard</p></div>
       </div>
     </div>
-    <p class="sec-lead">SEBI Registration Number: [Add SEBI Reg No.]</p>
+    <p class="sec-lead">SEBI Registration Number: INZ000178638</p>
     <div class="cta" style="align-self:flex-start"><a class="btn-gold" href="/open-demat-account">Start SIP Now</a><a class="btn-ghost" href="/contact-us">Talk to an Expert</a></div>
   </section>
 </BaseLayout>
-
-<style>
-  /* SIP calculator - all calculator UI now lives in global.css (.calc-* / .field
-     / .slider / .bar-* / .res-* / .ready-* / .bullets / .explore-grid). Only the
-     page-local FAQ border remains: General Questions sits on --sec-light here, so
-     the accordion + helper side card need a defined edge. */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-</style>
 
 <script>
   // SIP calculator - ported verbatim from legacy inline script (var → const/let,
@@ -580,7 +571,7 @@ const seo = {
   function fillSlider(sl: HTMLInputElement) {
     const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
     sl.style.background =
-      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%) center / 100% 6px no-repeat';
+      'linear-gradient(90deg, var(--color-olive-600) 0%, var(--color-olive-600) ' + p + '%, var(--color-gray-100) ' + p + '%, var(--color-gray-100) 100%) center / 100% 6px no-repeat';
   }
   /* core SIP maths, period-by-period so step-up & frequency are exact */
   function compute(amount: number, years: number, ratePct: number, stepPct: number, perYear: number) {

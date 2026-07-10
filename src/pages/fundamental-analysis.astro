@@ -120,9 +120,9 @@ const seo = {
 
   <!-- ================= ALL REPORTS IN ONE PLACE + UNLOCK BAND ================= -->
   <section class="section stack sec-tint" id="sec-notes" data-section="notes" style="gap:56px;justify-content:center">
-    <div class="stack" style="gap:16px;align-items:center;text-align:center">
+    <div class="stack" style="gap:16px">
       <h2 class="sec-title">Fundamental Research notes all you need in one place</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary);max-width:720px">Every report we publish, from single earnings note to a full sector study, lives here as soon as it’s out. Log in to read the full working, rating and target price.</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">Every report we publish, from single earnings note to a full sector study, lives here as soon as it’s out. Log in to read the full working, rating and target price.</p>
     </div>
 
     <!-- Unlock band - the doc's CTA, rendered in the site's dark focus-band
@@ -173,12 +173,6 @@ const seo = {
     scroll-margin-top: 96px;
   }
 
-  /* The FAQ sits on --sec-light, so the block needs a defined edge: stroke the
-     accordion AND the helper side card together (background-dependent rule -
-     same as research/technical). */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-
   /* ===== Gated daily-note card ===== */
   .gate {
     max-width: 640px; width: 100%; display: flex; flex-direction: column;
@@ -206,18 +200,6 @@ const seo = {
   .unlock-tx p { font-weight: 400; font-size: 16px; color: var(--color-text-on-dark-lead); }
   /* .unlock-cta buttons use the shared .btn-gold + .btn-outline (global.css). */
   .unlock-cta { display: flex; gap: 16px; flex-wrap: wrap; }
-
-  /* white-outline button on the dark band (matches the fill so it reads as an
-     outline). Auto width to fit the longer label. */
-  .btn-outline {
-    display: inline-flex; align-items: center; justify-content: center;
-    height: 40px; padding: 8px 24px; border-radius: 4px;
-    background: transparent; border: 1px solid var(--color-white); color: var(--color-white);
-    font-weight: 500; font-size: 12px; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease;
-  }
-  @media (min-width: 1024px) and (hover: hover) {
-    .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
-  }
 
   /* ===== responsive ===== */
   @media (max-width: 768px) {

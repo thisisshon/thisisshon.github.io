@@ -59,7 +59,7 @@ const seo = {
       <div class="hero-feats">
         <div class="feats">
           <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;Pan-India Presence</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered: [Registration Number]</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;SEBI-registered: INZ000178638</span></div>
           <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lb">&nbsp;AMFI-compliant platform</span></div>
         </div>
       </div>
@@ -413,22 +413,22 @@ const seo = {
     <div class="explore-grid" data-reveal-row>
       <a class="xcard" href="/sip-calculator">
         <span class="xc-title">SIP Calculator</span>
-        <span class="xc-desc">Plan monthly investments.</span>
+        <span class="xc-desc">See how small monthly investments grow into big wealth.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/lumpsum-calculator">
         <span class="xc-title">Lumpsum Calculator</span>
-        <span class="xc-desc">Estimate one-time investment growth.</span>
+        <span class="xc-desc">Project the future value of your one-time investment.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/nps-calculator">
         <span class="xc-title">NPS Calculator</span>
-        <span class="xc-desc">Plan retirement savings.</span>
+        <span class="xc-desc">Calculate your pension and secure your dream retirement.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
       <a class="xcard" href="/fd-calculator">
         <span class="xc-title">FD Calculator</span>
-        <span class="xc-desc">Check fixed deposit maturity value.</span>
+        <span class="xc-desc">Know your exact returns and maturity value instantly.</span>
         <span class="xc-cta">Calculate Now <span class="arr" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
       </a>
     </div>
@@ -455,14 +455,6 @@ const seo = {
   </section>
 </BaseLayout>
 
-<style>
-  /* SWP calculator - calculator UI is shared in global.css. Page-local:
-     General Questions sits on --sec-light, so the accordion + helper side card
-     need a defined edge. */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-</style>
-
 <script>
   // SWP calculator - month-by-month drawdown of a growing lumpsum.
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
@@ -488,7 +480,7 @@ const seo = {
   function fillSlider(sl: HTMLInputElement) {
     const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
     sl.style.background =
-      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
+      'linear-gradient(90deg, var(--color-olive-600) 0%, var(--color-olive-600) ' + p + '%, var(--color-gray-100) ' + p + '%, var(--color-gray-100) 100%)';
   }
   function countTo(el: HTMLElement, from: number, to: number, fn: (n: number) => string) {
     if (reduce || from === to) {

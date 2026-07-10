@@ -20,7 +20,7 @@ const FAQS = [
   },
   {
     q: 'What is the commission structure?',
-    a: 'You can earn a very reasonable revenue sharing on every trade made by the clients you refer, with no cap on what you can take home. It’s a lifetime model: as long as your referred clients stay active, you keep earning from them. The actual sharing percentage can be decided at the time of partnership onboarding process.',
+    a: 'You can earn a very reasonable and Fair revenue sharing on every trade made by the clients you refer, with no cap on what you can take home. It’s a lifetime model: as long as your referred clients stay active, you keep earning from them. The actual sharing percentage can be decided at the time of partnership onboarding process.',
   },
   {
     q: 'Do I need a SEBI registration?',
@@ -60,10 +60,10 @@ const seo = {
     </div>
   </section>
 
-  <!-- ================= BENEFITS THAT SETS US APART ================= -->
+  <!-- ================= BENEFITS THAT SET US APART ================= -->
   <section class="section stack sec-light" id="sec-benefits" data-section="benefits" style="gap:56px" data-enter="2">
     <div class="stack" style="gap:16px">
-      <h2 class="sec-title">Benefits That Sets Us Apart</h2>
+      <h2 class="sec-title">Benefits That Set Us Apart</h2>
       <h3 class="sub-title">Build Your Business with a Trusted Financial Partner</h3>
       <p class="sec-lead">At Shriram Financial Services, we empower our partners with the right combination of brand strength, technology, research, product diversity, and dedicated support to help them grow sustainably in a competitive financial services landscape.</p>
     </div>
@@ -263,6 +263,29 @@ const seo = {
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">Hear from Our Partners</h2>
     </div>
+    <div class="encl-grid tst-grid" data-reveal-row>
+      <figure class="encl-cell tst">
+        <blockquote class="tst-q">“I've been a Shriram partner for 17 years. The revenue share is consistent, and the partner dashboard makes tracking earnings effortless.”</blockquote>
+        <figcaption class="tst-cite">
+          <span class="tst-name">VIKAS SHIVLAL TOSHNIWAL</span>
+          <span class="tst-loc">Ahemdabad</span>
+        </figcaption>
+      </figure>
+      <figure class="encl-cell tst">
+        <blockquote class="tst-q">“The research support from Shriram sets me apart from other advisors in my area. My clients trust my recommendations because they're backed by real data.”</blockquote>
+        <figcaption class="tst-cite">
+          <span class="tst-name">JAYANTILAL LALJI DEDHIA</span>
+          <span class="tst-loc">Mumbai</span>
+        </figcaption>
+      </figure>
+      <figure class="encl-cell tst">
+        <blockquote class="tst-q">“Starting with zero investment and earning very good revenue share that was unbelievable at first. Now I run my own financial advisory practice full-time.”</blockquote>
+        <figcaption class="tst-cite">
+          <span class="tst-name">SUNITA SHARMA</span>
+          <span class="tst-loc">Kolkatta</span>
+        </figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ===== General Questions ===== -->
@@ -423,7 +446,7 @@ const seo = {
     color: var(--color-text-muted);
     font-weight: 400;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .port-tab:hover {
     color: var(--color-text-heading-dark);
   }
@@ -486,7 +509,7 @@ const seo = {
     flex: none;
     width: 1px;
     align-self: center;
-    height: 146px;
+    height: 144px;
     background: #454a3a; /* page-local divider on gradient - Tier-2 candidate */
   }
   .elig-check {
@@ -582,7 +605,7 @@ const seo = {
   .ec-box {
     width: 24px;
     height: 24px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     border: 1.5px solid #c9c6ba; /* page-local checkbox border - Tier-2 candidate */
     flex: none;
     background: var(--color-white);
@@ -690,15 +713,7 @@ const seo = {
   .apply-head {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 8px;
-  }
-  .apply-title {
-    text-align: center;
-  }
-  .apply-lead {
-    text-align: center;
-    max-width: 760px;
   }
   .apply-form {
     display: flex;
@@ -779,6 +794,31 @@ const seo = {
     justify-content: center;
   }
 
+  /* ---------- testimonials - 3-up quote cards on the shared .encl-grid / .encl-cell.
+     Only the quote + cite type is page-local; the grid/cell come from global.css. ---------- */
+  .tst-q {
+    margin: 0;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--color-text-muted);
+  }
+  .tst-cite {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tst-name {
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-primary);
+  }
+  .tst-loc {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+
   /* ---------- final CTA (dark) ---------- */
   .cta-box.dark {
     background: var(--color-olive-950);
@@ -802,12 +842,12 @@ const seo = {
   .cta-actions .btn-ghost {
     transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .cta-actions .btn-gold:hover {
     filter: brightness(0.96);
   }
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .cta-actions .btn-ghost:hover {
     background: #383838; /* page-local ghost-hover - Tier-2 candidate (charcoal-650) */
     border-color: var(--color-white);

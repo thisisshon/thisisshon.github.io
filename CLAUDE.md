@@ -160,6 +160,37 @@ off against each other:
     micro-labels (the `.hf-field` floating label at ~10px, compact eyebrow/badge text) are
     sanctioned and must not be "fixed."
 
+15. **🟢 Hover states are desktop-only, gated at 1200px.** Every hover affordance lives inside the
+    one canonical gate `@media (min-width: 1200px) and (hover: hover)` - never author a hover rule
+    outside it. The **1200px** threshold matches the nav's desktop→hamburger switch
+    (`max-width: 1199.98px`), so hover and the full desktop layout begin/end together: **≥1200px hover
+    is active, below 1200px it never fires** (the layout is already the mobile hamburger). The
+    `(hover: hover)` half also excludes touch pointers at any width. *(Updated 2026-07-09: the gate
+    was raised from `1024px` to `1200px` sitewide so hover no longer lingers in the 1024-1199 band
+    where the mobile chrome is already showing.)* The design is otherwise **proportionally identical
+    1200→1920** by construction - no fixed content max-width; the page gutter is fluid
+    (`--pad: clamp(20px, 8vw, 144px)`) and grids reflow on `1fr`, so elements scale with the viewport.
+
+16. **🟢 The FAQ section has two sanctioned variants, one per section band - colour is
+    automatic, never per-page.** *(Supersedes every earlier FAQ-styling instruction, 2026-07-10.)*
+    Every FAQ block is `<section class="faq-wrap sec-light|sec-tint">` → `.faq-cols` holding
+    `.faq-left` (`<h2 class="faq-title">Got Questions?</h2>` + `<FaqAccordion>`) and the `.faq-side`
+    "Need A Clearer Direction?" card. The accordion is the shared **segmented** style: each
+    `.faq-item` is its own bar with a **4px gap**, only the outer ends rounded (24px), a 16px
+    question that animates `font-weight` 500→600 on open (needs the **variable** Outfit face), and a
+    16px plus glyph whose vertical bar fades on open. The two variants differ only in colour, all set
+    once in `global.css` and keyed on the band:
+    - **Card fill** - `--faq-item-bg`, consumed by **both** the accordion segments **and** the side
+      card so they always match, is set to the **other** band's colour: `sec-light → cream-400`,
+      `sec-tint → cream-250`. The card thus sits one shade off the band it's on.
+    - **Watermark** - `.faq-side .usr` is the band's **own** colour (`--faq-section-bg`), painted via
+      a CSS `mask` of `/assets/user.svg` at full opacity (the external `<img>` can't inherit page
+      colour), so it reads as a subtle tone-on-tone against the off-colour card. Hidden below 1024px.
+    - **No strokes** on either segment - the fill delta + the 4px gaps carry all separation.
+    Set only the band class on the page; **never** re-declare fills, borders, or the watermark in a
+    page `<style>`. The homepage is the documented exception (single cream-100 band → `cream-350`
+    items, its own olive side card, no watermark). Documented live in `/designsystem/proposed`.
+
 ---
 
 ## ▶️ Running / preview
@@ -203,7 +234,7 @@ docs/                   legacy-style-audit.md, porting-guide.md, and the build s
 **Core & company**
 | URL | Source | Page |
 |---|---|---|
-| `/` | `pages/index.astro` | Homepage (video hero + glass Demat card, pinned "Why Shriram", advisory cards, dark product grid, steps, `<details>` FAQ). Unified shared `Footer`. |
+| `/` | `pages/index.astro` | Homepage (video hero + glass Demat card, pinned "Why Shriram", advisory cards, dark product grid, steps, shared `FaqAccordion` + olive "Still Have Questions?" side card). Unified shared `Footer`. |
 | `/about-us` | `pages/about-us.astro` | About Us (stat hero, MVV, timeline). |
 | `/open-demat-account` | `pages/open-demat-account.astro` | Open a Demat Account (two-column hero + lead-capture form, phone-flag decoration). |
 | `/become-a-partner` | `pages/become-a-partner.astro` | Become a Partner (Apply form, eligibility checker, portfolio tabs). |

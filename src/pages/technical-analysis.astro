@@ -211,7 +211,7 @@ const seo = {
       ))}
     </div>
 
-    <p class="sec-lead" style="color:var(--color-text-secondary);text-align:center">Full reports are accessible to Shriram demat account holders. Log in or open a account to read all notes.</p>
+    <p class="sec-lead" style="color:var(--color-text-secondary)">Full reports are accessible to Shriram demat account holders. Log in or open a account to read all notes.</p>
   </section>
 
   <!-- ================= SECTION 6 - UNLOCK ALL REPORTS CTA ================= -->
@@ -261,11 +261,6 @@ const seo = {
   .section {
     scroll-margin-top: 96px;
   }
-
-  /* The FAQ sits on --sec-tint here, but the accordion still needs a defined
-     edge; stroke the accordion AND the helper side card together. */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
 
   /* ===== Gated daily-note card ===== */
   .gate {
@@ -320,7 +315,7 @@ const seo = {
   .rcard-foot { margin-top: auto; padding-top: 8px; display: flex; align-items: flex-end; justify-content: flex-end; gap: 16px; }
   .rcard-link { display: inline-flex; align-items: center; gap: 8px; flex: none; font-weight: 500; font-size: 12px; color: var(--color-link); }
   .rcard-link svg { width: 16px; height: 16px; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .rcard-link:hover { text-decoration: underline; }
   }
 
@@ -329,7 +324,7 @@ const seo = {
   .rcard-action svg { width: 16px; height: 16px; flex: none; }
   /* nudge the trailing arrow on hover (matches the site's .appr / .pcard language) */
   .rcard-action svg:last-child { transition: transform 0.25s ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .rcard-action:hover svg:last-child { transform: translateX(4px); }
   }
 
@@ -347,18 +342,6 @@ const seo = {
   /* .unlock-cta buttons use the shared .btn-gold + .btn-outline (global.css);
      both already size to var(--cta-w), so no width rule is needed here. */
   .unlock-cta { display: flex; gap: 16px; flex-wrap: wrap; }
-
-  /* white-outline button on the dark unlock band (matches the fill so it reads
-     as an outline). */
-  .btn-outline {
-    display: inline-flex; align-items: center; justify-content: center;
-    height: 40px; padding: 8px 24px; border-radius: 4px;
-    background: transparent; border: 1px solid var(--color-white); color: var(--color-white);
-    font-weight: 500; font-size: 12px; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease;
-  }
-  @media (min-width: 1024px) and (hover: hover) {
-    .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
-  }
 
   /* ===== responsive ===== */
   @media (max-width: 1024px) {

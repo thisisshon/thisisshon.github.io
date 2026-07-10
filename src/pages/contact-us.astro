@@ -24,11 +24,11 @@ const seo = {
       contactPoint: [
         {
           '@type': 'ContactPoint',
-          telephone: '+91-1800-123-4567',
+          telephone: '080-47185579 / 080-43676869',
           contactType: 'customer support',
           areaServed: 'IN',
           availableLanguage: ['en', 'hi'],
-          email: 'support@shriramfs.in',
+          email: 'support@shriramfs.com',
         },
       ],
     },
@@ -203,14 +203,19 @@ const seo = {
       <p class="sub-lead">Search by state and city, or browse the list below.</p>
     </div>
     <div class="branch-search reveal">
-      <div class="bs-field">
-        <label class="sr-only" for="bs-state">Select State</label>
-        <select id="bs-state" aria-label="Select State"></select>
+      <div class="hf-field sel">
+        <div class="hf-field-in">
+          <label for="bs-state">State</label>
+          <select id="bs-state" aria-label="Select State"></select>
+        </div>
       </div>
-      <div class="bs-field">
-        <label class="sr-only" for="bs-branch">Select City</label>
-        <select id="bs-branch" aria-label="Select City"></select>
+      <div class="hf-field sel">
+        <div class="hf-field-in">
+          <label for="bs-branch">City</label>
+          <select id="bs-branch" aria-label="Select City"></select>
+        </div>
       </div>
+      <button class="btn-gold" type="button" id="bs-search">Search</button>
     </div>
     <div class="map-wrap reveal" id="map-wrap">
       <iframe id="branch-map" title="Map view – enter state and city to locate branches" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
@@ -368,7 +373,7 @@ const seo = {
 
   /* design-system rule: every font renders at a 1.5 line-height. Buttons, inputs, pills and
      links reset to `normal` by default, so restore 1.5 on them explicitly (page-scoped). */
-  .ct-pill, .tab, .hf-field-in input, .hf-field-in select, .bs-field select, .doc-search input,
+  .ct-pill, .tab, .hf-field-in input, .hf-field-in select, .doc-search input,
   .bc-meta a, .bc-map, .directions, .doc-dl, .doc-chip, .btn-gold, .btn-dark, .btn-ghost {
   }
 
@@ -410,7 +415,7 @@ const seo = {
     font-size: 14px;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .ct-pill:hover {
     background: #43443e; /* page-local - Tier-2 candidate */
     border-color: var(--color-sage-700); /* #6d6e6a (Tier-1: absorbed by sage-700) */
@@ -572,7 +577,7 @@ const seo = {
     visibility: hidden;
     pointer-events: none;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .tab:hover {
     color: var(--color-text-heading-dark);
   }
@@ -700,47 +705,13 @@ const seo = {
   /* ---------- Branch Locator ---------- */
   .branch-search {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr auto;
     gap: 16px;
     align-items: stretch;
   }
-  .bs-field {
-    position: relative;
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-border-card);
-    border-radius: 12px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .bs-field:focus-within {
-    border-color: var(--color-gold-400);
-  }
-  .bs-field select {
-    appearance: none;
-    border: 0;
-    outline: none;
-    background: none;
-    width: 100%;
-    font-family: inherit;
-    font-weight: 500;
-    font-size: 16px;
-    color: var(--color-text-primary);
-    cursor: pointer;
-  }
-  .bs-field::after {
-    content: '';
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    width: 8px;
-    height: 8px;
-    border-right: 1.6px solid var(--color-gray-450); /* #8a8a8a */
-    border-bottom: 1.6px solid var(--color-gray-450); /* #8a8a8a */
-    transform: translateY(-65%) rotate(45deg);
-    pointer-events: none;
+  #bs-search {
+    height: 48px;
+    padding: 0 32px;
   }
 
   /* interactive (draggable) Google map embed */
@@ -829,7 +800,7 @@ const seo = {
     overflow-wrap: anywhere;
     transition: color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .bc-meta a:hover {
     color: var(--color-text-heading-dark);
   }
@@ -864,7 +835,7 @@ const seo = {
     white-space: nowrap;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .bc-map:hover {
     background: var(--color-surface-section-tint);
     border-color: var(--color-sage-100); /* #c9c8c0 (Tier-1: absorbed by sage-100) */
@@ -890,7 +861,7 @@ const seo = {
     white-space: nowrap;
     transition: background 0.2s ease, border-color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .directions:hover {
     background: var(--color-surface-section-tint);
     border-color: var(--color-sage-100); /* #c9c8c0 (Tier-1: absorbed by sage-100) */
@@ -931,31 +902,16 @@ const seo = {
   .cta-actions .btn-gold, .cta-actions .btn-ghost {
     transition: filter 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .cta-actions .btn-gold:hover {
     filter: brightness(0.96);
   }
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .cta-actions .btn-ghost:hover {
     background: var(--color-charcoal-650); /* #383838 */
     border-color: var(--color-white);
   }
-  }
-
-  /* .sr-only lived in the legacy shared styles.css but is NOT in the new
-     global.css; it visually hides the branch/downloads field labels, so it is
-     kept page-local here for parity. (Shared-extraction candidate.) */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 
   /* ---------- responsive (two-column hero stacking is canonical in global.css @980px) ---------- */
@@ -1162,7 +1118,7 @@ const seo = {
       { id: 'vijayawada', name: 'Vijayawada', state: 'Andhra Pradesh', addr: '1st Floor, Om Square, Plot No.89, Near Gupta Kalyana Mandapam, Vijayawada – 520010', phone: '0866-2490719 / 2490720 / 2490721', email: 'vijayawada@shriramfs.in', q: 'Om Square Vijayawada 520010' },
       { id: 'surat', name: 'Surat', state: 'Gujarat', addr: 'G-16, D Block, International Trade Centre, Majura-Gate Ring Road, Surat – 395002', phone: '0261-4081400 / 401 / 402 / 403', email: 'surat@shriramfs.in', q: 'International Trade Centre Majura Gate Ring Road Surat 395002' },
       { id: 'ghatkopar', name: 'Mumbai – Ghatkopar', state: 'Maharashtra', addr: 'No.409/410/411, 4th Floor, Swastik Disa Business Park, LBS Marg, Behind Vadhani Industrial Estate, Ghatkopar West, Mumbai – 400086', phone: '022-61462900', email: 'ghatkopar@shriramfs.in', q: 'Swastik Disa Business Park LBS Marg Ghatkopar West Mumbai 400086' },
-      { id: 'andheri', name: 'Mumbai – Andheri', state: 'Maharashtra', addr: '101-104, A Wing, Dynasty Business Park, J B Nagar, Andheri-Kurla Road, Andheri East, Mumbai – 400059', phone: '022-69032900', email: 'andheri@shriramfs.in', q: 'Dynasty Business Park JB Nagar Andheri East Mumbai 400059' },
+      { id: 'andheri', name: 'Mumbai – Andheri', state: 'Maharashtra', addr: '101-104, A Wing, Dynasty Business Park, J B Nagar, Andheri-Kurla Road, Andheri East, Mumbai – 400059', phone: '022-69032903', email: 'andheri@shriramfs.in', q: 'Dynasty Business Park JB Nagar Andheri East Mumbai 400059' },
       { id: 'connaughtplace', name: 'New Delhi – Connaught Place', state: 'Delhi', addr: 'Flat No.704, 7th Floor, Rohit House, Tolstoy Marg, Connaught Place, New Delhi – 110001', phone: '011-41252100 to 106', email: 'connaughtplace@shriramfs.in', q: 'Rohit House Tolstoy Marg Connaught Place New Delhi 110001' },
       { id: 'kolkata', name: 'Kolkata', state: 'West Bengal', addr: '2, Brabourne Road, Govind Bhavan, 7th Floor, Kolkata – 700001', phone: '033-46013385 / 83', email: 'kolkata@shriramfs.in', q: 'Brabourne Road Govind Bhavan Kolkata 700001' },
     ];
@@ -1277,6 +1233,16 @@ const seo = {
       branchSel.addEventListener('change', function () {
         zoomTo(byId[branchSel.value], false);
       });
+      /* explicit "Search" CTA: re-apply the current State/City selection on the map */
+      var searchBtn = document.getElementById('bs-search');
+      if (searchBtn) {
+        searchBtn.addEventListener('click', function () {
+          var b = byId[branchSel.value];
+          if (b) {
+            zoomTo(b, true);
+          }
+        });
+      }
       groupsEl.addEventListener('click', function (e) {
         var btn = e.target.closest && e.target.closest('.bc-map');
         if (btn) {

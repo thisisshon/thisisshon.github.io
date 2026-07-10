@@ -29,7 +29,7 @@ const FAQS = [
   },
   {
     q: 'What is the minimum margin requirement?',
-    a: 'Typically, 259–50% depending on the stock category, with haircuts applied as per SEBI rules.',
+    a: 'Typically, 25% – 50% depending on the stock category, with haircuts applied as per SEBI rules.',
   },
   {
     q: 'How much leverage can I get under MTF?',
@@ -46,7 +46,7 @@ const site = Astro.site!.href;
 const seo = {
   title: 'Margin Trading Facility (MTF)',
   description:
-    'Get up to 4x buying power with Margin Trading Facility (MTF) from Shriram Financial Services - no overnight square-off, 500+ eligible stocks.',
+    'Get up to 4x buying power with Margin Trading Facility (MTF) from Shriram Financial Services - no overnight square-off, 700+ eligible stocks.',
   path: '/mtf',
   jsonLd: [
     faqPageSchema(FAQS.map((f) => ({ question: f.q, answer: f.a }))),
@@ -71,6 +71,15 @@ const seo = {
       <h1>Margin Trading Facility in India — Buy 4X More Stocks with Less Capital</h1>
       <p class="lead">Amplify your buying power up to 4x leverage with Shriram Financial Services trusted MTF platform. Trade approved NSE/BSE stocks with low margins, transparent interest rates, and secure settlement.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account">Open Demat Account / Activate MTF</a></div>
+      <div class="hero-feats">
+        <div class="feats">
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">SEBI Regulated</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">NSE &amp; BSE Approved</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">MTF Rates from 16% p.a.</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Up to 4x Buying Power</span></div>
+          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">100% Digital</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -100,7 +109,7 @@ const seo = {
   <section class="section stack sec-tint" id="sec-how" data-section="how" style="gap:56px;justify-content:center">
     <div class="stack" style="gap:16px">
       <h2 class="sec-title">How MTF Works</h2>
-      <p class="sec-lead" style="color:var(--color-text-secondary)">With Margin Trading Facility (MTF), you can buy stocks by paying only a fraction of the total value upfront — Shriram Financial Services funds the remaining amount. You can hold your leveraged position for up to 360 days, giving you the flexibility to stay invested without paying the full cost immediately. Whenever you're ready, simply repay the funded amount to get the shares transferred directly to your demat account — a process known as Convert to Delivery (CTD).</p>
+      <p class="sec-lead" style="color:var(--color-text-secondary)">With Margin Trading Facility (MTF), you can buy stocks by paying only a fraction of the total value upfront — Shriram Financial Services funds the remaining amount. You can hold your leveraged position for up to 90 days, giving you the flexibility to stay invested without paying the full cost immediately. Whenever you're ready, simply repay the funded amount to get the shares transferred directly to your demat account — a process known as Convert to Delivery (CTD).</p>
       <p class="sec-lead" style="color:var(--color-text-secondary)">Let's take an example for understanding how it works. Suppose you want to buy shares worth ₹1,00,000. With a 25% margin requirement, you pay ₹25,000. The broker funds ₹75,000. You hold the shares and pay interest only on the ₹75,000 financed amount.</p>
     </div>
     <div class="stack" style="gap:32px">
@@ -129,9 +138,9 @@ const seo = {
       <h2 class="sec-title">Key Benefits of MTF – Why Use Leverage Trading?</h2>
       <p class="sec-lead">Margin Trading Facility (MTF) offers six core advantages for delivery-based equity investors. Unlike intraday trading, MTF lets you hold positions for extended periods — up to 90 days — while unlike futures, you gain actual ownership of the shares in your demat account. At its heart, MTF amplifies your buying power without sacrificing the benefits of delivery-based investing.</p>
     </div>
-    <div class="cat-grid" data-reveal-row style="grid-template-columns:repeat(2,1fr)">
+    <div class="cat-grid cat-grid-2" data-reveal-row>
       <div class="cat"><h4>BUYING POWER 4X</h4><p>Up to 4X your Capital</p></div>
-      <div class="cat"><h4>HOLIDING 90 days</h4><p>No Forced Overnight Exit</p></div>
+      <div class="cat"><h4>HOLDING 90 days</h4><p>No Forced Overnight Exit</p></div>
       <div class="cat"><h4>SHARE OWNERSHIP YES</h4><p>Demat Credit + Dividends</p></div>
       <div class="cat"><h4>CAPITAL FREED 75%</h4><p>With 25% Margin example</p></div>
     </div>

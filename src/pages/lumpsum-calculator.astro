@@ -395,14 +395,6 @@ const seo = {
   </section>
 </BaseLayout>
 
-<style>
-  /* Lumpsum calculator - calculator UI is shared in global.css. Page-local:
-     General Questions sits on --sec-light, so the accordion + helper side card
-     need a defined edge. */
-  .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-side { border: 1px solid var(--color-border-card); }
-</style>
-
 <script>
   // Lumpsum calculator - compound growth of a single one-time investment.
   const fmt = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
@@ -428,7 +420,7 @@ const seo = {
   function fillSlider(sl: HTMLInputElement) {
     const p = ((+sl.value - +sl.min) / (+sl.max - +sl.min)) * 100;
     sl.style.background =
-      'linear-gradient(90deg, #4f583b 0%, #4f583b ' + p + '%, #f3f3f3 ' + p + '%, #f3f3f3 100%)';
+      'linear-gradient(90deg, var(--color-olive-600) 0%, var(--color-olive-600) ' + p + '%, var(--color-gray-100) ' + p + '%, var(--color-gray-100) 100%)';
   }
   function countTo(el: HTMLElement, from: number, to: number, fn: (n: number) => string) {
     if (reduce || from === to) {

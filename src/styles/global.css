@@ -402,7 +402,7 @@
     border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px;
     transition: border-color 0.22s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .doc-card:hover { border-color: var(--color-sage-450); }
   } /* #8d8e84 (Tier-1) */
   .doc-card .nm { font-weight: 500; font-size: 16px; color: var(--color-text-primary); flex: 1 0 auto; }
@@ -414,7 +414,7 @@
     font-weight: 500; font-size: 14px; white-space: nowrap;
     text-decoration: underline; text-underline-offset: 2px; transition: color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .doc-dl:hover { color: var(--color-link-hover); }
   } /* #1c5fc4 */
 
@@ -456,7 +456,7 @@
     font-size: 14px; color: var(--color-text-tertiary); cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .doc-chip:hover { border-color: var(--color-sage-100); }
   } /* #c9c8c0 (Tier-1) */
   .doc-chip[aria-pressed='true'] {
@@ -566,7 +566,7 @@
   .crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .crumbs li { display: inline-flex; align-items: center; gap: 8px; }
   .crumbs a { font-weight: 400; font-size: var(--text-sm); color: var(--color-sage-100); text-decoration: none; transition: color var(--dur-fast) ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .crumbs a:hover { color: var(--color-white); }
   }
   .crumbs [aria-current="page"] { font-weight: 500; font-size: var(--text-sm); color: var(--color-white); }
@@ -622,6 +622,14 @@
   .cat-grid-3 .cat:nth-child(3n) { border-right: 0; }
   .cat-grid-3 .cat:nth-last-child(-n + 3) { border-bottom: 0; }
 
+  /* 2-column variant: `.cat-grid cat-grid-2`. For 2-up card sets (2 / 4 / 6); like
+     cat-grid-3 the borders derive from position so it closes cleanly and still
+     collapses to 1-up on phones via the shared responsive rules. */
+  .cat-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .cat-grid-2 .cat { border-right: 1px solid var(--color-border-card); border-bottom: 1px solid var(--color-border-card); }
+  .cat-grid-2 .cat:nth-child(2n) { border-right: 0; }
+  .cat-grid-2 .cat:nth-last-child(-n + 2) { border-bottom: 0; }
+
   /* Clickable cell - `<a class="cat cat-link">`. Reuses Card Hover Animation 1
      from .appr (colour shift + arrow nudge, no lift/shadow), retuned for the light
      card surface: .appr's hover pair is dark-on-dark and means nothing here, so it
@@ -630,7 +638,7 @@
   .cat-link .cat-go { display: flex; gap: 8px; align-items: center; color: var(--color-gold-400); font-weight: 600; font-size: 16px; }
   .cat-link .cat-go span:last-child { display: inline-flex; transition: transform 0.25s ease; }
   .cat-link .cat-go svg { display: block; width: 16px; height: 16px; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .cat-link:hover { background: var(--color-cream-300); }
     .cat-link:hover .cat-go span:last-child { transform: translateX(8px); }
   }
@@ -702,13 +710,13 @@
     border-radius: 24px; padding: var(--container-pad); display: flex; gap: 32px; align-items: flex-start;
     transition: background 0.25s ease, border-color 0.25s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     /* Card Hover Animation 1 - subtle colour shift + arrow nudge, no lift/shadow */
   .appr:hover { background: var(--color-olive-925); border-color: var(--color-olive-700); }
   }
   .appr .explore span:last-child { transition: transform 0.25s ease; display: inline-flex; }
   .appr .explore span:last-child svg { display: block; width: 16px; height: 16px; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .appr:hover .explore span:last-child { transform: translateX(8px); }
   }
   .appr-main { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: 32px; }
@@ -730,53 +738,72 @@
   .pgroup-head h3 { font-weight: 700; font-size: 24px; color: var(--color-text-heading-dark); text-transform: uppercase; }
   .pgroup-head p { font-weight: 400; font-size: 16px; color: var(--color-text-tertiary); }
   .pcard-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; }
+  /* Groups with only two cards fill the row as halves instead of narrow quarters.
+     Desktop-only; the ≤1024/≤560 rules below keep the normal 2-col → 1-col flow. */
+  @media (min-width: 1025px) { .pcard-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .pcard {
     display: flex; gap: 16px; align-items: center; padding: 24px; background: var(--color-surface-card);
     border: 1px solid var(--color-border-product-card); border-radius: 24px; text-decoration: none;
     transition: background 0.25s ease, border-color 0.25s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .pcard:hover { background: var(--color-cream-300); border-color: var(--color-tan-400); }
   }
   .pcard-tx { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
   .pcard-tx h4 { font-weight: 500; font-size: 16px; color: var(--color-text-primary); }
   .pcard-tx p { font-weight: 400; font-size: 14px; color: var(--color-text-tertiary); }
   .pcard-arr { width: 24px; height: 24px; flex: none; color: var(--color-text-heading-dark); opacity: 0; transform: translateX(-6px); transition: opacity 0.25s ease, transform 0.25s ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .pcard:hover .pcard-arr { opacity: 1; transform: translateX(0); }
   }
   .pcard-arr svg { display: block; width: 24px; height: 24px; }
 
   /* ===== General Questions (FAQ) ===== */
-  .faq-wrap { padding: var(--section-y) var(--pad); }
+  /* --faq-item-bg is the segment/side-card fill; --faq-section-bg is the watermark
+     colour. Both are set per section band further down (the two sanctioned variants).
+     The defaults here are the no-band fallback. */
+  .faq-wrap { padding: var(--section-y) var(--pad); --faq-item-bg: var(--color-surface-card); }
   .faq-cols { display: flex; gap: 48px; align-items: stretch; }
   .faq-left { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: 48px; }
   .faq-title { font-weight: 400; font-size: 40px; color: var(--color-text-heading-dark); text-transform: capitalize; white-space: nowrap; }
-  .faq-acc { border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; gap: 2px; width: 100%; }
-  .faq-item { background: var(--color-surface-card); }
+  /* Segmented "divided" accordion (unified from the homepage FAQ): each item is its
+     own bar, separated by a 4px gap that reveals the band behind; only the outer ends
+     round. The item fill (--faq-item-bg) alternates with the section tone, so the gaps
+     + fill delta delineate every segment - no hairline border needed. */
+  .faq-acc { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+  .faq-item { background: var(--faq-item-bg, var(--color-surface-card)); }
+  .faq-item:first-child { border-top-left-radius: 24px; border-top-right-radius: 24px; }
+  .faq-item:last-child { border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
   /* the question is a real <button> for keyboard + screen-reader support */
-  .faq-q { width: 100%; background: none; border: 0; margin: 0; cursor: pointer; font-family: inherit; padding: 24px; display: flex; gap: 40px; align-items: flex-start; text-align: left; }
-  .faq-q .qt { flex: 1 0 0; min-width: 0; font-weight: 500; font-size: 14px; color: var(--color-charcoal-700); }
+  .faq-q { width: 100%; background: none; border: 0; margin: 0; cursor: pointer; font-family: inherit; padding: 24px; display: flex; gap: 40px; align-items: center; text-align: left; }
+  .faq-q .qt { flex: 1 0 0; min-width: 0; font-weight: 500; font-size: 16px; color: var(--color-charcoal-700); transition: font-weight 0.3s var(--ease-standard); }
+  .faq-item.open .faq-q .qt { font-weight: 600; }
   .faq-q:focus-visible { outline: 2px solid var(--color-olive-900); outline-offset: -2px; }
   .qa-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.38s var(--ease-standard); }
   .faq-item.open .qa-wrap { grid-template-rows: 1fr; }
   .qa { overflow: hidden; min-height: 0; }
   .qa p { padding: 0 24px 24px; font-weight: 400; font-size: 14px; color: var(--color-charcoal-600); }
-  .faq-icon { width: 24px; height: 24px; flex: none; }
-  .faq-icon svg { display: block; width: 24px; height: 24px; }
-  .faq-icon svg .v { transform-box: fill-box; transform-origin: center; transition: transform 0.38s var(--ease-standard), opacity 0.38s ease; }
-  .faq-item.open .faq-icon svg .v { transform: scaleY(0); opacity: 0; }
+  /* plus glyph: the vertical bar (.v) fades out on open, leaving a minus */
+  .faq-icon { width: 16px; height: 16px; flex: none; color: var(--color-charcoal-700); }
+  .faq-icon svg { display: block; width: 16px; height: 16px; }
+  .faq-icon svg .v { transition: opacity 0.15s var(--ease-standard); }
+  .faq-item.open .faq-icon svg .v { opacity: 0; }
 
-  /* .faq stroke is background-dependent: strokeless by default (the near-white
-     card reads against the --sec-tint band), but on a light FAQ band the card and
-     section are both near-white, so stroke the accordion AND the side card. Keyed
-     on `.faq-wrap.sec-light` so it's automatic per section tone - no per-page
-     scoping (which can't reach .faq-acc inside the FaqAccordion component anyway). */
-  .faq-wrap.sec-light .faq-acc { border: 1px solid var(--color-border-card); padding: 1px; }
-  .faq-wrap.sec-light .faq-side { border: 1px solid var(--color-border-card); }
-  .faq-side { width: 464px; flex: none; background: var(--color-surface-card); border-radius: 24px; padding: var(--container-pad); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 40px; justify-content: flex-end; }
-  .faq-side .usr { position: absolute; left: var(--container-pad); top: 64px; width: 128px; height: 144px; opacity: 0.1; } /* watermark dim - sanctioned opacity use */
-  .faq-side .usr img { width: 100%; height: 100%; display: block; }
+  /* ===== The two sanctioned FAQ variants, keyed on the section band =====
+     On EACH band both the accordion segments AND the "Need A Clearer Direction?"
+     side card share one fill (--faq-item-bg) set to the OTHER band's colour, so the
+     cards sit a shade off the band they're on: a light band gets the darker tint
+     fill; a tint band gets the lighter fill. The watermark uses the band's OWN
+     colour (--faq-section-bg) so it stays visible against that off-colour card.
+     No strokes - the fill delta + 4px segment gaps carry the separation. */
+  .faq-wrap.sec-light { --faq-item-bg: var(--color-cream-400); --faq-section-bg: var(--color-surface-section-light); }
+  .faq-wrap.sec-tint  { --faq-item-bg: var(--color-cream-250); --faq-section-bg: var(--color-surface-section-tint); }
+  .faq-side { width: 464px; flex: none; background: var(--faq-item-bg, var(--color-surface-card)); border-radius: 24px; padding: var(--container-pad); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 40px; justify-content: flex-end; }
+  /* watermark: the band's own colour, painted through a mask because the external
+     <img> can't inherit page colours. Full opacity - a subtle tone-on-tone against
+     the card, so no dimming needed. Hidden below 1024px (see responsive block). */
+  .faq-side .usr { position: absolute; left: var(--container-pad); top: 64px; width: 128px; height: 144px; background: var(--faq-section-bg, var(--color-surface-section-light)); -webkit-mask: url('/assets/user.svg') center / 100% 100% no-repeat; mask: url('/assets/user.svg') center / 100% 100% no-repeat; }
+  .faq-side .usr img { display: none; }
   .faq-side .side-in { display: flex; flex-direction: column; gap: 32px; position: relative; }
   .faq-side .side-tx { display: flex; flex-direction: column; gap: 8px; color: var(--color-charcoal-800); }
   .faq-side .side-tx h3 { font-weight: 500; font-size: 20px; letter-spacing: 0; }
@@ -787,7 +814,7 @@
   .btn-gold {
     background: var(--color-action-primary); height: 40px; width: var(--cta-w); border: 0; border-radius: 4px;
     -webkit-appearance: none; appearance: none; cursor: pointer; font-family: inherit;
-    display: flex; align-items: center; justify-content: center; padding: 8px 20px;
+    display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 20px;
     font-weight: 500; font-size: 12px; color: var(--color-action-primary-ink); white-space: nowrap;
   }
 
@@ -798,7 +825,7 @@
     display: flex; align-items: center; justify-content: center; padding: 8px 20px;
     font-weight: 500; font-size: 12px; white-space: nowrap;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .btn-ghost:hover { background: var(--color-charcoal-650); }
   }
 
@@ -815,7 +842,7 @@
     font-weight: 500; font-size: 12px; white-space: nowrap;
     transition: background 0.25s ease, color 0.25s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .btn-outline:hover { background: var(--color-white); color: var(--color-text-heading-dark); }
   }
 
@@ -842,11 +869,11 @@
   .fb-row { display: flex; gap: 12px; align-items: flex-start; font-weight: 400; font-size: 14px; color: var(--color-sage-300); }
   .fb-row svg { width: 16px; height: 16px; flex: none; margin-top: 3px; color: var(--color-gold-400); }
   a.fb-row { transition: color 0.15s ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     a.fb-row:hover { color: var(--color-white); }
   }
   .socials { margin-top: 32px; display: flex; gap: 8px; }
-  .socials a { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--color-charcoal-775); display: flex; align-items: center; justify-content: center; color: var(--color-sage-300); transition: color 0.15s ease, border-color 0.15s ease; } @media (min-width: 1024px) and (hover: hover) {
+  .socials a { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--color-charcoal-775); display: flex; align-items: center; justify-content: center; color: var(--color-sage-300); transition: color 0.15s ease, border-color 0.15s ease; } @media (min-width: 1200px) and (hover: hover) {
    /* 48px box = min mobile tap target, matches .hf-field / .to-top */
   .socials a:hover { color: var(--color-gold-400); border-color: var(--color-gold-400); }
  }
@@ -856,7 +883,7 @@
   .foot-col h5 { font-weight: 700; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--color-gold-400); }
   .foot-col ul { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
   .foot-col a { font-weight: 400; font-size: 14px; color: var(--color-text-faint); transition: color 0.15s ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .foot-col a:hover { color: var(--color-white); }
   }
   .foot-col-wide { grid-column: span 2; }
@@ -934,7 +961,7 @@
 
   /* inline Verify / Verified affordances (trailing, inside the box) */
   .hf-verify { flex: none; border: 0; background: none; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 14px; color: var(--color-link); padding: 0; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .hf-verify:hover { text-decoration: underline; }
   }
   .hf-verified { flex: none; display: flex; align-items: center; gap: 6px; font-weight: 500; font-size: 14px; color: var(--color-success); } /* 6px gap = legacy off-grid value, kept for parity (Tier-2: 8px) */
@@ -971,7 +998,7 @@
   .nps-logo img { height: 48px; width: auto; display: block; object-fit: contain; }
   .nps-nav { display: flex; flex-direction: column; gap: clamp(24px, 3.5vw, 48px); }
   .nps-item { font-size: 24px; font-weight: 300; color: var(--color-tan-500);transition: color 0.2s ease; background: none; border: none; cursor: pointer; text-align: left; padding: 0; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .nps-item:hover { color: var(--color-white); }
   }
   #nav-panel[data-panel='products'] .nps-item[data-for='products'],
@@ -994,7 +1021,7 @@
   .nps-col-title { font-size: 20px; font-weight: 500; color: var(--color-sage-900); text-transform: capitalize; }
   .nps-col-items { display: flex; flex-direction: column; gap: clamp(14px, 1.8vw, 24px); }
   .nps-col-items a { font-size: 16px; color: var(--color-charcoal-700); text-decoration: none; transition: color 0.2s ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .nps-col-items a:hover { color: var(--color-gold-400); }
   }
   .nps-divider { width: 1px; align-self: stretch; background: var(--color-border-divider); flex-shrink: 0; margin-top: calc(clamp(18px, 2.5vw, 32px) + clamp(14px, 1.3vw, 20px)); }
@@ -1005,7 +1032,7 @@
     color: #ffffffb3; /* legacy alpha over the sidebar GRADIENT - cannot flatten exactly; kept verbatim (Tier-2) */
     transition: color 0.2s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     #nps-go-back:hover { color: var(--color-white); }
   }
   #nps-go-back svg { width: 16px; height: 16px; flex-shrink: 0; }
@@ -1014,7 +1041,7 @@
   .nps-trade-cols .nps-col-items { flex: 1; padding: 0; }
   .nps-view-all { margin-top: clamp(28px, 4vw, 56px); }
   .nps-view-all a { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 28px; border: 1.5px solid var(--color-sage-900); border-radius: 6px; font-size: 14px; font-weight: 500; color: var(--color-sage-900); text-decoration: none; transition: background 0.2s ease, color 0.2s ease; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .nps-view-all a:hover { background: var(--color-sage-900); color: var(--color-white); }
   }
 
@@ -1159,7 +1186,7 @@
     background: var(--color-olive-950); border: 1px solid var(--color-olive-950); border-radius: 24px; padding: 32px;
     display: flex; flex-direction: column; color: inherit; transition: background-color 0.25s ease, border-color 0.25s ease;
   }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .xcard:hover { background: var(--color-olive-925); border-color: var(--color-olive-700); }
   }
   .xc-title { font-weight: 500; font-size: 19px; /* off-scale - Tier-2 */ color: var(--color-white); }
@@ -1167,7 +1194,7 @@
   .xc-cta { margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; color: var(--color-gold-400); font-weight: 600; font-size: 14px; }
   .xc-cta .arr { display: inline-flex; transition: transform 0.25s ease; }
   .xc-cta .arr svg { display: block; width: 16px; height: 16px; }
-  @media (min-width: 1024px) and (hover: hover) {
+  @media (min-width: 1200px) and (hover: hover) {
     .xcard:hover .xc-cta .arr { transform: translateX(5px); }
   }
 }
@@ -1206,8 +1233,28 @@
   .nav-links { gap: 16px; }
 }
 
-/* Collapse the desktop nav into a hamburger */
-@media (max-width: 1300px) {
+/* 1201-1300px: keep the FULL desktop nav (no hamburger yet) but render it as a
+   proportional miniature of the 1920 layout - every logo / text / button / gap
+   dimension is the 1920 design value scaled by a factor that eases from ~0.85 at
+   1200px up to ~0.95 at 1300px (fluid via clamp). The roomy 1920 spacing is
+   restored here (overriding the <=1500 tightened gaps) so the bar reads as a
+   smaller 1920, not a squeezed one. Below 1200px the hamburger takes over.
+   Responsive fluid scaling: a sanctioned exception to the 8px-grid / icon-size
+   rules, the same idiom as the clamp()-based --pad and hero sizing. */
+@media (min-width: 1200px) and (max-width: 1300px) {
+  .nav-left { gap: clamp(34px, calc(4vw - 14px), 38px); }
+  .logo-crop { width: clamp(108.8px, calc(12.8vw - 44.8px), 121.6px); height: clamp(47.6px, calc(5.6vw - 19.6px), 53.2px); }
+  .nav-links { gap: clamp(20.4px, calc(2.4vw - 8.4px), 22.8px); height: clamp(30.6px, calc(3.6vw - 12.6px), 34.2px); }
+  .nav-link span { font-size: clamp(11.9px, calc(1.4vw - 4.9px), 13.3px); }
+  .nav-link .chev { width: clamp(13.6px, calc(1.6vw - 5.6px), 15.2px); height: clamp(13.6px, calc(1.6vw - 5.6px), 15.2px); }
+  .nav-actions { gap: clamp(13.6px, calc(1.6vw - 5.6px), 15.2px); }
+  .login span { font-size: clamp(11.9px, calc(1.4vw - 4.9px), 13.3px); }
+  .login-chev { width: clamp(13.6px, calc(1.6vw - 5.6px), 15.2px); height: clamp(13.6px, calc(1.6vw - 5.6px), 15.2px); }
+  .btn-dark { width: clamp(170px, calc(20vw - 70px), 190px); height: clamp(34px, calc(4vw - 14px), 38px); font-size: clamp(10.2px, calc(1.2vw - 4.2px), 11.4px); }
+}
+
+/* Collapse the desktop nav into a hamburger (below 1200px) */
+@media (max-width: 1199.98px) {
   .nav-links { display: none; }
   .nav-toggle { display: flex; }
   /* mweb header (Figma 1154:3221): hamburger far left, logo beside it, the
@@ -1395,6 +1442,7 @@
   /* 1-up: the base only clears card 8's bottom border, so a 6-card grid would
      double up against the container's own border. Close on the real last card. */
   .cat-grid-3 .cat:last-child { border-bottom: 0 !important; }
+  .cat-grid-2 .cat:last-child { border-bottom: 0 !important; }
   .pcard-grid { grid-template-columns: 1fr; }
   .risk { flex: 1 1 100%; }
   .faq-q { gap: 20px; }
