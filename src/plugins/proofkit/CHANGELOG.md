@@ -6,6 +6,15 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 1.7.0 — 2026-07-12 — crisp, stackable AI prompts
+
+- Worker AI change-prompt (`worker/worker.js` → `genPrompt`) no longer includes reviewer/team
+  attribution — the "reviewed by X from the Y team" line is gone. `team`/`reviewer` are no longer
+  sent to the model; the instruction now asks for a crisp, self-contained 1-3 sentence change
+  instruction meant to be pasted into a coding agent and **stacked** one after another.
+- ⚠️ Worker change — takes effect only after `wrangler deploy` from `proofkit/worker/`; the
+  GitHub Pages deploy does not affect the Cloudflare Worker.
+
 ## 1.6.5 — 2026-07-12 — roomier overlay login
 
 - Overlay login made larger and more relaxed: card 400→480px wide, padding 40→56px; taller

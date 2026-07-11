@@ -157,21 +157,22 @@ async function genPrompt(env, kv, keyFor, rec) {
   try {
     if (env.AI) {
       const a = rec.anchor || {};
+      // NOTE: team/reviewer are deliberately NOT sent - the prompt is pasted into a
+      // coding agent, so reviewer attribution is noise. Keep it to the change itself.
       const facts = {
         page: rec.page.path,
         element: a.tag || 'unknown',
         section_or_text: a.snippet || '',
         css_selector: a.selector || '',
-        team: rec.team || '',
-        reviewer: rec.name || '',
         reviewer_note: rec.comment || '',
         exact_new_content: rec.changeTo || '',
       };
       const system =
-        'You convert a website content-review note into ONE precise, developer-ready change instruction. ' +
-        'Include: the exact page path, the specific section/element, the current text if given, and the exact ' +
-        'new content. Preserve casing, spacing and punctuation of any provided replacement copy VERBATIM and put ' +
-        'it in quotes. Keep it to 2-4 sentences. Output ONLY the instruction - no preamble, no options, no markdown headers.';
+        'You convert a website content-review note into ONE precise, developer-ready change instruction to paste into a coding agent. ' +
+        'State the exact page path, the specific section/element, the current text if given, and the exact new content. ' +
+        'Preserve casing, spacing and punctuation of any provided replacement copy VERBATIM and put it in quotes. ' +
+        'Be crisp and self-contained (1-3 imperative sentences) so several instructions can be stacked one after another. ' +
+        'Output ONLY the change instruction - no preamble, no reviewer/author attribution or sign-off, no options, no markdown headers.';
       const out = await env.AI.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', {
         messages: [
           { role: 'system', content: system },
