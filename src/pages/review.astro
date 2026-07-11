@@ -1,0 +1,328 @@
+---
+/**
+ * /review - TEMPORARY content-review dashboard.
+ *
+ * Client-rendered admin view of every comment across the site: where each sits
+ * on its page, who wrote it, when, open/resolved status, and the full thread of
+ * follow-up comments. Reads the Cloudflare Worker (PUBLIC_REVIEW_WORKER_URL)
+ * when set, else the localStorage demo store. Resolving happens here (admin
+ * side); the on-page overlay is add-only.
+ *
+ * Remove this file (and <ReviewOverlay /> in BaseLayout) before public launch.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const seo = {
+  title: 'Content Review Dashboard',
+  description: 'Internal content-review dashboard.',
+  path: '/review',
+  noindex: true,
+};
+---
+
+{/* footer="custom" + no default footer markup => this tool page has no footer. */}
+<BaseLayout seo={seo} footer="custom">
+  <section class="section rvd">
+    <div class="stack" style="gap:16px">
+      <h1 class="sec-title">Content Review Dashboard</h1>
+      <p class="sec-lead">Every comment left across the site. Open a pin to see it in
+        context on the live page; resolve items here as you action them.</p>
+    </div>
+
+    <div class="rvd-bar">
+      <div class="rvd-counts" id="rvd-counts"></div>
+      <button id="rvd-refresh" class="rvd-btn">Refresh</button>
+    </div>
+
+    <div class="rvd-tabs" id="rvd-tabs" role="tablist">
+      <button class="rvd-tab is-active" data-tab="all">All</button>
+      <button class="rvd-tab" data-tab="open">Open Changes</button>
+      <button class="rvd-tab" data-tab="closed">Closed Changes</button>
+      <button class="rvd-tab" data-tab="page">By Page</button>
+    </div>
+
+    <div class="rvd-teamchips" id="rvd-teamchips"></div>
+
+    <div id="rvd-list"></div>
+    <p id="rvd-empty" class="rvd-empty" hidden>No comments yet.</p>
+  </section>
+</BaseLayout>
+
+{/* is:global (namespaced under .rvd) because cards are injected via innerHTML at
+    runtime and would not receive Astro's scoped-style attribute. The .rvd
+    ancestor keeps these rules from leaking to any other page. */}
+<style is:global>
+  .rvd .rvd-bar{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;
+    margin:32px 0 16px}
+  .rvd .rvd-counts{display:flex;gap:8px;flex-wrap:wrap}
+  .rvd .rvd-count{padding:8px 16px;border-radius:12px;background:var(--color-cream-400);
+    font-weight:600;font-size:14px}
+  .rvd .rvd-count b{font-size:18px}
+  .rvd .rvd-btn{height:40px;padding:0 16px;border-radius:8px;border:none;
+    background:var(--color-surface-dark-card,#1d1d1d);color:#fff;font:600 14px/1 Outfit;cursor:pointer}
+  .rvd .rvd-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--color-cream-500,#e4ddcb);
+    margin-bottom:16px}
+  .rvd .rvd-tab{height:44px;padding:0 16px;border:none;background:none;cursor:pointer;
+    font:600 14px/1 Outfit;color:var(--color-text-secondary,#6b6b6b);border-bottom:2px solid transparent}
+  .rvd .rvd-tab.is-active{color:var(--color-text-primary,#1d1d1d);border-bottom-color:#b58a2e}
+  .rvd .rvd-teamchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+  .rvd .rvd-tchip{height:32px;padding:0 14px;border-radius:16px;border:1.5px solid transparent;cursor:pointer;
+    font:700 11px/1 Outfit;text-transform:uppercase;letter-spacing:.03em;
+    display:inline-flex;align-items:center;transition:opacity .15s}
+  @media (min-width:1200px) and (hover:hover){ .rvd .rvd-tchip:hover{opacity:.82} }
+  /* list: full-width rows stacked vertically */
+  .rvd .rvd-grid{display:flex;flex-direction:column;gap:8px}
+  .rvd .rvd-group{margin-bottom:28px}
+  .rvd .rvd-gh{display:flex;align-items:baseline;gap:8px;margin-bottom:12px;font-size:18px;font-weight:600}
+  .rvd .rvd-gh a{color:var(--color-text-primary,#1d1d1d);text-decoration:underline}
+  .rvd .rvd-gh span{font-size:13px;font-weight:500;color:var(--color-text-secondary,#6b6b6b)}
+  /* ---- list item: one full-width row per comment ---- */
+  .rvd .rvd-item{display:flex;flex-direction:column;gap:10px;padding:14px 18px;border-radius:12px;
+    background:var(--color-cream-400);border:1px solid var(--color-cream-500,#e4ddcb)}
+  .rvd .rvd-line{display:flex;align-items:flex-start;gap:12px}
+  .rvd .rvd-line .rvd-chip{flex:none;margin-top:2px}
+  .rvd .rvd-headline{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .rvd .rvd-comment{font-size:15px;font-weight:600;line-height:1.45;color:var(--color-text-primary,#1d1d1d);
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+  .rvd .rvd-count{font-size:12px;font-weight:500;color:var(--color-text-secondary,#6b6b6b)}
+  .rvd .rvd-snip{font-size:12px;color:var(--color-text-secondary,#6b6b6b);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rvd .rvd-acts{flex:none;display:flex;align-items:center;gap:12px}
+  .rvd .rvd-openpin{height:32px;padding:0 14px;border-radius:8px;
+    background:var(--color-surface-dark-card,#1d1d1d);color:#fff;font:600 12px/1 Outfit;
+    display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap}
+  .rvd .rvd-a{height:32px;padding:0 14px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;
+    font:600 12px/1 Outfit;display:inline-flex;align-items:center;transition:opacity .15s}
+  .rvd .rvd-a.resolve{background:#fff;border:1px solid var(--color-cream-500,#d8d2c4);color:#1d1d1d}
+  .rvd .rvd-del{background:none;border:none;padding:0;cursor:pointer;white-space:nowrap;
+    font:600 12px/1 Outfit;color:#a12626;text-decoration:underline}
+  .rvd .rvd-chip{padding:3px 12px;border-radius:11px;font-weight:600;font-size:12px}
+  .rvd .rvd-chip.open{background:#fdecc8;color:#8a5a00}
+  .rvd .rvd-chip.resolved{background:#e3e3e3;color:#555}
+  .rvd .rvd-team-chip{padding:3px 10px;border-radius:11px;font-weight:700;font-size:11px;
+    text-transform:uppercase;letter-spacing:.02em}
+  .rvd .rvd-change{padding:10px 12px;border-radius:10px;background:#fffaf0;border:1px solid #f0e2c0}
+  .rvd .rvd-change span{display:block;font-size:10px;font-weight:700;text-transform:uppercase;
+    color:#8a5a00;letter-spacing:.04em;margin-bottom:2px}
+  .rvd .rvd-change div{white-space:pre-wrap;font-size:14px;color:#1d1d1d}
+  .rvd .rvd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .rvd .rvd-by{font-size:13px;font-weight:600;color:var(--color-text-primary,#1d1d1d)}
+  .rvd .rvd-time{font-size:12px;color:var(--color-text-secondary,#6b6b6b)}
+  .rvd .rvd-slug{font-size:13px;font-weight:600;color:var(--color-text-primary,#1d1d1d);text-decoration:underline}
+  .rvd .rvd-replies{display:flex;flex-direction:column;gap:12px;padding-left:14px;
+    border-left:2px solid var(--color-cream-500,#e4ddcb)}
+  .rvd .rvd-reply{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .rvd .rvd-rtxt{font-size:14px;color:var(--color-text-primary,#1d1d1d)}
+  .rvd .rvd-rmeta{font-size:12px;color:var(--color-text-secondary,#6b6b6b)}
+  .rvd .rvd-empty{margin:48px 0;text-align:center;color:var(--color-text-secondary,#6b6b6b)}
+  @media (max-width:640px){
+    .rvd .rvd-line{flex-wrap:wrap}
+    .rvd .rvd-acts{width:100%}
+  }
+  @media (min-width:1200px) and (hover:hover){
+    .rvd .rvd-a:hover,.rvd .rvd-openpin:hover,.rvd .rvd-del:hover{opacity:.8}
+  }
+</style>
+
+<script>
+  (() => {
+    const WORKER_URL = import.meta.env.PUBLIC_REVIEW_WORKER_URL || '';
+    const LOCAL = !WORKER_URL;
+    const PASS_KEY = 'reviewPass';
+
+    async function apiFetch(path, opts = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      const pass = sessionStorage.getItem(PASS_KEY);
+      if (pass) headers['X-Review-Pass'] = pass;
+      const res = await fetch(WORKER_URL + path, { ...opts, headers });
+      if (res.status === 401) { sessionStorage.removeItem(PASS_KEY); throw new Error('unauthorized'); }
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }
+    function localAll() {
+      const out = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('rvc:')) { try { out.push(...JSON.parse(localStorage.getItem(k) || '[]')); } catch {} }
+      }
+      out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      return out;
+    }
+    function localResolve(rec, status) {
+      const key = 'rvc:' + rec.page.path;
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      const r = arr.find((x) => x.id === rec.id); if (r) r.status = status;
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+    function localDelete(rec) {
+      const key = 'rvc:' + rec.page.path;
+      let arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr = arr.filter((r) => r.id !== rec.id && r.parentId !== rec.id); // root + replies
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+    const store = LOCAL
+      ? {
+          all: async () => localAll(),
+          resolve: async (rec, status) => { localResolve(rec, status); return { ...rec, status }; },
+          del: async (rec) => { localDelete(rec); return { ok: true }; },
+        }
+      : {
+          all: () => apiFetch('/comments'),
+          resolve: (rec, status) => apiFetch('/resolve', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path, status }) }),
+          del: (rec) => apiFetch('/delete', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path }) }),
+        };
+
+    async function ensurePass() {
+      if (LOCAL) return true;
+      if (sessionStorage.getItem(PASS_KEY)) return true;
+      const p = prompt('Review passcode:'); if (!p) return false;
+      sessionStorage.setItem(PASS_KEY, p); return true;
+    }
+
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+    const fmt = (iso) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+    const TEAM_COLORS = {
+      Product: ['#e7f0fb', '#1b5fa8'], SEO: ['#e7f7ee', '#1d7a46'],
+      Marketing: ['#fdeee6', '#b5541f'], Content: ['#f1eafb', '#6b3fa0'],
+    };
+    const teamChip = (team) => {
+      if (!team) return '';
+      const c = TEAM_COLORS[team] || ['#eee', '#555'];
+      return `<span class="rvd-team-chip" style="background:${c[0]};color:${c[1]}">${esc(team)}</span>`;
+    };
+    const TEAMS = ['Product', 'SEO', 'Marketing', 'Content'];
+    let all = [], tab = 'all', teamFilter = '';
+
+    function buildTeamChips() {
+      const one = (label, team) => {
+        const active = teamFilter === team;
+        let style;
+        if (team) { const c = TEAM_COLORS[team]; style = `background:${c[0]};color:${c[1]};border-color:${active ? c[1] : 'transparent'}`; }
+        else style = active ? 'background:#1d1d1d;color:#fff;border-color:#1d1d1d'
+                            : 'background:var(--color-cream-400);color:#1d1d1d;border-color:transparent';
+        return `<button class="rvd-tchip" data-team="${esc(team)}" style="${style}">${esc(label)}</button>`;
+      };
+      $('#rvd-teamchips').innerHTML = one('All Teams', '') + TEAMS.map((t) => one(t, t)).join('');
+      $('#rvd-teamchips').querySelectorAll('.rvd-tchip').forEach((b) => {
+        b.addEventListener('click', () => { teamFilter = b.dataset.team; buildTeamChips(); render(); });
+      });
+    }
+    const roots = () => all.filter((c) => !c.parentId);
+    const repliesOf = (id) => all.filter((c) => c.parentId === id).sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1));
+
+    function counts() {
+      const rs = roots();
+      const open = rs.filter((c) => c.status !== 'resolved').length;
+      $('#rvd-counts').innerHTML =
+        `<span class="rvd-count"><b>${open}</b> open</span>` +
+        `<span class="rvd-count"><b>${rs.length}</b> changes</span>` +
+        `<span class="rvd-count"><b>${new Set(rs.map((c) => c.page.path)).size}</b> pages</span>`;
+    }
+
+    function card(root) {
+      const a = root.anchor || {};
+      const resolved = root.status === 'resolved';
+      const replies = repliesOf(root.id);
+      const repliesHtml = replies.length
+        ? `<div class="rvd-replies">` + replies.map((r) =>
+            `<div class="rvd-reply">${teamChip(r.team)}<div class="rvd-rtxt">${esc(r.comment)}</div>` +
+            (r.changeTo ? `<div class="rvd-change"><span>Change to</span><div>${esc(r.changeTo)}</div></div>` : '') +
+            `<div class="rvd-rmeta">${esc(r.name || 'anonymous')} · ${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
+        : '';
+      const meta =
+        `<div class="rvd-meta">` +
+          teamChip(root.team) +
+          `<span class="rvd-by">${esc(root.name || 'anonymous')}</span>` +
+          `<a class="rvd-slug" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(root.page.path)}</a>` +
+          `<span class="rvd-time">${esc(fmt(root.createdAt))}</span>` +
+        `</div>`;
+      return (
+        `<article class="rvd-item">` +
+          `<div class="rvd-line">` +
+            `<span class="rvd-chip ${resolved ? 'resolved' : 'open'}">${resolved ? 'Resolved' : 'Open'}</span>` +
+            `<div class="rvd-headline">` +
+              `<div class="rvd-comment">${esc(root.comment)}` +
+                (replies.length ? `<span class="rvd-count">${replies.length + 1} comments</span>` : '') + `</div>` +
+              (a.snippet ? `<div class="rvd-snip">on “${esc(a.snippet)}”</div>` : '') +
+            `</div>` +
+            `<div class="rvd-acts">` +
+              `<a class="rvd-openpin" href="${esc(root.page.path)}?review=1#c=${esc(root.id)}" target="_blank" rel="noopener">Open Pin</a>` +
+              `<button class="rvd-a resolve" data-id="${esc(root.id)}">${resolved ? 'Mark as Open' : 'Mark as Resolved'}</button>` +
+              `<button class="rvd-del delete" data-id="${esc(root.id)}">Delete</button>` +
+            `</div>` +
+          `</div>` +
+          (root.changeTo ? `<div class="rvd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
+          meta +
+          repliesHtml +
+        `</article>`
+      );
+    }
+
+    function render() {
+      const host = $('#rvd-list');
+      let rs = roots();
+      if (tab === 'open') rs = rs.filter((c) => c.status !== 'resolved');
+      if (tab === 'closed') rs = rs.filter((c) => c.status === 'resolved');
+      if (teamFilter) rs = rs.filter((c) => c.team === teamFilter);
+
+      if (tab === 'page') {
+        const paths = [...new Set(rs.map((c) => c.page.path))].sort();
+        host.innerHTML = paths.map((p) => {
+          const group = rs.filter((c) => c.page.path === p);
+          return `<div class="rvd-group"><h2 class="rvd-gh">` +
+            `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(p)}</a><span>${group.length} change${group.length > 1 ? 's' : ''}</span></h2>` +
+            `<div class="rvd-grid">${group.map(card).join('')}</div></div>`;
+        }).join('');
+      } else {
+        host.innerHTML = `<div class="rvd-grid">${rs.map(card).join('')}</div>`;
+      }
+      $('#rvd-empty').hidden = rs.length > 0;
+      bindActions();
+    }
+
+    function bindActions() {
+      $('#rvd-list').querySelectorAll('.resolve').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const rec = all.find((c) => c.id === btn.dataset.id); if (!rec) return;
+          const next = rec.status === 'resolved' ? 'open' : 'resolved';
+          btn.disabled = true;
+          try { const updated = await store.resolve(rec, next); rec.status = updated.status; counts(); render(); }
+          catch (e) { btn.disabled = false; alert('Could not update — ' + e.message); }
+        });
+      });
+      $('#rvd-list').querySelectorAll('.delete').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const rec = all.find((c) => c.id === btn.dataset.id); if (!rec) return;
+          if (!confirm('Delete this whole thread (comment + all replies)? This cannot be undone.')) return;
+          btn.disabled = true;
+          try {
+            await store.del(rec);
+            all = all.filter((c) => c.id !== rec.id && c.parentId !== rec.id);
+            counts(); render();
+          } catch (e) { btn.disabled = false; alert('Could not delete — ' + e.message); }
+        });
+      });
+    }
+
+    async function load() {
+      if (!(await ensurePass())) { $('#rvd-empty').hidden = false; $('#rvd-empty').textContent = 'Passcode required.'; return; }
+      try { all = await store.all(); }
+      catch (e) {
+        if (e.message === 'unauthorized') { $('#rvd-empty').hidden = false; $('#rvd-empty').textContent = 'Wrong passcode — reload to retry.'; return; }
+        $('#rvd-empty').hidden = false; $('#rvd-empty').textContent = 'Could not load — ' + e.message; return;
+      }
+      counts(); render();
+    }
+
+    $('#rvd-tabs').addEventListener('click', (e) => {
+      const b = e.target.closest('.rvd-tab'); if (!b) return;
+      tab = b.dataset.tab;
+      $('#rvd-tabs').querySelectorAll('.rvd-tab').forEach((t) => t.classList.toggle('is-active', t === b));
+      render();
+    });
+    $('#rvd-refresh').addEventListener('click', load);
+    buildTeamChips();
+    load();
+  })();
+</script>

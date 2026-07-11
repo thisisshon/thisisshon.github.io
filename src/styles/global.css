@@ -583,16 +583,6 @@
   .hero h1 .g { color: var(--color-gold-400); }
   .hero .lead { margin-top: 16px; font-weight: 400; font-size: 18px; color: var(--color-text-on-dark-lead); max-width: var(--hero-text-w); }
   .hero .cta { margin-top: 40px; }
-  .hero-feats { margin-top: 40px; width: 100%; }
-  .feats {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 24px; width: 100%; max-width: 760px;
-    padding-top: 36px; border-top: 1px solid #4f514a; /* single-use hairline on gradient - Tier-2: merge into olive-600 */
-  }
-  .feat { display: flex; gap: 8px; align-items: center; }
-  /* hero USP tick - a 20px SVG icon (never a text glyph), gold */
-  .feat .tk { width: 20px; height: 20px; flex: none; display: inline-flex; align-items: center; justify-content: center; color: var(--color-gold-400); }
-  .feat .tk svg { display: block; width: 20px; height: 20px; }
-  .feat .lb { color: #e9eae9; font-weight: 500; font-size: 16px; white-space: nowrap; } /* single-use - Tier-2: sage-100 */
 
   /* Two-column hero (text + right card/form). The aside is ALWAYS
      --hero-aside-w; never hard-code a width or change the 56px gap. */
@@ -608,15 +598,18 @@
   .cat-grid { border: 1px solid var(--color-border-card); border-radius: 24px; overflow: hidden; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--color-surface-card); }
   .cat { background: var(--color-surface-card); padding: var(--container-pad); display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--color-border-card); border-bottom: 1px solid var(--color-border-card); }
   .cat:nth-child(4n) { border-right: 0; }
-  .cat:nth-child(n + 5) { border-bottom: 0; }
+  /* Last row / last cell derive from position (nth-last-child + :last-child),
+     not a hardcoded 8-card count, so the base grid closes cleanly at ANY cell
+     count. :last-child also drops the right border so a ragged final row never
+     strands a stub divider (applies to the variants below too). */
+  .cat:nth-last-child(-n + 4) { border-bottom: 0; }
   .cat h4 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
   .cat p { font-weight: 400; font-size: 16px; color: var(--color-text-muted); }
 
-  /* 3-column variant: `.cat-grid cat-grid-3`. For card counts that are a multiple
-     of 3 (3 / 6 / 9), where the 4-wide default leaves a ragged, part-empty last row
-     and strands a divider mid-row. Unlike the base - whose borders are hardcoded to
-     an 8-card grid (:nth-child(4n) / :nth-child(n+5)) - these derive the last column
-     and last ROW from position, so the grid closes cleanly at any multiple of 3. */
+  /* 3-column variant: `.cat-grid cat-grid-3`. Switches the base 4-wide grid to
+     3 columns for card counts that read better 3-up (3 / 5 / 6 / 7 / 9…) where the
+     4-wide default would leave a lonely, part-empty last row. Dividers derive from
+     position (like the base), so the grid closes cleanly at any card count. */
   .cat-grid-3 { grid-template-columns: repeat(3, 1fr); }
   .cat-grid-3 .cat { border-right: 1px solid var(--color-border-card); border-bottom: 1px solid var(--color-border-card); }
   .cat-grid-3 .cat:nth-child(3n) { border-right: 0; }
@@ -630,18 +623,10 @@
   .cat-grid-2 .cat:nth-child(2n) { border-right: 0; }
   .cat-grid-2 .cat:nth-last-child(-n + 2) { border-bottom: 0; }
 
-  /* Clickable cell - `<a class="cat cat-link">`. Reuses Card Hover Animation 1
-     from .appr (colour shift + arrow nudge, no lift/shadow), retuned for the light
-     card surface: .appr's hover pair is dark-on-dark and means nothing here, so it
-     borrows .pcard's light hover token instead. Same 0.25s ease, same pointer gate. */
-  .cat-link { text-decoration: none; transition: background 0.25s ease; }
-  .cat-link .cat-go { display: flex; gap: 8px; align-items: center; color: var(--color-gold-400); font-weight: 600; font-size: 16px; }
-  .cat-link .cat-go span:last-child { display: inline-flex; transition: transform 0.25s ease; }
-  .cat-link .cat-go svg { display: block; width: 16px; height: 16px; }
-  @media (min-width: 1200px) and (hover: hover) {
-    .cat-link:hover { background: var(--color-cream-300); }
-    .cat-link:hover .cat-go span:last-child { transform: translateX(8px); }
-  }
+  /* Shared stub-guard: the final cell of ANY variant never needs a right
+     divider (nothing sits to its right), so drop it. This keeps a ragged last
+     row - e.g. 5 or 7 cards in the 3-col variant - from leaving a stub. */
+  .cat:last-child { border-right: 0; }
 
   /* ===== steps ===== */
   .steps { background: var(--color-surface-card); border: 1px solid var(--color-border-card); border-radius: 24px; overflow: hidden; display: flex; align-items: stretch; }
@@ -728,6 +713,10 @@
 
   /* ===== risks ===== */
   .risks { display: flex; gap: 24px; align-items: stretch; }
+  /* 3-column grid variant of .risks (e.g. the 6 SEBI risk cards on /derivatives).
+     Overrides the equal-flex row; inherits the 24px gap. Collapses 3 -> 2 -> 1 in
+     the responsive blocks below. */
+  .risks-3 { display: grid; grid-template-columns: repeat(3, 1fr); }
   .risk { flex: 1 0 0; min-width: 0; background: var(--color-surface-card); border: 1px solid var(--color-border-card); border-radius: 24px; padding: var(--container-pad); display: flex; flex-direction: column; gap: 12px; }
   .risk h4 { font-weight: 500; font-size: 20px; color: var(--color-text-primary); }
   .risk p { font-weight: 400; font-size: 16px; color: var(--color-text-tertiary); }
@@ -1205,19 +1194,24 @@
 
 /* Tablet */
 @media (max-width: 1024px) {
+  /* Every variant reflows to 2-up here; recompute the dividers from position so
+     any cell count closes cleanly (no hardcoded 8-card assumption). */
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .cat-grid .cat { border-right: 1px solid var(--color-border-card); border-bottom: 1px solid var(--color-border-card); }
   .cat-grid .cat:nth-child(2n) { border-right: 0; }
-  .cat-grid .cat:nth-child(7), .cat-grid .cat:nth-child(8) { border-bottom: 0; }
-  /* .cat-grid-3 reflows to the same 2-up: undo the 3-col last-column/last-row rules
-     (equal specificity, so source order decides) and recompute them for 2 columns. */
+  .cat-grid .cat:last-child { border-right: 0; }
+  .cat-grid .cat:nth-last-child(-n + 2) { border-bottom: 0; }
+  /* .cat-grid-3 also reflows to 2-up: undo the desktop 3-col strips (equal/higher
+     specificity, so restore then recompute for 2 columns). */
   .cat-grid-3 .cat:nth-child(3n) { border-right: 1px solid var(--color-border-card); }
   .cat-grid-3 .cat:nth-child(2n) { border-right: 0; }
+  .cat-grid-3 .cat:last-child { border-right: 0; }
   .cat-grid-3 .cat:nth-last-child(-n + 3) { border-bottom: 1px solid var(--color-border-card); }
   .cat-grid-3 .cat:nth-last-child(-n + 2) { border-bottom: 0; }
   .pcard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .risks { flex-wrap: wrap; }
   .risk { flex: 1 1 calc(50% - 12px); }
+  .risks-3 { grid-template-columns: repeat(2, 1fr); }
   .faq-side .usr { display: none; }
   .explore-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1365,7 +1359,6 @@
   .foot-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
   .foot-col-wide ul { column-gap: 24px; }
   .foot-note { padding: 24px 0; }
-  .feats { padding-top: 32px; }
 
   .hero-inner { padding: 48px 0; }
   /* Breadcrumb - mobile centring. Must sit here, UNLAYERED, alongside the
@@ -1438,13 +1431,12 @@
 @media (max-width: 560px) {
   .cat-grid { grid-template-columns: 1fr; }
   .cat { border-right: 0 !important; border-bottom: 1px solid var(--color-border-card) !important; }
-  .cat:nth-child(8) { border-bottom: 0 !important; }
-  /* 1-up: the base only clears card 8's bottom border, so a 6-card grid would
-     double up against the container's own border. Close on the real last card. */
-  .cat-grid-3 .cat:last-child { border-bottom: 0 !important; }
-  .cat-grid-2 .cat:last-child { border-bottom: 0 !important; }
+  /* 1-up: close the stack on the real last card (position-derived, so this holds
+     for any card count and every variant - no hardcoded 8-card assumption). */
+  .cat:last-child { border-bottom: 0 !important; }
   .pcard-grid { grid-template-columns: 1fr; }
   .risk { flex: 1 1 100%; }
+  .risks-3 { grid-template-columns: 1fr; }
   .faq-q { gap: 20px; }
 
   /* calculator: single-column explore grid; keep result columns tidy */
@@ -1492,7 +1484,7 @@
 /* NOTE - this rule is UNLAYERED, so it beats every component `transition` declared
    in @layer components, and an element has only one `transition`. Written as the
    shorthand it silently clobbered the hover transition on the card components that
-   sit inside a reveal row (.appr, .pcard, .cat-link), so their "Card Hover
+   sit inside a reveal row (.appr, .pcard), so their "Card Hover
    Animation 1" colour shift snapped instead of easing. Longhand lists let the
    reveal own opacity/transform while the components' colour properties keep their
    own 0.25s ease. Keep the four lists in the same order. */

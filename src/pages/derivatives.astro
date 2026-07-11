@@ -2,12 +2,13 @@
 /**
  * Equity Derivatives (F&O) - /derivatives/
  * Long-form F&O guide. Built entirely from shared design-system components in
- * global.css (hero, .section/.sec-title, .card, .cat-grid, .steps, .product-page_table,
+ * global.css (hero, .section/.sec-title, .card, .cat-grid, StepFlow, .product-page_table,
  * .risks, FaqAccordion, .cta-box). Content is the compliance-approved doc, verbatim.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/site/Breadcrumb.astro';
 import FaqAccordion from '../components/sections/FaqAccordion.astro';
+import StepFlow from '../components/sections/StepFlow.astro';
 import { faqPageSchema, breadcrumbSchema, organizationSchema } from '../lib/seo';
 
 // Advantages of Derivatives - numbered list rendered as a cat-grid.
@@ -100,14 +101,6 @@ const seo = {
       <h1>Derivatives Trading in India — Futures &amp; Options Made Simple</h1>
       <p class="lead">Access real-time market data, advanced charts, Option Chain insights, and powerful trading tools to navigate the derivatives market with ease.</p>
       <div class="cta"><a class="btn-gold" href="/open-demat-account">Start Trading Futures &amp; Options</a></div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">SEBI-registered</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">100% Digital</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Research-led</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">25+ years of Legacy</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -198,42 +191,18 @@ const seo = {
       <h2 class="sec-title">How to Start Trading Derivatives?</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">A simple step by step journey to start trading Futures and Options.</p>
     </div>
-    <div class="steps" data-reveal-row>
-      <div class="step">
-        <div class="num">1</div>
-        <div class="st-body"><h4>Open a Trading &amp; Demat Account</h4><p>Complete your KYC digitally (PAN, Aadhaar, bank details) and select option to activate  F&amp;O trading segment.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">2</div>
-        <div class="st-body"><h4>Complete F&amp;O Activation</h4><p>Submit any of the income proof i.e., latest 6 months Bank statements, latest Salary slip, net worth certificate etc.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">3</div>
-        <div class="st-body"><h4>Fund Your Account</h4><p>Transfer funds via NEFT, RTGS, UPI, or Net Banking to your trading account.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">4</div>
-        <div class="st-body"><h4>Choose Your  contract</h4><p>Select Futures or Options — pick the underlying asset, expiry date, and strike price.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">5</div>
-        <div class="st-body"><h4>Set Order Parameters</h4><p>enter the lot size(Quantity), Price and execute the trade.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">6</div>
-        <div class="st-body"><h4>Monitor &amp; Manage</h4><p>Track positions in real time, set stop-loss orders, and adjust or exit as the market moves.</p></div>
-      </div>
-      <div class="step-div"></div>
-      <div class="step">
-        <div class="num">7</div>
-        <div class="st-body"><h4>Expiry &amp; Settlement</h4><p>In-the-money(ITM) options are settled on expiry. Futures can be rolled over or cash-settled for index contracts.</p></div>
-      </div>
-    </div>
+    <StepFlow
+      perRow={4}
+      steps={[
+        { icon: 'account', title: 'Open a Trading & Demat Account', desc: 'Complete your KYC digitally (PAN, Aadhaar, bank details) and select the option to activate the F&O trading segment.' },
+        { icon: 'activate', title: 'Complete F&O Activation', desc: 'Submit any income proof — latest 6 months’ bank statements, latest salary slip, net-worth certificate, etc.' },
+        { icon: 'fund', title: 'Fund Your Account', desc: 'Transfer funds via NEFT, RTGS, UPI, or Net Banking to your trading account.' },
+        { icon: 'contract', title: 'Choose Your Contract', desc: 'Select Futures or Options — pick the underlying asset, expiry date, and strike price.' },
+        { icon: 'trade', title: 'Set Order Parameters', desc: 'Enter the lot size (quantity) and price, then execute the trade.' },
+        { icon: 'analyse', title: 'Monitor & Manage', desc: 'Track positions in real time, set stop-loss orders, and adjust or exit as the market moves.' },
+        { icon: 'settle', title: 'Expiry & Settlement', desc: 'In-the-money (ITM) options are settled on expiry. Futures can be rolled over or cash-settled for index contracts.' },
+      ]}
+    />
     <a class="btn-gold" href="/open-demat-account" style="align-self:center">Open Demat Account</a>
   </section>
 
@@ -258,7 +227,7 @@ const seo = {
       <h2 class="sec-title">What are the Risks in Derivative Trading?</h2>
       <p class="sec-lead" style="color:var(--color-text-secondary)">SEBI mandates that all brokers disclose risks associated with F&amp;O trading. Every derivative trader should understand these six risk categories before committing capital:</p>
     </div>
-    <div class="risks" data-reveal-row>
+    <div class="risks risks-3" data-reveal-row>
       {RISKS.map((r) => (
         <div class="risk"><h4>{r.h}</h4><p>{r.p}</p></div>
       ))}

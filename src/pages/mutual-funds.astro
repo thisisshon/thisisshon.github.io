@@ -149,15 +149,16 @@ const seo = {
       <h2 class="sec-title">Mutual Fund Calculators and Tools</h2>
       <p class="sec-lead">Sound investment decisions begin with precise planning. Our free mutual fund calculator tools enable you to model scenarios, set realistic return expectations, and determine the right investment amount for your goals — before you invest a single rupee.</p>
     </div>
-    <div class="cat-grid cat-grid-3" data-reveal-row>
+    <div class="approaches" data-reveal-row>
       {CALC_TOOLS.map((c) => (
-        <a class="cat cat-link" href={calcHref(c.slug)}>
-          <h4>{c.title}</h4>
-          <p>{c.desc}</p>
-          <div class="cat-go">
-            <span>Open&nbsp;</span>
-            <span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <a class="appr" href={calcHref(c.slug)}>
+          <div class="appr-main">
+            <div class="appr-tt">
+              <h4>{c.title}</h4>
+              <p>{c.desc}</p>
+            </div>
           </div>
+          <div class="explore"><span>Open&nbsp;</span><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
         </a>
       ))}
     </div>

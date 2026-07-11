@@ -47,16 +47,6 @@ const seo = {
       <div class="cta">
         <a class="btn-gold" href="#sec-apply">Learn More</a>
       </div>
-      <div class="hero-feats">
-        <div class="feats">
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Reasonable/Optimum Revenue Sharing</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Zero Investment</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Research and Advisory support</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Dedicated Franchisee help desk</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Training support</span></div>
-          <div class="feat"><span class="tk" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4.5 10.5 8 14l7.5-7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="lb">Multi Product offering</span></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -68,7 +58,7 @@ const seo = {
       <p class="sec-lead">At Shriram Financial Services, we empower our partners with the right combination of brand strength, technology, research, product diversity, and dedicated support to help them grow sustainably in a competitive financial services landscape.</p>
     </div>
     <h3 class="sub-title">Key Advantages</h3>
-    <div class="cat-grid" data-reveal-row>
+    <div class="cat-grid cat-grid-3" data-reveal-row>
       <div class="cat">
         <h4>Trusted Brand &amp; Strong Legacy</h4>
         <p>Partner with a well-established financial services institution backed by decades of experience, strong governance, and a customer-first approach that enhances your market credibility.</p>
@@ -378,24 +368,9 @@ const seo = {
   /* ---------- benefits - 3-col bordered grid with icon ---------- */
   /* "Why partner?" benefit grid uses the shared .encl-grid / .encl-cell (global.css). */
 
-  /* ---------- partner types - 6-item category grid, 3 columns (3→2→1).
-     Overrides the shared 4-col cat-grid above 1024px; at ≤1024 the shared
-     2-col resets already suit a 6-cell grid, so no extra override there. ---------- */
-  @media (min-width: 1025px) {
-    .cat-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .cat-grid .cat {
-      border-right: 1px solid var(--color-border-card);
-      border-bottom: 1px solid var(--color-border-card);
-    }
-    .cat-grid .cat:nth-child(3n) {
-      border-right: 0;
-    } /* strip right on the last column (3, 6) */
-    .cat-grid .cat:nth-child(n + 4) {
-      border-bottom: 0;
-    } /* strip bottom on the last row (4, 5, 6) */
-  }
+  /* Partner types use the shared .cat-grid-3 (6 cards → 3 cols → 2 → 1); the
+     shared divider rules close it cleanly at every breakpoint, so no page-level
+     grid override is needed. */
 
   /* ---------- product portfolio - tabbed card (Trading / Loans / Insurance) ---------- */
   .port-card {
@@ -856,13 +831,6 @@ const seo = {
 
   /* ---------- responsive ---------- */
   @media (max-width: 1024px) {
-    /* 6-item cat-grid at 2 cols (3 rows): shared strips bottom on cells 7-8, so
-       re-strip the real last row (5, 6) here. Right borders (2n) handled by shared. */
-    .cat-grid .cat:nth-child(n + 5) {
-      border-bottom: 0;
-    }
-  }
-  @media (max-width: 1024px) {
     .port-cols {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -937,9 +905,6 @@ const seo = {
     }
   }
   @media (max-width: 560px) {
-    .cat-grid .cat:last-child {
-      border-bottom: 0 !important;
-    }
     .port-cols {
       grid-template-columns: 1fr;
     }

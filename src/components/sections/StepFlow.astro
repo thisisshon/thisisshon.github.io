@@ -14,6 +14,13 @@
  * Column count is derived from `steps.length` (via --sf-cols), so it is NOT
  * locked to five the way <HowSoon> is - 3, 4 or 5 steps all close cleanly.
  *
+ * Longer flows (6+ steps) would cramp in a single desktop row, so pass
+ * `perRow` to switch desktop into a centred multi-row wrap: chips flow
+ * `perRow` per row, each row carries its own dashed connector (running
+ * behind the opaque chips, exactly like the single-row line), and an
+ * incomplete final row centres itself. mWeb is unchanged - always the
+ * vertical dashed spine. `perRow` is ignored when it is >= steps.length.
+ *
  * Icons are real inline <svg>s (rule 4), 24px, currentColor, in a 40px round
  * chip (8px grid). Add to ICONS to extend the set for other pages' steps.
  */
@@ -25,8 +32,11 @@ interface Step {
 }
 interface Props {
   steps: Step[];
+  /** desktop chips per row; enables the multi-row wrap when < steps.length */
+  perRow?: number;
 }
-const { steps } = Astro.props;
+const { steps, perRow } = Astro.props;
+const wrap = !!perRow && perRow < steps.length;
 
 // Inline SVG icon set - 24px, stroke: currentColor. Repurpose across pages.
 const ICONS: Record<string, string> = {
@@ -44,15 +54,29 @@ const ICONS: Record<string, string> = {
   // wallet - "add funds"
   fund:
     '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12.5" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9.5h18" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="13.75" r="1.5" fill="currentColor"/></svg>',
+  // ruled document - "choose / read a contract"
+  contract:
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 3h7l5 5v13H6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13 3v5h5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 13h6M9 16.5h6M9 9.5h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  // calendar with a tick - "expiry / settlement"
+  settle:
+    '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8.5 14.5 11 17l4.5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 ---
 
-<div class="stepflow" style={`--sf-cols:${steps.length}`}>
+<div
+  class:list={['stepflow', { 'sf-wrap': wrap }]}
+  style={`--sf-cols:${steps.length}${wrap ? `;--sf-per:${perRow}` : ''}`}
+>
   <div class="sf-line" aria-hidden="true"></div>
   <div class="sf-track" data-reveal-row>
     {
-      steps.map((s) => (
-        <div class="sf-item">
+      steps.map((s, i) => (
+        <div
+          class:list={[
+            'sf-item',
+            { 'sf-rowend': wrap && ((i + 1) % perRow! === 0 || i === steps.length - 1) },
+          ]}
+        >
           <div class="sf-chip"><Fragment set:html={ICONS[s.icon] ?? ''} /></div>
           <div class="sf-tx">
             <p class="sf-title">{s.title}</p>
@@ -140,5 +164,38 @@ const ICONS: Record<string, string> = {
       background-image: repeating-linear-gradient(90deg, var(--color-tan-200) 0 7px, transparent 7px 14px);
       z-index: 0;
     }
+
+    /* ---- desktop multi-row wrap (opt-in via `perRow`) ----
+       Chips flow `--sf-per` per row and the incomplete final row centres
+       itself. Each item paints its own dashed connector to the NEXT chip
+       (behind the opaque chips, like the single-row line); row-ends and the
+       final item drop it, so the dashes never dangle past a row. */
+    .sf-wrap .sf-track {
+      display: flex;
+      flex-direction: row; /* override the mweb column spine */
+      flex-wrap: wrap;
+      justify-content: center;
+      column-gap: 24px;
+      row-gap: 56px;
+    }
+    .sf-wrap .sf-item {
+      flex: 0 1 calc((100% - (var(--sf-per) - 1) * 24px) / var(--sf-per));
+    }
+    .sf-wrap .sf-line { display: none; }
+    /* per-item connector: this chip centre → the next chip centre */
+    .sf-wrap .sf-item::before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: 31px; /* 64px chip centre − 1px */
+      bottom: auto;
+      width: calc(100% + 24px); /* item width + column gap = centre-to-centre */
+      height: 2px;
+      background-color: transparent;
+      background-image: repeating-linear-gradient(90deg, var(--color-tan-200) 0 7px, transparent 7px 14px);
+      z-index: 0;
+    }
+    .sf-wrap .sf-rowend::before { display: none; }
   }
 </style>

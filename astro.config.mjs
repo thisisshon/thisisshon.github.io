@@ -12,6 +12,8 @@ export default defineConfig({
   // the real domain: 'https://www.shriramfinancialservices.com'.
   site: 'https://thisisshon.github.io',
   trailingSlash: 'never',
+  // Hide the Astro dev toolbar (the floating dev-only pill at the bottom).
+  devToolbar: { enabled: false },
   build: {
     // 'file' emits foo.html (served at /foo, no trailing slash) instead of the
     // directory index foo/index.html (which GitHub Pages 301s to /foo/).
