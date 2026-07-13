@@ -18,6 +18,7 @@
 | `/open-demat-account` | `pages/open-demat-account.astro` | Open a Demat Account (two-column hero + lead-capture form, phone-flag decoration). |
 | `/become-a-partner` | `pages/become-a-partner.astro` | Become a Partner (Apply form, eligibility checker, portfolio tabs). |
 | `/karnataka-bank-customers` | `pages/karnataka-bank-customers.astro` | Karnataka Bank 3-in-1 (co-brand hero lockup + lead-capture form). |
+| `/open-demat-campaign1` | `pages/open-demat-campaign1.astro` | Demat campaign landing page (isolated - `chrome={false}` logo-only bar + disclaimer strip, single-screen hero + lead-capture form). |
 | `/antara` | `pages/antara.astro` | Explore Antara (Shriram X platform - standardised hero, feature/cat grids, `.gate` locked card, FAQ). |
 | `/sitemap` | `pages/sitemap.astro` | HTML sitemap (link index, built from `navigation.ts`). |
 
