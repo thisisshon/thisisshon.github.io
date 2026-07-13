@@ -6,6 +6,17 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.11.2 — 2026-07-13 — dropdown item icons + stacking open animation + blue team name
+
+- **Dropdown items carry icons.** `buildDropdown` items take an `icon` (inline SVG); the Sort menu
+  (Newest first ↓ / Oldest first ↑ / Page A–Z 📄) and the Copy menu (Copy prompts / Copy MD / Download
+  JSON) now each show an icon that inherits the item colour.
+- **"Stacking" open animation.** The dropdown menu no longer just fades — each option now staggers in
+  (drop-in + scale, `--i`-indexed delay, spring easing) so the list assembles like a stack coming
+  together. Reduced-motion guarded.
+- **Team name highlighted blue.** In the team-dash header the `<Team>` section is now a contrasting
+  blue (`--pk-blue`) while the rest of the tag stays muted.
+
 ## 2.11.1 — 2026-07-13 — dropdown open/close animation + team-dash header + login tidy
 
 - **Dropdowns animate open/close** — the `.pk-dropdown` menu now fades + slides + slightly scales in/out

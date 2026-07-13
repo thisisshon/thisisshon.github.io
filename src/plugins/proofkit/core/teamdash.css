@@ -40,6 +40,8 @@
   .tmd .tmd-word{font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
   .tmd .tmd-tag{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
     color:var(--pk-muted);padding-left:12px;border-left:1px solid var(--pk-hair)}
+  /* the team name (third section) highlighted in a contrasting blue */
+  .tmd .tmd-team-hi{color:var(--pk-blue)}
   .tmd .tmd-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .tmd .tmd-team-chip{padding:4px 11px;border-radius:9999px;font-weight:700;font-size:10px;
     text-transform:uppercase;letter-spacing:.08em}

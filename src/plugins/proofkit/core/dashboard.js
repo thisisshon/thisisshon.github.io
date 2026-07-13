@@ -789,10 +789,23 @@
     });
     // ---- toolbar: search / sort / export / copy-all-prompts ----
     $('#rvd-search').addEventListener('input', (e) => { search = e.target.value.trim(); render(); });
+    // Toolbar dropdown icons (Lucide-style; inherit currentColor).
+    const IC = {
+      newest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>',
+      oldest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>',
+      page: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v6h6"/></svg>',
+      copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>',
+      md: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+      json: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>',
+    };
     // Sort — a custom (non-native) themed dropdown.
     const sortDD = buildDropdown({
       small: true, value: sort,
-      items: [{ value: 'new', label: 'Newest first' }, { value: 'old', label: 'Oldest first' }, { value: 'page', label: 'Page A–Z' }],
+      items: [
+        { value: 'new', label: 'Newest first', icon: IC.newest },
+        { value: 'old', label: 'Oldest first', icon: IC.oldest },
+        { value: 'page', label: 'Page A–Z', icon: IC.page },
+      ],
       onSelect: (v) => { sort = v; render(); },
     });
     $('#rvd-sort-mount').appendChild(sortDD.el);
@@ -802,9 +815,9 @@
     copyDD = buildDropdown({
       small: true, fixedLabel: 'Copy', menuAlign: 'right',
       items: [
-        { label: 'Copy prompts', onSelect: () => { copyToClip(promptsText(currentRoots()), null); flashCopy(); } },
-        { label: 'Copy MD', onSelect: () => { copyToClip(mdExport(currentRoots()), null); flashCopy(); } },
-        { label: 'Download JSON', onSelect: () => downloadJSON() },
+        { label: 'Copy prompts', icon: IC.copy, onSelect: () => { copyToClip(promptsText(currentRoots()), null); flashCopy(); } },
+        { label: 'Copy MD', icon: IC.md, onSelect: () => { copyToClip(mdExport(currentRoots()), null); flashCopy(); } },
+        { label: 'Download JSON', icon: IC.json, onSelect: () => downloadJSON() },
       ],
     });
     $('#rvd-copy-mount').appendChild(copyDD.el);

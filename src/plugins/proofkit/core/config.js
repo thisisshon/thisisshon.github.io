@@ -261,11 +261,13 @@ export function buildDropdown(opts) {
   }
   trigger.addEventListener('click', (e) => { e.stopPropagation(); isOpen ? close() : open(); });
 
-  items.forEach((it) => {
+  items.forEach((it, idx) => {
     const v = valOf(it);
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'pk-dropdown-item'; b.setAttribute('role', 'option');
-    b.dataset.value = v; b.textContent = it.label;
+    b.dataset.value = v; b.style.setProperty('--i', idx); // stagger index for the open animation
+    if (it.icon) { const ico = document.createElement('span'); ico.className = 'pk-dropdown-ico'; ico.innerHTML = it.icon; b.appendChild(ico); }
+    const txt = document.createElement('span'); txt.className = 'pk-dropdown-txt'; txt.textContent = it.label; b.appendChild(txt);
     if (!fixed && v === value) b.setAttribute('aria-selected', 'true');
     b.addEventListener('click', () => {
       if (!fixed) {

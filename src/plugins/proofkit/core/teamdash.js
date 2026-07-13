@@ -123,9 +123,10 @@
     }
 
     function renderHeader() {
-      // Team is the third section of the brand tag: "Content Review | Shriram FS | <Team>".
+      // Team is the third section of the brand tag: "Content Review | Shriram FS | <Team>",
+      // with the team name highlighted in a contrasting blue.
       const tt = $('#tmd-tag-team');
-      if (tt) tt.textContent = team() ? ' | ' + team() : '';
+      if (tt) tt.innerHTML = team() ? ' | <span class="tmd-team-hi">' + esc(team()) + '</span>' : '';
       const badge = $('#tmd-navbadge');
       const u = unreadNotes().length;
       badge.textContent = u;
