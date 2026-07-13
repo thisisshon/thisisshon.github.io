@@ -1,0 +1,83 @@
+/* ===========================================================================
+   PROOFKIT DESIGN TOKENS — the single source of truth for COLOUR + THEME.
+
+   Distilled from the two reference kits in ./reference/ (kept as inspiration only,
+   nothing imports them): "Red Moon" — the signature near-black canvas with a scarce
+   Rosso Corsa voltage — is the default dark skin; "Dark Cream" is the warm dark alt.
+   A third "light" skin completes the light/dark system.
+
+   Three skins, keyed by [data-pk-theme]; :root defaults to Red Moon so the very
+   first paint is already themed (before JS sets the attribute).
+
+   CONSUMERS
+   - design/components.css + the dashboards + /reviewdash/product link/import this.
+   - The on-page overlay can't link a stylesheet (it self-injects at review time so
+     real visitors download nothing), so it mirrors the :root skin from
+     config.js `themeVars`. Keep that literal in sync with the :root block below.
+
+   THE TOKEN CONTRACT (semantic --pk-* roles — bind components to these, never hexes)
+     canvas  page floor       card   surface         elev   raised surface
+     input   field background red    brand voltage   red-2  brand pressed
+     ink     primary text     body   secondary text  muted  tertiary text
+     hair    hairline/border  amber  warning/open    green  success  softred danger
+   =========================================================================== */
+
+/* ---- SKIN 1 · Red Moon (default dark) ---- */
+:root,
+:root[data-pk-theme="red-moon"] {
+  color-scheme: dark;
+  --pk-canvas:#181818; --pk-card:#1e1e1e; --pk-elev:#242424; --pk-input:#141414;
+  --pk-red:#da291c; --pk-red-2:#b01e0a; --pk-ink:#ffffff; --pk-body:#a7a7a7;
+  --pk-muted:#7d7d7d; --pk-hair:#333333; --pk-amber:#f5a623; --pk-green:#3ddc84; --pk-softred:#ef5b50;
+}
+
+/* ---- SKIN 2 · Dark Cream (warm dark alt) ---- */
+:root[data-pk-theme="dark-cream"] {
+  color-scheme: dark;
+  --pk-canvas:#1a1712; --pk-card:#221d16; --pk-elev:#2a241c; --pk-input:#15120d;
+  --pk-red:#c9a24b; --pk-red-2:#a8843a; --pk-ink:#f5efe2; --pk-body:#b8ad97;
+  --pk-muted:#8a8069; --pk-hair:#3a3226; --pk-amber:#e0b45a; --pk-green:#7fb58a; --pk-softred:#d98a6a;
+}
+
+/* ---- SKIN 3 · Light (warm off-white; brand red kept; status colours darkened) ---- */
+:root[data-pk-theme="light"] {
+  color-scheme: light;
+  --pk-canvas:#f2f1ec; --pk-card:#ffffff; --pk-elev:#f8f7f3; --pk-input:#ffffff;
+  --pk-red:#c81e12; --pk-red-2:#a5170c; --pk-ink:#1c1c1a; --pk-body:#565650;
+  --pk-muted:#8c8c84; --pk-hair:#e4e1d9; --pk-amber:#a86a12; --pk-green:#1d7a46; --pk-softred:#c0392b;
+}
+
+/* ---- NON-THEME tokens (stable across skins) ---- */
+:root {
+  /* extra functional accents — ship-ready blue (deploy bucket) + deploy green */
+  --pk-blue:#3b82f6; --pk-blue-bg:#15243d; --pk-blue-ink:#8fbaf8;
+  --pk-deploy:#1a7f37; --pk-deploy-hover:#14682c;
+
+  /* type — Inter is the documented FerrariSans substitute; system stack falls back */
+  --pk-font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --pk-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  /* spacing ladder — 8px grid (per the reference kit's xxxs…super) */
+  --pk-space-2:4px; --pk-space-3:8px; --pk-space-4:16px; --pk-space-5:24px;
+  --pk-space-6:32px; --pk-space-7:48px; --pk-space-8:64px; --pk-space-9:96px; --pk-space-10:128px;
+
+  /* radius — sharp corners are the signature; curves used sparingly */
+  --pk-radius-sm:4px; --pk-radius-md:8px; --pk-radius-lg:12px; --pk-radius-full:9999px;
+
+  /* elevation */
+  --pk-shadow-sm:0 1px 4px rgba(0,0,0,.28);
+  --pk-shadow-md:0 6px 20px rgba(0,0,0,.28);
+  --pk-shadow-lg:0 24px 64px rgba(0,0,0,.5);
+
+  /* motion */
+  --pk-ease:cubic-bezier(.4,0,.2,1);
+  --pk-spring:cubic-bezier(.34,1.56,.64,1);
+}
+
+/* light-mode: soften shadows + re-tint the ship-ready blue for a light surface */
+:root[data-pk-theme="light"] {
+  --pk-blue-bg:#e2ecfb; --pk-blue-ink:#1c5fc4;
+  --pk-shadow-sm:0 1px 3px rgba(40,38,32,.12);
+  --pk-shadow-md:0 8px 24px rgba(40,38,32,.12);
+  --pk-shadow-lg:0 24px 64px rgba(40,38,32,.16);
+}

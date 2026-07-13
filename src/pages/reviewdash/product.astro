@@ -1,0 +1,279 @@
+---
+/**
+ * /reviewdash/product — the Proofkit showcase.
+ *
+ * A standalone, self-themed marketing/overview page for the tool: what it is, the
+ * key + full feature set, how it collapses review-to-ship to seconds, and how it
+ * unifies the review queue across verticals. Built entirely on the Proofkit design
+ * system (core/design/tokens.css + components.css) so it re-skins with the tool.
+ * Gated on PROOFKIT_ENABLED; noindex. Renders its own document (no host BaseLayout).
+ */
+import { PROOFKIT_ENABLED, WORKER_URL } from '../../plugins/proofkit/config';
+import '../../plugins/proofkit/core/design/tokens.css';
+import '../../plugins/proofkit/core/design/components.css';
+
+const FLOW = [
+  { n: '01', t: 'Comment on the live page', d: 'Open any page, add /review, and click straight onto the real thing. No staging build, no screenshots, no separate tool — pins anchor to the exact element.' },
+  { n: '02', t: 'Get a developer-ready prompt', d: 'Every comment is turned into a precise, paste-ready change instruction by AI within seconds — exact page, element, and the verbatim new copy.' },
+  { n: '03', t: 'Mark complete — auto-validated', d: 'The admin actions it and Proofkit fetches the live page to confirm the new copy is actually there (content-copy match), or flags it for a manual check.' },
+  { n: '04', t: 'Deploy — publish + notify', d: 'One Deploy publishes the whole bucket and fires per-team notifications. The vertical that raised it sees “Done” the moment it ships.' },
+];
+
+const KEY_FEATURES = [
+  { t: 'On-page review overlay', d: 'Click-to-comment directly on the live site. Grayscale focus mode, numbered pins that track reflow, add-only so nothing gets edited out from under you.' },
+  { t: 'AI change-prompts', d: 'Each note becomes a crisp, self-contained instruction ready to paste into a coding agent — casing and punctuation of replacement copy preserved verbatim.' },
+  { t: 'Per-team dashboards', d: 'Every vertical gets its own view, keyed by a team login. The Worker returns only that team’s items — server-side isolation, not a client filter.' },
+  { t: 'Deploy gate + validation', d: 'A working status the admin controls, separate from what teams see. Nothing goes live until Deploy, and copy changes are verified against the live page.' },
+  { t: 'Notifications', d: 'Deploy fires per-team + admin notifications with read / unread tracking, so each vertical hears the moment its comment shipped.' },
+  { t: 'Master Log audit trail', d: 'Every comment carries its full history — created, status changes, deployed — with a status-history timeline for a complete paper trail.' },
+];
+
+const ALL_FEATURES = [
+  'Live-site click-to-comment overlay', 'Anchored pins that re-project on scroll/reflow',
+  'Deep-link Open-Pin to any comment', 'Threaded replies per pin',
+  'Team + key sign-in on the page', 'Content team “change it to…” copy field',
+  'AI change-prompt (Claude or Workers AI)', 'Copy-all prompts, Copy-as-Markdown, JSON export',
+  'Admin dashboard across every page', 'Per-team dashboards with server-side isolation',
+  'Two-door admin login via /teamdash', 'Deploy bucket + one-click batch Deploy',
+  'Content-copy-match validation', 'Per-team + admin notifications, read tracking',
+  'Master Log + per-entry status timeline', 'Bulk select: complete / reopen / close / delete',
+  'Search, sort, by-page grouping', 'Global admin-controlled light / dark theme',
+  'Framework-neutral core + standalone HTML', 'One-switch enable/disable, fully portable',
+];
+
+const VERTICALS = ['Product', 'SEO', 'Marketing', 'Content'];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{PROOFKIT_ENABLED ? 'Proofkit — Product' : 'Not Found'}</title>
+    {PROOFKIT_ENABLED && (
+      <script is:inline set:html={`try{document.documentElement.setAttribute('data-pk-theme',localStorage.getItem('pkTheme')||'red-moon')}catch(e){document.documentElement.setAttribute('data-pk-theme','red-moon')}window.PROOFKIT_WORKER_URL=${JSON.stringify(WORKER_URL)}`}></script>
+    )}
+    <style>
+      html,body{margin:0;background:#181818}
+    </style>
+  </head>
+  <body>
+    {!PROOFKIT_ENABLED ? (
+      <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#141414;color:#fff;font:400 15px system-ui">Not available.</main>
+    ) : (
+    <main class="prd">
+      <!-- top bar -->
+      <header class="prd-top">
+        <a class="prd-brand" href="/reviewdash">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-4 4V5Z" fill="var(--pk-red)"/>
+            <circle cx="12" cy="9.5" r="1.6" fill="#fff"/>
+          </svg>
+          <span class="prd-word">ProofKit</span>
+          <span class="prd-tag">Product</span>
+        </a>
+        <nav class="prd-nav">
+          <a class="pk-btn pk-btn--ghost" href="/reviewdash">Dashboard</a>
+          <a class="pk-btn pk-btn--primary" href="/review">Start reviewing</a>
+        </nav>
+      </header>
+
+      <!-- hero -->
+      <section class="prd-hero">
+        <span class="pk-eyebrow">Content review, reimagined</span>
+        <h1 class="prd-h1">From comment to <em>shipped</em>,<br />in seconds.</h1>
+        <p class="prd-lead">Proofkit turns the live website into the review surface. Your teams
+          comment on the real page, AI writes the change, and one Deploy ships it — the feedback
+          loop that used to take days now closes in a single sitting.</p>
+        <div class="prd-cta">
+          <a class="pk-btn pk-btn--primary" href="/review">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Try review mode
+          </a>
+          <a class="pk-btn pk-btn--ghost" href="/reviewdash">Open the dashboard</a>
+        </div>
+      </section>
+
+      <!-- metric band -->
+      <section class="prd-metrics">
+        <div class="prd-metric"><b>Seconds</b><span>Comment → AI change-prompt</span></div>
+        <div class="prd-metric"><b>4-in-1</b><span>Verticals, one shared queue</span></div>
+        <div class="prd-metric"><b>1 click</b><span>Deploy publishes + notifies</span></div>
+        <div class="prd-metric"><b>Zero</b><span>Tools to install — it’s on the page</span></div>
+      </section>
+
+      <!-- how it works -->
+      <section class="prd-sec">
+        <div class="prd-sec-head">
+          <span class="pk-eyebrow">The loop</span>
+          <h2 class="prd-h2">Review to ship, without the handoffs</h2>
+          <p class="prd-sub">Four steps, no context-switching. The comment, the fix, the proof,
+            and the ship all live in one place.</p>
+        </div>
+        <div class="prd-flow">
+          {FLOW.map((s) => (
+            <article class="prd-step">
+              <span class="prd-step-n">{s.n}</span>
+              <h3 class="prd-step-t">{s.t}</h3>
+              <p class="prd-step-d">{s.d}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- key features -->
+      <section class="prd-sec">
+        <div class="prd-sec-head">
+          <span class="pk-eyebrow">Key capabilities</span>
+          <h2 class="prd-h2">Everything the review needs, in one surface</h2>
+        </div>
+        <div class="prd-grid">
+          {KEY_FEATURES.map((f) => (
+            <article class="pk-card pk-card--hover prd-feat">
+              <h3 class="prd-feat-t">{f.t}</h3>
+              <p class="prd-feat-d">{f.d}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <!-- verticals -->
+      <section class="prd-sec prd-verticals">
+        <div class="prd-sec-head">
+          <span class="pk-eyebrow">Across verticals</span>
+          <h2 class="prd-h2">One queue for every team</h2>
+          <p class="prd-sub">Product, SEO, Marketing and Content review the same live pages and
+            drop notes side by side. Each team sees only its own items, the admin sees everything,
+            and nobody waits on a shared doc, a screenshot thread, or a staging deploy to weigh in.
+            Cross-vertical review that used to sprawl across tools collapses into one timeline.</p>
+        </div>
+        <div class="prd-chips">
+          {VERTICALS.map((v) => <span class="pk-chip">{v}</span>)}
+          <span class="pk-chip pk-chip--red">Admin sees all</span>
+        </div>
+      </section>
+
+      <!-- all features -->
+      <section class="prd-sec">
+        <div class="prd-sec-head">
+          <span class="pk-eyebrow">The full set</span>
+          <h2 class="prd-h2">Every ability, at a glance</h2>
+        </div>
+        <ul class="prd-all">
+          {ALL_FEATURES.map((f) => (
+            <li class="prd-all-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--pk-red)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- closing CTA -->
+      <section class="prd-close">
+        <span class="pk-eyebrow">Ship the feedback</span>
+        <h2 class="prd-close-h">Feedback to shipping, done in seconds.</h2>
+        <div class="prd-cta">
+          <a class="pk-btn pk-btn--primary" href="/review">Start reviewing</a>
+          <a class="pk-btn pk-btn--ghost" href="/reviewdash">Open the dashboard</a>
+        </div>
+      </section>
+
+      <footer class="prd-foot">
+        <span>ProofKit · Content Review</span>
+        <a class="prd-foot-link" href="/reviewdash">Back to dashboard →</a>
+      </footer>
+    </main>
+    )}
+
+    {PROOFKIT_ENABLED && (
+      <script>
+        import { initTheme } from '../../plugins/proofkit/core/config.js';
+        initTheme(); // respect the global (admin-set) theme
+      </script>
+    )}
+
+    <style>
+      /* ===== /reviewdash/product — layout on top of the design system ===== */
+      .prd{--gutter:clamp(20px,6vw,120px);
+        background:var(--pk-canvas);color:var(--pk-ink);font-family:var(--pk-font);
+        min-height:100vh;padding:0 var(--gutter) 0}
+      .prd *{box-sizing:border-box}
+
+      /* top bar */
+      .prd-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+        padding:24px 0;border-bottom:1px solid var(--pk-hair)}
+      .prd-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+      .prd-word{font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
+      .prd-tag{font:600 11px/1 var(--pk-font);letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted);
+        padding-left:12px;border-left:1px solid var(--pk-hair)}
+      .prd-nav{display:flex;gap:10px;flex-wrap:wrap}
+      .prd-nav .pk-btn{height:40px;padding:0 18px;font-size:11px}
+
+      /* hero */
+      .prd-hero{padding:clamp(56px,10vw,120px) 0 clamp(40px,6vw,72px);max-width:860px}
+      .prd-h1{margin:22px 0 0;font-weight:500;letter-spacing:-.03em;line-height:1.02;
+        font-size:clamp(44px,8vw,88px);color:var(--pk-ink)}
+      .prd-h1 em{font-style:normal;color:var(--pk-red)}
+      .prd-lead{margin:26px 0 0;max-width:620px;font-size:clamp(16px,2vw,19px);line-height:1.6;color:var(--pk-body)}
+      .prd-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+
+      /* metric band */
+      .prd-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;
+        background:var(--pk-hair);border:1px solid var(--pk-hair);margin-bottom:clamp(64px,10vw,120px)}
+      .prd-metric{background:var(--pk-canvas);padding:32px 28px;display:flex;flex-direction:column;gap:10px}
+      .prd-metric b{font-size:clamp(34px,4.5vw,52px);font-weight:700;line-height:.95;letter-spacing:-.03em;color:var(--pk-red)}
+      .prd-metric span{font:600 12px/1.4 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+
+      /* section scaffold */
+      .prd-sec{padding-bottom:clamp(64px,10vw,120px)}
+      .prd-sec-head{max-width:660px;margin-bottom:44px}
+      .prd-h2{margin:18px 0 0;font-weight:500;letter-spacing:-.02em;line-height:1.1;
+        font-size:clamp(28px,4vw,42px);color:var(--pk-ink)}
+      .prd-sub{margin:18px 0 0;font-size:16px;line-height:1.65;color:var(--pk-body)}
+
+      /* flow (how it works) */
+      .prd-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+        gap:1px;background:var(--pk-hair);border:1px solid var(--pk-hair)}
+      .prd-step{background:var(--pk-canvas);padding:32px 28px 36px;display:flex;flex-direction:column;gap:14px}
+      .prd-step-n{font:700 13px/1 var(--pk-font);letter-spacing:.14em;color:var(--pk-red)}
+      .prd-step-t{margin:0;font-size:19px;font-weight:600;line-height:1.25;color:var(--pk-ink)}
+      .prd-step-d{margin:0;font-size:14px;line-height:1.6;color:var(--pk-body)}
+
+      /* feature cards */
+      .prd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+      .prd-feat{display:flex;flex-direction:column;gap:12px}
+      .prd-feat-t{margin:0;font-size:18px;font-weight:600;line-height:1.3;color:var(--pk-ink)}
+      .prd-feat-d{margin:0;font-size:14px;line-height:1.6;color:var(--pk-body)}
+
+      /* verticals */
+      .prd-chips{display:flex;flex-wrap:wrap;gap:10px}
+      .prd-chips .pk-chip{height:34px;padding:0 18px;font-size:11px}
+
+      /* all features list */
+      .prd-all{list-style:none;margin:0;padding:0;display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px 32px}
+      .prd-all-item{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.5;color:var(--pk-body);
+        padding-bottom:14px;border-bottom:1px solid var(--pk-hair)}
+      .prd-all-item svg{width:18px;height:18px;flex:none;margin-top:2px}
+
+      /* closing CTA */
+      .prd-close{padding:clamp(64px,10vw,120px) 0;border-top:1px solid var(--pk-hair);text-align:center}
+      .prd-close-h{margin:18px auto 34px;max-width:640px;font-weight:500;letter-spacing:-.02em;line-height:1.1;
+        font-size:clamp(30px,5vw,52px);color:var(--pk-ink)}
+      .prd-close .pk-eyebrow{justify-content:center}
+      .prd-close .prd-cta{justify-content:center}
+
+      /* footer */
+      .prd-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+        padding:28px 0;border-top:1px solid var(--pk-hair);
+        font:400 12px/1.4 var(--pk-font);letter-spacing:.04em;text-transform:uppercase;color:var(--pk-muted)}
+      .prd-foot-link{color:var(--pk-body);text-decoration:none;font-weight:700;letter-spacing:.08em}
+      @media (min-width:1024px) and (hover:hover){ .prd-foot-link:hover{color:var(--pk-red)} }
+
+      @media (prefers-reduced-motion:reduce){ .prd *{transition:none !important} }
+    </style>
+  </body>
+</html>

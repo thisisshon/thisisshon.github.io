@@ -17,7 +17,9 @@
  * This file only mounts the shell, bridges the build-time Worker URL, and loads the core.
  */
 import { WORKER_URL } from './config';
-import './core/dashboard.css';
+import './core/design/tokens.css';       // colour + theme system (single source of truth)
+import './core/design/components.css';   // reusable component classes (incl. the toggle)
+import './core/dashboard.css';           // admin-dashboard-specific styles
 ---
 
 {/* Bridge the build-time Worker URL to the framework-neutral core (window global). */}

@@ -1,6 +1,6 @@
 {
   "name": "proofkit",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "private": true,
   "description": "Proofkit — a self-contained, toggleable, portable content-review tool: an on-page click-to-comment overlay + admin dashboard + Cloudflare Worker. A framework-neutral core/ (plain JS/CSS + standalone HTML) with a thin Astro adapter, injectable into any Astro / Claude Code website project — or any stack via the standalone entries.",
   "keywords": ["content-review", "annotation", "overlay", "review-tool", "astro", "framework-neutral", "claude-code", "plugin"],
@@ -8,6 +8,12 @@
   "proofkit": {
     "kind": "framework-neutral-core + astro-adapter",
     "core": {
+      "design": {
+        "tokens": "core/design/tokens.css",
+        "components": "core/design/components.css",
+        "reference": ["core/design/reference/red-moon.md", "core/design/reference/dark-cream.md"],
+        "note": "Design system — colour/theme tokens (3 skins keyed by [data-pk-theme]) + reusable .pk-* component classes. Single source of truth for colour; reference/ is inspiration only."
+      },
       "config": "core/config.js",
       "overlay": "core/overlay.js",
       "dashboard": ["core/dashboard.js", "core/dashboard.css", "core/dashboard.html"],

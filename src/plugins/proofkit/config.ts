@@ -27,11 +27,9 @@ export {
   REVIEW_PASSWORD_SHA256,
   sha256Hex,
   checkReviewPassword,
-  THEMES,
   DEFAULT_THEME,
   LIGHT_THEME,
   themeVars,
-  themeCss,
 } from './core/config.js';
 
 /**

@@ -77,39 +77,22 @@ export const HIDE_SELECTORS = ['.to-top'];
  * is already themed. Swapping the attribute on <html> re-skins live, and the
  * choice persists in localStorage — that is the whole light-mode toggle.
  * ------------------------------------------------------------------------ */
-export const THEMES = {
-  'red-moon':
-    '--pk-canvas:#181818;--pk-card:#1e1e1e;--pk-elev:#242424;--pk-input:#141414;' +
-    '--pk-red:#da291c;--pk-red-2:#b01e0a;--pk-ink:#ffffff;--pk-body:#a7a7a7;' +
-    '--pk-muted:#7d7d7d;--pk-hair:#333333;--pk-amber:#f5a623;--pk-green:#3ddc84;--pk-softred:#ef5b50',
-  'dark-cream':
-    '--pk-canvas:#1a1712;--pk-card:#221d16;--pk-elev:#2a241c;--pk-input:#15120d;' +
-    '--pk-red:#c9a24b;--pk-red-2:#a8843a;--pk-ink:#f5efe2;--pk-body:#b8ad97;' +
-    '--pk-muted:#8a8069;--pk-hair:#3a3226;--pk-amber:#e0b45a;--pk-green:#7fb58a;--pk-softred:#d98a6a',
-  /* Light skin — warm off-white surfaces, brand red kept, status colours
-     darkened so they stay legible on light. Mirrors the token contract 1:1. */
-  light:
-    '--pk-canvas:#f2f1ec;--pk-card:#ffffff;--pk-elev:#f8f7f3;--pk-input:#ffffff;' +
-    '--pk-red:#c81e12;--pk-red-2:#a5170c;--pk-ink:#1c1c1a;--pk-body:#565650;' +
-    '--pk-muted:#8c8c84;--pk-hair:#e4e1d9;--pk-amber:#a86a12;--pk-green:#1d7a46;--pk-softred:#c0392b',
-};
-
-/** The default (dark) skin and the light skin the toggle flips to. */
-export const DEFAULT_THEME = 'red-moon';
-export const LIGHT_THEME = 'light';
+/* The full colour system (all three skins, keyed by [data-pk-theme]) now lives in
+ * design/tokens.css — the single source of truth that the dashboards + the product
+ * page link/import. This module only keeps the theme NAMES + the dark skin as a bare
+ * literal for the ONE consumer that can't link a stylesheet: the on-page overlay,
+ * which self-injects `:root{themeVars}` at review time so real visitors get nothing.
+ * KEEP `themeVars` in sync with tokens.css :root (the Red Moon skin). */
+export const DEFAULT_THEME = 'red-moon'; // dark default
+export const LIGHT_THEME = 'light';      // what the toggle flips to
 const THEME_KEY = 'pkTheme';              // localStorage cache — instant, no-flash first paint
 const ADMIN_PASS_KEY = 'reviewAdminPass'; // where the admin dashboard keeps its pass (to write the global theme)
 
-/** Default skin's tokens as a bare declaration list (no selector) — used by the
- *  overlay, which stays on its dark skin regardless of the dashboard toggle. */
-export const themeVars = THEMES[DEFAULT_THEME];
-
-/** Every skin as selector-keyed CSS, `:root` defaulting to the dark skin. */
-export function themeCss() {
-  let css = ':root{' + THEMES[DEFAULT_THEME] + '}';
-  for (const name in THEMES) css += '[data-pk-theme="' + name + '"]{' + THEMES[name] + '}';
-  return css;
-}
+/** Red Moon (dark) tokens as a bare declaration list — mirrors tokens.css :root. */
+export const themeVars =
+  '--pk-canvas:#181818;--pk-card:#1e1e1e;--pk-elev:#242424;--pk-input:#141414;' +
+  '--pk-red:#da291c;--pk-red-2:#b01e0a;--pk-ink:#ffffff;--pk-body:#a7a7a7;' +
+  '--pk-muted:#7d7d7d;--pk-hair:#333333;--pk-amber:#f5a623;--pk-green:#3ddc84;--pk-softred:#ef5b50';
 
 /* The theme is a GLOBAL setting the admin controls — flipping it changes the mode
  * for everyone, so the source of truth is the Worker (KV `settings.theme`), not this
@@ -170,46 +153,15 @@ export function initTheme() {
   return getTheme();
 }
 
-/** Inject the keyed theme CSS once (id-guarded so it is safe to call per app). */
-export function injectThemeStyle(id) {
-  id = id || 'pk-theme-vars';
-  if (document.getElementById(id)) return;
-  const el = document.createElement('style');
-  el.id = id;
-  el.textContent = themeCss();
-  document.head.appendChild(el);
-}
-
 /* --------------------------------------------------------------------------
- * The creative light/dark toggle — a subtle sun⇄moon slider that lives under the
- * dashboard logo. Self-contained: injects its own scoped styles once, builds the
- * control, wires it to toggleTheme(), and stays in sync with the persisted state
- * (including changes made on another surface). Themes itself via --pk-* tokens.
+ * The light/dark toggle control. Its STYLES live in design/components.css
+ * (`.pk-tt`); this only builds the wired DOM node, keeps it in sync with the
+ * persisted theme, and flips the GLOBAL theme on click. Mounted under the admin
+ * dashboard's wordmark via a [data-pk-toggle] slot (admin-only surface).
  * ------------------------------------------------------------------------ */
-const TOGGLE_CSS =
-  '.pk-tt{--tt-w:52px;--tt-h:26px;position:relative;display:inline-flex;align-items:center;justify-content:center;' +
-  'width:48px;height:48px;margin:-11px -11px -11px -1px;padding:0;border:0;background:none;cursor:pointer;' +
-  '-webkit-tap-highlight-color:transparent}' +
-  '.pk-tt-track{position:relative;width:var(--tt-w);height:var(--tt-h);border-radius:999px;' +
-  'background:var(--pk-input);border:1px solid var(--pk-hair);' +
-  'box-shadow:inset 0 1px 2px rgba(0,0,0,.28);transition:background .45s cubic-bezier(.4,0,.2,1),border-color .3s}' +
-  '.pk-tt-thumb{position:absolute;top:50%;left:3px;width:20px;height:20px;border-radius:50%;' +
-  'transform:translate(0,-50%);display:flex;align-items:center;justify-content:center;color:#fff;' +
-  'background:var(--pk-red);box-shadow:0 1px 4px rgba(0,0,0,.4);' +
-  'transition:transform .45s cubic-bezier(.34,1.56,.64,1),background .3s}' +
-  '.pk-tt-thumb svg{width:12px;height:12px;display:block}' + // one glyph, centred inside the thumb
-  '.pk-tt[aria-checked="true"] .pk-tt-thumb{transform:translate(calc(var(--tt-w) - 26px),-50%);background:var(--pk-amber)}' +
-  '.pk-tt:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px;border-radius:8px}' +
-  '@media (min-width:1024px) and (hover:hover){.pk-tt:hover .pk-tt-track{border-color:var(--pk-body)}}';
 
 /** Build one toggle control (a wired DOM node). aria-checked === light mode. */
 export function buildThemeToggle() {
-  if (!document.getElementById('pk-tt-style')) {
-    const s = document.createElement('style');
-    s.id = 'pk-tt-style';
-    s.textContent = TOGGLE_CSS;
-    document.head.appendChild(s);
-  }
   const btn = document.createElement('button');
   btn.className = 'pk-tt';
   btn.type = 'button';

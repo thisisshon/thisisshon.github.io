@@ -1,0 +1,81 @@
+/* ===========================================================================
+   PROOFKIT DESIGN COMPONENTS — reusable, token-bound classes.
+
+   Built entirely on design/tokens.css (the pk color roles), so every component
+   re-skins automatically across Red Moon / Dark Cream / Light. These are the
+   shared, scalable primitives new surfaces should compose (the /reviewdash/product
+   showcase uses them); the dashboards keep their own rvd-/tmd- CSS for now and can
+   migrate onto these over time. Namespaced under pk- so nothing here leaks.
+   =========================================================================== */
+
+/* ---- eyebrow: the uppercase tracked micro-label (voltage red) ---- */
+.pk-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font:700 11px/1.4 var(--pk-font);letter-spacing:1.4px;text-transform:uppercase;color:var(--pk-red);
+}
+.pk-eyebrow::before{content:"";width:8px;height:8px;background:var(--pk-red);flex:none}
+
+/* ---- buttons: sharp corners, uppercase tracked, one voltage ---- */
+.pk-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:48px;padding:0 26px;border:1px solid transparent;border-radius:0;cursor:pointer;text-decoration:none;
+  font:700 13px/1 var(--pk-font);letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap;
+  transition:background .15s var(--pk-ease),border-color .15s,color .15s,transform .15s;
+}
+.pk-btn svg{width:18px;height:18px;flex:none}
+.pk-btn--primary{background:var(--pk-red);color:#fff}
+.pk-btn--ghost{background:transparent;border-color:var(--pk-hair);color:var(--pk-ink)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-btn--primary:hover{background:var(--pk-red-2)}
+  .pk-btn--ghost:hover{border-color:var(--pk-red);color:var(--pk-red)}
+}
+
+/* ---- card: the elevated surface ---- */
+.pk-card{
+  background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
+  padding:24px;color:var(--pk-ink);transition:border-color .15s,background .15s;
+}
+@media (min-width:1024px) and (hover:hover){
+  .pk-card--hover:hover{border-left-color:var(--pk-red);background:var(--pk-elev)}
+}
+
+/* ---- chip / tag: the pill ---- */
+.pk-chip{
+  display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:var(--pk-radius-full);
+  border:1px solid var(--pk-hair);background:transparent;
+  font:700 10px/1 var(--pk-font);letter-spacing:1px;text-transform:uppercase;color:var(--pk-body);
+}
+.pk-chip--red{background:var(--pk-red);border-color:var(--pk-red);color:#fff}
+.pk-chip--green{color:var(--pk-green);border-color:var(--pk-green)}
+
+/* ---- hairline divider ---- */
+.pk-hr{height:1px;background:var(--pk-hair);border:0;margin:0}
+
+/* ---------------------------------------------------------------------------
+   THE LIGHT/DARK TOGGLE (.pk-tt) — control DOM is built by config.js
+   buildThemeToggle(); these are its styles. One moon glyph rides the thumb; the
+   thumb is ALWAYS the brand red and slides fully INSIDE the track between states.
+   --------------------------------------------------------------------------- */
+.pk-tt{
+  --tt-w:46px; --tt-h:24px; --tt-thumb:18px; --tt-pad:3px;
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:48px;height:48px;margin:-12px;padding:0;border:0;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.pk-tt-track{
+  position:relative;width:var(--tt-w);height:var(--tt-h);border-radius:var(--pk-radius-full);
+  background:var(--pk-input);border:1px solid var(--pk-hair);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.28);transition:background .4s var(--pk-ease),border-color .3s;
+}
+.pk-tt-thumb{
+  position:absolute;top:50%;left:var(--tt-pad);width:var(--tt-thumb);height:var(--tt-thumb);border-radius:50%;
+  transform:translateY(-50%);display:flex;align-items:center;justify-content:center;color:#fff;
+  background:var(--pk-red);box-shadow:0 1px 4px rgba(0,0,0,.4);
+  transition:transform .4s var(--pk-spring);
+}
+.pk-tt-thumb svg{width:11px;height:11px;display:block}
+/* checked = light mode: thumb slides right, staying fully inside the track.
+   travel = track(46) - thumb(18) - pad(3) - pad(3) = 22px */
+.pk-tt[aria-checked="true"] .pk-tt-thumb{ transform:translate(22px,-50%); }
+.pk-tt:focus-visible{outline:2px solid var(--pk-red);outline-offset:3px;border-radius:8px}
+@media (min-width:1024px) and (hover:hover){.pk-tt:hover .pk-tt-track{border-color:var(--pk-body)}}

@@ -1,10 +1,11 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
-    injectThemeStyle, initTheme } from './config.js';
+    initTheme } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
-    // Theme is a GLOBAL, admin-controlled setting — team users have NO toggle; they
-    // just read + apply whatever the admin set (initTheme syncs it from the Worker).
-    injectThemeStyle(); initTheme();
+    // Theme skins come from design/tokens.css (linked by the adapter). This is a
+    // GLOBAL, admin-controlled setting — team users have NO toggle; initTheme just
+    // reads + applies whatever the admin set (synced from the Worker).
+    initTheme();
     const LOCAL = !WORKER_URL;
     const TEAM_KEY = 'teamDashTeam'; // the signed-in team (server-side isolation is keyed to it)
     const PASS_KEY = 'teamDashPass'; // that team's reviewer key

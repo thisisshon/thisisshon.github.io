@@ -6,6 +6,25 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.8.0 — 2026-07-13 — design system (tokens + components) + /reviewdash/product showcase + toggle fix
+
+- **Design system extracted into `core/design/`.** Colour + theme are now a single source of truth in
+  **`design/tokens.css`** — all three skins (Red Moon / Dark Cream / Light) keyed by `[data-pk-theme]`,
+  plus non-theme tokens (8px spacing ladder, radii, shadows, font, motion). Reusable component classes
+  live in **`design/components.css`** (`.pk-btn`, `.pk-card`, `.pk-chip`, `.pk-eyebrow`, `.pk-hr`, and
+  the `.pk-tt` toggle). Both re-skin automatically via the tokens. The two reference kits moved to
+  **`core/design/reference/`** (`red-moon.md`, `dark-cream.md`) — inspiration only, nothing imports them.
+  - `config.js` no longer injects theme CSS from JS: `THEMES` / `themeCss()` / `injectThemeStyle()`
+    removed (tokens.css is the colour source). It keeps only the theme NAMES + a `themeVars` literal
+    (the dark skin) for the on-page overlay, which self-injects at review time and can't link a sheet.
+  - The dashboard adapters + standalone HTML entries now load `design/tokens.css` + `design/components.css`.
+- **New showcase page `/reviewdash/product`.** A self-themed overview of the whole tool, built entirely
+  on the design system: hero, metric band, the review→ship loop, key + full feature set, the
+  cross-vertical “one queue for every team” story, and CTAs. Respects the global theme; gated on
+  `PROOFKIT_ENABLED`, noindex.
+- **Fix — light-mode toggle thumb.** It now stays fully INSIDE the track in both states and is the
+  brand RED (was amber/orange and riding the edge).
+
 ## 2.7.0 — 2026-07-13 — global admin-controlled theme + overlay "Go to Dashboard" + light-mode fixes
 
 - **Theme is now a GLOBAL, admin-controlled setting.** The light/dark toggle lives ONLY in the admin

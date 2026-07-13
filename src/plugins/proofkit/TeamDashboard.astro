@@ -21,7 +21,9 @@
  * This file only mounts the shell, bridges the build-time Worker URL, and loads the core.
  */
 import { WORKER_URL } from './config';
-import './core/teamdash.css';
+import './core/design/tokens.css';       // colour + theme system (single source of truth)
+import './core/design/components.css';   // reusable component classes
+import './core/teamdash.css';            // team-dashboard-specific styles
 ---
 
 {/* Bridge the build-time Worker URL to the framework-neutral core (window global). */}

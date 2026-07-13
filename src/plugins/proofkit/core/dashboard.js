@@ -1,9 +1,10 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
-    injectThemeStyle, initTheme, mountThemeToggle } from './config.js';
+    initTheme, mountThemeToggle } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
-    // Theme: inject every --pk-* skin, apply the persisted choice, mount the toggle.
-    injectThemeStyle(); initTheme(); mountThemeToggle();
+    // Theme skins come from design/tokens.css (linked by the adapter); apply the
+    // global choice and mount the admin toggle.
+    initTheme(); mountThemeToggle();
     const LOCAL = !WORKER_URL;
     const PASS_KEY = 'reviewAdminPass'; // admin password for the dashboard (separate from reviewer Team ID)
 
