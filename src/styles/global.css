@@ -553,7 +553,9 @@
     font-weight: 500; font-size: 16px; color: var(--color-text-primary);
     text-decoration: none; transition: background 0.15s ease;
   }
-  a.login-item:hover { background: var(--color-cream-100); }
+  @media (min-width: 1024px) and (hover: hover) {
+    a.login-item:hover { background: var(--color-cream-100); }
+  }
   .login-item--soon { color: var(--color-text-muted); cursor: default; }
   /* .btn-dark retired 2026-07-11 -> global .btn .btn-tertiary (nav uses .nav-cta/.mm-cta sizing). */
 
@@ -974,8 +976,10 @@
   }
   .infotip-pop .tip-title { font-weight: 700; }
   .infotip-pop .tip-body  { font-weight: 400; }
-  .infotip:hover .infotip-pop,
   .infotip:focus-within .infotip-pop { opacity: 1; visibility: visible; transform: none; }
+  @media (min-width: 1024px) and (hover: hover) {
+    .infotip:hover .infotip-pop { opacity: 1; visibility: visible; transform: none; }
+  }
   .infotip-pop::before {
     content: ""; position: absolute; width: 12px; height: 12px;
     background: var(--color-infotip-bg); transform: rotate(45deg);
@@ -992,11 +996,13 @@
   .infotip-top.infotip-end::before { left: auto; right: 20px; }
   /* position: RIGHT (bubble to the right, pointer on left edge) */
   .infotip-right { left: calc(100% + 10px); top: 50%; transform: translateY(-50%) translateX(-2px); }
-  .infotip:hover .infotip-right, .infotip:focus-within .infotip-right { transform: translateY(-50%); }
+  .infotip:focus-within .infotip-right { transform: translateY(-50%); }
+  @media (min-width: 1024px) and (hover: hover) { .infotip:hover .infotip-right { transform: translateY(-50%); } }
   .infotip-right::before { left: -5px; top: 50%; margin-top: -6px; }
   /* position: LEFT (bubble to the left, pointer on right edge) */
   .infotip-left { right: calc(100% + 10px); top: 50%; transform: translateY(-50%) translateX(2px); }
-  .infotip:hover .infotip-left, .infotip:focus-within .infotip-left { transform: translateY(-50%); }
+  .infotip:focus-within .infotip-left { transform: translateY(-50%); }
+  @media (min-width: 1024px) and (hover: hover) { .infotip:hover .infotip-left { transform: translateY(-50%); } }
   .infotip-left::before { right: -5px; top: 50%; margin-top: -6px; }
 
   /* ===== final CTA ===== */

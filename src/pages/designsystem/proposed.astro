@@ -89,7 +89,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Charcoal - dark neutrals ⚠ 12 steps (Tier-2: → ~4)',
+    name: 'Charcoal - dark neutrals (!) 12 steps (Tier-2: reduce to ~4)',
     toks: [
       { token: 'color-charcoal-950', role: 'homepage footer bg (home fork)' },
       { token: 'color-charcoal-925', role: 'filled input text (field-ink)' },
@@ -148,7 +148,7 @@ const families: { name: string; tint?: boolean; toks: Tok[] }[] = [
     ],
   },
   {
-    name: 'Cream - light surfaces ⚠ 9 steps (Tier-2: → ~5)',
+    name: 'Cream - light surfaces (!) 9 steps (Tier-2: reduce to ~5)',
     tint: true,
     toks: [
       { token: 'color-cream-50', role: 'card surface (legacy --card)' },
@@ -348,7 +348,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
         <b>Merge policy.</b> <b>Tier 1 (applied):</b> near-duplicates ≤2 RGB points apart are already
         collapsed - imperceptible. <b>Tier 2 (proposed, awaiting sign-off):</b> visible unifications
         the audit flags but this system keeps for pixel parity - the 12→4 charcoal collapse, 15→5
-        creams, the button-spec fork, the footer fork, the 4 hero gradients. Steps marked ⚠ are the
+        creams, the button-spec fork, the footer fork, the 4 hero gradients. Steps marked (!) are the
         honest current count.
       </p>
     </div>
@@ -582,7 +582,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
           <span class="gal-cap"><code>.btn-tertiary-inverse</code> · solid white (tertiary on dark)</span>
         </div>
         <div class="gal-item">
-          <a class="btn-link btn-link-inverse" href="#buttons" onclick="return false">View all →</a>
+          <a class="btn-link btn-link-inverse" href="#buttons" onclick="return false">View all<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           <span class="gal-cap"><code>.btn-link-inverse</code> · link on dark</span>
         </div>
       </div>
@@ -938,7 +938,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   .tok-meta {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     min-width: 0;
     padding-top: 2px;
   }
@@ -995,7 +995,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   .ds-table th,
   .ds-table td {
     text-align: left;
-    padding: 10px 16px;
+    padding: 8px 16px;
     font-size: 14px;
     border-bottom: 1px solid var(--color-border-hairline);
     vertical-align: middle;
@@ -1140,7 +1140,7 @@ const durs = ['--dur-fast 0.2s', '--dur-base 0.25s', '--dur-slow 0.3s', '--dur-o
   .radius-cell {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     align-items: flex-start;
   }
   .radius-box {

@@ -2,6 +2,13 @@
 /**
  * 404 — also ProofKit's universal /<page>/review router.
  *
+ * ⚠ PART OF THE PROOFKIT PACKAGE. This file is site-level only because static
+ * hosting forces it to be (see below), but it belongs to the isolated ProofKit
+ * tool, not the main site. It is therefore EXEMPT from the main-site design
+ * system (BaseLayout/tokens/one-font/8px-grid rules) and is excluded from
+ * site-wide guideline audits — it carries ProofKit's own chrome/fonts/colours
+ * by design. Do not "fix" it to the main design system.
+ *
  * On a static host every /<page>/review has no file, so GitHub Pages (and astro
  * preview) serve 404.html. This catches that: if the path ends in /review it arms
  * auto-review and bounces to the real page (/<page>), where the on-page overlay
