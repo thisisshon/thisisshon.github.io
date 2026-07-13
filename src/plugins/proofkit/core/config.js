@@ -206,6 +206,98 @@ export function mountThemeToggle(selector) {
 }
 
 /* --------------------------------------------------------------------------
+ * buildDropdown — a custom, NON-NATIVE themed dropdown (styles: .pk-dropdown in
+ * components.css). Sharp corners, spaced items, colour-themed via tokens.
+ *   opts: { items:[{value?, label, onSelect?}], value, placeholder, fixedLabel,
+ *           block, small, menuAlign:'right', onSelect(value,item) }
+ *   fixedLabel → action menu (trigger label never changes, e.g. "Copy").
+ * Returns { el, getValue, setValue, focus }.
+ * ------------------------------------------------------------------------ */
+const PK_CHEV =
+  '<svg class="pk-dropdown-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+  'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+export function buildDropdown(opts) {
+  opts = opts || {};
+  const items = opts.items || [];
+  const fixed = opts.fixedLabel || null;
+  let value = opts.value != null ? opts.value : '';
+  const wrap = document.createElement('div');
+  wrap.className = 'pk-dropdown' + (opts.block ? ' pk-dropdown--block' : '') + (opts.small ? ' pk-dropdown--sm' : '');
+  wrap.innerHTML =
+    '<button type="button" class="pk-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">' +
+      '<span class="pk-dropdown-label"></span>' + PK_CHEV +
+    '</button>' +
+    '<div class="pk-dropdown-menu' + (opts.menuAlign === 'right' ? ' pk-dropdown-menu--right' : '') + '" role="listbox" hidden></div>';
+  const trigger = wrap.querySelector('.pk-dropdown-trigger');
+  const labelEl = wrap.querySelector('.pk-dropdown-label');
+  const menu = wrap.querySelector('.pk-dropdown-menu');
+  const valOf = (it) => (it.value != null ? it.value : it.label);
+  const labelFor = (v) => { const it = items.find((i) => valOf(i) === v); return it ? it.label : ''; };
+  const syncLabel = () => {
+    if (fixed) { labelEl.textContent = fixed; labelEl.classList.remove('is-placeholder'); return; }
+    if (value !== '' && value != null) { labelEl.textContent = labelFor(value); labelEl.classList.remove('is-placeholder'); }
+    else { labelEl.textContent = opts.placeholder || 'Select'; labelEl.classList.add('is-placeholder'); }
+  };
+
+  let isOpen = false;
+  const onDoc = (e) => { if (!wrap.contains(e.target)) close(); };
+  const onKey = (e) => {
+    if (e.key === 'Escape') { close(); trigger.focus(); return; }
+    const list = [].slice.call(menu.querySelectorAll('.pk-dropdown-item'));
+    const i = list.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); (list[i + 1] || list[0]).focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); (list[i - 1] || list[list.length - 1]).focus(); }
+  };
+  function open() {
+    isOpen = true; menu.hidden = false; wrap.classList.add('is-open'); trigger.setAttribute('aria-expanded', 'true');
+    document.addEventListener('click', onDoc, true); document.addEventListener('keydown', onKey, true);
+    const sel = menu.querySelector('[aria-selected="true"]') || menu.querySelector('.pk-dropdown-item');
+    if (sel) sel.focus();
+  }
+  function close() {
+    isOpen = false; menu.hidden = true; wrap.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('click', onDoc, true); document.removeEventListener('keydown', onKey, true);
+  }
+  trigger.addEventListener('click', (e) => { e.stopPropagation(); isOpen ? close() : open(); });
+
+  items.forEach((it) => {
+    const v = valOf(it);
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'pk-dropdown-item'; b.setAttribute('role', 'option');
+    b.dataset.value = v; b.textContent = it.label;
+    if (!fixed && v === value) b.setAttribute('aria-selected', 'true');
+    b.addEventListener('click', () => {
+      if (!fixed) {
+        value = v;
+        menu.querySelectorAll('.pk-dropdown-item').forEach((e) => e.removeAttribute('aria-selected'));
+        b.setAttribute('aria-selected', 'true');
+        syncLabel();
+      }
+      close(); trigger.focus();
+      if (it.onSelect) it.onSelect(v, it);
+      if (opts.onSelect) opts.onSelect(v, it);
+    });
+    menu.appendChild(b);
+  });
+
+  syncLabel();
+  return {
+    el: wrap,
+    getValue: () => value,
+    setValue: (v) => {
+      value = v;
+      menu.querySelectorAll('.pk-dropdown-item').forEach((e) => {
+        if (String(e.dataset.value) === String(v)) e.setAttribute('aria-selected', 'true'); else e.removeAttribute('aria-selected');
+      });
+      syncLabel();
+    },
+    setLabel: (t) => { labelEl.textContent = t; },
+    focus: () => trigger.focus(),
+  };
+}
+
+/* --------------------------------------------------------------------------
  * The shared "Panel Login" card — the ONE modern auth surface both dashboards
  * use (styles: design/components.css `.pk-login`). It builds the Team + Key
  * fields, the Authenticate button, and the ProofKit logo; each dashboard wires
@@ -224,21 +316,17 @@ export function buildPanelLogin(opts) {
   const sub = opts.sub || 'Enter your key to continue.';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const teamOpts = [...TEAMS].sort((a, b) => a.localeCompare(b))
-    .map((t) => '<option value="' + esc(t) + '">' + esc(t) + '</option>').join('') +
-    '<option value="' + esc(ADMIN_TEAM) + '">' + esc(ADMIN_TEAM) + ' (Admin)</option>';
   const el = document.createElement('div');
   el.className = 'pk-login';
   el.innerHTML =
     '<div class="pk-login-card" role="dialog" aria-modal="true">' +
+      '<div class="pk-login-glow"></div>' +
       '<span class="pk-login-eyebrow">Content Review</span>' +
       '<h1 class="pk-login-title">' + esc(title) + '</h1>' +
       '<p class="pk-login-sub">' + esc(sub) + '</p>' +
       '<div class="pk-login-field">' +
-        '<label class="pk-login-label" for="pk-login-team">Team</label>' +
-        '<select id="pk-login-team" class="pk-login-input pk-login-select">' +
-          '<option value="" disabled selected>Select Team</option>' + teamOpts +
-        '</select>' +
+        '<span class="pk-login-label">Team</span>' +
+        '<div class="pk-login-team"></div>' +
       '</div>' +
       '<div class="pk-login-field">' +
         '<label class="pk-login-label" for="pk-login-key">Key</label>' +
@@ -249,13 +337,23 @@ export function buildPanelLogin(opts) {
       '<div class="pk-login-brand">' + PK_MARK + '<span>ProofKit</span></div>' +
     '</div>';
   const q = (s) => el.querySelector(s);
+  // Team = a custom (non-native) dropdown, full-width inside the card.
+  const teamItems = [...TEAMS].sort((a, b) => a.localeCompare(b)).map((t) => ({ value: t, label: t }));
+  teamItems.push({ value: ADMIN_TEAM, label: ADMIN_TEAM + ' (Admin)' });
+  const teamDD = buildDropdown({ items: teamItems, placeholder: 'Select Team', block: true });
+  q('.pk-login-team').appendChild(teamDD.el);
   return {
     el,
-    teamSel: q('#pk-login-team'),
+    getTeam: () => teamDD.getValue(),
+    setTeam: (t) => teamDD.setValue(t || ''),
+    focusTeam: () => teamDD.focus(),
     keyInput: q('#pk-login-key'),
     button: q('.pk-login-btn'),
     setError: (msg) => { const e = q('.pk-login-err'); e.textContent = msg || ''; e.hidden = !msg; },
-    setBusy: (busy, label) => { const b = q('.pk-login-btn'); b.disabled = !!busy; if (label != null) b.textContent = label; },
+    setBusy: (busy, label) => {
+      const b = q('.pk-login-btn'); b.disabled = !!busy; b.classList.toggle('is-busy', !!busy);
+      if (label != null) b.textContent = label;
+    },
   };
 }
 

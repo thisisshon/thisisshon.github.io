@@ -76,16 +76,19 @@
    --------------------------------------------------------------------------- */
 .pk-login{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;
   background:rgba(6,6,6,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
-.pk-login-card{position:relative;overflow:hidden;width:408px;max-width:100%;
+.pk-login-card{position:relative;width:408px;max-width:100%;
   background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);border-radius:0;
   padding:58px 46px 26px;box-shadow:var(--pk-shadow-lg);box-sizing:border-box;
   display:flex;flex-direction:column;align-items:center;text-align:center;animation:pk-login-pop .2s ease both}
 @keyframes pk-login-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
-/* minimal background visual: one soft brand-red glow bleeding down from the top */
-.pk-login-card::before{content:"";position:absolute;top:-140px;left:50%;width:340px;height:320px;
-  transform:translateX(-50%);pointer-events:none;
-  background:radial-gradient(circle,rgba(218,41,28,.20),rgba(218,41,28,0) 68%)}
+/* content sits above the glow via DOM order (no z-index, so a field never becomes a
+   stacking context that would trap its custom-dropdown menu below sibling fields) */
 .pk-login-card > *{position:relative}
+/* minimal background visual: one soft brand-red glow from the top, in its OWN clipped
+   layer (first child → painted behind) so the card can overflow (dropdown menus escape) */
+.pk-login-glow{position:absolute;top:0;left:0;right:0;height:170px;overflow:hidden;pointer-events:none}
+.pk-login-glow::before{content:"";position:absolute;top:-140px;left:50%;width:340px;height:320px;
+  transform:translateX(-50%);background:radial-gradient(circle,rgba(218,41,28,.20),rgba(218,41,28,0) 68%)}
 .pk-login-eyebrow{font:700 11px/1 var(--pk-font);letter-spacing:1.6px;text-transform:uppercase;color:var(--pk-red)}
 .pk-login-title{margin:16px 0 0;font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--pk-ink)}
 .pk-login-sub{margin:12px 0 32px;font-size:14px;line-height:1.5;color:var(--pk-body)}
@@ -101,14 +104,51 @@
   background-repeat:no-repeat;background-position:right 16px center}
 .pk-login-select option{background:var(--pk-card);color:var(--pk-ink)}
 .pk-login-err{width:100%;margin:-4px 0 14px;font-size:13px;font-weight:600;color:var(--pk-softred);text-align:left}
-.pk-login-btn{width:100%;height:54px;border:none;border-radius:0;background:var(--pk-red);color:#fff;
+.pk-login-btn{position:relative;overflow:hidden;width:100%;height:54px;border:none;border-radius:0;background:var(--pk-red);color:#fff;
   font:700 13px/1 var(--pk-font);letter-spacing:1.6px;text-transform:uppercase;cursor:pointer;transition:background .15s}
 .pk-login-btn:disabled{opacity:.6;cursor:default}
+/* very subtle "securing" shimmer while authenticating (stays vivid, not dimmed) */
+.pk-login-btn.is-busy{opacity:1;cursor:default}
+.pk-login-btn.is-busy::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  transform:translateX(-100%);animation:pk-login-shimmer 1.5s ease-in-out infinite}
+@keyframes pk-login-shimmer{100%{transform:translateX(100%)}}
 .pk-login-brand{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
   margin-top:38px;padding-top:22px;border-top:1px solid var(--pk-hair);
   font:700 11px/1 var(--pk-font);letter-spacing:1.4px;text-transform:uppercase;color:var(--pk-muted)}
 .pk-login-brand svg{width:16px;height:16px;flex:none}
 @media (min-width:1024px) and (hover:hover){.pk-login-btn:hover{background:var(--pk-red-2)}}
+
+/* ---------------------------------------------------------------------------
+   CUSTOM DROPDOWN (.pk-dropdown) — a non-native, fully themed dropdown built by
+   config.js buildDropdown(). Sharp corners, spaced items, colour-themed via
+   tokens (red accent on the selected item). Replaces native <select> menus so
+   the open list matches the tool instead of the OS chrome.
+   --------------------------------------------------------------------------- */
+.pk-dropdown{position:relative;display:inline-block;font-family:var(--pk-font)}
+.pk-dropdown--block{display:block;width:100%}
+.pk-dropdown-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  height:48px;padding:0 16px;min-width:170px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);cursor:pointer;
+  font:600 13px/1 var(--pk-font);letter-spacing:.04em;transition:border-color .15s var(--pk-ease)}
+.pk-dropdown--sm .pk-dropdown-trigger{height:42px;min-width:0;padding:0 14px;font-size:12px}
+.pk-dropdown-trigger:focus-visible{outline:none;border-color:var(--pk-red)}
+.pk-dropdown.is-open .pk-dropdown-trigger{border-color:var(--pk-red)}
+.pk-dropdown-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-dropdown-label.is-placeholder{color:var(--pk-muted)}
+.pk-dropdown-chev{width:16px;height:16px;flex:none;color:var(--pk-muted);transition:transform .18s var(--pk-ease)}
+.pk-dropdown.is-open .pk-dropdown-chev{transform:rotate(180deg)}
+.pk-dropdown-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:100%;z-index:210;
+  display:flex;flex-direction:column;gap:2px;padding:6px;box-sizing:border-box;
+  background:var(--pk-card);border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-md)}
+.pk-dropdown-menu--right{left:auto;right:0}
+.pk-dropdown-menu[hidden]{display:none}
+.pk-dropdown-item{display:block;width:100%;text-align:left;white-space:nowrap;border:0;border-radius:0;cursor:pointer;
+  padding:11px 16px;background:transparent;color:var(--pk-body);
+  font:600 12px/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
+.pk-dropdown-item[aria-selected="true"]{background:var(--pk-elev);color:var(--pk-red)}
+.pk-dropdown-item:focus-visible{outline:none;background:var(--pk-elev);color:var(--pk-ink)}
+@media (min-width:1024px) and (hover:hover){.pk-dropdown-item:hover{background:var(--pk-elev);color:var(--pk-ink)}}
 
 /* ---------------------------------------------------------------------------
    THE LIGHT/DARK TOGGLE (.pk-tt) — control DOM is built by config.js

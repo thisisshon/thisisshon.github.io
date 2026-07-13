@@ -237,31 +237,30 @@
         const go = () => tryLogin();
         login.button.addEventListener('click', go);
         login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-        login.teamSel.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
       }
-      login.setError(''); login.keyInput.value = ''; login.teamSel.value = team() || '';
+      login.setError(''); login.keyInput.value = ''; login.setTeam(team() || '');
       document.body.appendChild(login.el);
-      (login.teamSel.value ? login.keyInput : login.teamSel).focus();
+      if (team()) login.keyInput.focus(); else login.focusTeam();
     }
     function hideLogin() { login && login.el.remove(); }
 
     async function tryLogin() {
-      const t = login.teamSel.value;
+      const t = login.getTeam();
       const key = login.keyInput.value.trim();
-      if (!t) { login.teamSel.focus(); login.setError('Please choose your team.'); return; }
+      if (!t) { login.focusTeam(); login.setError('Please choose your team.'); return; }
       if (!key) { login.keyInput.focus(); return; }
       // ADMIN_TEAM ('Design') is the admin door: store the key as the admin session
       // token and hand off to /reviewdash, which validates the admin key itself.
       if (t === ADMIN_TEAM) {
         sessionStorage.setItem('reviewAdminPass', key);
         sessionStorage.setItem('reviewMode', '1');
-        login.setBusy(true, 'Signing in…');
+        login.setBusy(true, 'Authenticating'); login.setError('');
         location.replace('/reviewdash');
         return;
       }
       sessionStorage.setItem(TEAM_KEY, t);   // scopes every request to this team
       sessionStorage.setItem(PASS_KEY, key); // validated below against the team-scoped read
-      login.setBusy(true, 'Authenticating…'); login.setError('');
+      login.setBusy(true, 'Authenticating'); login.setError('');
       try { await loadData(); hideLogin(); startAutoRefresh(); }
       catch (e) {
         sessionStorage.removeItem(PASS_KEY);

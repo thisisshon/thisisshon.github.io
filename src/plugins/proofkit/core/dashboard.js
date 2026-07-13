@@ -1,5 +1,5 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
-    ADMIN_TEAM, buildPanelLogin, initTheme, mountThemeToggle } from './config.js';
+    ADMIN_TEAM, buildPanelLogin, buildDropdown, initTheme, mountThemeToggle } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter); apply the
@@ -160,30 +160,29 @@
         const go = () => tryLogin();
         login.button.addEventListener('click', go);
         login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-        login.teamSel.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
       }
-      login.setError(''); login.keyInput.value = ''; login.teamSel.value = '';
+      login.setError(''); login.keyInput.value = ''; login.setTeam('');
       document.body.appendChild(login.el);
-      login.teamSel.focus();
+      login.focusTeam();
     }
     function hideLogin() { login && login.el.remove(); }
 
     async function tryLogin() {
-      const team = login.teamSel.value;
+      const team = login.getTeam();
       const key = login.keyInput.value.trim();
-      if (!team) { login.teamSel.focus(); login.setError('Please choose your team.'); return; }
+      if (!team) { login.focusTeam(); login.setError('Please choose your team.'); return; }
       if (!key) { login.keyInput.focus(); return; }
       // Non-admin team at the admin URL → send them to their team dashboard.
       if (team !== ADMIN_TEAM) {
         sessionStorage.setItem('teamDashTeam', team);
         sessionStorage.setItem('teamDashPass', key);
-        login.setBusy(true, 'Signing in…');
+        login.setBusy(true, 'Authenticating'); login.setError('');
         location.replace('/teamdash');
         return;
       }
       // Design = admin: validate the key by loading the admin dashboard.
       sessionStorage.setItem(PASS_KEY, key);
-      login.setBusy(true, 'Authenticating…'); login.setError('');
+      login.setBusy(true, 'Authenticating'); login.setError('');
       try { await loadData(); hideLogin(); startAutoRefresh(); }
       catch (e) {
         sessionStorage.removeItem(PASS_KEY);
@@ -790,10 +789,25 @@
     });
     // ---- toolbar: search / sort / export / copy-all-prompts ----
     $('#rvd-search').addEventListener('input', (e) => { search = e.target.value.trim(); render(); });
-    $('#rvd-sort').addEventListener('change', (e) => { sort = e.target.value; render(); });
-    $('#rvd-copyall').addEventListener('click', (e) => copyToClip(promptsText(currentRoots()), e.currentTarget, 'Copied ✓'));
-    $('#rvd-md').addEventListener('click', (e) => copyToClip(mdExport(currentRoots()), e.currentTarget, 'Copied ✓'));
-    $('#rvd-json').addEventListener('click', () => downloadJSON());
+    // Sort — a custom (non-native) themed dropdown.
+    const sortDD = buildDropdown({
+      small: true, value: sort,
+      items: [{ value: 'new', label: 'Newest first' }, { value: 'old', label: 'Oldest first' }, { value: 'page', label: 'Page A–Z' }],
+      onSelect: (v) => { sort = v; render(); },
+    });
+    $('#rvd-sort-mount').appendChild(sortDD.el);
+    // Copy — ONE dropdown consolidating Copy prompts / Copy MD / Download JSON.
+    let copyDD;
+    const flashCopy = () => { copyDD.setLabel('Copied ✓'); setTimeout(() => copyDD.setLabel('Copy'), 1400); };
+    copyDD = buildDropdown({
+      small: true, fixedLabel: 'Copy', menuAlign: 'right',
+      items: [
+        { label: 'Copy prompts', onSelect: () => { copyToClip(promptsText(currentRoots()), null); flashCopy(); } },
+        { label: 'Copy MD', onSelect: () => { copyToClip(mdExport(currentRoots()), null); flashCopy(); } },
+        { label: 'Download JSON', onSelect: () => downloadJSON() },
+      ],
+    });
+    $('#rvd-copy-mount').appendChild(copyDD.el);
 
     // ---- bulk actions on the selected comments ----
     $('#rvd-bulk').addEventListener('click', async (e) => {

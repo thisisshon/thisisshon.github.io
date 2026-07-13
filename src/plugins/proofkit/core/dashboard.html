@@ -68,15 +68,9 @@
         <div id="rvd-view-dash">
           <div class="rvd-toolbar" id="rvd-toolbar">
             <input id="rvd-search" class="rvd-search" type="search" placeholder="Search comments, pages, reviewers…" autocomplete="off" spellcheck="false" />
-            <select id="rvd-sort" class="rvd-sort" aria-label="Sort">
-              <option value="new">Newest first</option>
-              <option value="old">Oldest first</option>
-              <option value="page">Page A–Z</option>
-            </select>
+            <div id="rvd-sort-mount"></div>
             <span class="rvd-toolbar-sp"></span>
-            <button id="rvd-copyall" class="rvd-tbtn" type="button" title="Copy every AI change-prompt in view, stacked">Copy prompts</button>
-            <button id="rvd-md" class="rvd-tbtn" type="button" title="Copy the changes in view as Markdown">Copy MD</button>
-            <button id="rvd-json" class="rvd-tbtn" type="button" title="Download all comments as JSON">JSON</button>
+            <div id="rvd-copy-mount"></div>
           </div>
           <div class="rvd-tabs" id="rvd-tabs" role="tablist">
             <button class="rvd-tab is-active" data-tab="all">All</button>

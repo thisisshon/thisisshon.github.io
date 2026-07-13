@@ -6,6 +6,20 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.11.0 — 2026-07-13 — custom themed dropdowns + consolidated Copy + login "Authenticating" shimmer
+
+- **Custom, non-native dropdowns.** New `.pk-dropdown` component (`design/components.css`) +
+  `buildDropdown()` (`config.js`) — a fully themed dropdown (sharp corners, spaced items, red-accent
+  selection, keyboard nav + click-away) that replaces native `<select>` menus so the open list matches
+  the tool instead of the OS chrome. Now used for the login **Team** field, the dashboard **Sort**, and
+  the new Copy menu.
+- **Copy consolidated to one dropdown.** The three toolbar buttons (Copy prompts / Copy MD / JSON) are now
+  a single **Copy** dropdown → Copy prompts · Copy MD · Download JSON, with a brief "Copied ✓" flash.
+- **Login CTA "Authenticating" + subtle shimmer.** During sign-in the button reads **Authenticating** with
+  a very subtle "securing" shimmer sweep (stays vivid, not dimmed). Both dashboards' logins.
+- The shared login card's red glow moved into its own clipped layer so custom dropdown menus escape it
+  un-clipped (and fields no longer trap the menu in a stacking context).
+
 ## 2.10.0 — 2026-07-13 — unified "Panel Login" for all users
 
 - **One shared login for both dashboards.** New `.pk-login` component (`design/components.css`) +
