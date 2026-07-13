@@ -1,0 +1,29 @@
+---
+/**
+ * /teamdash - route shim for Proofkit (per-team dashboard).
+ *
+ * Like /reviewdash, Proofkit's team dashboard is a self-themed, full-bleed app, so
+ * this route renders its OWN minimal HTML shell instead of the host BaseLayout — it
+ * needs nothing from the host layout but the document. All logic lives in the package
+ * (src/plugins/proofkit/). A team signs in with its team key; the Worker returns only
+ * that team's comments (server-side isolation) + notifications. One route, every team.
+ * Gated on PROOFKIT_ENABLED; when off it renders a bare noindex stub.
+ * See src/plugins/proofkit/README.md.
+ */
+import ProofkitTeamDashboard from '../plugins/proofkit/TeamDashboard.astro';
+import { PROOFKIT_ENABLED, teamDashSeo } from '../plugins/proofkit/config';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{PROOFKIT_ENABLED ? teamDashSeo.title : 'Not Found'}</title>
+    <style>html,body{margin:0;background:#141414}</style>
+  </head>
+  <body>
+    {PROOFKIT_ENABLED && <ProofkitTeamDashboard />}
+  </body>
+</html>

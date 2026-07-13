@@ -30,15 +30,15 @@ export const WORKER_URL: string = import.meta.env.PUBLIC_REVIEW_WORKER_URL || ''
  * as a SHA-256 hash so the plaintext password never ships in the client bundle;
  * test an entry with `checkReviewPassword()`. Set to '' to accept anything.
  *
- * Current value = SHA-256("shriramreview").  (Regenerate with:
+ * Current value = SHA-256("website").  (Regenerate with:
  *   echo -n 'yourpassword' | shasum -a 256)
  *
  * SECURITY: on a static (no-Worker) site this gate is still client-side - it keeps
  * unauthorized people out in practice, but a determined user can bypass client JS.
  * For a true server-side secret, deploy the Worker and `wrangler secret put ADMIN_PASS`
- * (same password); the Worker then enforces it and this value is unused.
+ * (same password 'website'); the Worker then enforces it and this value is unused.
  */
-export const REVIEW_PASSWORD_SHA256 = 'ca4b109dda34bcd2a502f9d867adf0ff103ee39d411d8aa3c7380ebc70ad8d2f';
+export const REVIEW_PASSWORD_SHA256 = '747a8f398395dde8e524d9f983784bd8441c5cfe4307b5a079be5412ee65c314';
 
 /** SHA-256 hex digest of a string (Web Crypto - available in browsers + Workers). */
 export async function sha256Hex(s: string): Promise<string> {
@@ -54,6 +54,15 @@ export async function checkReviewPassword(input: string): Promise<boolean> {
 
 /** Reviewer teams offered in the comment composer and the dashboard filters. */
 export const TEAMS = ['Product', 'SEO', 'Marketing', 'Content'] as const;
+
+/**
+ * The team label that maps to ADMIN. Shown in the /teamdash login dropdown (in
+ * addition to TEAMS); picking it and entering the admin password ('website') signs
+ * in as admin and lands on the admin dashboard (/reviewdash). It is deliberately NOT
+ * in TEAMS, so it never appears in the on-page comment composer or the team filters —
+ * it is a login identity only. Its "key" is the admin password (ADMIN_PASS).
+ */
+export const ADMIN_TEAM = 'Design' as const;
 
 /** Per-team chip colours as [background, text]. Keys must match TEAMS. */
 export const TEAM_COLORS: Record<string, [string, string]> = {
@@ -157,10 +166,23 @@ export const loginSeo: SEO = {
   noindex: true,
 };
 
-/** SEO for the dashboard route (/reviewdash) — noindex. */
+/** SEO for the admin dashboard route (/reviewdash) — noindex. */
 export const dashSeo: SEO = {
   title: 'Content Review Dashboard',
   description: 'Internal content-review dashboard.',
   path: '/reviewdash',
+  noindex: true,
+};
+
+/**
+ * SEO for the per-team dashboard route (/teamdash) — noindex. A team signs in with
+ * its own team key; the Worker returns only that team's comments (server-side
+ * isolation) plus that team's notifications. One route serves every team — the team
+ * is identified by the login key, never by the URL.
+ */
+export const teamDashSeo: SEO = {
+  title: 'Team Review Dashboard',
+  description: 'Your team’s content-review status.',
+  path: '/teamdash',
   noindex: true,
 };

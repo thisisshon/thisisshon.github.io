@@ -56,9 +56,10 @@ import { themeVars } from './config';
 
     <div class="rvd-shell">
       <aside class="rvd-side">
-        <button class="rvd-nav is-active" data-view="dash">Dashboard</button>
-        <button class="rvd-nav" data-view="log">Master Log</button>
-        <button class="rvd-nav" data-view="entries">All Entries</button>
+        <button class="rvd-nav is-active" data-view="dash">Overview</button>
+        <button class="rvd-nav" data-view="deploy">Deploy<span class="rvd-navbadge" id="rvd-badge-deploy" hidden>0</span></button>
+        <button class="rvd-nav" data-view="notifs">Notifications<span class="rvd-navbadge rvd-navbadge-alert" id="rvd-badge-notifs" hidden>0</span></button>
+        <button class="rvd-nav" data-view="entries">Master Log</button>
       </aside>
 
       <div class="rvd-content">
@@ -79,15 +80,22 @@ import { themeVars } from './config';
           <div class="rvd-tabs" id="rvd-tabs" role="tablist">
             <button class="rvd-tab is-active" data-tab="all">All</button>
             <button class="rvd-tab" data-tab="page">By Page</button>
-            <button class="rvd-tab" data-tab="open">Unresolved</button>
-            <button class="rvd-tab" data-tab="resolved">Resolved</button>
+            <button class="rvd-tab" data-tab="open">Open</button>
+            <button class="rvd-tab" data-tab="bucket">In Bucket</button>
+            <button class="rvd-tab" data-tab="deployed">Deployed</button>
             <button class="rvd-tab" data-tab="closed">Closed</button>
           </div>
           <div class="rvd-teamchips" id="rvd-teamchips"></div>
           <div id="rvd-list"></div>
         </div>
 
-        <!-- All Entries: tabular log (one row per change) with AI prompts -->
+        <!-- Deploy Bucket: completed/closed comments awaiting publish -->
+        <div id="rvd-view-deploy" hidden></div>
+
+        <!-- Notifications: fired on Deploy, newest first -->
+        <div id="rvd-view-notifs" hidden></div>
+
+        <!-- Master Log: tabular log (one row per change) + per-entry detail drill-in -->
         <div id="rvd-view-entries" hidden>
           <div id="rvd-entries"></div>
         </div>
@@ -99,8 +107,8 @@ import { themeVars } from './config';
     <!-- bulk-select action bar (shows when ≥1 comment is selected) -->
     <div class="rvd-bulk" id="rvd-bulk" hidden>
       <span class="rvd-bulk-n" id="rvd-bulk-n">0 selected</span>
-      <button class="rvd-bulk-a" type="button" data-act="resolve">Resolve</button>
-      <button class="rvd-bulk-a" type="button" data-act="unresolve">Unresolve</button>
+      <button class="rvd-bulk-a" type="button" data-act="complete">Mark Complete</button>
+      <button class="rvd-bulk-a" type="button" data-act="reopen">Reopen</button>
       <button class="rvd-bulk-a" type="button" data-act="close">Close</button>
       <button class="rvd-bulk-a" type="button" data-act="copy">Copy prompts</button>
       <button class="rvd-bulk-a danger" type="button" data-act="delete">Delete</button>
@@ -116,6 +124,11 @@ import { themeVars } from './config';
   /* ===== ProofKit theme — colour tokens injected from config (THEME); font here ===== */
   .rvd, .rvd-login, .rvd-prompt{
     --pk-font:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    /* deploy-bucket accent (not part of the injected theme tokens): a distinct
+       "ready to ship" blue, kept clearly apart from open/amber + done/green. */
+    --pk-blue:#3b82f6;--pk-blue-bg:#15243d;--pk-blue-ink:#8fbaf8;
+    /* Deploy CTA: strong forest green that reads as "ship it" against the near-black canvas. */
+    --pk-deploy:#1a7f37;--pk-deploy-hover:#14682c;
   }
   /* page floor goes dark on the dashboard route only (this component ships only here).
      Self-sufficient reset so the route needs no host layout / global.css. */
@@ -221,6 +234,12 @@ import { themeVars } from './config';
   .rvd .rvd-nav::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:2px;background:transparent;transition:background .15s}
   .rvd .rvd-nav.is-active{color:var(--pk-ink);background:#202020}
   .rvd .rvd-nav.is-active::before{background:var(--pk-red)}
+  /* live count badge on Deploy / Notifications nav items */
+  .rvd .rvd-navbadge{display:inline-flex;align-items:center;justify-content:center;margin-left:8px;
+    min-width:18px;height:18px;padding:0 5px;border-radius:9999px;background:var(--pk-blue);color:#fff;
+    font:700 10px/1 var(--pk-font);letter-spacing:.02em;vertical-align:middle;font-variant-numeric:tabular-nums}
+  .rvd .rvd-navbadge[hidden]{display:none}
+  .rvd .rvd-navbadge-alert{background:var(--pk-red)}
   .rvd .rvd-content{flex:1;min-width:0}
 
   /* ---- toolbar: search + sort + export/copy actions ---- */
@@ -279,18 +298,31 @@ import { themeVars } from './config';
   .rvd .rvd-gh a{color:var(--pk-ink);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
   .rvd .rvd-gh span{font-size:12px;font-weight:500;color:var(--pk-muted);letter-spacing:0;text-transform:none}
 
-  /* ---- comment card ---- */
-  .rvd .rvd-item{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:0;
+  /* ---- comment card (scalable: HEADER / BODY / CALLOUT / FOOTER) ---- */
+  .rvd .rvd-item{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:0;max-width:100%;
     background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
-    transition:border-color .15s,background .15s}
-  .rvd .rvd-line{display:flex;align-items:flex-start;gap:14px}
-  .rvd .rvd-line .rvd-chip{flex:none;margin-top:1px}
-  .rvd .rvd-headline{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-  .rvd .rvd-comment{font-size:15px;font-weight:500;line-height:1.5;color:var(--pk-ink);
-    display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
-  .rvd .rvd-comment .rvd-count{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
-  .rvd .rvd-snip{font-size:12px;color:var(--pk-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .rvd .rvd-acts{flex:none;display:flex;align-items:center;gap:8px}
+    transition:border-color .15s,background .15s;overflow-wrap:anywhere}
+  /* HEADER: checkbox · status · team · page · time · actions */
+  .rvd .rvd-card-head{display:flex;align-items:center;flex-wrap:wrap;gap:10px 10px}
+  .rvd .rvd-card-head .rvd-sel{margin-top:0}
+  .rvd .rvd-card-head .rvd-slug{margin-left:2px}
+  .rvd .rvd-card-head .rvd-acts{margin-left:auto}
+  .rvd .rvd-acts{flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  /* BODY: the comment, clamped to ~4 lines until expanded */
+  .rvd .rvd-card-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .rvd .rvd-comment-text{font-size:15px;font-weight:500;line-height:1.5;color:var(--pk-ink);
+    white-space:pre-wrap;overflow-wrap:anywhere}
+  .rvd .rvd-comment-text.rvd-clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
+    overflow:hidden;white-space:normal}
+  .rvd .rvd-morebtn{align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;
+    font:700 10px/1.4 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+  .rvd .rvd-morebtn[hidden]{display:none}
+  .rvd .rvd-snip{font-size:12px;color:var(--pk-muted);overflow-wrap:anywhere}
+  /* FOOTER: replies collapsed behind an "N replies" toggle */
+  .rvd .rvd-repliestoggle{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;
+    font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+  .rvd .rvd-repliestoggle .rvd-caret{transition:transform .15s}
+  .rvd .rvd-repliestoggle.is-open .rvd-caret{transform:rotate(90deg)}
 
   /* row action buttons */
   .rvd .rvd-openpin{height:32px;padding:0 14px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;
@@ -305,8 +337,15 @@ import { themeVars } from './config';
   /* status + team chips (badge pills) */
   .rvd .rvd-chip{padding:4px 11px;border-radius:9999px;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
   .rvd .rvd-chip.open{background:#3a2a12;color:var(--pk-amber)}
-  .rvd .rvd-chip.resolved{background:#16281c;color:var(--pk-green)}
+  /* "in bucket" = completed/closed but not yet deployed → the ship-ready blue tone */
+  .rvd .rvd-chip.bucket{background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
+  .rvd .rvd-chip.resolved,.rvd .rvd-chip.deployed{background:#16281c;color:var(--pk-green)}
   .rvd .rvd-chip.closed{background:#2a2a2a;color:var(--pk-muted)}
+
+  /* content-copy-match validation flag on a card (only when method=content-copy-match) */
+  .rvd .rvd-valid{display:inline-flex;align-items:center;gap:6px;font:600 12px/1.4 var(--pk-font);cursor:help}
+  .rvd .rvd-valid.ok{color:var(--pk-green)}
+  .rvd .rvd-valid.warn{color:var(--pk-amber)}
   .rvd .rvd-team-chip{padding:4px 10px;border-radius:9999px;font-weight:700;font-size:10px;
     text-transform:uppercase;letter-spacing:.08em}
 
@@ -314,19 +353,47 @@ import { themeVars } from './config';
   .rvd .rvd-change{padding:12px 14px;border-radius:0;background:#241a10;border:1px solid #4a3417;border-left:2px solid var(--pk-amber)}
   .rvd .rvd-change span{display:block;font-size:10px;font-weight:700;text-transform:uppercase;
     color:var(--pk-amber);letter-spacing:.12em;margin-bottom:4px}
-  .rvd .rvd-change div{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--pk-ink)}
+  .rvd .rvd-change div{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--pk-ink);
+    overflow-wrap:anywhere;max-height:140px;overflow-y:auto}
 
   /* meta + replies */
   .rvd .rvd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
   .rvd .rvd-by{font-size:12px;font-weight:600;color:var(--pk-ink)}
   .rvd .rvd-time{font-size:12px;color:var(--pk-muted)}
   .rvd .rvd-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
-  .rvd .rvd-replies{display:flex;flex-direction:column;gap:12px;padding-left:16px;border-left:2px solid var(--pk-hair)}
-  .rvd .rvd-reply{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
-  .rvd .rvd-rtxt{font-size:14px;line-height:1.5;color:var(--pk-ink)}
+  .rvd .rvd-replies{display:flex;flex-direction:column;gap:12px;margin-top:4px;padding-left:16px;border-left:2px solid var(--pk-hair)}
+  .rvd .rvd-replies[hidden]{display:none}
+  .rvd .rvd-reply{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}
+  .rvd .rvd-rtxt{font-size:14px;line-height:1.5;color:var(--pk-ink);overflow-wrap:anywhere}
   .rvd .rvd-rmeta{font-size:12px;color:var(--pk-muted)}
 
   .rvd .rvd-empty{margin:64px 0;text-align:center;color:var(--pk-muted);font-size:14px;letter-spacing:.02em}
+
+  /* ---- Deploy Bucket view ---- */
+  .rvd #rvd-view-deploy .rvd-deployhead,.rvd #rvd-view-notifs .rvd-notifhead{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .rvd .rvd-deployhead h2,.rvd .rvd-notifhead h2{margin:0 0 6px;font-size:14px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+  .rvd .rvd-deploy-explain{margin:0;max-width:520px;font-size:13px;line-height:1.5;color:var(--pk-body)}
+  /* the prominent Deploy CTA: strong dark green (ship it) */
+  .rvd .rvd-deploy-btn{flex:none;height:44px;padding:0 26px;border:1px solid var(--pk-deploy);border-radius:0;background:var(--pk-deploy);
+    color:#fff;font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+    display:inline-flex;align-items:center;transition:background .15s,border-color .15s,opacity .15s}
+  .rvd .rvd-deploy-btn:disabled{opacity:.45;cursor:default}
+  .rvd .rvd-deploy-banner{margin-bottom:20px;padding:14px 16px;border:1px solid var(--pk-green);border-left:2px solid var(--pk-green);
+    background:#16281c;color:var(--pk-green);font:600 13px/1.4 var(--pk-font)}
+
+  /* ---- Notifications view ---- */
+  .rvd .rvd-notiflist{display:flex;flex-direction:column;gap:8px}
+  .rvd .rvd-notif{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--pk-card);
+    border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);transition:border-color .15s,background .15s}
+  .rvd .rvd-notif.is-unread{border-left-color:var(--pk-red);background:var(--pk-elev)}
+  .rvd .rvd-notif-dot{flex:none;width:8px;height:8px;margin-top:6px;border-radius:9999px;background:transparent}
+  .rvd .rvd-notif.is-unread .rvd-notif-dot{background:var(--pk-red)}
+  .rvd .rvd-notif-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+  .rvd .rvd-notif-summary{font-size:14px;font-weight:500;line-height:1.5;color:var(--pk-ink);overflow-wrap:anywhere}
+  .rvd .rvd-notif-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .rvd .rvd-notif-toggle{flex:none;margin-top:2px}
 
   /* All Entries head + prompt trigger */
   .rvd .rvd-entrieshead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
@@ -347,6 +414,32 @@ import { themeVars } from './config';
   .rvd .rvd-back{margin-bottom:16px;background:none;border:none;cursor:pointer;padding:0;
     font:700 11px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
   .rvd .rvd-detailhead{font-size:13px;color:var(--pk-muted);margin-bottom:20px}
+
+  /* ---- Master Log entry detail (drill-in) ---- */
+  .rvd .rvd-detail{display:flex;flex-direction:column;gap:20px;max-width:760px;
+    background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:24px}
+  .rvd .rvd-detail-title{margin:0;font-size:18px;font-weight:600;line-height:1.4;color:var(--pk-ink);overflow-wrap:anywhere}
+  .rvd .rvd-detail-chips{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .rvd .rvd-fields{display:flex;flex-direction:column;gap:14px}
+  .rvd .rvd-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .rvd .rvd-field-k{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd .rvd-field-v{font-size:14px;line-height:1.55;color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
+  .rvd .rvd-field-v a{color:var(--pk-body);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
+  .rvd .rvd-field-prompt{white-space:pre-wrap;background:var(--pk-input);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
+    padding:14px;font:400 12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:#e8e8e8;overflow-wrap:anywhere;
+    max-height:280px;overflow-y:auto}
+  /* status-history timeline (oldest → newest) */
+  .rvd .rvd-timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+  .rvd .rvd-tl{position:relative;padding:0 0 18px 26px}
+  .rvd .rvd-tl:last-child{padding-bottom:0}
+  .rvd .rvd-tl::before{content:"";position:absolute;left:5px;top:14px;bottom:-4px;width:2px;background:var(--pk-hair)}
+  .rvd .rvd-tl:last-child::before{display:none}
+  .rvd .rvd-tl::after{content:"";position:absolute;left:0;top:3px;width:12px;height:12px;border-radius:9999px;
+    background:var(--pk-card);border:2px solid var(--pk-muted)}
+  .rvd .rvd-tl.is-current::after{border-color:var(--pk-red);background:var(--pk-red)}
+  .rvd .rvd-tl-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .rvd .rvd-tl-event{font:700 11px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-ink)}
+  .rvd .rvd-tl-time{font-size:12px;color:var(--pk-muted)}
 
   /* ===== overlays (appended to <body>, outside .rvd) ===== */
   .rvd-login,.rvd-prompt{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;
@@ -392,8 +485,7 @@ import { themeVars } from './config';
   }
   @media (max-width:560px){
     .rvd #rvd-counts{grid-template-columns:1fr}
-    .rvd .rvd-line{flex-wrap:wrap}
-    .rvd .rvd-acts{width:100%}
+    .rvd .rvd-card-head .rvd-acts{width:100%;margin-left:0}
   }
 
   /* ===== hover (desktop only, gated) ===== */
@@ -405,6 +497,8 @@ import { themeVars } from './config';
     .rvd .rvd-tchip:hover{transform:translateY(-1px)}
     .rvd .rvd-item:hover{border-left-color:var(--pk-red);background:var(--pk-elev)}
     .rvd .rvd-openpin:hover,.rvd .rvd-prompt-btn:hover,.rvd .rvd-tbtn:hover,.rvd .rvd-gh-copy:hover,.rvd .rvd-bulk-a:hover{border-color:var(--pk-red);color:var(--pk-red)}
+    .rvd .rvd-deploy-btn:not(:disabled):hover{background:var(--pk-deploy-hover);border-color:var(--pk-deploy-hover)}
+    .rvd .rvd-notif:hover{border-left-color:var(--pk-red)}
     .rvd .rvd-bulk-a.danger:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
     .rvd .rvd-bulk-x:hover{color:var(--pk-ink)}
     .rvd .rvd-a:hover{border-color:var(--pk-ink);color:var(--pk-ink)}
@@ -412,6 +506,7 @@ import { themeVars } from './config';
     .rvd .rvd-slug:hover{color:var(--pk-red);border-color:var(--pk-red)}
     .rvd .rvd-logrow:hover{background:var(--pk-elev)}
     .rvd .rvd-back:hover{color:var(--pk-red)}
+    .rvd .rvd-morebtn:hover,.rvd .rvd-repliestoggle:hover{color:var(--pk-red)}
     .rvd-login-btn:hover,.rvd-prompt-copy:hover{background:var(--pk-red-2)}
     .rvd-prompt-x:hover{color:var(--pk-ink)}
   }
@@ -449,11 +544,75 @@ import { themeVars } from './config';
       out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
       return out;
     }
-    function localResolve(rec, status) {
+    const NOTIF_KEY = 'rvc-notifications'; // local mirror of the Worker's notifications store
+    const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'n_' + Date.now() + '_' + Math.random().toString(16).slice(2));
+    // Set the working status locally + mirror the Worker's completedAt/closedAt/validation stamping.
+    function localStatus(rec, status) {
       const key = 'rvc:' + rec.page.path;
       const arr = JSON.parse(localStorage.getItem(key) || '[]');
-      const r = arr.find((x) => x.id === rec.id); if (r) r.status = status;
+      const r = arr.find((x) => x.id === rec.id);
+      const now = new Date().toISOString();
+      if (!r) return { ...rec, status };
+      r.status = status;
+      if (status === 'completed') {
+        r.completedAt = now;
+        r.validation = { ok: true, method: 'manual', detail: 'Local mode — not auto-verified.', checkedAt: now };
+      } else if (status === 'closed') {
+        r.closedAt = now;
+      } else {
+        r.validation = null; // reopened
+      }
       localStorage.setItem(key, JSON.stringify(arr));
+      return { ...r };
+    }
+    // A local notification for one just-published root comment (shape mirrors the Worker's makeNotif).
+    function localMakeNotif(r, now) {
+      const done = r.publishedStatus === 'closed' ? 'closed' : 'marked Done';
+      const where = (r.page && r.page.title) || (r.page && r.page.path) || 'a page';
+      return {
+        id: uid(), createdAt: now, team: r.team || '', commentId: r.id,
+        path: (r.page && r.page.path) || '/', pageName: where, publishedStatus: r.publishedStatus,
+        summary: 'Your comment on ' + where + ' was ' + done + '.', readTeam: false, readAdmin: false,
+      };
+    }
+    // Publish the whole local bucket: every completed/closed record not already live.
+    function localDeploy() {
+      const now = new Date().toISOString();
+      const created = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith('rvc:')) continue;
+        let arr; try { arr = JSON.parse(localStorage.getItem(k) || '[]'); } catch { continue; }
+        let dirty = false;
+        for (const r of arr) {
+          let st = r.status || 'open'; if (st === 'resolved') st = 'completed';
+          const ready = st === 'completed' || st === 'closed';
+          const alreadyLive = r.published && r.publishedStatus === st;
+          if (ready && !alreadyLive) {
+            r.status = st; r.published = true; r.publishedStatus = st; r.publishedAt = now; dirty = true;
+            if (!r.parentId) created.push(localMakeNotif(r, now));
+          }
+        }
+        if (dirty) localStorage.setItem(k, JSON.stringify(arr));
+      }
+      if (created.length) {
+        let ex = []; try { ex = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch {}
+        ex.push(...created);
+        localStorage.setItem(NOTIF_KEY, JSON.stringify(ex));
+      }
+      return { deployed: created.length, notifications: created };
+    }
+    function localNotifs() {
+      let arr = []; try { arr = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch {}
+      arr.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      return arr;
+    }
+    function localMarkRead(ids, read = true) {
+      let arr = []; try { arr = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch { return { ok: true, updated: 0 }; }
+      let updated = 0;
+      for (const n of arr) { if (ids.includes(n.id) && n.readAdmin !== read) { n.readAdmin = read; updated++; } }
+      if (updated) localStorage.setItem(NOTIF_KEY, JSON.stringify(arr));
+      return { ok: true, updated };
     }
     function localDelete(rec) {
       const key = 'rvc:' + rec.page.path;
@@ -470,19 +629,34 @@ import { themeVars } from './config';
     const store = LOCAL
       ? {
           all: async () => { await localGuard(); return localAll(); },
-          resolve: async (rec, status) => { await localGuard(); localResolve(rec, status); return { ...rec, status }; },
+          // working status: open | completed | closed (stamps validation on completed).
+          status: async (rec, status) => { await localGuard(); return localStatus(rec, status); },
+          // back-compat: route the old resolve() through status ('resolved' ⇒ 'completed').
+          resolve: async (rec, status) => { await localGuard(); return localStatus(rec, status === 'resolved' ? 'completed' : status); },
+          deploy: async () => { await localGuard(); return localDeploy(); },
+          notifications: async () => { await localGuard(); return localNotifs(); },
+          markRead: async (ids, read = true) => { await localGuard(); return localMarkRead(ids, read); },
           del: async (rec) => { await localGuard(); localDelete(rec); return { ok: true }; },
         }
       : {
           all: () => apiFetch('/comments'),
-          resolve: (rec, status) => apiFetch('/resolve', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path, status }) }),
+          // the UI drives /status; the Worker keeps /resolve only as a back-compat alias.
+          status: (rec, status) => apiFetch('/status', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path, status }) }),
+          resolve: (rec, status) => apiFetch('/status', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path, status: status === 'resolved' ? 'completed' : status }) }),
+          deploy: () => apiFetch('/deploy', { method: 'POST', body: '{}' }),
+          notifications: () => apiFetch('/notifications'),
+          markRead: (ids, read = true) => apiFetch('/notifications/read', { method: 'POST', body: JSON.stringify({ ids, read }) }),
           del: (rec) => apiFetch('/delete', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path }) }),
         };
 
     let loginEl = null, refreshTimer = null;
 
     async function loadData() {
-      all = await store.all(); counts(); render();
+      all = await store.all();
+      // Notifications drive the nav badge + the Notifications view; a failure here
+      // must never break the dashboard, so fall back to the last-known list.
+      try { notifs = await store.notifications(); } catch (e) { notifs = notifs || []; }
+      counts(); render();
       // Mark "seen" once per dashboard open, so the NEW badges clear on the next visit.
       if (!seenMarked) { seenMarked = true; try { localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch (e) {} }
     }
@@ -561,14 +735,45 @@ import { themeVars } from './config';
       const s = teamStyle(team);
       return `<span class="rvd-team-chip" style="background:${s.bg};color:${s.fg};border:1px solid ${s.bd}">${esc(team)}</span>`;
     };
-    // Ticket lifecycle: open (=Unresolved, default) ⇄ resolved → closed (terminal).
-    const isUnresolved = (c) => c.status !== 'resolved' && c.status !== 'closed';
-    const statusChip = (c) => c.status === 'resolved'
-      ? `<span class="rvd-chip resolved">Resolved</span>`
-      : c.status === 'closed'
-        ? `<span class="rvd-chip closed">Closed</span>`
-        : `<span class="rvd-chip open">Unresolved</span>`;
-    let all = [], tab = 'all', teamFilter = '', logSession = null, view = 'dash', search = '', sort = 'new';
+    // ---- lifecycle (deploy gate) ----
+    // Working status the admin controls (legacy 'resolved' ⇒ 'completed').
+    const workingStatus = (c) => { let s = (c && c.status) || 'open'; return s === 'resolved' ? 'completed' : s; };
+    // In the DEPLOY BUCKET: completed/closed but not yet published to teams (matches the
+    // Worker's deploy readiness — published AND publishedStatus===status means it's live).
+    const isBucketed = (c) => {
+      const s = workingStatus(c);
+      return (s === 'completed' || s === 'closed') && !(c.published && c.publishedStatus === s);
+    };
+    const isOpen = (c) => workingStatus(c) === 'open';
+    const isDeployed = (c) => !!c.published && c.publishedStatus === 'completed';
+    const isClosedLive = (c) => !!c.published && c.publishedStatus === 'closed';
+    // Four display states from status + published + publishedStatus.
+    const displayState = (c) => {
+      if (isOpen(c)) return 'open';
+      if (isBucketed(c)) return 'bucket';
+      return c.publishedStatus === 'closed' ? 'closed' : 'deployed';
+    };
+    const STATUS_META = {
+      open: ['open', 'Open'],
+      bucket: ['bucket', 'In Bucket'],
+      deployed: ['deployed', 'Deployed'],
+      closed: ['closed', 'Closed'],
+    };
+    const statusLabel = (c) => STATUS_META[displayState(c)][1];
+    const statusChip = (c) => {
+      const [cls, label] = STATUS_META[displayState(c)];
+      return `<span class="rvd-chip ${cls}">${label}</span>`;
+    };
+    // Card validation flag — only for content-copy-match (manual completions show nothing).
+    const validLine = (c) => {
+      const v = c && c.validation;
+      if (!v || v.method !== 'content-copy-match') return '';
+      const t = esc(v.detail || '');
+      return v.ok
+        ? `<div class="rvd-valid ok" title="${t}">✓ Verified on live page</div>`
+        : `<div class="rvd-valid warn" title="${t}">⚠ Not verified on live page yet</div>`;
+    };
+    let all = [], notifs = [], tab = 'all', teamFilter = '', entryDetail = null, view = 'dash', search = '', sort = 'new', deployResult = '';
     const sel = new Set(); // bulk-selected root ids
 
     // ---- unread: comments arrived since the last dashboard visit ----
@@ -595,9 +800,13 @@ import { themeVars } from './config';
     // the list render and the toolbar's copy/export actions ("what's in view").
     function currentRoots() {
       let rs = roots();
-      if (tab === 'open') rs = rs.filter(isUnresolved);
-      if (tab === 'resolved') rs = rs.filter((c) => c.status === 'resolved');
-      if (tab === 'closed') rs = rs.filter((c) => c.status === 'closed');
+      // "All" = the active worklist only: open + in-bucket. Anything published (deployed
+      // or closed-live) drops out here; it still shows under its own tab + in Master Log.
+      if (tab === 'all') rs = rs.filter((c) => isOpen(c) || isBucketed(c));
+      if (tab === 'open') rs = rs.filter(isOpen);
+      if (tab === 'bucket') rs = rs.filter(isBucketed);
+      if (tab === 'deployed') rs = rs.filter(isDeployed);
+      if (tab === 'closed') rs = rs.filter(isClosedLive);
       if (teamFilter) rs = rs.filter((c) => c.team === teamFilter);
       return sortRoots(rs.filter(matchesSearch));
     }
@@ -624,7 +833,7 @@ import { themeVars } from './config';
       const lines = ['# Content review — ' + list.length + ' change' + (list.length === 1 ? '' : 's'), ''];
       list.forEach((c) => {
         const a = c.anchor || {};
-        lines.push(`- **${c.page.path}** — ${c.team || '—'} · ${c.status === 'resolved' ? 'Resolved' : 'Open'}`);
+        lines.push(`- **${c.page.path}** — ${c.team || '—'} · ${statusLabel(c)}`);
         lines.push(`  - ${c.comment}${a.snippet ? ` _(on “${a.snippet}”)_` : ''}`);
         if (c.changeTo) lines.push(`  - Change to: “${c.changeTo}”`);
       });
@@ -635,30 +844,6 @@ import { themeVars } from './config';
       const url = URL.createObjectURL(blob);
       const aEl = document.createElement('a'); aEl.href = url; aEl.download = 'proofkit-comments.json';
       document.body.appendChild(aEl); aEl.click(); aEl.remove(); URL.revokeObjectURL(url);
-    }
-
-    // group every comment/reply by its review session (one sitting)
-    function sessions() {
-      const map = new Map();
-      all.forEach((c) => {
-        const sid = c.sessionId || '(legacy)';
-        if (!map.has(sid)) map.set(sid, []);
-        map.get(sid).push(c);
-      });
-      return [...map.entries()].map(([sid, items]) => {
-        const times = items.map((i) => i.createdAt).sort();
-        const roots = items.filter((i) => !i.parentId);
-        return {
-          sid, items,
-          start: times[0], end: times[times.length - 1],
-          names: [...new Set(items.map((i) => i.name).filter(Boolean))],
-          teams: [...new Set(items.map((i) => i.team).filter(Boolean))],
-          pages: [...new Set(items.map((i) => i.page.path))],
-          changes: roots.length,
-          total: items.length,
-          open: roots.filter(isUnresolved).length,
-        };
-      }).sort((a, b) => (a.start < b.start ? 1 : -1)); // newest session first
     }
 
     function buildTeamChips() {
@@ -680,135 +865,191 @@ import { themeVars } from './config';
 
     function counts() {
       const rs = roots();
-      const open = rs.filter(isUnresolved).length;
+      const open = rs.filter(isOpen).length;
+      const bucket = rs.filter(isBucketed).length;
+      const deployed = rs.filter(isDeployed).length;
       const newN = rs.filter(isNew).length;
       $('#rvd-counts').innerHTML =
-        `<span class="rvd-count"><b>${open}</b> unresolved</span>` +
-        `<span class="rvd-count"><b>${rs.length}</b> changes</span>` +
-        `<span class="rvd-count"><b>${new Set(rs.map((c) => c.page.path)).size}</b> pages</span>` +
+        `<span class="rvd-count"><b>${open}</b> open</span>` +
+        `<span class="rvd-count"><b>${bucket}</b> in bucket</span>` +
+        `<span class="rvd-count"><b>${deployed}</b> deployed</span>` +
         (newN ? `<span class="rvd-count rvd-count-new"><b>${newN}</b> new</span>` : '');
+      updateBadges();
+    }
+    // Live counts on the Deploy + Notifications nav items.
+    function updateBadges() {
+      const bucket = roots().filter(isBucketed).length;
+      const unread = (notifs || []).filter((n) => n.readAdmin === false).length;
+      const bd = $('#rvd-badge-deploy'); if (bd) { bd.textContent = bucket; bd.hidden = !bucket; }
+      const nd = $('#rvd-badge-notifs'); if (nd) { nd.textContent = unread; nd.hidden = !unread; }
     }
 
+    // Scalable comment card — HEADER / BODY / CALLOUT / FOOTER. Shared by the
+    // Overview list and the Deploy bucket. Stays clean for 1 or 50 lines of comment,
+    // short or long Change-to copy, and 0 or many replies (see the F-section CSS).
     function card(root) {
       const a = root.anchor || {};
       const replies = repliesOf(root.id);
       const repliesHtml = replies.length
-        ? `<div class="rvd-replies">` + replies.map((r) =>
+        ? `<button class="rvd-repliestoggle" type="button" data-replies="${esc(root.id)}">` +
+            `<span class="rvd-caret">▸</span>${replies.length} repl${replies.length === 1 ? 'y' : 'ies'}</button>` +
+          `<div class="rvd-replies" hidden>` + replies.map((r) =>
             `<div class="rvd-reply">${teamChip(r.team)}<div class="rvd-rtxt">${esc(r.comment)}</div>` +
             (r.changeTo ? `<div class="rvd-change"><span>Change to</span><div>${esc(r.changeTo)}</div></div>` : '') +
             `<div class="rvd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
         : '';
-      const meta =
-        `<div class="rvd-meta">` +
-          teamChip(root.team) +
-          `<a class="rvd-slug" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(pageName(root.page.path))}</a>` +
-          `<span class="rvd-time">${esc(fmt(root.createdAt))}</span>` +
-        `</div>`;
       return (
         `<article class="rvd-item">` +
-          `<div class="rvd-line">` +
+          // HEADER
+          `<header class="rvd-card-head">` +
             `<input type="checkbox" class="rvd-sel" data-id="${esc(root.id)}"${sel.has(root.id) ? ' checked' : ''} aria-label="Select">` +
             (isNew(root) ? `<span class="rvd-chip rvd-new">New</span>` : '') +
             statusChip(root) +
-            `<div class="rvd-headline">` +
-              `<div class="rvd-comment">${esc(root.comment)}` +
-                (replies.length ? `<span class="rvd-count">${replies.length + 1} comments</span>` : '') + `</div>` +
-              (a.snippet ? `<div class="rvd-snip">on “${esc(a.snippet)}”</div>` : '') +
-            `</div>` +
+            teamChip(root.team) +
+            `<a class="rvd-slug" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(pageName(root.page.path))}</a>` +
+            `<span class="rvd-time">${esc(fmt(root.createdAt))}</span>` +
             `<div class="rvd-acts">` +
               `<a class="rvd-openpin" href="${esc(root.page.path)}?review=1#c=${esc(root.id)}" target="_blank" rel="noopener">Open Pin</a>` +
-              (root.status === 'closed'
-                ? ''
-                : (isUnresolved(root)
-                    ? `<button class="rvd-a" data-id="${esc(root.id)}" data-status="resolved">Resolve</button>`
-                    : `<button class="rvd-a" data-id="${esc(root.id)}" data-status="open">Unresolve</button>`) +
-                  `<button class="rvd-a" data-id="${esc(root.id)}" data-status="closed">Close</button>`) +
+              lifecycleActions(root) +
               `<button class="rvd-del delete" data-id="${esc(root.id)}">Delete</button>` +
             `</div>` +
+          `</header>` +
+          // BODY (comment, clamped until expanded)
+          `<div class="rvd-card-body">` +
+            `<div class="rvd-comment-text rvd-clamp">${esc(root.comment)}</div>` +
+            `<button class="rvd-morebtn" type="button" hidden>Show more</button>` +
+            (a.snippet ? `<div class="rvd-snip">on “${esc(a.snippet)}”</div>` : '') +
+            validLine(root) +
           `</div>` +
+          // CALLOUT (Change-to)
           (root.changeTo ? `<div class="rvd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
-          meta +
+          // FOOTER (replies)
           repliesHtml +
         `</article>`
       );
     }
 
-    function renderLog() {
-      const ss = sessions();
-      $('#rvd-empty').hidden = ss.length > 0;
-      $('#rvd-list').innerHTML = !ss.length ? '' :
-        `<div class="rvd-logwrap"><table class="rvd-log"><thead><tr>` +
-        `<th>When</th><th>Team</th><th>Changes</th><th>Comments</th><th>Pages</th><th>Open</th>` +
-        `</tr></thead><tbody>` +
-        ss.map((s) =>
-          `<tr class="rvd-logrow" data-sid="${esc(s.sid)}">` +
-            `<td>${esc(fmt(s.start))}</td>` +
-            `<td>${s.teams.map(teamChip).join('') || '—'}</td>` +
-            `<td class="num">${s.changes}</td>` +
-            `<td class="num">${s.total}</td>` +
-            `<td class="num">${s.pages.length}</td>` +
-            `<td class="num">${s.open}</td>` +
-          `</tr>`).join('') +
-        `</tbody></table></div>`;
-      $('#rvd-list').querySelectorAll('.rvd-logrow').forEach((tr) =>
-        tr.addEventListener('click', () => { logSession = tr.dataset.sid; render(); }));
+    // After a card render, reveal the comment "Show more" button only where the
+    // clamped text actually overflows (measure in the live, visible DOM).
+    function revealClamps(host) {
+      host.querySelectorAll('.rvd-comment-text.rvd-clamp').forEach((el) => {
+        const btn = el.parentElement.querySelector('.rvd-morebtn');
+        if (btn) btn.hidden = el.scrollHeight <= el.clientHeight + 2;
+      });
     }
 
-    function logItem(c) {
-      const a = c.anchor || {};
-      const isReply = !!c.parentId;
-      return `<article class="rvd-item">` +
-        `<div class="rvd-line">` +
-          (isReply ? `<span class="rvd-chip resolved">Reply</span>` : statusChip(c)) +
-          `<div class="rvd-headline"><div class="rvd-comment">${esc(c.comment)}</div>` +
-            (a.snippet ? `<div class="rvd-snip">on “${esc(a.snippet)}”</div>` : '') + `</div>` +
-          `<a class="rvd-openpin" href="${esc(c.page.path)}?review=1#c=${esc(c.parentId || c.id)}" target="_blank" rel="noopener">Open Pin</a>` +
-        `</div>` +
-        (c.changeTo ? `<div class="rvd-change"><span>Change to</span><div>${esc(c.changeTo)}</div></div>` : '') +
-        `<div class="rvd-meta">${teamChip(c.team)}` +
-          `<a class="rvd-slug" href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a>` +
-          `<span class="rvd-time">${esc(fmt(c.createdAt))}</span></div>` +
-      `</article>`;
+    // Status buttons per working state (section 1): open→Mark Complete; completed→Reopen
+    // (+ Re-verify when content-copy-match failed); Close on any non-closed; closed→Reopen.
+    function lifecycleActions(root) {
+      const id = esc(root.id);
+      const st = workingStatus(root);
+      const v = root.validation;
+      const reverify = (st === 'completed' && v && v.method === 'content-copy-match' && !v.ok)
+        ? `<button class="rvd-a" data-id="${id}" data-status="completed">Re-verify</button>` : '';
+      let btns;
+      if (st === 'open') btns = `<button class="rvd-a" data-id="${id}" data-status="completed">Mark Complete</button>`;
+      else if (st === 'completed') btns = reverify + `<button class="rvd-a" data-id="${id}" data-status="open">Reopen</button>`;
+      else btns = `<button class="rvd-a" data-id="${id}" data-status="open">Reopen</button>`; // closed
+      if (st !== 'closed') btns += `<button class="rvd-a" data-id="${id}" data-status="closed">Close</button>`;
+      return btns;
     }
 
-    function renderSessionDetail() {
-      const s = sessions().find((x) => x.sid === logSession);
-      if (!s) { logSession = null; return renderLog(); }
-      $('#rvd-empty').hidden = true;
-      const items = s.items.slice().sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1));
-      $('#rvd-list').innerHTML =
-        `<button class="rvd-back" id="rvd-back">← Back to log</button>` +
-        `<div class="rvd-detailhead">Session · ${esc(fmt(s.start))}` +
-          ` · ${s.total} comment${s.total > 1 ? 's' : ''} across ${s.pages.length} page${s.pages.length > 1 ? 's' : ''}</div>` +
-        `<div class="rvd-grid">${items.map(logItem).join('')}</div>`;
-      $('#rvd-back').addEventListener('click', () => { logSession = null; render(); });
-    }
-
-    // ---- All Entries: tabular log of every change, with the AI prompt ----
+    // ---- Master Log: tabular log of every root change, with drill-in detail ----
     function renderEntries() {
-      const rs = roots();
+      if (entryDetail) { renderEntryDetail(); return; }
+      const rs = sortRoots(roots());
       $('#rvd-empty').hidden = rs.length > 0;
       if (!rs.length) { $('#rvd-entries').innerHTML = ''; return; }
       $('#rvd-entries').innerHTML =
-        `<div class="rvd-entrieshead"><h2>All Entries <span style="font-weight:500;color:var(--color-text-secondary,#6b6b6b)">(${rs.length})</span></h2></div>` +
+        `<div class="rvd-entrieshead"><h2>Master Log <span style="font-weight:500;color:var(--pk-muted)">(${rs.length})</span></h2></div>` +
         `<div class="rvd-logwrap"><table class="rvd-log"><thead><tr>` +
         `<th>When</th><th>Page</th><th>Element</th><th>Team</th><th>Status</th><th>Prompt</th>` +
         `</tr></thead><tbody>` +
         rs.map((c) => {
           const a = c.anchor || {};
           const el = a.snippet ? '“' + esc(a.snippet.slice(0, 40)) + '”' : esc(a.tag || '—');
-          return `<tr>` +
+          return `<tr class="rvd-logrow" data-id="${esc(c.id)}">` +
             `<td>${esc(fmt(c.createdAt))}</td>` +
             `<td><a class="rvd-slug" href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a></td>` +
             `<td>${el}</td>` +
             `<td>${teamChip(c.team) || '—'}</td>` +
             `<td>${statusChip(c)}</td>` +
-            `<td><button class="rvd-prompt-btn" data-id="${esc(c.id)}">View prompt</button></td>` +
+            `<td><button class="rvd-prompt-btn" data-more="${esc(c.id)}">View more</button></td>` +
           `</tr>`;
         }).join('') +
         `</tbody></table></div>`;
-      $('#rvd-entries').querySelectorAll('.rvd-prompt-btn').forEach((b) =>
-        b.addEventListener('click', () => openPrompt(all.find((x) => x.id === b.dataset.id))));
+      // Clicking a row (or its "View more") opens the entry detail. The page link + the
+      // View-more button are handled separately so they don't double-fire.
+      const open = (id) => { entryDetail = id; render(); };
+      $('#rvd-entries').querySelectorAll('.rvd-logrow').forEach((tr) => {
+        tr.addEventListener('click', (e) => {
+          if (e.target.closest('a')) return; // let the page link through
+          open(tr.dataset.id);
+        });
+      });
+    }
+
+    // Build the status-history timeline: use record.history when present, else
+    // synthesize it from the lifecycle timestamps (old records predate history).
+    function entryHistory(c) {
+      if (Array.isArray(c.history) && c.history.length) {
+        return c.history.slice().map((h) => ({
+          at: h.at,
+          label: h.event === 'created' ? 'Created (open)'
+            : h.event === 'deployed' ? 'Deployed — ' + (h.status === 'closed' ? 'closed' : 'completed')
+            : 'Status → ' + (h.status || 'open'),
+        })).sort((a, b) => (a.at < b.at ? -1 : 1));
+      }
+      const out = [];
+      if (c.createdAt) out.push({ at: c.createdAt, label: 'Created (open)' });
+      if (c.completedAt) out.push({ at: c.completedAt, label: 'Status → completed' });
+      if (c.closedAt) out.push({ at: c.closedAt, label: 'Status → closed' });
+      if (c.publishedAt) out.push({ at: c.publishedAt, label: 'Deployed — ' + (c.publishedStatus === 'closed' ? 'closed' : 'completed') });
+      return out.sort((a, b) => (a.at < b.at ? -1 : 1));
+    }
+
+    function renderEntryDetail() {
+      const c = all.find((x) => x.id === entryDetail);
+      if (!c) { entryDetail = null; return renderEntries(); }
+      $('#rvd-empty').hidden = true;
+      const a = c.anchor || {};
+      const v = c.validation;
+      const validTxt = v
+        ? (v.method === 'content-copy-match'
+            ? (v.ok ? '✓ Verified on live page' : '⚠ Not verified on live page yet') + (v.detail ? ' — ' + esc(v.detail) : '')
+            : 'Manual completion' + (v.detail ? ' — ' + esc(v.detail) : ''))
+        : '—';
+      const where = a.snippet ? '“' + esc(a.snippet) + '”' + (a.tag ? ' · ' + esc(a.tag) : '') : (a.tag ? esc(a.tag) : '—');
+      const hist = entryHistory(c);
+      const field = (k, vHtml) => `<div class="rvd-field"><div class="rvd-field-k">${k}</div><div class="rvd-field-v">${vHtml}</div></div>`;
+      const timeline = hist.length
+        ? `<ol class="rvd-timeline">` + hist.map((h, i) =>
+            `<li class="rvd-tl${i === hist.length - 1 ? ' is-current' : ''}">` +
+              `<div class="rvd-tl-top"><span class="rvd-tl-event">${esc(h.label)}</span>` +
+              `<span class="rvd-tl-time">${esc(fmt(h.at))}</span></div>` +
+            `</li>`).join('') + `</ol>`
+        : '—';
+      $('#rvd-entries').innerHTML =
+        `<button class="rvd-back" id="rvd-back">← Back to Master Log</button>` +
+        `<article class="rvd-detail">` +
+          `<h2 class="rvd-detail-title">${esc(c.comment)}</h2>` +
+          `<div class="rvd-detail-chips">${statusChip(c)}${teamChip(c.team)}` +
+            `<a class="rvd-slug" href="${esc(c.page.path)}?review=1#c=${esc(c.id)}" target="_blank" rel="noopener">Open pin</a></div>` +
+          `<div class="rvd-fields">` +
+            field('Page', `<a href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a> <span style="color:var(--pk-muted)">${esc(c.page.path)}</span>`) +
+            field('Element / anchor', where) +
+            field('Reviewer', esc(c.name || 'anonymous') + (c.team ? ' · ' + esc(c.team) : '')) +
+            field('Submitted', esc(fmt(c.createdAt))) +
+            (c.changeTo ? `<div class="rvd-field"><div class="rvd-field-k">Change to</div><div class="rvd-change"><div>${esc(c.changeTo)}</div></div></div>` : '') +
+            field('Current status', esc(statusLabel(c))) +
+            field('Validation', validTxt) +
+            `<div class="rvd-field"><div class="rvd-field-k">AI prompt</div>` +
+              (c.aiPrompt ? `<div class="rvd-field-prompt">${esc(c.aiPrompt)}</div>`
+                          : `<div class="rvd-field-v" style="color:var(--pk-muted);font-style:italic">Generating — usually ready within seconds of submit. Refresh in a moment.</div>`) + `</div>` +
+            `<div class="rvd-field"><div class="rvd-field-k">Status history</div>${timeline}</div>` +
+          `</div>` +
+        `</article>`;
+      $('#rvd-back').addEventListener('click', () => { entryDetail = null; render(); });
     }
 
     // AI change-prompt overlay (precise, ready-to-hand-to-a-dev instruction)
@@ -841,23 +1082,93 @@ import { themeVars } from './config';
       });
     }
 
-    function render() {
-      // left-panel view: Dashboard / Master Log / All Entries
-      $('#rvd-view-entries').hidden = view !== 'entries';
-      $('#rvd-view-dash').hidden = view === 'entries'; // dash container also hosts the log list
-      if (view === 'entries') { renderEntries(); return; }
+    // ---- Deploy Bucket: every root completed/closed but not yet published ----
+    function renderDeploy() {
+      $('#rvd-empty').hidden = true;
+      const bucket = sortRoots(roots().filter(isBucketed));
+      const banner = deployResult
+        ? `<div class="rvd-deploy-banner">${esc(deployResult)}</div>` : '';
+      const body = bucket.length
+        ? `<div class="rvd-grid">${bucket.map(card).join('')}</div>`
+        : `<p class="rvd-empty">Nothing waiting to deploy. Mark comments complete to fill the bucket.</p>`;
+      $('#rvd-view-deploy').innerHTML =
+        `<div class="rvd-deployhead">` +
+          `<div><h2>Deploy Bucket</h2>` +
+          `<p class="rvd-deploy-explain">Publishing releases these status changes to teams and sends notifications.</p></div>` +
+          `<button class="rvd-deploy-btn" id="rvd-deploy-go"${bucket.length ? '' : ' disabled'}>Deploy${bucket.length ? ' ' + bucket.length : ''}</button>` +
+        `</div>` + banner + body;
+      const go = $('#rvd-deploy-go');
+      if (go && bucket.length) go.addEventListener('click', doDeploy);
+      bindActions($('#rvd-view-deploy'));
+    }
+    async function doDeploy() {
+      const go = $('#rvd-deploy-go'); if (!go) return;
+      if (!confirm('Deploy all completed/closed comments now? This publishes them to teams and sends notifications.')) return;
+      go.disabled = true; go.textContent = 'Deploying…';
+      try {
+        const res = await store.deploy();
+        const n = res.deployed || 0, nn = (res.notifications || []).length;
+        deployResult = `Deployed ${n} update${n === 1 ? '' : 's'} · ${nn} notification${nn === 1 ? '' : 's'} sent`;
+        await loadData(); // refreshes bucket + notifs; render() redraws this view with the banner
+      } catch (e) { go.disabled = false; go.textContent = 'Deploy'; alert('Deploy failed — ' + e.message); }
+    }
 
-      // Master Log lives in the left panel now: hide the dash tabs + team chips + toolbar.
-      if (view === 'log') {
-        $('#rvd-toolbar').style.display = 'none';
-        $('#rvd-tabs').style.display = 'none';
-        $('#rvd-teamchips').style.display = 'none';
-        logSession ? renderSessionDetail() : renderLog();
-        return;
-      }
-      $('#rvd-toolbar').style.display = 'flex';
-      $('#rvd-tabs').style.display = 'flex';
-      $('#rvd-teamchips').style.display = 'flex';
+    // ---- Notifications (admin: all), newest first, unread flagged ----
+    function renderNotifs() {
+      $('#rvd-empty').hidden = true;
+      const list = (notifs || []).slice().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      const unread = list.filter((n) => n.readAdmin === false);
+      $('#rvd-view-notifs').innerHTML =
+        `<div class="rvd-notifhead">` +
+          `<div><h2>Notifications</h2>` +
+          `<p class="rvd-deploy-explain">Fired when a deploy publishes a comment to its team.</p></div>` +
+          (unread.length ? `<button class="rvd-a" id="rvd-notif-read">Mark all read (${unread.length})</button>` : '') +
+        `</div>` +
+        (list.length
+          ? `<div class="rvd-notiflist">${list.map(notifItem).join('')}</div>`
+          : `<p class="rvd-empty">No notifications yet. Deploy the bucket to notify teams.</p>`);
+      const rb = $('#rvd-notif-read');
+      if (rb) rb.addEventListener('click', async () => {
+        rb.disabled = true;
+        try { await store.markRead(unread.map((n) => n.id), true); await loadData(); }
+        catch (e) { rb.disabled = false; alert('Could not update — ' + e.message); }
+      });
+      // per-item read/unread toggle: data-read is the target state (true = mark read)
+      $('#rvd-view-notifs').querySelectorAll('.rvd-notif-toggle').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          try { await store.markRead([btn.dataset.id], btn.dataset.read === 'true'); await loadData(); }
+          catch (e) { btn.disabled = false; alert('Could not update — ' + e.message); }
+        });
+      });
+    }
+    function notifItem(n) {
+      const unread = n.readAdmin === false;
+      const done = n.publishedStatus === 'closed' ? 'closed' : 'deployed';
+      return `<div class="rvd-notif${unread ? ' is-unread' : ''}">` +
+        `<span class="rvd-notif-dot"></span>` +
+        `<div class="rvd-notif-body">` +
+          `<div class="rvd-notif-summary">${esc(n.summary || '')}</div>` +
+          `<div class="rvd-notif-meta">${teamChip(n.team)}` +
+            `<a class="rvd-slug" href="${esc(n.path)}" target="_blank" rel="noopener">${esc(n.pageName || pageName(n.path))}</a>` +
+            `<span class="rvd-time">${esc(fmt(n.createdAt))}</span>` +
+            `<span class="rvd-chip ${done}">${done === 'closed' ? 'Closed' : 'Deployed'}</span>` +
+          `</div>` +
+        `</div>` +
+        `<button class="rvd-a rvd-notif-toggle" type="button" data-id="${esc(n.id)}" data-read="${unread ? 'true' : 'false'}">` +
+          `${unread ? 'Mark read' : 'Mark unread'}</button>` +
+      `</div>`;
+    }
+
+    function render() {
+      // left-panel view: Overview / Deploy / Notifications / Master Log.
+      $('#rvd-view-dash').hidden = view !== 'dash';
+      $('#rvd-view-entries').hidden = view !== 'entries';
+      $('#rvd-view-deploy').hidden = view !== 'deploy';
+      $('#rvd-view-notifs').hidden = view !== 'notifs';
+      if (view === 'entries') { renderEntries(); return; }
+      if (view === 'deploy') { renderDeploy(); return; }
+      if (view === 'notifs') { renderNotifs(); return; }
 
       const host = $('#rvd-list');
       const rs = currentRoots();
@@ -866,12 +1177,13 @@ import { themeVars } from './config';
         const paths = [...new Set(rs.map((c) => c.page.path))].sort();
         host.innerHTML = paths.map((p) => {
           const group = rs.filter((c) => c.page.path === p);
-          const openN = group.filter(isUnresolved).length;
-          const resN = group.filter((c) => c.status === 'resolved').length;
-          const closedN = group.filter((c) => c.status === 'closed').length;
+          const openN = group.filter(isOpen).length;
+          const bucketN = group.filter(isBucketed).length;
+          const deployedN = group.filter(isDeployed).length;
+          const closedN = group.filter(isClosedLive).length;
           return `<div class="rvd-group"><h2 class="rvd-gh">` +
             `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(pageName(p))}</a>` +
-            `<span class="rvd-gh-rollup">${openN} unresolved · ${resN} resolved${closedN ? ' · ' + closedN + ' closed' : ''}</span>` +
+            `<span class="rvd-gh-rollup">${openN} open · ${bucketN} in bucket · ${deployedN} deployed${closedN ? ' · ' + closedN + ' closed' : ''}</span>` +
             `<span class="rvd-gh-actions"><button class="rvd-gh-copy" data-page="${esc(p)}">Copy prompts</button></span>` +
             `</h2><div class="rvd-grid">${group.map(card).join('')}</div></div>`;
         }).join('');
@@ -893,22 +1205,23 @@ import { themeVars } from './config';
       if (n) $('#rvd-bulk-n').textContent = n + ' selected';
     }
 
-    function bindActions() {
-      $('#rvd-list').querySelectorAll('.rvd-sel').forEach((cb) => {
+    function bindActions(scope) {
+      const host = scope || $('#rvd-list');
+      host.querySelectorAll('.rvd-sel').forEach((cb) => {
         cb.addEventListener('change', () => {
           cb.checked ? sel.add(cb.dataset.id) : sel.delete(cb.dataset.id);
           updateBulk();
         });
       });
-      $('#rvd-list').querySelectorAll('.rvd-a[data-status]').forEach((btn) => {
+      host.querySelectorAll('.rvd-a[data-status]').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const rec = all.find((c) => c.id === btn.dataset.id); if (!rec) return;
           btn.disabled = true;
-          try { const updated = await store.resolve(rec, btn.dataset.status); rec.status = updated.status; counts(); render(); }
+          try { const updated = await store.status(rec, btn.dataset.status); Object.assign(rec, updated); counts(); render(); }
           catch (e) { btn.disabled = false; alert('Could not update — ' + e.message); }
         });
       });
-      $('#rvd-list').querySelectorAll('.delete').forEach((btn) => {
+      host.querySelectorAll('.delete').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const rec = all.find((c) => c.id === btn.dataset.id); if (!rec) return;
           if (!confirm('Delete this whole thread (comment + all replies)? This cannot be undone.')) return;
@@ -920,18 +1233,37 @@ import { themeVars } from './config';
           } catch (e) { btn.disabled = false; alert('Could not delete — ' + e.message); }
         });
       });
+      // comment body: Show more / Show less (clamp toggle)
+      host.querySelectorAll('.rvd-morebtn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const el = btn.parentElement.querySelector('.rvd-comment-text');
+          const clamped = el.classList.toggle('rvd-clamp');
+          btn.textContent = clamped ? 'Show more' : 'Show less';
+        });
+      });
+      // footer: expand / collapse replies
+      host.querySelectorAll('.rvd-repliestoggle').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const wrap = btn.nextElementSibling; if (!wrap) return;
+          const open = wrap.hasAttribute('hidden');
+          if (open) wrap.removeAttribute('hidden'); else wrap.setAttribute('hidden', '');
+          btn.classList.toggle('is-open', open);
+        });
+      });
+      revealClamps(host); // reveal Show-more only where the comment actually overflows
     }
 
     document.querySelector('.rvd-side').addEventListener('click', (e) => {
       const b = e.target.closest('.rvd-nav'); if (!b) return;
-      view = b.dataset.view; logSession = null; // reset log drill-down when switching views
+      view = b.dataset.view; entryDetail = null; // reset Master Log drill-in when switching views
+      deployResult = ''; // the deploy banner only shows right after a deploy action
       document.querySelectorAll('.rvd-nav').forEach((n) => n.classList.toggle('is-active', n === b));
       render();
     });
 
     $('#rvd-tabs').addEventListener('click', (e) => {
       const b = e.target.closest('.rvd-tab'); if (!b) return;
-      tab = b.dataset.tab; logSession = null;
+      tab = b.dataset.tab;
       $('#rvd-tabs').querySelectorAll('.rvd-tab').forEach((t) => t.classList.toggle('is-active', t === b));
       render();
     });
@@ -975,9 +1307,9 @@ import { themeVars } from './config';
       [...$('#rvd-bulk').querySelectorAll('.rvd-bulk-a')].forEach((x) => (x.disabled = true));
       try {
         for (const rec of recs) {
-          if (act === 'resolve') { const u = await store.resolve(rec, 'resolved'); rec.status = u.status; }
-          else if (act === 'unresolve') { const u = await store.resolve(rec, 'open'); rec.status = u.status; }
-          else if (act === 'close') { const u = await store.resolve(rec, 'closed'); rec.status = u.status; }
+          if (act === 'complete') { Object.assign(rec, await store.status(rec, 'completed')); }
+          else if (act === 'reopen') { Object.assign(rec, await store.status(rec, 'open')); }
+          else if (act === 'close') { Object.assign(rec, await store.status(rec, 'closed')); }
           else if (act === 'delete') { await store.del(rec); all = all.filter((c) => c.id !== rec.id && c.parentId !== rec.id); }
         }
         sel.clear(); updateBulk(); counts(); render();

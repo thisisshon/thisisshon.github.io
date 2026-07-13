@@ -6,6 +6,77 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.5.1 — 2026-07-13 — admin log-in via /teamdash + audit trail + Master Log detail
+
+- **Admin password is now `website`** (was `shriramreview`). `config.ts`
+  `REVIEW_PASSWORD_SHA256` = SHA-256(`website`); on the Worker set the secret to match with
+  `wrangler secret put ADMIN_PASS` → `website`. `TEAM_KEYS` are unchanged.
+- **Two-door admin login.** New `config.ts` export `ADMIN_TEAM = 'Design'` — a login-only
+  identity. The `/teamdash` login dropdown now lists the reviewer `TEAMS` **plus** a
+  "Design (Admin)" option; picking **Design** + the admin password signs in as admin and
+  redirects to `/reviewdash`. Design is **not** in `TEAMS`, so it never appears in the on-page
+  comment composer or the team filters — its "key" is simply the admin password. The `/reviewdash`
+  direct password gate is unchanged.
+- **Admin nav restructured** to **Overview · Deploy · Notifications · Master Log**. The old
+  session-grouped "Master Log" view was **removed**; the former "All Entries" tabular view was
+  **renamed to "Master Log"** and gained a click-through **detail view** ("View more") showing full
+  entry details + a **status-history timeline** (current + past status). Master Log lists all root
+  entries, including deployed ones.
+- **Comment audit trail.** Every comment now carries `history: [{ status, at, event, published }]`
+  (`event` ∈ `created` | `status` | `deployed`), appended on create, on `POST /status`, and on
+  Deploy. Old records missing it are synthesized in the UI from the timestamps.
+- **Notifications read/unread toggle.** `POST /notifications/read` now takes `{ ids, read?:boolean }`
+  (default `true`); `read:false` toggles a notification back to **unread**. Both the admin and team
+  dashboards expose a per-notification read/unread toggle (admin flips `readAdmin`, a team flips its
+  `readTeam`).
+- **Overview "All" excludes deployed.** The Overview `All` tab is now the active worklist —
+  open + in-bucket only; deployed/published items are excluded (they remain under the Deployed tab
+  and in Master Log).
+- **Overview cards redesigned for large content** — clamped comment body with Show more/less, a
+  height-capped Change-to callout, collapsible replies, and wrap-safe containers, so a card stays
+  clean whether the comment is one line or fifty.
+- **Deploy button** restyled to a strong dark green (`--pk-deploy:#1a7f37`, hover `#14682c`) so the
+  primary Deploy CTA stands out against the near-black canvas; no other button changes.
+- ⚠️ Worker change — needs `wrangler deploy` to take effect (the `history` audit trail + the
+  `read` param on `/notifications/read`), and `wrangler secret put ADMIN_PASS` → `website`.
+
+## 2.5.0 — 2026-07-13 — per-team dashboards + deploy gate + notifications
+
+- **Two dashboards, one team route.** `/reviewdash` stays the **admin** dashboard (full access,
+  every team). A **new `/teamdash`** per-team dashboard lets a team sign in with **its own team key**
+  and pick its team; the Worker returns **only that team's** comments (server-side isolation via the
+  masked `GET /comments?team=X`) plus that team's notifications. One route serves every team — the
+  team is identified by the **login key, not the URL**. New files: `TeamDashboard.astro` +
+  `src/pages/teamdash.astro` (a new host-project route seam alongside `reviewdash.astro`); new config
+  `teamDashSeo` (noindex).
+- **Deploy-gated lifecycle.** A comment's **working** status (`status`: `open` | `completed` |
+  `closed`, admin-only) is now separate from **what the team sees** (`published ? publishedStatus :
+  'open'`). Admin **Mark Complete** moves a comment into a silent **deploy bucket** — the team still
+  sees *Pending*. Only the batch **Deploy** action publishes the bucket (flips `published`, snapshots
+  `publishedStatus`, stamps `publishedAt`) — and **that** is what fires notifications. Teams never see
+  the bucket.
+- **Completion validation** (content changes only). Mark Complete runs a server-side check: if the
+  comment carries replacement copy (`changeTo`), the Worker fetches the **live page**
+  (`ALLOW_ORIGIN` + path) and confirms the new copy is present
+  (`validation.method = 'content-copy-match'`); otherwise it's `'manual'`. The result is stored on
+  `validation:{ ok, method, detail, checkedAt }` and shown on the admin card with a ⚠ flag when not
+  yet verified. Completing is **allowed even if unverified** (the site may redeploy afterwards).
+- **Notifications.** Created **only on Deploy**, one per published root comment, in KV key
+  `notifications`. Team feed (`GET /notifications?team=X`) + admin feed (`GET /notifications`), with
+  unread tracking (`readTeam` / `readAdmin`) and mark-read (`POST /notifications/read`). Both
+  dashboards gain a Notifications view.
+- **New / changed endpoints:** `GET /comments?team=X` (team-scoped, masked), `POST /status` (working
+  status + validation), `POST /deploy` (publish the bucket + notify), `GET /notifications`,
+  `POST /notifications/read`. `POST /resolve` is **kept as a back-compat alias** of `/status`
+  (legacy `resolved` ⇒ `completed`). New comment-record fields: `status` (now
+  `open`|`completed`|`closed`), `published`, `publishedStatus`, `completedAt`, `closedAt`,
+  `publishedAt`, `validation` — all backward-compatible (missing ⇒ default).
+- **Admin dashboard** gains Deploy (bucket + Deploy button) and Notifications views; tabs are now
+  All / By Page / Open / In Bucket / Deployed / Closed. (The "Dashboard" tab is the "Overview" tab.)
+- ⚠️ Worker change — needs `wrangler deploy` to take effect. `ALLOW_ORIGIN` now has a **second role**:
+  besides the CORS lock, it's the base URL the Worker fetches for content validation, so it must be
+  the real site origin (not `*`) for auto-verification to work.
+
 ## 2.4.0 — 2026-07-12 — per-team reviewer keys
 
 - **Per-team passwords** — the Worker now accepts a `TEAM_KEYS` JSON var (`{"Product":"…",…}`);

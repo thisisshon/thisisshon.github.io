@@ -1,0 +1,679 @@
+---
+/**
+ * Proofkit Team Dashboard — the /teamdash per-team view.
+ *
+ * A client-rendered, READ-ONLY window a single team gets onto its OWN review
+ * items. The team signs in with its team key; the Cloudflare Worker returns
+ * ONLY that team's comments (server-side isolation, masked to the team-visible
+ * status) plus that team's notifications. No admin actions, no delete, no AI
+ * prompt, no other team's data — a lighter sibling of the admin Dashboard.
+ *
+ * Statuses are framed for the team (the deploy BUCKET is never exposed):
+ *   masked 'open' → "Pending"   ·  'completed' → "Done"   ·  'closed' → "Closed".
+ *
+ * Rendered by the src/pages/teamdash.astro route shim, gated on PROOFKIT_ENABLED
+ * (./config.ts). Reads the Worker (WORKER_URL) when set, else the localStorage
+ * demo store (masking client-side). Scoped under .tmd so it never clashes with
+ * the admin .rvd styles.
+ */
+import { themeVars } from './config';
+---
+
+{/* Active theme's --pk-* tokens (config.ts THEME); shared with the admin + overlay. */}
+<style is:global set:html={`:root{${themeVars}}`}></style>
+
+<section class="tmd">
+  <div class="tmd-app" data-enter>
+    <!-- Brand top bar -->
+    <header class="tmd-top">
+      <div class="tmd-brand">
+        <svg class="tmd-mark" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-4 4V5Z" fill="#da291c"/>
+          <circle cx="12" cy="9.5" r="1.6" fill="#fff"/>
+        </svg>
+        <span class="tmd-word">ProofKit</span>
+        <span class="tmd-tag">Team Review</span>
+      </div>
+      <div class="tmd-actions">
+        <span class="tmd-you" id="tmd-you" hidden>
+          <span class="tmd-you-lbl">Your Team</span>
+          <span id="tmd-you-chip"></span>
+        </span>
+        <a class="tmd-btn tmd-btn-primary" href="/">Go to site</a>
+        <button id="tmd-refresh" class="tmd-btn" type="button">
+          <span class="tmd-refresh-ico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+          </span>
+          <span class="tmd-refresh-label">Refresh</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Headline -->
+    <div class="tmd-headband">
+      <h1 class="tmd-h1">Your Reviews</h1>
+      <p class="tmd-lead">Every comment your team has left across the site, and where each
+        one stands. Pending items are still being actioned; Done items are live.</p>
+    </div>
+
+    <!-- Stat tiles -->
+    <div class="tmd-bar">
+      <div class="tmd-counts" id="tmd-counts"></div>
+    </div>
+
+    <div class="tmd-shell">
+      <aside class="tmd-side">
+        <button class="tmd-nav is-active" data-view="comments">My Comments</button>
+        <button class="tmd-nav" data-view="notifs">
+          Notifications
+          <span class="tmd-navbadge" id="tmd-navbadge" hidden>0</span>
+        </button>
+      </aside>
+
+      <div class="tmd-content">
+        <!-- My Comments -->
+        <div id="tmd-view-comments">
+          <div class="tmd-filters" id="tmd-filters" role="tablist">
+            <button class="tmd-filter is-active" data-filter="all">All</button>
+            <button class="tmd-filter" data-filter="pending">Pending</button>
+            <button class="tmd-filter" data-filter="done">Done</button>
+            <button class="tmd-filter" data-filter="closed">Closed</button>
+            <span class="tmd-filter-sp"></span>
+            <button class="tmd-bypage" id="tmd-bypage" type="button">By Page</button>
+          </div>
+          <div id="tmd-list"></div>
+        </div>
+
+        <!-- Notifications -->
+        <div id="tmd-view-notifs" hidden>
+          <div class="tmd-noteshead">
+            <h2>Notifications</h2>
+            <button class="tmd-markall" id="tmd-markall" type="button" disabled>Mark all read</button>
+          </div>
+          <div id="tmd-notes"></div>
+        </div>
+
+        <p id="tmd-empty" class="tmd-empty" hidden>Nothing here yet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* is:global (namespaced under .tmd) — cards are injected via innerHTML at runtime
+    and would not receive Astro's scoped-style attribute. The .tmd ancestor keeps
+    these rules from leaking to any other page (and clear of the admin .rvd). */}
+<style is:global>
+  .tmd, .tmd-login{
+    --pk-font:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  /* Dark floor on the team-dashboard route only. Self-sufficient — needs no host layout. */
+  :root{color-scheme:dark}
+  html,body{margin:0}
+  body:has(.tmd){background:#141414}
+
+  .tmd{background:var(--pk-canvas);color:var(--pk-ink);font-family:var(--pk-font);
+    min-height:100vh;padding:40px clamp(20px,5vw,48px) 96px}
+  .tmd *{box-sizing:border-box}
+  .tmd .tmd-app{max-width:1100px;margin:0 auto}
+  @keyframes tmd-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes tmd-spin{to{transform:rotate(360deg)}}
+  @keyframes tmd-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+
+  /* --- page entry: staggered cascade of the structural bands (matches admin idiom) --- */
+  .tmd .tmd-app[data-enter]{animation:none}
+  .tmd .tmd-app > *{animation:tmd-rise .55s cubic-bezier(.2,.7,.2,1) both}
+  .tmd .tmd-app > *:nth-child(1){animation-delay:.04s}
+  .tmd .tmd-app > *:nth-child(2){animation-delay:.12s}
+  .tmd .tmd-app > *:nth-child(3){animation-delay:.20s}
+  .tmd .tmd-app > *:nth-child(4){animation-delay:.28s}
+  .tmd #tmd-counts .tmd-count{animation:tmd-rise .5s cubic-bezier(.2,.7,.2,1) both}
+  .tmd #tmd-counts .tmd-count:nth-child(2){animation-delay:.07s}
+  .tmd #tmd-counts .tmd-count:nth-child(3){animation-delay:.14s}
+  .tmd .tmd-grid > .tmd-item{animation:tmd-rise .45s cubic-bezier(.2,.7,.2,1) both}
+  .tmd .tmd-grid > .tmd-item:nth-child(2){animation-delay:.04s}
+  .tmd .tmd-grid > .tmd-item:nth-child(3){animation-delay:.08s}
+  .tmd .tmd-grid > .tmd-item:nth-child(4){animation-delay:.12s}
+  .tmd .tmd-grid > .tmd-item:nth-child(5){animation-delay:.16s}
+  .tmd .tmd-grid > .tmd-item:nth-child(n+6){animation-delay:.20s}
+  .tmd .tmd-note{animation:tmd-rise .4s cubic-bezier(.2,.7,.2,1) both}
+
+  /* ---- brand top bar ---- */
+  .tmd .tmd-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding-bottom:22px;border-bottom:1px solid var(--pk-hair)}
+  .tmd .tmd-brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+  .tmd .tmd-mark{display:block;flex:none}
+  .tmd .tmd-word{font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
+  .tmd .tmd-tag{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--pk-muted);padding-left:12px;border-left:1px solid var(--pk-hair)}
+  .tmd .tmd-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tmd .tmd-you{display:inline-flex;align-items:center;gap:8px;margin-right:4px}
+  .tmd .tmd-you-lbl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
+  .tmd .tmd-team-chip{padding:4px 11px;border-radius:9999px;font-weight:700;font-size:10px;
+    text-transform:uppercase;letter-spacing:.08em}
+
+  /* ---- headline ---- */
+  .tmd .tmd-headband{padding:44px 0 4px}
+  .tmd .tmd-h1{margin:0;font-size:clamp(30px,4.4vw,44px);line-height:1.04;font-weight:500;
+    letter-spacing:-.02em;color:var(--pk-ink)}
+  .tmd .tmd-lead{margin:14px 0 0;max-width:620px;font-size:14px;line-height:1.6;color:var(--pk-body)}
+
+  /* ---- stat tiles ---- */
+  .tmd .tmd-bar{margin:32px 0 8px}
+  .tmd #tmd-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
+    background:var(--pk-hair);border:1px solid var(--pk-hair)}
+  .tmd #tmd-counts .tmd-count{background:var(--pk-canvas);padding:22px 24px;
+    display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+    font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted)}
+  .tmd #tmd-counts .tmd-count b{font-size:clamp(30px,4vw,42px);font-weight:700;line-height:.95;
+    letter-spacing:-.02em;color:var(--pk-ink);font-variant-numeric:tabular-nums}
+  .tmd #tmd-counts .tmd-count-pending b{color:var(--pk-amber)}
+  .tmd #tmd-counts .tmd-count-done b{color:var(--pk-green)}
+
+  /* ---- top-bar buttons ---- */
+  .tmd .tmd-btn{position:relative;height:40px;padding:0 20px;border:1px solid var(--pk-hair);background:transparent;
+    color:var(--pk-ink);font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;
+    cursor:pointer;border-radius:0;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+    transition:border-color .15s,color .15s,background .15s}
+  .tmd .tmd-btn.tmd-btn-primary{background:var(--pk-red);border-color:var(--pk-red);color:#fff}
+  .tmd .tmd-refresh-ico{display:inline-block;width:16px;height:16px;margin-right:8px}
+  .tmd .tmd-refresh-ico svg{width:16px;height:16px;display:block}
+  .tmd .tmd-btn.is-refreshing{color:var(--pk-body)}
+  .tmd .tmd-btn.is-refreshing .tmd-refresh-ico svg{animation:tmd-spin .7s cubic-bezier(.5,.15,.3,1) infinite;transform-origin:50% 50%}
+
+  /* ---- left-sidebar shell ---- */
+  .tmd .tmd-shell{display:flex;gap:32px;align-items:flex-start;margin-top:28px}
+  .tmd .tmd-side{flex:none;width:184px;display:flex;flex-direction:column;gap:2px;position:sticky;top:24px}
+  .tmd .tmd-nav{position:relative;text-align:left;height:46px;padding:0 16px;border:none;border-radius:0;
+    background:transparent;cursor:pointer;color:var(--pk-body);display:flex;align-items:center;gap:8px;
+    font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:color .15s,background .15s}
+  .tmd .tmd-nav::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:2px;background:transparent;transition:background .15s}
+  .tmd .tmd-nav.is-active{color:var(--pk-ink);background:#202020}
+  .tmd .tmd-nav.is-active::before{background:var(--pk-red)}
+  .tmd .tmd-navbadge{min-width:18px;height:18px;padding:0 5px;border-radius:9999px;background:var(--pk-red);color:#fff;
+    font:700 10px/18px var(--pk-font);letter-spacing:0;text-align:center}
+  .tmd .tmd-content{flex:1;min-width:0}
+
+  /* ---- filters ---- */
+  .tmd .tmd-filters{display:flex;gap:2px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--pk-hair);margin-bottom:20px}
+  .tmd .tmd-filter{height:46px;padding:0 16px;border:none;background:none;cursor:pointer;margin-bottom:-1px;
+    font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
+    border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+  .tmd .tmd-filter.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
+  .tmd .tmd-filter-sp{flex:1}
+  .tmd .tmd-bypage{height:32px;align-self:center;padding:0 14px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;
+    cursor:pointer;color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+    transition:border-color .15s,color .15s}
+  .tmd .tmd-bypage.is-active{border-color:var(--pk-red);color:var(--pk-red)}
+
+  /* ---- list + group ---- */
+  .tmd .tmd-grid{display:flex;flex-direction:column;gap:10px}
+  .tmd .tmd-group{margin-bottom:32px}
+  .tmd .tmd-gh{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;font-size:13px;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
+  .tmd .tmd-gh a{color:var(--pk-ink);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
+  .tmd .tmd-gh span{font-size:12px;font-weight:500;color:var(--pk-muted);letter-spacing:0;text-transform:none}
+
+  /* ---- comment card (read-only) ---- */
+  .tmd .tmd-item{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:0;
+    background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair)}
+  .tmd .tmd-line{display:flex;align-items:flex-start;gap:14px}
+  .tmd .tmd-line .tmd-chip{flex:none;margin-top:1px}
+  .tmd .tmd-headline{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .tmd .tmd-comment{font-size:15px;font-weight:500;line-height:1.5;color:var(--pk-ink);
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+  .tmd .tmd-comment .tmd-n{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
+  .tmd .tmd-snip{font-size:12px;color:var(--pk-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* status chips */
+  .tmd .tmd-chip{padding:4px 11px;border-radius:9999px;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+  .tmd .tmd-chip.pending{background:#3a2a12;color:var(--pk-amber)}
+  .tmd .tmd-chip.done{background:#16281c;color:var(--pk-green)}
+  .tmd .tmd-chip.closed{background:#2a2a2a;color:var(--pk-muted)}
+
+  /* "change to" callout */
+  .tmd .tmd-change{padding:12px 14px;border-radius:0;background:#241a10;border:1px solid #4a3417;border-left:2px solid var(--pk-amber)}
+  .tmd .tmd-change span{display:block;font-size:10px;font-weight:700;text-transform:uppercase;
+    color:var(--pk-amber);letter-spacing:.12em;margin-bottom:4px}
+  .tmd .tmd-change div{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--pk-ink)}
+
+  /* meta + replies */
+  .tmd .tmd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .tmd .tmd-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
+  .tmd .tmd-time{font-size:12px;color:var(--pk-muted)}
+  .tmd .tmd-replies{display:flex;flex-direction:column;gap:12px;padding-left:16px;border-left:2px solid var(--pk-hair)}
+  .tmd .tmd-reply{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .tmd .tmd-rtxt{font-size:14px;line-height:1.5;color:var(--pk-ink)}
+  .tmd .tmd-rmeta{font-size:12px;color:var(--pk-muted)}
+
+  /* ---- notifications ---- */
+  .tmd .tmd-noteshead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+  .tmd .tmd-noteshead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink);margin:0}
+  .tmd .tmd-markall{height:32px;padding:0 14px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
+  .tmd .tmd-markall:disabled{opacity:.5;cursor:default}
+  .tmd .tmd-notes{display:flex;flex-direction:column;gap:8px}
+  .tmd .tmd-note{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-radius:0;
+    background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair)}
+  .tmd .tmd-note.is-unread{border-left-color:var(--pk-red);background:var(--pk-elev)}
+  .tmd .tmd-note-dot{flex:none;width:8px;height:8px;margin-top:6px;border-radius:9999px;background:transparent}
+  .tmd .tmd-note.is-unread .tmd-note-dot{background:var(--pk-red)}
+  .tmd .tmd-note-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+  .tmd .tmd-note-sum{font-size:14px;line-height:1.5;color:var(--pk-ink);font-weight:500}
+  .tmd .tmd-note-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .tmd .tmd-note-toggle{flex:none;align-self:center;height:28px;padding:0 12px;border:1px solid var(--pk-hair);border-radius:0;
+    background:transparent;cursor:pointer;color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;
+    text-transform:uppercase;white-space:nowrap;transition:border-color .15s,color .15s}
+  .tmd .tmd-note-toggle:disabled{opacity:.5;cursor:default}
+
+  .tmd .tmd-empty{margin:64px 0;text-align:center;color:var(--pk-muted);font-size:14px;letter-spacing:.02em}
+
+  /* ===== login overlay (appended to <body>, outside .tmd) ===== */
+  .tmd-login{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;
+    background:rgba(8,8,8,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);font-family:var(--pk-font)}
+  .tmd-login-card{width:400px;max-width:100%;background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);
+    border-radius:12px;padding:32px;box-shadow:0 24px 80px rgba(0,0,0,.6);font:400 14px/1.5 var(--pk-font);box-sizing:border-box;
+    animation:tmd-pop .2s ease both}
+  .tmd-login-title{font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .tmd-login-sub{font-size:13px;color:var(--pk-body);margin:8px 0 22px}
+  .tmd-login-label{display:block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--pk-muted);margin:0 0 8px}
+  .tmd-login-label2{margin-top:18px}
+  .tmd-login-input{width:100%;height:48px;padding:0 14px;border:1px solid var(--pk-hair);border-radius:4px;
+    font:inherit;color:var(--pk-ink);background:var(--pk-input);box-sizing:border-box}
+  .tmd-login-input::placeholder{color:var(--pk-muted)}
+  .tmd-login-input:focus{outline:none;border-color:var(--pk-red)}
+  .tmd-login-select{cursor:pointer;appearance:none;-webkit-appearance:none;
+    background:var(--pk-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237d7d7d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:34px}
+  .tmd-login-select option{background:#111;color:#fff}
+  .tmd-login-err{margin-top:10px;font-size:13px;font-weight:600;color:var(--pk-softred)}
+  .tmd-login-actions{display:flex;justify-content:flex-end;margin-top:22px}
+  .tmd-login-btn{height:44px;padding:0 26px;border:none;border-radius:0;background:var(--pk-red);color:#fff;
+    font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .15s}
+  .tmd-login-btn:disabled{opacity:.6;cursor:default}
+
+  /* ===== responsive ===== */
+  @media (max-width:768px){
+    .tmd .tmd-shell{flex-direction:column;gap:20px}
+    .tmd .tmd-side{flex-direction:row;width:auto;position:static;flex-wrap:wrap}
+  }
+  @media (max-width:560px){
+    .tmd #tmd-counts{grid-template-columns:1fr}
+    .tmd .tmd-line{flex-wrap:wrap}
+  }
+
+  /* ===== hover (desktop only, gated) ===== */
+  @media (min-width:1024px) and (hover:hover){
+    .tmd .tmd-btn:not(.tmd-btn-primary):hover{border-color:var(--pk-red);color:var(--pk-red)}
+    .tmd .tmd-btn-primary:hover{background:var(--pk-red-2);border-color:var(--pk-red-2);color:#fff}
+    .tmd .tmd-nav:hover{color:var(--pk-ink)}
+    .tmd .tmd-filter:hover{color:var(--pk-ink)}
+    .tmd .tmd-bypage:hover,.tmd .tmd-markall:hover,.tmd .tmd-note-toggle:hover{border-color:var(--pk-red);color:var(--pk-red)}
+    .tmd .tmd-slug:hover{color:var(--pk-red);border-color:var(--pk-red)}
+    .tmd-login-btn:hover{background:var(--pk-red-2)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .tmd .tmd-app > *,.tmd #tmd-counts .tmd-count,.tmd .tmd-grid > .tmd-item,.tmd .tmd-note,
+    .tmd .tmd-btn.is-refreshing .tmd-refresh-ico svg,.tmd-login-card{animation:none !important}
+  }
+</style>
+
+<script>
+  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM } from './config';
+  (() => {
+    if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
+    const LOCAL = !WORKER_URL;
+    const TEAM_KEY = 'teamDashTeam'; // the signed-in team (server-side isolation is keyed to it)
+    const PASS_KEY = 'teamDashPass'; // that team's reviewer key
+
+    const team = () => sessionStorage.getItem(TEAM_KEY) || '';
+
+    // ---- transport: Worker (X-Review-Pass) or the localStorage demo store ----
+    async function apiFetch(path, opts = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      const pass = sessionStorage.getItem(PASS_KEY);
+      if (pass) headers['X-Review-Pass'] = pass;
+      const res = await fetch(WORKER_URL + path, { ...opts, headers });
+      if (res.status === 401) { sessionStorage.removeItem(PASS_KEY); throw new Error('unauthorized'); }
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }
+    // The team-visible projection (matches the Worker's maskForTeam) for LOCAL mode.
+    const maskLocal = (c) => ({
+      id: c.id, parentId: c.parentId || null, createdAt: c.createdAt, team: c.team || '',
+      name: c.name || '', comment: c.comment, changeTo: c.changeTo || '', page: c.page, anchor: c.anchor || {},
+      status: c.published ? (c.publishedStatus || 'open') : 'open', // masked
+      publishedAt: c.publishedAt || '',
+    });
+    function localComments(t) {
+      const out = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('rvc:')) { try { out.push(...JSON.parse(localStorage.getItem(k) || '[]')); } catch {} }
+      }
+      return out.filter((c) => (c.team || '') === t).map(maskLocal).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    }
+    function localNotifs(t) {
+      let arr = [];
+      try { arr = JSON.parse(localStorage.getItem('rvc-notifications') || '[]'); } catch {}
+      return arr.filter((n) => n.team === t).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    }
+    function localMarkRead(ids, read = true) {
+      let arr = [];
+      try { arr = JSON.parse(localStorage.getItem('rvc-notifications') || '[]'); } catch {}
+      let updated = 0;
+      for (const n of arr) { if (ids.includes(n.id) && n.team === team() && n.readTeam !== read) { n.readTeam = read; updated++; } }
+      if (updated) localStorage.setItem('rvc-notifications', JSON.stringify(arr));
+      return { ok: true, updated };
+    }
+
+    const store = LOCAL
+      ? {
+          comments: async () => localComments(team()),
+          notifs: async () => localNotifs(team()),
+          markRead: async (ids, read = true) => localMarkRead(ids, read),
+        }
+      : {
+          comments: () => apiFetch('/comments?team=' + encodeURIComponent(team())),
+          notifs: () => apiFetch('/notifications?team=' + encodeURIComponent(team())),
+          markRead: (ids, read = true) => apiFetch('/notifications/read', { method: 'POST', body: JSON.stringify({ ids, team: team(), read }) }),
+        };
+
+    // ---- helpers ----
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
+    const fmt = (iso) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+    // Team chip colour derived from the team's identity hue (mirrors Dashboard.astro).
+    const mix = (a, b, t) => {
+      const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+      const [ar, ag, ab] = p(a), [br, bg, bb] = p(b);
+      const ch = (x, y) => Math.round(x + (y - x) * t).toString(16).padStart(2, '0');
+      return '#' + ch(ar, br) + ch(ag, bg) + ch(ab, bb);
+    };
+    const teamStyle = (t) => {
+      const accent = (TEAM_COLORS[t] || ['#888', '#888'])[1];
+      return { bg: mix(accent, '#181818', 0.82), fg: mix(accent, '#ffffff', 0.55), bd: mix(accent, '#181818', 0.5) };
+    };
+    const teamChip = (t) => {
+      if (!t) return '';
+      const s = teamStyle(t);
+      return `<span class="tmd-team-chip" style="background:${s.bg};color:${s.fg};border:1px solid ${s.bd}">${esc(t)}</span>`;
+    };
+    // Statuses are framed for the team — the deploy bucket is never shown.
+    const statusChip = (c) => c.status === 'completed'
+      ? `<span class="tmd-chip done">Done</span>`
+      : c.status === 'closed'
+        ? `<span class="tmd-chip closed">Closed</span>`
+        : `<span class="tmd-chip pending">Pending</span>`;
+
+    // ---- state ----
+    let comments = [], notes = [], view = 'comments', filter = 'all', byPage = false;
+    const roots = () => comments.filter((c) => !c.parentId);
+    const repliesOf = (id) => comments.filter((c) => c.parentId === id).sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1));
+    const unreadNotes = () => notes.filter((n) => n.readTeam === false);
+
+    function currentRoots() {
+      let rs = roots();
+      if (filter === 'pending') rs = rs.filter((c) => c.status === 'open');
+      else if (filter === 'done') rs = rs.filter((c) => c.status === 'completed');
+      else if (filter === 'closed') rs = rs.filter((c) => c.status === 'closed');
+      return rs.slice().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+    }
+
+    // ---- data ----
+    async function loadData() {
+      const [c, n] = await Promise.all([store.comments(), store.notifs()]);
+      comments = Array.isArray(c) ? c : [];
+      notes = Array.isArray(n) ? n : [];
+      renderHeader(); counts(); render();
+    }
+    let refreshTimer = null;
+    function startAutoRefresh() {
+      if (refreshTimer) return;
+      refreshTimer = setInterval(() => { if (!document.hidden) loadData().catch(() => {}); }, 30000);
+      window.addEventListener('focus', () => loadData().catch(() => {}));
+    }
+
+    function renderHeader() {
+      const you = $('#tmd-you');
+      $('#tmd-you-chip').innerHTML = teamChip(team());
+      you.hidden = !team();
+      const badge = $('#tmd-navbadge');
+      const u = unreadNotes().length;
+      badge.textContent = u;
+      badge.hidden = u === 0;
+    }
+
+    function counts() {
+      const rs = roots();
+      const pending = rs.filter((c) => c.status === 'open').length;
+      const done = rs.filter((c) => c.status === 'completed').length;
+      const unread = unreadNotes().length;
+      $('#tmd-counts').innerHTML =
+        `<span class="tmd-count tmd-count-pending"><b>${pending}</b> Pending</span>` +
+        `<span class="tmd-count tmd-count-done"><b>${done}</b> Done</span>` +
+        `<span class="tmd-count"><b>${unread}</b> Notifications</span>`;
+    }
+
+    function card(root) {
+      const a = root.anchor || {};
+      const replies = repliesOf(root.id);
+      const repliesHtml = replies.length
+        ? `<div class="tmd-replies">` + replies.map((r) =>
+            `<div class="tmd-reply">${teamChip(r.team)}<div class="tmd-rtxt">${esc(r.comment)}</div>` +
+            (r.changeTo ? `<div class="tmd-change"><span>Change to</span><div>${esc(r.changeTo)}</div></div>` : '') +
+            `<div class="tmd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
+        : '';
+      return (
+        `<article class="tmd-item">` +
+          `<div class="tmd-line">` +
+            statusChip(root) +
+            `<div class="tmd-headline">` +
+              `<div class="tmd-comment">${esc(root.comment)}` +
+                (replies.length ? `<span class="tmd-n">${replies.length + 1} comments</span>` : '') + `</div>` +
+              (a.snippet ? `<div class="tmd-snip">on “${esc(a.snippet)}”</div>` : '') +
+            `</div>` +
+          `</div>` +
+          (root.changeTo ? `<div class="tmd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
+          `<div class="tmd-meta">` +
+            `<a class="tmd-slug" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(pageName(root.page.path))}</a>` +
+            `<span class="tmd-time">${esc(fmt(root.createdAt))}</span>` +
+          `</div>` +
+          repliesHtml +
+        `</article>`
+      );
+    }
+
+    function renderComments() {
+      const host = $('#tmd-list');
+      const rs = currentRoots();
+      if (byPage) {
+        const paths = [...new Set(rs.map((c) => c.page.path))].sort();
+        host.innerHTML = paths.map((p) => {
+          const group = rs.filter((c) => c.page.path === p);
+          const pend = group.filter((c) => c.status === 'open').length;
+          const done = group.filter((c) => c.status === 'completed').length;
+          return `<div class="tmd-group"><h2 class="tmd-gh">` +
+            `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(pageName(p))}</a>` +
+            `<span>${pend} pending · ${done} done</span>` +
+            `</h2><div class="tmd-grid">${group.map(card).join('')}</div></div>`;
+        }).join('');
+      } else {
+        host.innerHTML = `<div class="tmd-grid">${rs.map(card).join('')}</div>`;
+      }
+      const emp = $('#tmd-empty');
+      emp.hidden = rs.length > 0;
+      if (!rs.length) emp.textContent = filter === 'all' ? 'No comments from your team yet.' : 'Nothing in this filter.';
+    }
+
+    function noteItem(n) {
+      const unread = n.readTeam === false;
+      return `<article class="tmd-note${unread ? ' is-unread' : ''}">` +
+        `<span class="tmd-note-dot"></span>` +
+        `<div class="tmd-note-body">` +
+          `<div class="tmd-note-sum">${esc(n.summary || 'Your comment was updated.')}</div>` +
+          `<div class="tmd-note-meta">` +
+            `<a class="tmd-slug" href="${esc(n.path || '/')}" target="_blank" rel="noopener">${esc(n.pageName || pageName(n.path || '/'))}</a>` +
+            `<span class="tmd-time">${esc(fmt(n.createdAt))}</span>` +
+          `</div>` +
+        `</div>` +
+        `<button class="tmd-note-toggle" type="button" data-id="${esc(n.id)}" data-read="${unread ? '1' : '0'}">` +
+          (unread ? 'Mark read' : 'Mark unread') +
+        `</button>` +
+      `</article>`;
+    }
+
+    function renderNotes() {
+      const list = notes.slice().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+      $('#tmd-notes').innerHTML = list.map(noteItem).join('');
+      const u = unreadNotes().length;
+      $('#tmd-markall').disabled = u === 0;
+      const emp = $('#tmd-empty');
+      emp.hidden = list.length > 0;
+      if (!list.length) emp.textContent = 'No notifications yet.';
+    }
+
+    function render() {
+      $('#tmd-view-comments').hidden = view !== 'comments';
+      $('#tmd-view-notifs').hidden = view !== 'notifs';
+      $('#tmd-empty').hidden = true;
+      if (view === 'notifs') renderNotes(); else renderComments();
+      renderHeader();
+    }
+
+    // ---- login (Team + Key) ----
+    let loginEl = null;
+    function showLogin() {
+      if (!loginEl) {
+        const teamOpts = [...TEAMS].sort((a, b) => a.localeCompare(b))
+          .map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('')
+          // ADMIN_TEAM ('Design') is a login-only identity — not in TEAMS. Picking it
+          // + the admin password signs in as admin and lands on /reviewdash.
+          + `<option value="${esc(ADMIN_TEAM)}">${esc(ADMIN_TEAM)} (Admin)</option>`;
+        loginEl = document.createElement('div'); loginEl.className = 'tmd-login';
+        loginEl.innerHTML =
+          '<div class="tmd-login-card" role="dialog" aria-modal="true">' +
+          '<div class="tmd-login-title">Team Review</div>' +
+          '<div class="tmd-login-sub">Select your team and enter your key to see your review items.</div>' +
+          '<label class="tmd-login-label" for="tmd-login-team">Team</label>' +
+          '<select id="tmd-login-team" class="tmd-login-input tmd-login-select">' +
+          '<option value="" disabled selected>Select Team</option>' + teamOpts +
+          '</select>' +
+          '<label class="tmd-login-label tmd-login-label2" for="tmd-login-key">Key</label>' +
+          '<input id="tmd-login-key" class="tmd-login-input" type="password" placeholder="Enter Key" autocomplete="off" spellcheck="false">' +
+          '<div class="tmd-login-err" hidden></div>' +
+          '<div class="tmd-login-actions"><button type="button" class="tmd-login-btn">Sign in</button></div>' +
+          '</div>';
+        const teamSel = loginEl.querySelector('#tmd-login-team');
+        const input = loginEl.querySelector('#tmd-login-key');
+        const go = () => tryLogin(teamSel, input);
+        loginEl.querySelector('.tmd-login-btn').addEventListener('click', go);
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+        teamSel.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+      }
+      loginEl.querySelector('.tmd-login-err').hidden = true;
+      const teamSel = loginEl.querySelector('#tmd-login-team');
+      teamSel.value = team() || '';
+      loginEl.querySelector('#tmd-login-key').value = '';
+      document.body.appendChild(loginEl);
+      (teamSel.value ? loginEl.querySelector('#tmd-login-key') : teamSel).focus();
+    }
+    function hideLogin() { loginEl && loginEl.remove(); }
+
+    async function tryLogin(teamSel, input) {
+      const t = teamSel.value;
+      const key = input.value.trim();
+      const err = loginEl.querySelector('.tmd-login-err');
+      if (!t) { teamSel.focus(); err.textContent = 'Please choose your team.'; err.hidden = false; return; }
+      if (!key) { input.focus(); return; }
+      const btn = loginEl.querySelector('.tmd-login-btn');
+      // ADMIN_TEAM ('Design') is the admin door: don't attempt a team-scoped read.
+      // Store the key as the admin session token and hand off to /reviewdash, which
+      // validates the password ('website') itself.
+      if (t === ADMIN_TEAM) {
+        sessionStorage.setItem('reviewAdminPass', key);
+        sessionStorage.setItem('reviewMode', '1');
+        btn.disabled = true; btn.textContent = 'Signing in…';
+        location.replace('/reviewdash');
+        return;
+      }
+      sessionStorage.setItem(TEAM_KEY, t);   // scopes every request to this team
+      sessionStorage.setItem(PASS_KEY, key); // validated below against the team-scoped read
+      btn.disabled = true; btn.textContent = 'Checking…'; err.hidden = true;
+      try { await loadData(); hideLogin(); startAutoRefresh(); }
+      catch (e) {
+        sessionStorage.removeItem(PASS_KEY);
+        btn.disabled = false; btn.textContent = 'Sign in';
+        err.textContent = e.message === 'unauthorized' ? 'Incorrect team or key.' : ('Could not connect — ' + e.message);
+        err.hidden = false; input.focus(); input.select();
+      }
+    }
+
+    function init() {
+      // A live admin session (Design) with no active team resume → straight to /reviewdash.
+      if (!sessionStorage.getItem(TEAM_KEY) && sessionStorage.getItem('reviewAdminPass')) {
+        location.replace('/reviewdash'); return;
+      }
+      if (sessionStorage.getItem(TEAM_KEY) && sessionStorage.getItem(PASS_KEY)) {
+        loadData().then(startAutoRefresh).catch((e) => {
+          if (e.message === 'unauthorized') { sessionStorage.removeItem(PASS_KEY); showLogin(); }
+          else { $('#tmd-empty').hidden = false; $('#tmd-empty').textContent = 'Could not load — ' + e.message; }
+        });
+      } else showLogin();
+    }
+
+    // ---- events ----
+    $('.tmd-side').addEventListener('click', (e) => {
+      const b = e.target.closest('.tmd-nav'); if (!b) return;
+      view = b.dataset.view;
+      document.querySelectorAll('.tmd-nav').forEach((n) => n.classList.toggle('is-active', n === b));
+      render();
+    });
+    $('#tmd-filters').addEventListener('click', (e) => {
+      const b = e.target.closest('.tmd-filter'); if (!b) return;
+      filter = b.dataset.filter;
+      $('#tmd-filters').querySelectorAll('.tmd-filter').forEach((f) => f.classList.toggle('is-active', f === b));
+      renderComments();
+    });
+    $('#tmd-bypage').addEventListener('click', (e) => {
+      byPage = !byPage;
+      e.currentTarget.classList.toggle('is-active', byPage);
+      renderComments();
+    });
+    $('#tmd-markall').addEventListener('click', async (e) => {
+      const ids = unreadNotes().map((n) => n.id);
+      if (!ids.length) return;
+      const btn = e.currentTarget; btn.disabled = true;
+      try {
+        await store.markRead(ids, true);
+        notes.forEach((n) => { if (ids.includes(n.id)) n.readTeam = true; });
+        counts(); render();
+      } catch (err) { btn.disabled = false; alert('Could not update — ' + err.message); }
+    });
+    // Per-item read/unread toggle. data-read="1" = currently unread ⇒ mark read; "0" ⇒ mark unread.
+    $('#tmd-notes').addEventListener('click', async (e) => {
+      const b = e.target.closest('.tmd-note-toggle'); if (!b) return;
+      const id = b.dataset.id;
+      const read = b.dataset.read === '1';
+      b.disabled = true;
+      try {
+        await store.markRead([id], read);
+        const n = notes.find((x) => x.id === id);
+        if (n) n.readTeam = read;
+        counts(); render();
+      } catch (err) { b.disabled = false; alert('Could not update — ' + err.message); }
+    });
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    $('#tmd-refresh').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      if (btn.classList.contains('is-refreshing')) return;
+      btn.classList.add('is-refreshing');
+      const t0 = Date.now();
+      try { await loadData(); await wait(Math.max(0, 550 - (Date.now() - t0))); }
+      catch (err) { alert('Could not refresh — ' + err.message); }
+      finally { btn.classList.remove('is-refreshing'); }
+    });
+
+    init();
+  })();
+</script>
