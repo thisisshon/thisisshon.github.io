@@ -1,11 +1,15 @@
-  import { TEAMS, TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, themeVars, ADMIN_TEAM } from './config.js';
+  import { TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, ADMIN_TEAM,
+    getSession, setSession, clearSession, buildPanelLogin } from './config.js';
+  // The design system, inlined — injected only when review mode arms (real visitors
+  // download nothing), so the on-page login matches the dashboards (.pk-login).
+  import pkTokensCss from './design/tokens.css?inline';
+  import pkComponentsCss from './design/components.css?inline';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
 
     // ---- arm gate --------------------------------------------------------
-    const KEY = 'reviewMode', PASS_KEY = 'reviewPass', TEAM_KEY = 'reviewTeam',
-      SESSION_KEY = 'reviewSessionId';
+    const KEY = 'reviewMode', SESSION_KEY = 'reviewSessionId';
     // A review session = one sitting in the tab; id persists across page nav and
     // comments, and is cleared on Save/exit so the next entry logs separately.
     function sessionId() {
@@ -39,10 +43,10 @@
     // ---- storage abstraction (Worker | localStorage demo) ----------------
     async function apiFetch(path, opts = {}) {
       const headers = { 'Content-Type': 'application/json' };
-      const pass = sessionStorage.getItem(PASS_KEY);
+      const pass = getSession().key;
       if (pass) headers['X-Review-Pass'] = pass;
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
-      if (res.status === 401) { sessionStorage.removeItem(PASS_KEY); throw new Error('unauthorized'); }
+      if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }
@@ -65,89 +69,51 @@
           add: (rec) => apiFetch('/comments', { method: 'POST', body: JSON.stringify(rec) }),
         };
 
-    // ---- Team + Key login gate ------------------------------------------
-    // Clicking Comment opens an in-page login overlay (not a browser prompt).
-    // TWO fields: a Team dropdown (session-global team, stored in TEAM_KEY) and a
-    // Key (the shared passcode, stored in PASS_KEY and validated against the Worker
-    // before review mode starts). Team options are sourced from config's TEAMS
-    // (imported above) — never hardcoded here — and shown sorted alphabetically.
-    let loginEl = null;
+    // ---- login (the shared modern Panel Login — same as the dashboards) --
+    // One login per tab: the { team, key } chosen here is the shared session
+    // (config's getSession/setSession), so the dashboards recognise it too.
+    let login = null;
     function startReview() {
-      if (sessionStorage.getItem(PASS_KEY)) return enter(); // already logged in this tab
+      if (getSession().key) return enter(); // already logged in this tab
       showLogin();
     }
     function showLogin() {
-      if (!loginEl) {
-        // Team <option>s from config's TEAMS, sorted alphabetically (config stays
-        // the single source — add/rename a team there and the login follows).
-        const teamOpts = [...TEAMS].sort((a, b) => a.localeCompare(b))
-          .map((t) => '<option value="' + t + '">' + t + '</option>').join('');
-        // Admin can sign in here too (login-only identity); they land on /reviewdash.
-        const adminOpt = '<option value="' + ADMIN_TEAM + '">' + ADMIN_TEAM + ' (Admin)</option>';
-        loginEl = document.createElement('div'); loginEl.className = 'rv-login';
-        loginEl.innerHTML =
-          '<div class="rv-login-card" role="dialog" aria-modal="true">' +
-          '<div class="rv-login-brand"><span class="rv-login-mark"></span>ProofKit</div>' +
-          '<div class="rv-login-title">Let’s Review.</div>' +
-          '<div class="rv-login-sub">Please select your Team and enter the provided key to start marking comments.</div>' +
-          '<label class="rv-login-label" for="rv-login-team">Team</label>' +
-          '<select id="rv-login-team" class="rv-login-input rv-login-select">' +
-          '<option value="" disabled selected>Select Team</option>' + teamOpts + adminOpt +
-          '</select>' +
-          '<label class="rv-login-label rv-login-label2" for="rv-login-id">Authentication</label>' +
-          '<input id="rv-login-id" class="rv-login-input" type="password" placeholder="Enter Key" autocomplete="off" spellcheck="false">' +
-          '<div class="rv-login-err" hidden></div>' +
-          '<div class="rv-login-actions">' +
-          '<button type="button" class="rv-login-cancel">Cancel</button>' +
-          '<button type="button" class="rv-login-btn">Sign in</button>' +
-          '</div>' +
-          '<div class="rv-login-foot">ProofKit · Content Review</div>' +
-          '</div>';
-        const teamSel = loginEl.querySelector('#rv-login-team');
-        const input = loginEl.querySelector('#rv-login-id');
-        const go = () => tryLogin(teamSel, input, loginEl);
-        loginEl.querySelector('.rv-login-btn').addEventListener('click', go);
-        loginEl.querySelector('.rv-login-cancel').addEventListener('click', hideLogin);
-        teamSel.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-        loginEl.addEventListener('click', (e) => { if (e.target === loginEl) hideLogin(); });
+      if (!login) {
+        login = buildPanelLogin({ title: 'Let’s Review.', sub: 'Select your team and enter your key to start marking comments.' });
+        const go = () => tryLogin();
+        login.button.addEventListener('click', go);
+        login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+        // overlay context: clicking the backdrop backs out of review
+        login.el.addEventListener('click', (e) => { if (e.target === login.el) hideLogin(); });
       }
-      loginEl.querySelector('.rv-login-err').hidden = true;
-      const teamSel = loginEl.querySelector('#rv-login-team');
-      teamSel.value = localStorage.getItem(TEAM_KEY) || ''; // pre-fill last team
-      const inp = loginEl.querySelector('#rv-login-id'); inp.value = '';
-      document.body.appendChild(loginEl);
-      (teamSel.value ? inp : teamSel).focus();
+      login.setError(''); login.keyInput.value = ''; login.setTeam(getSession().team || '');
+      document.body.appendChild(login.el);
+      if (getSession().team) login.keyInput.focus(); else login.focusTeam();
     }
-    function hideLogin() { loginEl && loginEl.remove(); }
-    async function tryLogin(teamSel, input, el) {
-      const team = teamSel.value;
-      const id = input.value.trim();
-      const err = el.querySelector('.rv-login-err');
-      if (!team) { teamSel.focus(); err.textContent = 'Please choose your team.'; err.hidden = false; return; }
-      if (!id) { input.focus(); return; }
-      const btn = el.querySelector('.rv-login-btn');
-      localStorage.setItem(TEAM_KEY, team);   // session-global team (chosen once at login)
-      sessionStorage.setItem(PASS_KEY, id);   // the shared key, validated below
-      btn.disabled = true; btn.textContent = 'Checking…'; err.hidden = true;
+    function hideLogin() { login && login.el.remove(); }
+    async function tryLogin() {
+      const team = login.getTeam();
+      const id = login.keyInput.value.trim();
+      if (!team) { login.focusTeam(); login.setError('Please choose your team.'); return; }
+      if (!id) { login.keyInput.focus(); return; }
+      setSession(team, id); // shared session (validated below)
+      login.setBusy(true, 'Authenticating'); login.setError('');
       try {
-        if (!LOCAL) await store.list(pagePath()); // validate the Key against the Worker
+        if (!LOCAL) await store.list(pagePath()); // validate the key against the Worker
         hideLogin();
         enter();
       } catch (e) {
-        sessionStorage.removeItem(PASS_KEY);
-        btn.disabled = false; btn.textContent = 'Sign in';
-        err.textContent = e.message === 'unauthorized'
-          ? 'Incorrect key. Please try again.'
-          : ('Could not connect — ' + e.message);
-        err.hidden = false; input.focus(); input.select();
+        clearSession();
+        login.setBusy(false, 'Authenticate');
+        login.setError(e.message === 'unauthorized' ? 'Incorrect key. Please try again.' : ('Could not connect — ' + e.message));
+        login.keyInput.focus(); login.keyInput.select();
       }
     }
 
     // ---- styles (injected once, only in review mode) ---------------------
     // Host-page elements to hide while armed (e.g. a back-to-top FAB); see ./config.
     const hideCss = HIDE_SELECTORS.map((s) => `html.rv-armed ${s}{display:none !important}`).join('');
-    const css = ':root{' + themeVars + '}' + hideCss + `
+    const css = pkTokensCss + pkComponentsCss + hideCss + `
       /* Dock sits ABOVE popovers/toasts so its buttons are always clickable,
          even when a comment popover would otherwise overlap the bottom-right. */
       .rv-dock{position:fixed;right:24px;bottom:24px;z-index:2147483040;
@@ -323,7 +289,7 @@
     document.head.appendChild(styleEl);
     // The Comment dock (and the host .to-top hide) appear ONLY once the review session
     // is authenticated - i.e. a validated Key is stored in PASS_KEY (`reviewPass`).
-    const isAuthed = () => !!sessionStorage.getItem(PASS_KEY);
+    const isAuthed = () => !!getSession().key;
     const dock = document.createElement('div'); dock.className = 'rv-dock';
     let dockShown = false;
     function revealDock() {
@@ -374,7 +340,7 @@
     dashBtn.innerHTML = ICON_GRID + '<span>Dashboard</span>';
     dashBtn.style.display = 'none'; // shown by revealDock() once authenticated
     dashBtn.addEventListener('click', () => {
-      const team = localStorage.getItem(TEAM_KEY) || '';
+      const team = getSession().team;
       location.href = team === ADMIN_TEAM ? '/reviewdash' : '/teamdash';
     });
 
@@ -533,7 +499,7 @@
       placePop(pop, cx, cy);
 
       const textI = pop.querySelector('.rv-text'), changeI = pop.querySelector('.rv-change');
-      const team = localStorage.getItem(TEAM_KEY) || ''; // session-global team, chosen at login
+      const team = getSession().team; // session-global team, chosen at login
       // Content is the only team that suggests replacement copy -> reveal 2nd field.
       changeI.hidden = team !== 'Content';
       placePop(pop, cx, cy);
@@ -549,7 +515,7 @@
     }
 
     async function send(pop, textI, changeI, anchor) {
-      const team = localStorage.getItem(TEAM_KEY) || ''; // session-global team from login
+      const team = getSession().team; // session-global team from login
       const comment = textI.value.trim();
       const changeTo = changeI.value.trim();
       if (!comment) { textI.focus(); return; }
@@ -615,7 +581,7 @@
       document.body.appendChild(pop);
       const p = pinPos(root); placePop(pop, p.x, p.y);
       // The team is session-global (chosen at login); replies are team-tagged, no name.
-      const rteam = localStorage.getItem(TEAM_KEY) || '';
+      const rteam = getSession().team;
       const rchange = pop.querySelector('.rv-rchange');
       rchange.hidden = rteam !== 'Content'; // Content team reveals the "change to…" field
       placePop(pop, p.x, p.y);
@@ -627,7 +593,7 @@
     }
 
     async function addReply(pop, root) {
-      const team = localStorage.getItem(TEAM_KEY) || ''; // session-global team from login
+      const team = getSession().team; // session-global team from login
       const txt = pop.querySelector('.rv-rtext').value.trim();
       const changeTo = pop.querySelector('.rv-rchange').value.trim();
       if (!txt) { pop.querySelector('.rv-rtext').focus(); return; }

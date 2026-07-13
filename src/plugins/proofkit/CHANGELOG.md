@@ -6,6 +6,21 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.12.0 — 2026-07-13 — one login per tab: unified session + modern on-page login
+
+- **The on-page overlay login is now the shared modern login** (`.pk-login`), matching the dashboards —
+  the legacy `.rv-login` card is gone (answering "why is /review showing the legacy login"). The overlay
+  inlines the design system (tokens + components) and injects it only when review mode arms, so real
+  visitors still download nothing.
+- **ONE login per tab.** All three surfaces (overlay, `/reviewdash`, `/teamdash`) now share a single
+  per-tab session — `{ team, key }` in sessionStorage (`pkTeam`/`pkKey`) via config's
+  `getSession`/`setSession`/`clearSession`. Signing in anywhere authenticates everywhere in that tab; the
+  old separate `reviewPass` / `reviewAdminPass` / `teamDashTeam`+`teamDashPass` logins are gone.
+- **Role routing off the one session.** `/reviewdash`: a Design (admin) session opens the panel and stays
+  active; any other team is sent to `/teamdash`. `/teamdash`: a Design session bounces to `/reviewdash`.
+  Hitting a page's `/review` with a live session auto-enters review — no prompt.
+- The global-theme write (POST `/settings`) now reads the shared session key.
+
 ## 2.11.2 — 2026-07-13 — dropdown item icons + stacking open animation + blue team name
 
 - **Dropdown items carry icons.** `buildDropdown` items take an `icon` (inline SVG); the Sort menu

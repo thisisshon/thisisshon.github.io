@@ -1,5 +1,5 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
-    buildPanelLogin, initTheme } from './config.js';
+    buildPanelLogin, getSession, setSession, clearSession, initTheme } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). This is a
@@ -7,18 +7,17 @@
     // reads + applies whatever the admin set (synced from the Worker).
     initTheme();
     const LOCAL = !WORKER_URL;
-    const TEAM_KEY = 'teamDashTeam'; // the signed-in team (server-side isolation is keyed to it)
-    const PASS_KEY = 'teamDashPass'; // that team's reviewer key
 
-    const team = () => sessionStorage.getItem(TEAM_KEY) || '';
+    // The signed-in team comes from the ONE shared per-tab session (config).
+    const team = () => getSession().team;
 
     // ---- transport: Worker (X-Review-Pass) or the localStorage demo store ----
     async function apiFetch(path, opts = {}) {
       const headers = { 'Content-Type': 'application/json' };
-      const pass = sessionStorage.getItem(PASS_KEY);
+      const pass = getSession().key; // the one shared session key
       if (pass) headers['X-Review-Pass'] = pass;
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
-      if (res.status === 401) { sessionStorage.removeItem(PASS_KEY); throw new Error('unauthorized'); }
+      if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }
@@ -250,21 +249,14 @@
       const key = login.keyInput.value.trim();
       if (!t) { login.focusTeam(); login.setError('Please choose your team.'); return; }
       if (!key) { login.keyInput.focus(); return; }
-      // ADMIN_TEAM ('Design') is the admin door: store the key as the admin session
-      // token and hand off to /reviewdash, which validates the admin key itself.
-      if (t === ADMIN_TEAM) {
-        sessionStorage.setItem('reviewAdminPass', key);
-        sessionStorage.setItem('reviewMode', '1');
-        login.setBusy(true, 'Authenticating'); login.setError('');
-        location.replace('/reviewdash');
-        return;
-      }
-      sessionStorage.setItem(TEAM_KEY, t);   // scopes every request to this team
-      sessionStorage.setItem(PASS_KEY, key); // validated below against the team-scoped read
+      setSession(t, key); // the one shared per-tab session
       login.setBusy(true, 'Authenticating'); login.setError('');
+      // ADMIN_TEAM ('Design') is the admin door → hand off to /reviewdash.
+      if (t === ADMIN_TEAM) { location.replace('/reviewdash'); return; }
+      // Team: validate the key against the team-scoped read.
       try { await loadData(); hideLogin(); startAutoRefresh(); }
       catch (e) {
-        sessionStorage.removeItem(PASS_KEY);
+        clearSession();
         login.setBusy(false, 'Authenticate');
         login.setError(e.message === 'unauthorized' ? 'Incorrect team or key.' : ('Could not connect — ' + e.message));
         login.keyInput.focus(); login.keyInput.select();
@@ -272,13 +264,13 @@
     }
 
     function init() {
-      // A live admin session (Design) with no active team resume → straight to /reviewdash.
-      if (!sessionStorage.getItem(TEAM_KEY) && sessionStorage.getItem('reviewAdminPass')) {
-        location.replace('/reviewdash'); return;
-      }
-      if (sessionStorage.getItem(TEAM_KEY) && sessionStorage.getItem(PASS_KEY)) {
+      const s = getSession();
+      // A live admin session (Design) → straight to the admin panel.
+      if (s.key && s.team === ADMIN_TEAM) { location.replace('/reviewdash'); return; }
+      // A team session → load it; otherwise ask to log in once.
+      if (s.key && s.team) {
         loadData().then(startAutoRefresh).catch((e) => {
-          if (e.message === 'unauthorized') { sessionStorage.removeItem(PASS_KEY); showLogin(); }
+          if (e.message === 'unauthorized') { clearSession(); showLogin(); }
           else { $('#tmd-empty').hidden = false; $('#tmd-empty').textContent = 'Could not load — ' + e.message; }
         });
       } else showLogin();

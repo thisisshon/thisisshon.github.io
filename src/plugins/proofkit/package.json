@@ -1,6 +1,6 @@
 {
   "name": "proofkit",
-  "version": "2.11.2",
+  "version": "2.12.0",
   "private": true,
   "description": "Proofkit — a self-contained, toggleable, portable content-review tool: an on-page click-to-comment overlay + admin dashboard + Cloudflare Worker. A framework-neutral core/ (plain JS/CSS + standalone HTML) with a thin Astro adapter, injectable into any Astro / Claude Code website project — or any stack via the standalone entries.",
   "keywords": ["content-review", "annotation", "overlay", "review-tool", "astro", "framework-neutral", "claude-code", "plugin"],

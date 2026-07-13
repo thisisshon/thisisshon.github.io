@@ -1,19 +1,19 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
-    ADMIN_TEAM, buildPanelLogin, buildDropdown, initTheme, mountThemeToggle } from './config.js';
+    ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession,
+    initTheme, mountThemeToggle } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter); apply the
     // global choice and mount the admin toggle.
     initTheme(); mountThemeToggle();
     const LOCAL = !WORKER_URL;
-    const PASS_KEY = 'reviewAdminPass'; // admin password for the dashboard (separate from reviewer Team ID)
 
     async function apiFetch(path, opts = {}) {
       const headers = { 'Content-Type': 'application/json' };
-      const pass = sessionStorage.getItem(PASS_KEY);
+      const pass = getSession().key; // the one shared session key
       if (pass) headers['X-Review-Pass'] = pass;
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
-      if (res.status === 401) { sessionStorage.removeItem(PASS_KEY); throw new Error('unauthorized'); }
+      if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
     }
@@ -106,7 +106,7 @@
     // the session password against the configured review password (hash-compared).
     // Throws the same 'unauthorized' the Worker would, so login/init handle it alike.
     const localGuard = async () => {
-      if (!(await checkReviewPassword(sessionStorage.getItem(PASS_KEY) || ''))) throw new Error('unauthorized');
+      if (!(await checkReviewPassword(getSession().key || ''))) throw new Error('unauthorized');
     };
     const store = LOCAL
       ? {
@@ -172,20 +172,14 @@
       const key = login.keyInput.value.trim();
       if (!team) { login.focusTeam(); login.setError('Please choose your team.'); return; }
       if (!key) { login.keyInput.focus(); return; }
-      // Non-admin team at the admin URL → send them to their team dashboard.
-      if (team !== ADMIN_TEAM) {
-        sessionStorage.setItem('teamDashTeam', team);
-        sessionStorage.setItem('teamDashPass', key);
-        login.setBusy(true, 'Authenticating'); login.setError('');
-        location.replace('/teamdash');
-        return;
-      }
-      // Design = admin: validate the key by loading the admin dashboard.
-      sessionStorage.setItem(PASS_KEY, key);
+      setSession(team, key); // the one shared per-tab session
       login.setBusy(true, 'Authenticating'); login.setError('');
+      // Non-admin team at the admin URL → hand off to their team dashboard.
+      if (team !== ADMIN_TEAM) { location.replace('/teamdash'); return; }
+      // Design = admin: validate the key by loading the admin panel.
       try { await loadData(); hideLogin(); startAutoRefresh(); }
       catch (e) {
-        sessionStorage.removeItem(PASS_KEY);
+        clearSession();
         login.setBusy(false, 'Authenticate');
         login.setError(e.message === 'unauthorized' ? 'Incorrect key. Please try again.' : ('Could not connect — ' + e.message));
         login.keyInput.focus(); login.keyInput.select();
@@ -193,9 +187,13 @@
     }
 
     function init() {
-      if (sessionStorage.getItem(PASS_KEY)) {
+      const s = getSession();
+      // Already signed in this tab as a team (not admin) → their team dashboard.
+      if (s.key && s.team && s.team !== ADMIN_TEAM) { location.replace('/teamdash'); return; }
+      // Admin session → open the panel; otherwise ask to log in once.
+      if (s.key && s.team === ADMIN_TEAM) {
         loadData().then(startAutoRefresh).catch((e) => {
-          if (e.message === 'unauthorized') { sessionStorage.removeItem(PASS_KEY); showLogin(); }
+          if (e.message === 'unauthorized') { clearSession(); showLogin(); }
           else { $('#rvd-empty').hidden = false; $('#rvd-empty').textContent = 'Could not load — ' + e.message; }
         });
       } else showLogin();

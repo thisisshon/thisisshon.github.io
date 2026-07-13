@@ -50,6 +50,23 @@ export async function checkReviewPassword(input) {
 }
 
 /* --------------------------------------------------------------------------
+ * ONE login per tab. Every Proofkit surface — the on-page overlay, /reviewdash,
+ * /teamdash — shares this single per-tab session: the { team, key } chosen at the
+ * one login. Whoever logs in anywhere is authenticated everywhere in that tab;
+ * the team decides the role (ADMIN_TEAM ⇒ admin panel, else the team dashboard).
+ * ------------------------------------------------------------------------ */
+export function getSession() {
+  try { return { team: sessionStorage.getItem('pkTeam') || '', key: sessionStorage.getItem('pkKey') || '' }; }
+  catch { return { team: '', key: '' }; }
+}
+export function setSession(team, key) {
+  try { sessionStorage.setItem('pkTeam', team); sessionStorage.setItem('pkKey', key); } catch {}
+}
+export function clearSession() {
+  try { sessionStorage.removeItem('pkTeam'); sessionStorage.removeItem('pkKey'); } catch {}
+}
+
+/* --------------------------------------------------------------------------
  * Teams + chip colours.
  * ------------------------------------------------------------------------ */
 export const TEAMS = ['Product', 'SEO', 'Marketing', 'Content'];
@@ -86,7 +103,6 @@ export const HIDE_SELECTORS = ['.to-top'];
 export const DEFAULT_THEME = 'red-moon'; // dark default
 export const LIGHT_THEME = 'light';      // what the toggle flips to
 const THEME_KEY = 'pkTheme';              // localStorage cache — instant, no-flash first paint
-const ADMIN_PASS_KEY = 'reviewAdminPass'; // where the admin dashboard keeps its pass (to write the global theme)
 
 /** Red Moon (dark) tokens as a bare declaration list — mirrors tokens.css :root. */
 export const themeVars =
@@ -119,7 +135,7 @@ export async function setGlobalTheme(name) {
   applyTheme(name);
   if (!WORKER_URL) return;
   try {
-    const pass = sessionStorage.getItem(ADMIN_PASS_KEY) || '';
+    const pass = getSession().key || ''; // admin key = the shared session key (team === Design)
     await fetch(WORKER_URL + '/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Review-Pass': pass },
