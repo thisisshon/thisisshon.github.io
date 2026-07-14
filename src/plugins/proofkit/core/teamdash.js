@@ -1,11 +1,12 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
-    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initTheme, ensureDemoReset } from './config.js';
+    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initLocalTheme, mountThemeToggle, ensureDemoReset } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
-    // Theme skins come from design/tokens.css (linked by the adapter). This is a
-    // GLOBAL, admin-controlled setting — team users have NO toggle; initTheme just
-    // reads + applies whatever the admin set (synced from the Worker).
-    initTheme();
+    // Theme skins come from design/tokens.css (linked by the adapter). Each team member
+    // controls their OWN light/dark mode — an individual, per-browser toggle (never the
+    // admin's global one). initLocalTheme applies the remembered choice; the toggle flips
+    // it locally and persists it, so the next login on this browser starts in that mode.
+    initLocalTheme(); mountThemeToggle('[data-pk-toggle]', { local: true });
     const LOCAL = !WORKER_URL;
 
     // Admin override: Builder (admin) can open ANY team's board via /teamdash?team=<T>
@@ -35,7 +36,7 @@
     }
     // The team-visible projection (matches the Worker's maskForTeam) for LOCAL mode.
     const maskLocal = (c) => ({
-      id: c.id, parentId: c.parentId || null, createdAt: c.createdAt, team: c.team || '', toTeam: c.toTeam || '',
+      id: c.id, ticket: c.ticket || '', parentId: c.parentId || null, createdAt: c.createdAt, team: c.team || '', toTeam: c.toTeam || '',
       name: c.name || '', comment: c.comment, changeTo: c.changeTo || '',
       aiPrompt: c.aiPrompt || '', validation: c.validation || null,
       page: c.page, anchor: c.anchor || {},
@@ -85,6 +86,17 @@
     const $ = (s) => document.querySelector(s);
     const esc = (s) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
     const fmt = (iso) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+    // "11:11:53 | 14 July, 2026" — the rail timestamp format (per the Figma card).
+    const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const fmtTimeDate = (iso) => {
+      try {
+        const d = new Date(iso);
+        return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())} | ${d.getDate()} ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`;
+      } catch { return String(iso || ''); }
+    };
+    // Card left-border state: pending (open) · done (completed) · closed.
+    const dataState = (c) => (c.status === 'completed' ? 'done' : c.status === 'closed' ? 'closed' : 'pending');
     // Team chip colour derived from the team's identity hue (mirrors Dashboard.astro).
     const mix = (a, b, t) => {
       const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
@@ -191,6 +203,9 @@
       // with the team name highlighted in a contrasting blue.
       const tt = $('#tmd-tag-team');
       if (tt) tt.innerHTML = team() ? ' | <span class="tmd-team-hi">' + esc(team()) + '</span>' : '';
+      // Page title carries the team name: e.g. "SEO Team" (falls back to "Team").
+      const h1 = document.querySelector('.tmd-h1');
+      if (h1) h1.textContent = team() ? team() + ' Team' : 'Team';
       const badge = $('#tmd-navbadge');
       const u = unreadNotes().length;
       badge.textContent = u;
@@ -217,28 +232,44 @@
             (r.changeTo ? `<div class="tmd-change"><span>Change to</span><div>${esc(r.changeTo)}</div></div>` : '') +
             `<div class="tmd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
         : '';
+      const id = esc(root.id);
+      // Direction: received → "Raised By <them>"; raised by us to another team → "To <them>".
+      const dir = (root.team && root.team !== team())
+        ? `Raised By <b>${esc(root.team)}</b>`
+        : (root.toTeam && root.toTeam !== team() && root.toTeam !== ADMIN_TEAM)
+          ? `To <b>${esc(root.toTeam)}</b>`
+          : '';
       return (
-        `<article class="tmd-item" data-id="${esc(root.id)}" tabindex="0" role="button" aria-label="View comment details">` +
-          `<div class="tmd-line">` +
-            statusChip(root) +
-            // Direction: received → "Raised By <them>"; raised by us to another team → "To <them>".
-            ((root.team && root.team !== team())
-              ? `<span class="tmd-from">Raised By ${teamChip(root.team)}</span>`
-              : (root.toTeam && root.toTeam !== team() && root.toTeam !== ADMIN_TEAM)
-                ? `<span class="tmd-from">To ${teamChip(root.toTeam)}</span>`
-                : '') +
-            `<div class="tmd-headline">` +
-              `<div class="tmd-comment">${esc(root.comment)}` +
-                (replies.length ? `<span class="tmd-n">${replies.length + 1} comments</span>` : '') + `</div>` +
-              (a.snippet ? `<div class="tmd-snip">on “${esc(a.snippet)}”</div>` : '') +
+        `<article class="tmd-item" data-id="${id}" data-state="${dataState(root)}" tabindex="0" role="button" aria-label="View comment details">` +
+          `<div class="tmd-card-row">` +
+            // LEFT — comment · selected element · raised-by · actions
+            `<div class="tmd-card-main">` +
+              `<div class="tmd-card-top">` +
+                `<div class="tmd-card-title">` +
+                  `<p class="tmd-comment">${esc(root.comment)}` +
+                    (replies.length ? ` <span class="tmd-n">${replies.length + 1} comments</span>` : '') + `</p>` +
+                  (a.snippet
+                    ? `<p class="tmd-selel"><span class="tmd-selel-lbl">Selected element:</span> ` +
+                      `<span class="tmd-selel-val">“${esc(a.snippet)}” on ` +
+                      `<a class="tmd-selel-page" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(pageName(root.page.path))}</a></span></p>`
+                    : '') +
+                `</div>` +
+                (dir ? `<p class="tmd-raised">${dir}</p>` : '') +
+              `</div>` +
+              (root.changeTo ? `<div class="tmd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
+              `<div class="tmd-card-actions">` +
+                `<a class="tmd-openpin" href="${esc(root.page.path)}?review=1#c=${id}" target="_blank" rel="noopener">Open Pin</a>` +
+                `<span class="tmd-detailhint">View details →</span>` +
+              `</div>` +
             `</div>` +
-          `</div>` +
-          (root.changeTo ? `<div class="tmd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
-          `<div class="tmd-meta">` +
-            `<a class="tmd-slug" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(pageName(root.page.path))}</a>` +
-            `<span class="tmd-time">${esc(fmt(root.createdAt))}</span>` +
-            `<a class="tmd-openpin" href="${esc(root.page.path)}?review=1#c=${esc(root.id)}" target="_blank" rel="noopener">Open Pin</a>` +
-            `<span class="tmd-detailhint">View details →</span>` +
+            // RIGHT rail — status chip + ticket, then the timestamp
+            `<div class="tmd-card-rail">` +
+              `<div class="tmd-rail-top">` +
+                statusChip(root) +
+                (root.ticket ? `<span class="tmd-ticket">#${esc(root.ticket)}</span>` : '') +
+              `</div>` +
+              `<span class="tmd-card-time">${esc(fmtTimeDate(root.createdAt))}</span>` +
+            `</div>` +
           `</div>` +
           repliesHtml +
         `</article>`
@@ -290,6 +321,7 @@
           `<div class="tmd-detail-chips">${statusChip(c)}${c.team ? '<span class="tmd-from">from ' + teamChip(c.team) + '</span>' : ''}` +
             `<a class="tmd-slug" href="${esc(c.page.path)}?review=1#c=${esc(c.id)}" target="_blank" rel="noopener">Open pin</a></div>` +
           `<div class="tmd-fields">` +
+            field('Ticket', c.ticket ? `<span class="tmd-ticket">#${esc(c.ticket)}</span>` : '—') +
             field('Page', `<a class="tmd-slug" href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a> <span style="color:var(--pk-muted)">${esc(c.page.path)}</span>`) +
             field('Element / anchor', where) +
             field('Raised by', esc(c.name || 'anonymous') + (c.team ? ' · ' + esc(c.team) : '')) +
@@ -346,7 +378,7 @@
         `<div class="tmd-note-body">` +
           `<div class="tmd-note-sum">${esc(n.summary || 'Your comment was updated.')}</div>` +
           `<div class="tmd-note-meta">` +
-            `<a class="tmd-slug" href="${esc(n.path || '/')}" target="_blank" rel="noopener">${esc(n.pageName || pageName(n.path || '/'))}</a>` +
+            `<a class="tmd-slug" href="${esc(n.path || '/')}" target="_blank" rel="noopener">${esc(pageName(n.path || '/'))}</a>` +
             `<span class="tmd-time">${esc(fmt(n.createdAt))}</span>` +
             (n.commentId ? `<a class="tmd-openpin" href="${esc(n.path || '/')}?review=1#c=${esc(n.commentId)}" target="_blank" rel="noopener">Open Pin</a>` : '') +
           `</div>` +

@@ -6,6 +6,121 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.21.0 — 2026-07-14 — team-dashboard card redesign (Figma) — two-column layout
+
+- Rebuilt the /teamdash "For Action" card to the Figma two-column layout (node 1287:7748): the LEFT
+  column holds the comment, a "Selected element: “snippet” on <page>" line (page underlined), the
+  "Raised By <team>" / "To <team>" direction, and the Open Pin + View details actions; the RIGHT rail
+  holds the status chip + ticket, then a "HH:MM:SS | D Month, YYYY" timestamp. Pending cards take a
+  full brand-red border; done/closed keep a coloured left accent. Built on --pk-* tokens so LIGHT
+  matches the Figma exactly (#f8f7f3 surface etc.) and DARK adapts automatically.
+
+## 2.20.0 — 2026-07-14 — UAT posture: unlisted routes + clean-removal doc
+
+Prep for the UAT push. No behavioural change to the tool itself; this is about its **surface**.
+
+- **Admin routes unlisted from the public sitemap.** `astro.config.mjs` now passes a `sitemap()`
+  `filter` that drops `/review`, `/review-guide`, `/reviewdash[/*]` and `/teamdash` (seam: the public
+  sitemap no longer advertises Proofkit). Routes stay reachable for reviewers who know the URL; they
+  remain `noindex` via their per-route SEO objects here. The whole UAT site is also `noindex` via
+  BaseLayout + a new `public/robots.txt`.
+- **`REMOVAL.md` added.** Documents the exact one-shot removal (disable = flip `PROOFKIT_ENABLED`;
+  full = delete the package folder + the four route stubs + `reviewdash/` + the 404 router block +
+  the `PUBLIC_REVIEW_WORKER_URL` env + the sitemap filter entries). Makes "remove Proofkit cleanly,
+  no traces" a fixed checklist.
+
+## 2.19.0 — 2026-07-14 — design-system compliance sweep (fonts · grid · tokens · alpha)
+
+Brings the whole tool onto the site's design-system rules. Verified in-browser on `/reviewdash` +
+`/teamdash` in both light and dark.
+
+- **One font — Outfit — everywhere (rule 3).** `--pk-font` was `Inter`; it is now Outfit, and the
+  dashboards actually **load** Outfit (their route shells `reviewdash.astro`/`teamdash.astro` and the
+  standalone `core/*.html` add the Google-Fonts `<link>` — they render outside the host BaseLayout).
+  Removed the `--pk-font:system-ui` overrides that had crept into `dashboard.css`/`teamdash.css`.
+  Killed every second face: the monospace ticket + AI-prompt text now use Outfit with
+  `font-variant-numeric:tabular-nums`; deleted the dead `.rv-login-*` overlay block (which pulled in
+  Inter) and its Inter font-loader; dropped the unused `--pk-mono` token.
+- **Spacing on the 4/8 grid (rule 6).** Snapped ~120 off-grid values (5/6/7/9/10/11/14/18/22/26/38/46/58px
+  → nearest 4/8 step) across `dashboard.css`, `teamdash.css`, `login.css`, `components.css` and the
+  overlay's inline CSS. Only structural 1–2px hairlines/separators/border-overlaps are intentionally kept.
+- **No alpha colour fills (rule 5).** The two real offenders — the login-glow radial gradient and the
+  "securing" shimmer — now use solid tokens (`--pk-red` / `--pk-on-accent`) + the `transparent` keyword
+  faded by the `opacity` property. Shadows and frosted `backdrop-filter` scrims keep their translucency
+  (explicitly allowed by rule 5).
+- **Everything on tokens (rule 9).** Promoted the bespoke status-tint palette to semantic per-theme
+  tokens — `--pk-open/done/closed/new-bg`+`-ink`, `--pk-callout-bg/-line`, `--pk-active-bg`,
+  `--pk-thead-bg`, plus `--pk-on-accent` (always-white on-fill ink) and `--pk-brand-gold`. Chips,
+  callouts, banners, active-nav and the table header now theme automatically, so the entire
+  `[data-pk-theme="light"]` tint-override block in both dashboards was **deleted** (light == the light
+  token values). `components.css` is now 100% token-bound; only a couple of structural one-offs remain
+  (the `#141414` route floor, one light selection tint, one overlay control grey).
+- No endpoints/auth/config/data changes — CSS/markup + token definitions only.
+
+## 2.18.1 — 2026-07-14 — pages always shown by the friendly naming convention
+
+- Pages are now labelled by the **friendly `pageName()` convention everywhere** — "Equity", "Home Page" —
+  never the raw SEO `<title>` (e.g. "Buy Equity Stocks - NSE & BSE | Shriram Financial Services").
+- **At capture** (`overlay.js`): a new comment stores `page.title = pageName(path)` (the friendly name)
+  instead of `document.title`; the raw title is preserved separately as `page.docTitle`. This makes the
+  Worker- and locally-generated **notification summaries** read the friendly name for all new comments.
+- **At render**: notification page links now always compute `pageName(n.path)` and ignore any stored
+  full-title `pageName` (`dashboard.js` + `teamdash.js`), so **existing** notifications display the
+  friendly name too. (Old baked summary *sentences* keep their original text; only new ones regenerate.)
+- **`PAGE_NAMES['/']` "Homepage" → "Home Page"** to match the stated convention.
+- No endpoints/auth/config changes; the Master Log, cards and detail views already used `pageName()`.
+
+## 2.18.0 — 2026-07-14 — per-team individual light/dark toggle
+
+- **Every team dashboard (`/teamdash`) now has its own light/dark toggle**, in the same position as the
+  admin's (top-right of the headband, beside the H1). It is an **individual, per-browser** control —
+  distinct from the admin's GLOBAL theme: flipping it changes only that person's view and is **never**
+  written to the Worker.
+- **Remembered across logins.** The choice persists in localStorage (`pkTheme`); the next login on that
+  browser opens in the last-used mode. Team boards no longer follow the admin's global theme or the live
+  `/events` push — they self-manage (`initLocalTheme()` instead of `initTheme()`).
+- New `config.js` exports: `toggleLocalTheme()` (local-only flip) and `initLocalTheme()` (apply the
+  remembered local choice, no global reconcile / no SSE). `buildThemeToggle(opts)` + `mountThemeToggle(sel,
+  opts)` now take `{ local:true }`; the admin dashboard keeps the global toggle unchanged.
+- Markup/CSS: team headband gains a `.tmd-headband-row` + `.tmd-headtoggle` slot mirroring the admin
+  (`TeamDashboard.astro` + `core/teamdash.html` + `core/teamdash.css`); toggle styles reuse the shared
+  `.pk-tt` component. No endpoints/auth/config/data changes.
+
+## 2.17.2 — 2026-07-14 — "Deploy" → "Delivery" wording
+
+- Admin side-nav item **"Deploy" → "Delivery"** (`Dashboard.astro` + `core/dashboard.html`); the internal
+  `data-view="deploy"` key is unchanged.
+- The bucket view heading **"Deploy Bucket" → "Delivery Queue"** (`renderDeploy()` in `dashboard.js`).
+- Copy-only; the Deploy CTA button, "Deployed" status label, "in bucket" count and empty-state text are
+  left as-is. No endpoints/auth/config/data changes.
+
+## 2.17.1 — 2026-07-14 — dashboard heading copy
+
+- Admin dashboard H1 **"Review and Bug Testing" → "Admin Console"** (`Dashboard.astro` + `core/dashboard.html`).
+- Team dashboard H1 is now the **team's own name + " Team"** — e.g. `SEO Team`, `Content Team` — set at
+  render time from the signed-in team (`renderHeader()` in `teamdash.js`); the static markup falls back to
+  a bare "Team" for the pre-JS paint (`TeamDashboard.astro` + `core/teamdash.html`).
+- Copy-only; no endpoints/auth/config/data changes.
+
+## 2.17.0 — 2026-07-14 — ticket numbers on every comment
+
+- **Every raised comment now gets a ticket number** of the form **YYMMDD + a 4-digit per-day serial**
+  (0001–9999) — e.g. a comment on 2026-07-14 is `2607140001`, the next `2607140002`, reset each day.
+  Stamped once at creation onto `rec.ticket` (root **and** reply — every comment is tagged), immutable
+  thereafter.
+- **Worker** (`POST /comments`): the serial is a per-day KV counter `ticketseq:<YYMMDD>` incremented
+  read-modify-write per comment (`nextTicket()`); the date part comes from the comment's own
+  `createdAt` (UTC). `maskForTeam` now forwards `ticket` so teams see the same number. ⚠️ Worker
+  change — auto-deploys via CI; adds one KV key per day + one extra get/put per comment.
+- **LOCAL/no-Worker demo**: mirrored by `nextLocalTicket()` in `config.js` (localStorage counter
+  `rvc-ticketseq:<YYMMDD>`), plus a `formatTicket(iso, serial)` display helper.
+- **Surfaced in the log everywhere**: a new **Ticket** column + detail field in the admin Master Log
+  (`/reviewdash`), a `#`-prefixed ticket on team cards + the detail view (`/teamdash`), and a
+  **Ticket #…** line in the on-page comment popover. Deploy + arrival **notifications** now cite the
+  ticket in their summary (and carry a `ticket` field).
+- No endpoints/auth/config changed; one new record field (`ticket`) and one new KV key namespace
+  (`ticketseq:`). Old comments without a ticket render a `—` (never crash).
+
 ## 2.16.1 — 2026-07-13 — retire the demo seed; local domain starts clean
 
 - The LOCAL/no-Worker demo store no longer auto-seeds ~20 dummy comments — `ensureDemoSeed()` is

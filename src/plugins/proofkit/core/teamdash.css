@@ -1,10 +1,7 @@
-  .tmd, .tmd-login{
-    --pk-font:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-  }
   /* Dark floor on the team-dashboard route only. Self-sufficient — needs no host layout. */
   :root{color-scheme:dark}
   html,body{margin:0}
-  body:has(.tmd){background:#141414}
+  body:has(.tmd){background:var(--pk-floor)}
 
   .tmd{background:var(--pk-canvas);color:var(--pk-ink);font-family:var(--pk-font);
     min-height:100vh;padding:40px clamp(20px,5vw,48px) 96px}
@@ -34,33 +31,37 @@
 
   /* ---- brand top bar ---- */
   .tmd .tmd-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
-    padding-bottom:22px;border-bottom:1px solid var(--pk-hair)}
+    padding-bottom:24px;border-bottom:1px solid var(--pk-hair)}
   .tmd .tmd-brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
   .tmd .tmd-mark{display:block;flex:none}
+  .tmd .tmd-mark path{fill:var(--pk-red)}
+  .tmd .tmd-mark circle{fill:var(--pk-on-accent)}
   .tmd .tmd-word{font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
   .tmd .tmd-tag{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
     color:var(--pk-muted);padding-left:12px;border-left:1px solid var(--pk-hair)}
   /* "Shriram FS" in the Shriram brand gold (dark mode); neutral in light mode. */
-  .tmd .tmd-tag-brand{color:#f3b83f}
+  .tmd .tmd-tag-brand{color:var(--pk-brand-gold)}
   :root[data-pk-theme="light"] .tmd .tmd-tag-brand{color:var(--pk-muted)}
   /* the team name (third section) highlighted in a contrasting blue */
   .tmd .tmd-team-hi{color:var(--pk-blue)}
-  .tmd .tmd-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .tmd .tmd-team-chip{padding:4px 11px;border-radius:9999px;font-weight:700;font-size:10px;
+  .tmd .tmd-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tmd .tmd-team-chip{padding:4px 12px;border-radius:9999px;font-weight:700;font-size:10px;
     text-transform:uppercase;letter-spacing:.08em;
     display:inline-flex;align-items:center;justify-content:center;min-width:var(--pk-chip-w);box-sizing:border-box}
 
   /* ---- headline ---- */
   .tmd .tmd-headband{padding:44px 0 4px}
+  .tmd .tmd-headband-row{display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .tmd .tmd-headtoggle{flex:none;display:flex;align-items:center}
   .tmd .tmd-h1{margin:0;font-size:clamp(30px,4.4vw,44px);line-height:1.04;font-weight:500;
     letter-spacing:-.02em;color:var(--pk-ink)}
-  .tmd .tmd-lead{margin:14px 0 0;max-width:620px;font-size:14px;line-height:1.6;color:var(--pk-body)}
+  .tmd .tmd-lead{margin:16px 0 0;max-width:620px;font-size:14px;line-height:1.6;color:var(--pk-body)}
 
   /* ---- stat tiles ---- */
   .tmd .tmd-bar{margin:32px 0 8px}
   .tmd #tmd-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
     background:var(--pk-hair);border:1px solid var(--pk-hair)}
-  .tmd #tmd-counts .tmd-count{background:var(--pk-canvas);padding:22px 24px;
+  .tmd #tmd-counts .tmd-count{background:var(--pk-canvas);padding:24px 24px;
     display:flex;flex-direction:column;align-items:flex-start;gap:8px;
     font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted)}
   .tmd #tmd-counts .tmd-count b{font-size:clamp(30px,4vw,42px);font-weight:700;line-height:.95;
@@ -73,7 +74,7 @@
     color:var(--pk-ink);font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;
     cursor:pointer;border-radius:0;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
     transition:border-color .15s,color .15s,background .15s}
-  .tmd .tmd-btn.tmd-btn-primary{background:var(--pk-red);border-color:var(--pk-red);color:#fff}
+  .tmd .tmd-btn.tmd-btn-primary{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
   .tmd .tmd-refresh-ico{display:inline-block;width:16px;height:16px;margin-right:8px}
   .tmd .tmd-refresh-ico svg{width:16px;height:16px;display:block}
   .tmd .tmd-btn.is-refreshing{color:var(--pk-body)}
@@ -85,10 +86,10 @@
   .tmd .tmd-nav{position:relative;text-align:left;height:46px;padding:0 16px;border:none;border-radius:0;
     background:transparent;cursor:pointer;color:var(--pk-body);display:flex;align-items:center;gap:8px;
     font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:color .15s,background .15s}
-  .tmd .tmd-nav::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:2px;background:transparent;transition:background .15s}
-  .tmd .tmd-nav.is-active{color:var(--pk-ink);background:#202020}
+  .tmd .tmd-nav::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:2px;background:transparent;transition:background .15s}
+  .tmd .tmd-nav.is-active{color:var(--pk-ink);background:var(--pk-active-bg)}
   .tmd .tmd-nav.is-active::before{background:var(--pk-red)}
-  .tmd .tmd-navbadge{min-width:18px;height:18px;padding:0 5px;border-radius:9999px;background:var(--pk-red);color:#fff;
+  .tmd .tmd-navbadge{min-width:18px;height:18px;padding:0 4px;border-radius:9999px;background:var(--pk-red);color:var(--pk-on-accent);
     font:700 10px/18px var(--pk-font);letter-spacing:0;text-align:center}
   .tmd .tmd-content{flex:1;min-width:0}
 
@@ -99,14 +100,14 @@
     border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
   .tmd .tmd-filter.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
   .tmd .tmd-filter-sp{flex:1}
-  .tmd .tmd-bypage{height:32px;align-self:center;padding:0 14px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;
+  .tmd .tmd-bypage{height:32px;align-self:center;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;
     cursor:pointer;color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
     transition:border-color .15s,color .15s}
   .tmd .tmd-bypage.is-active{border-color:var(--pk-red);color:var(--pk-red)}
 
   /* ---- toolbar: search + sort ---- */
-  .tmd .tmd-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
-  .tmd .tmd-search{flex:1 1 220px;min-width:180px;height:42px;padding:0 14px;border:1px solid var(--pk-hair);border-radius:0;
+  .tmd .tmd-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
+  .tmd .tmd-search{flex:1 1 220px;min-width:180px;height:42px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;
     background:var(--pk-input);color:var(--pk-ink);font:400 14px/1.5 var(--pk-font)}
   .tmd .tmd-search::placeholder{color:var(--pk-muted)}
   .tmd .tmd-search:focus{outline:none;border-color:var(--pk-red)}
@@ -119,52 +120,67 @@
     color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
     display:inline-flex;align-items:center;white-space:nowrap;transition:border-color .15s,color .15s}
   .tmd .tmd-teamchips[hidden]{display:none}
-  .tmd .tmd-tchip{height:30px;padding:0 14px;border:1.5px solid transparent;border-radius:9999px;cursor:pointer;
+  .tmd .tmd-tchip{height:30px;padding:0 16px;border:1.5px solid transparent;border-radius:9999px;cursor:pointer;
     font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
     display:inline-flex;align-items:center;justify-content:center;min-width:var(--pk-chip-w-lg);box-sizing:border-box;transition:transform .12s}
 
   /* ---- list + group ---- */
-  .tmd .tmd-grid{display:flex;flex-direction:column;gap:10px}
+  .tmd .tmd-grid{display:flex;flex-direction:column;gap:8px}
   .tmd .tmd-group{margin-bottom:32px}
-  .tmd .tmd-gh{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;font-size:13px;font-weight:600;
+  .tmd .tmd-gh{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;font-size:13px;font-weight:600;
     letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
   .tmd .tmd-gh a{color:var(--pk-ink);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
   .tmd .tmd-gh span{font-size:12px;font-weight:500;color:var(--pk-muted);letter-spacing:0;text-transform:none}
 
-  /* ---- comment card (read-only, click to open detail) ---- */
-  .tmd .tmd-item{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:0;cursor:pointer;
-    background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
-    transition:border-color .15s,background .15s}
-  .tmd .tmd-item:focus-visible{outline:none;border-left-color:var(--pk-red);background:var(--pk-elev)}
-  .tmd .tmd-detailhint{margin-left:auto;font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
-  .tmd .tmd-line{display:flex;align-items:flex-start;gap:14px}
-  .tmd .tmd-line .tmd-chip{flex:none;margin-top:1px}
-  /* "from <team>" — who raised the comment that's now directed to us */
-  .tmd .tmd-from{flex:none;display:inline-flex;align-items:center;gap:6px;margin-top:1px;
-    font-size:11px;color:var(--pk-muted)}
-  .tmd .tmd-headline{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-  .tmd .tmd-comment{font-size:15px;font-weight:500;line-height:1.5;color:var(--pk-ink);
-    display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
-  .tmd .tmd-comment .tmd-n{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
-  .tmd .tmd-snip{font-size:12px;color:var(--pk-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* ---- comment card — two columns: content (left) + status/ticket/time rail (right) ---- */
+  .tmd .tmd-item{background:var(--pk-elev);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
+    border-radius:0;cursor:pointer;transition:border-color .15s,background .15s}
+  .tmd .tmd-item[data-state="pending"]{border-color:var(--pk-red)}          /* full red per the design (attention) */
+  .tmd .tmd-item[data-state="done"]{border-left-color:var(--pk-green)}
+  .tmd .tmd-item[data-state="closed"]{border-left-color:var(--pk-muted)}
+  .tmd .tmd-item:focus-visible{outline:none;border-color:var(--pk-red)}
+  .tmd .tmd-card-row{display:flex;align-items:center;gap:24px;padding:19px 22px}
+  /* LEFT column */
+  .tmd .tmd-card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:24px}
+  .tmd .tmd-card-top{display:flex;flex-direction:column;gap:16px}
+  .tmd .tmd-card-title{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .tmd .tmd-comment{margin:0;font:500 15px/1.5 var(--pk-font);letter-spacing:-.016em;color:var(--pk-ink);overflow-wrap:anywhere}
+  .tmd .tmd-comment .tmd-n{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted);white-space:nowrap}
+  .tmd .tmd-selel{margin:0;font:400 12px/1.45 var(--pk-font);color:var(--pk-muted);overflow-wrap:anywhere}
+  .tmd .tmd-selel-val{color:var(--pk-ink)}
+  .tmd .tmd-selel-page{color:inherit;text-decoration:underline;text-underline-offset:2px}
+  .tmd .tmd-raised{margin:0;font:400 11px/1.4 var(--pk-font);letter-spacing:.006em;color:var(--pk-body)}
+  .tmd .tmd-raised b{font-weight:700;color:var(--pk-ink)}
+  .tmd .tmd-card-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .tmd .tmd-detailhint{font:700 10px/1 var(--pk-font);letter-spacing:.09em;text-transform:uppercase;color:var(--pk-red)}
+  /* RIGHT rail */
+  .tmd .tmd-card-rail{flex:none;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;text-align:center}
+  .tmd .tmd-rail-top{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .tmd .tmd-card-time{font:500 12px/1.3 var(--pk-font);color:var(--pk-body);white-space:nowrap}
 
   /* status chips */
-  .tmd .tmd-chip{padding:4px 11px;border-radius:9999px;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  .tmd .tmd-chip{padding:4px 12px;border-radius:9999px;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
     display:inline-flex;align-items:center;justify-content:center;min-width:var(--pk-chip-w);box-sizing:border-box}
-  .tmd .tmd-chip.pending{background:#3a2a12;color:var(--pk-amber)}
-  .tmd .tmd-chip.done{background:#16281c;color:var(--pk-green)}
-  .tmd .tmd-chip.closed{background:#2a2a2a;color:var(--pk-muted)}
+  .tmd .tmd-chip.pending{background:var(--pk-open-bg);color:var(--pk-open-ink)}
+  .tmd .tmd-chip.done{background:var(--pk-done-bg);color:var(--pk-done-ink)}
+  .tmd .tmd-chip.closed{background:var(--pk-closed-bg);color:var(--pk-closed-ink)}
+  .tmd .tmd-ticket{font:700 12px/1 var(--pk-mono);letter-spacing:.02em;color:var(--pk-red);white-space:nowrap}
 
   /* "change to" callout */
-  .tmd .tmd-change{padding:12px 14px;border-radius:0;background:#241a10;border:1px solid #4a3417;border-left:2px solid var(--pk-amber)}
+  .tmd .tmd-change{padding:12px 16px;border-radius:0;background:var(--pk-callout-bg);border:1px solid var(--pk-callout-line);border-left:2px solid var(--pk-amber)}
   .tmd .tmd-change span{display:block;font-size:10px;font-weight:700;text-transform:uppercase;
     color:var(--pk-amber);letter-spacing:.12em;margin-bottom:4px}
   .tmd .tmd-change div{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--pk-ink)}
 
-  /* meta + replies */
-  .tmd .tmd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  /* meta bits reused by the detail view / notifications */
   .tmd .tmd-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
   .tmd .tmd-time{font-size:12px;color:var(--pk-muted)}
+  /* stack the card on narrow screens: content, then the rail below (left-aligned) */
+  @media (max-width:640px){
+    .tmd .tmd-card-row{flex-direction:column;align-items:stretch;gap:16px}
+    .tmd .tmd-card-rail{flex-direction:row;align-items:center;justify-content:flex-start;gap:14px;text-align:left}
+    .tmd .tmd-rail-top{flex-direction:row;align-items:center;gap:10px}
+  }
   .tmd .tmd-replies{display:flex;flex-direction:column;gap:12px;padding-left:16px;border-left:2px solid var(--pk-hair)}
   .tmd .tmd-reply{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
   .tmd .tmd-rtxt{font-size:14px;line-height:1.5;color:var(--pk-ink)}
@@ -177,17 +193,17 @@
   .tmd .tmd-detail-title{font-size:20px;font-weight:600;line-height:1.4;color:var(--pk-ink);margin:0}
   .tmd .tmd-detail-chips{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
   .tmd .tmd-fields{display:flex;flex-direction:column;gap:0;border:1px solid var(--pk-hair)}
-  .tmd .tmd-field{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:14px 16px;border-bottom:1px solid var(--pk-hair)}
+  .tmd .tmd-field{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:16px 16px;border-bottom:1px solid var(--pk-hair)}
   .tmd .tmd-field:last-child{border-bottom:none}
   .tmd .tmd-field-k{font:700 10px/1.4 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
   .tmd .tmd-field-v{font-size:14px;line-height:1.5;color:var(--pk-ink);min-width:0;overflow-wrap:anywhere}
   .tmd .tmd-prompt-box{white-space:pre-wrap;font-size:13px;line-height:1.55;color:var(--pk-ink);
-    background:var(--pk-input);border:1px solid var(--pk-hair);padding:12px 14px;overflow-wrap:anywhere}
-  .tmd .tmd-copyprompt{margin-top:10px;height:34px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+    background:var(--pk-input);border:1px solid var(--pk-hair);padding:12px 16px;overflow-wrap:anywhere}
+  .tmd .tmd-copyprompt{margin-top:8px;height:34px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
     color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
-  .tmd .tmd-timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .tmd .tmd-timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
   .tmd .tmd-tl{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-left:16px;position:relative}
-  .tmd .tmd-tl::before{content:"";position:absolute;left:0;top:5px;width:7px;height:7px;border-radius:9999px;background:var(--pk-hair)}
+  .tmd .tmd-tl::before{content:"";position:absolute;left:0;top:4px;width:7px;height:7px;border-radius:9999px;background:var(--pk-hair)}
   .tmd .tmd-tl.is-current::before{background:var(--pk-red)}
   .tmd .tmd-tl-event{font-size:13px;font-weight:600;color:var(--pk-ink)}
   .tmd .tmd-tl-time{font-size:12px;color:var(--pk-muted);white-space:nowrap}
@@ -195,16 +211,16 @@
   /* ---- notifications ---- */
   .tmd .tmd-noteshead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
   .tmd .tmd-noteshead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink);margin:0}
-  .tmd .tmd-markall{height:32px;padding:0 14px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+  .tmd .tmd-markall{height:32px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
     color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
   .tmd .tmd-markall:disabled{opacity:.5;cursor:default}
   .tmd .tmd-notes{display:flex;flex-direction:column;gap:8px}
-  .tmd .tmd-note{display:flex;align-items:flex-start;gap:12px;padding:16px 18px;border-radius:0;
+  .tmd .tmd-note{display:flex;align-items:flex-start;gap:12px;padding:16px 16px;border-radius:0;
     background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair)}
   .tmd .tmd-note.is-unread{border-left-color:var(--pk-red);background:var(--pk-elev)}
-  .tmd .tmd-note-dot{flex:none;width:8px;height:8px;margin-top:6px;border-radius:9999px;background:transparent}
+  .tmd .tmd-note-dot{flex:none;width:8px;height:8px;margin-top:8px;border-radius:9999px;background:transparent}
   .tmd .tmd-note.is-unread .tmd-note-dot{background:var(--pk-red)}
-  .tmd .tmd-note-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+  .tmd .tmd-note-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
   .tmd .tmd-note-sum{font-size:14px;line-height:1.5;color:var(--pk-ink);font-weight:500}
   .tmd .tmd-note-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
   .tmd .tmd-note-toggle{flex:none;align-self:center;height:28px;padding:0 12px;border:1px solid var(--pk-hair);border-radius:0;
@@ -216,7 +232,7 @@
 
   /* Admin-view ribbon — Builder viewing a specific team's board. */
   .tmd .tmd-adminbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
-    margin:0 0 24px;padding:12px 18px;border:1px solid var(--pk-red);border-left:3px solid var(--pk-red);
+    margin:0 0 24px;padding:12px 16px;border:1px solid var(--pk-red);border-left:3px solid var(--pk-red);
     border-radius:8px;background:var(--pk-elev)}
   .tmd .tmd-adminbar-txt{font-size:13px;color:var(--pk-body);letter-spacing:.02em}
   .tmd .tmd-adminbar-txt b{color:var(--pk-ink);font-weight:700}
@@ -244,7 +260,7 @@
   /* ===== hover (desktop only, gated) ===== */
   @media (min-width:1024px) and (hover:hover){
     .tmd .tmd-btn:not(.tmd-btn-primary):hover{border-color:var(--pk-red);color:var(--pk-red)}
-    .tmd .tmd-btn-primary:hover{background:var(--pk-red-2);border-color:var(--pk-red-2);color:#fff}
+    .tmd .tmd-btn-primary:hover{background:var(--pk-red-2);border-color:var(--pk-red-2);color:var(--pk-on-accent)}
     .tmd .tmd-nav:hover{color:var(--pk-ink)}
     .tmd .tmd-filter:hover{color:var(--pk-ink)}
     .tmd .tmd-bypage:hover,.tmd .tmd-markall:hover,.tmd .tmd-note-toggle:hover{border-color:var(--pk-red);color:var(--pk-red)}
@@ -269,10 +285,5 @@
      Scoped to [data-pk-theme="light"], so dark mode is untouched.
      ============================================================ */
   :root[data-pk-theme="light"]{color-scheme:light}
-  :root[data-pk-theme="light"] body:has(.tmd){background:var(--pk-canvas)}
-  :root[data-pk-theme="light"] .tmd .tmd-nav.is-active{background:#ece9e1}
-  :root[data-pk-theme="light"] .tmd .tmd-chip.pending{background:#f6e8c9;color:#8a5a12}
-  :root[data-pk-theme="light"] .tmd .tmd-chip.done{background:#dbeee1;color:#1d7a46}
-  :root[data-pk-theme="light"] .tmd .tmd-chip.closed{background:#ece9e1;color:#6b6b63}
-  :root[data-pk-theme="light"] .tmd .tmd-change{background:#fbf3e2;border-color:#ecdcb6}
-  :root[data-pk-theme="light"] .tmd-login-select option{background:#fff;color:#1c1c1a}
+  /* status chips + "change to" callout theme automatically via the --pk-*-bg/ink tint tokens. */
+  :root[data-pk-theme="light"] .tmd-login-select option{background:var(--pk-card);color:var(--pk-ink)}
