@@ -83,96 +83,21 @@ export function clearSession() {
 }
 
 /* --------------------------------------------------------------------------
- * DEMO SEED (LOCAL/no-Worker mode only). Populates the localStorage store with a
- * spread of ~20 dummy comments covering every lifecycle state (open · in-bucket
- * completed · in-bucket closed · deployed · closed-live) at least twice, across
- * teams/pages, with a couple of threads and legacy change-to callouts. Runs ONCE
- * (guarded by `pkDemoSeeded`) and wipes any prior demo rows first, so a real edit
- * afterwards is never clobbered. Callers gate on LOCAL — never seed against a Worker.
+ * DEMO RESET (LOCAL/no-Worker mode only). The local domain now starts CLEAN so the
+ * real review flow is testable from scratch — the old ~20-comment demo seed is
+ * retired. Runs ONCE per browser (guarded by `pkDemoReset`): wipes any prior local
+ * rows (old demo seed or otherwise) so an already-loaded tab clears too, then leaves
+ * the store alone — comments you create afterwards persist. Never touches a Worker.
+ * (To repopulate a demo dataset, restore this function from git history ≤ v2.16.0.)
  * ------------------------------------------------------------------------ */
-export function ensureDemoSeed() {
+export function ensureDemoReset() {
   try {
     if (typeof localStorage === 'undefined') return;
-    if (localStorage.getItem('pkDemoSeeded') === '1') return;
-    Object.keys(localStorage).forEach((k) => { if (k.indexOf('rvc:') === 0 || k === 'rvc-notifications') localStorage.removeItem(k); });
-    const now = Date.now();
-    const at = (min) => new Date(now - min * 60000).toISOString();
-    const titles = {
-      '/': 'Homepage', '/equity': 'Equity', '/mutual-funds': 'Mutual Funds', '/contact-us': 'Contact Us',
-      '/nps': 'NPS', '/bonds': 'Bonds', '/open-demat-account': 'Open a Demat Account',
-      '/sip-calculator': 'SIP Calculator', '/about-us': 'About Us',
-    };
-    const pg = (path) => ({ path, url: path, title: titles[path] || path, slug: path.replace(/^\//, '') || 'home' });
-    let n = 0;
-    const uid = () => 'D' + now.toString(36) + (n++).toString(36);
-    const mk = (min, from, to, path, snippet, tag, comment, state, extra) => {
-      extra = extra || {};
-      const createdAt = at(min), cAt = at(Math.max(1, min - 5)), pAt = at(Math.max(1, min - 8));
-      const r = {
-        id: extra.id || uid(), createdAt, status: 'open', published: false, publishedStatus: '',
-        completedAt: '', closedAt: '', publishedAt: '', validation: null,
-        history: [{ status: 'open', at: createdAt, event: 'created', published: false }],
-        parentId: extra.parentId || null, sessionId: 'demo', team: from, toTeam: to,
-        name: 'demo', comment, changeTo: extra.changeTo || '',
-        aiPrompt: 'On page ' + path + ', in the “' + snippet + '” ' + tag + ': ' + comment,
-        page: pg(path), anchor: { selector: '', snippet, tag, pageX: 120, pageY: 320, xPct: 20, yPct: 40 },
-      };
-      if (state === 'completed' || state === 'deployed') {
-        r.status = 'completed'; r.completedAt = cAt;
-        r.validation = { ok: true, method: 'manual', detail: 'Marked complete.', checkedAt: cAt };
-        r.history.push({ status: 'completed', at: cAt, event: 'status', published: false });
-      }
-      if (state === 'closed' || state === 'closedlive') {
-        r.status = 'closed'; r.closedAt = cAt;
-        r.history.push({ status: 'closed', at: cAt, event: 'status', published: false });
-      }
-      if (state === 'deployed') { r.published = true; r.publishedStatus = 'completed'; r.publishedAt = pAt; r.history.push({ status: 'completed', at: pAt, event: 'deployed', published: true }); }
-      if (state === 'closedlive') { r.published = true; r.publishedStatus = 'closed'; r.publishedAt = pAt; r.history.push({ status: 'closed', at: pAt, event: 'deployed', published: true }); }
-      return r;
-    };
-    const thread1 = mk(40, 'SEO', 'Builder', '/', 'Footer links row', 'ul', 'Two footer links return a 404.', 'open');
-    const thread2 = mk(64, 'Content', 'Design', '/about-us', 'About — heading', 'h1', 'Tighten the about-us copy.', 'completed');
-    const recs = [
-      mk(5, 'Content', 'Builder', '/', 'Upload a bank proof (cancelled cheque)', 'p', 'Headline is too long for mobile viewports.', 'open', { changeTo: 'Upload proof' }),
-      mk(12, 'SEO', 'Builder', '/', 'Book a free 15-minute discovery call', 'a', 'Add a meta description to the homepage.', 'open'),
-      mk(18, 'SEO', 'Product', '/', 'Mobile Number', 'label', 'Placeholder text is unclear to users.', 'open'),
-      mk(24, 'Product', 'Builder', '/equity', "Own a part of India's leading companies", 'h2', 'CTA button contrast is too low (a11y).', 'open'),
-      mk(33, 'Marketing', 'Design', '/mutual-funds', 'Start a SIP today', 'h3', 'Banner image feels dated — refresh it.', 'open'),
-      mk(46, 'Business', 'Builder', '/contact-us', 'Get Expert Advise', 'span', 'Typo: “Advise” should be “Advice”.', 'open', { changeTo: 'Get Expert Advice' }),
-      mk(58, 'SEO', 'Builder', '/equity', 'Equity — hero', 'h1', 'Title tag is missing on this page.', 'completed'),
-      mk(72, 'Content', 'Builder', '/nps', 'NPS introduction', 'p', 'Reword the intro paragraph for clarity.', 'completed'),
-      mk(88, 'Design', 'Product', '/bonds', 'Bonds — product card', 'div', 'Card grid is misaligned on tablet.', 'completed'),
-      mk(101, 'Marketing', 'Builder', '/open-demat-account', 'Open your account', 'button', 'Update the promo copy for the new offer.', 'completed'),
-      mk(119, 'Product', 'Builder', '/sip-calculator', 'SIP amount slider', 'input', 'Duplicate of an earlier note — closing.', 'closed'),
-      mk(134, 'Business', 'SEO', '/contact-us', 'Contact form', 'form', 'Not actionable as written — closing.', 'closed'),
-      mk(150, 'SEO', 'Builder', '/', 'Trust badges', 'div', 'Add the SEBI registration number.', 'deployed'),
-      mk(168, 'Content', 'Builder', '/equity', 'Risk disclaimer', 'p', 'Shorten the risk disclaimer text.', 'deployed', { changeTo: 'Investments are subject to market risks.' }),
-      mk(181, 'Marketing', 'Design', '/mutual-funds', 'Fund cards', 'section', 'New fund-card layout shipped.', 'deployed'),
-      mk(200, 'Design', 'Builder', '/nps', 'NPS calculator link', 'a', 'Fixed the broken calculator link.', 'deployed'),
-      mk(224, 'Product', 'Builder', '/bonds', 'Bond yield table', 'table', "Won't fix this cycle — closing live.", 'closedlive'),
-      mk(241, 'Business', 'Builder', '/open-demat-account', 'KYC steps', 'ol', 'Deferred to next sprint.', 'closedlive'),
-      thread1, thread2,
-      mk(38, 'Product', 'Builder', '/', 'Footer links row', 'ul', 'Confirmed — investigating the broken links.', 'open', { parentId: thread1.id }),
-      mk(35, 'SEO', 'Builder', '/', 'Footer links row', 'ul', 'Any update on this?', 'open', { parentId: thread1.id }),
-      mk(60, 'Design', 'Design', '/about-us', 'About — heading', 'h1', 'Draft copy is ready for review.', 'open', { parentId: thread2.id }),
-    ];
-    const byPage = {};
-    recs.forEach((r) => { (byPage[r.page.path] = byPage[r.page.path] || []).push(r); });
-    Object.keys(byPage).forEach((p) => localStorage.setItem('rvc:' + p, JSON.stringify(byPage[p])));
-    const notifs = recs.filter((r) => !r.parentId && r.published).map((r) => ({
-      id: uid(), createdAt: r.publishedAt, team: r.team, commentId: r.id, path: r.page.path, pageName: r.page.title,
-      publishedStatus: r.publishedStatus, summary: 'Your comment on ' + r.page.title + ' was ' + (r.publishedStatus === 'closed' ? 'closed' : 'marked Done') + '.',
-      readTeam: false, readAdmin: false,
-    }));
-    // Arrival notifications: a new review was directed to a (real) team's inbox.
-    const arrival = recs.filter((r) => !r.parentId && r.toTeam && r.toTeam !== ADMIN_TEAM).map((r) => ({
-      id: uid(), createdAt: r.createdAt, team: r.toTeam, kind: 'directed', fromTeam: r.team,
-      commentId: r.id, path: r.page.path, pageName: r.page.title,
-      summary: 'New comment on ' + r.page.title + (r.team ? ' from ' + r.team : ''),
-      readTeam: false, readAdmin: false,
-    }));
-    localStorage.setItem('rvc-notifications', JSON.stringify(notifs.concat(arrival)));
-    localStorage.setItem('pkDemoSeeded', '1');
+    if (localStorage.getItem('pkDemoReset') === '1') return; // clear once, then never again
+    Object.keys(localStorage).forEach((k) => {
+      if (k.indexOf('rvc:') === 0 || k === 'rvc-notifications' || k === 'pkDemoSeeded') localStorage.removeItem(k);
+    });
+    localStorage.setItem('pkDemoReset', '1');
   } catch {}
 }
 

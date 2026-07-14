@@ -6,6 +6,14 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 2.16.1 — 2026-07-13 — retire the demo seed; local domain starts clean
+
+- The LOCAL/no-Worker demo store no longer auto-seeds ~20 dummy comments — `ensureDemoSeed()` is
+  replaced by **`ensureDemoReset()`**, which clears any prior local rows ONCE per browser (guarded by
+  `pkDemoReset`) so the real review flow is testable from an empty slate; comments you create
+  afterwards persist. Production (Worker mode) is unaffected — the reset is gated on LOCAL and never
+  runs against the Worker. (Restore the demo dataset from git history ≤ v2.16.0 if needed.)
+
 ## 2.16.0 — 2026-07-13 — cross-team tasks visible to BOTH the raiser and the receiver
 
 - A comment directed from one team to another (e.g. **SEO → Content**) now shows in **both** teams'

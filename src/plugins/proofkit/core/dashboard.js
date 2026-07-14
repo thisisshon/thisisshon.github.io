@@ -1,6 +1,6 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
     ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession,
-    initTheme, mountThemeToggle, ensureDemoSeed } from './config.js';
+    initTheme, mountThemeToggle, ensureDemoReset } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter); apply the
@@ -205,7 +205,7 @@
     }
 
     function init() {
-      if (LOCAL) ensureDemoSeed(); // demo mode: populate ~20 dummy comments once
+      if (LOCAL) ensureDemoReset(); // demo mode: start clean (clears old demo rows once)
       const s = getSession();
       // Already signed in this tab as a team (not admin) → their team dashboard.
       if (s.key && s.team && s.team !== ADMIN_TEAM) { location.replace('/teamdash'); return; }

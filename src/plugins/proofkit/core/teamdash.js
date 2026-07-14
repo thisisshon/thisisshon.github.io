@@ -1,5 +1,5 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
-    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initTheme, ensureDemoSeed } from './config.js';
+    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initTheme, ensureDemoReset } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). This is a
@@ -411,7 +411,7 @@
     }
 
     function init() {
-      if (LOCAL) ensureDemoSeed(); // demo mode: populate ~20 dummy comments once
+      if (LOCAL) ensureDemoReset(); // demo mode: start clean (clears old demo rows once)
       const s = getSession();
       if (OVERRIDE) mountAdminBar(); // admin is viewing a specific team's board
       // A live admin session (Builder) → straight to the admin panel, UNLESS viewing a
