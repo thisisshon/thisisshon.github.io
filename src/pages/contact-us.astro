@@ -34,6 +34,44 @@ const seo = {
     },
   ],
 };
+
+/**
+ * Branch directory - the single source of truth for the Branch Locator tab.
+ * Cards are rendered server-side (below) so their addresses ship in static HTML
+ * (SEO) and pick up the scoped card styles; the client script reads these same
+ * nodes back from the DOM to drive the dropdowns + OpenStreetMap embed. `lat`/`lon`
+ * (geocoded via OSM Nominatim) position the map marker; `q` is the precise text
+ * address that powers the external "Directions" link.
+ */
+const branches = [
+  { id: 'indiranagar', name: 'Bangalore – Indiranagar', state: 'Karnataka', addr: '#415, 1st Floor, 7th Cross, Domlur, Bangalore – 560071', phone: '080-41153138 / 22951020 / 25350963', email: 'indiranagar@shriramfs.in', q: 'Domlur Indiranagar Bangalore 560071', lat: 12.95798, lon: 77.64146 },
+  { id: 'malleshwaram', name: 'Bangalore – Malleshwaram', state: 'Karnataka', addr: 'No.8, 1st Floor, Between 3rd & 4th Main, 17th Cross Road, Margosa Road, Malleshwaram, Bangalore – 560003', phone: '080-23446764 / 22951019 / 23469641', email: 'malleshwaram@shriramfs.in', q: 'Malleshwaram 17th Cross Margosa Road Bangalore 560003', lat: 13.00274, lon: 77.57033 },
+  { id: 'basavanagudi', name: 'Bangalore – Basavanagudi', state: 'Karnataka', addr: 'No.34, First Floor, Annapoorna Complex, South End Road, Basavanagudi, Bangalore – 560004', phone: '080-22445282 / 26547271 / 26540491', email: 'basavanagudi@shriramfs.in', q: 'South End Road Basavanagudi Bangalore 560004', lat: 12.93826, lon: 77.58006 },
+  { id: 'vijayanagar', name: 'Bangalore – Vijayanagar', state: 'Karnataka', addr: 'No.201/E, 2nd Floor, 1st Main Road, 1st Stage, Vijayanagar, Bangalore – 560104', phone: '080-22951026 / 23117202 / 23111026', email: 'vijayanagar@shriramfs.in', q: 'Vijayanagar 1st Stage Bangalore 560104', lat: 12.97095, lon: 77.53739 },
+  { id: 'hubli', name: 'Hubli', state: 'Karnataka', addr: 'No.S-1, 2nd Floor, R.R. Mahalaxmi Mansion, Pinto Road, Desai Cross, Hubli – 580020', phone: '0836-2257010 / 2257011 / 2257012', email: 'hubli@shriramfs.in', q: 'Desai Cross Pinto Road Hubli 580020', lat: 15.35184, lon: 75.13798 },
+  { id: 'mangalore', name: 'Mangalore', state: 'Karnataka', addr: 'D.No.4/6/548/6(1), 2nd Floor, Pramod Automobiles Building, KRR Road, Karangalpady, Mangalore – 575003', phone: '0824-2411123 / 2411124 / 2422717', email: 'mangalore@shriramfs.in', q: 'Karangalpady KRR Road Mangalore 575003', lat: 12.87650, lon: 74.84701 },
+  { id: 'shimoga', name: 'Shimoga', state: 'Karnataka', addr: 'Sree Karthik Plaza, 3rd Floor, Opp. Laxmi Galaxy, Above ICICI Bank, Nehru Road, Durgigudi, Shimoga – 577201', phone: '08182-261002 / 261003 / 261005', email: 'shimoga@shriramfs.in', q: 'Durgigudi Nehru Road Shivamogga 577201', lat: 13.93364, lon: 75.57327 },
+  { id: 'chennai', name: 'Chennai – Mylapore', state: 'Tamil Nadu', addr: '3rd Floor, 221, Thiru Vi Ka Salai, Royapettah High Road, Luz, Near Vidhya Mandir School, Mylapore, Chennai – 600004', phone: '044-42983690 / 42983643', email: 'chennai@shriramfs.in', q: 'Royapettah High Road Luz Mylapore Chennai 600004', lat: 13.03165, lon: 80.27002 },
+  { id: 'coimbatore', name: 'Coimbatore', state: 'Tamil Nadu', addr: 'No.114/A/1, T.V. Samy Road West, R.S. Puram, Coimbatore – 641002', phone: '0422-4313625', email: 'coimbatore@shriramfs.in', q: 'TV Samy Road West RS Puram Coimbatore 641002', lat: 11.01451, lon: 76.94426 },
+  { id: 'madurai', name: 'Madurai', state: 'Tamil Nadu', addr: 'Unit No: B-1, No.16 & 17, KRV Arcade – A R Plaza, Block-H, North Veli Street, Madurai – 625001', phone: '0452-4380935', email: 'madurai@shriramfs.in', q: 'North Veli Street Madurai 625001', lat: 9.92410, lon: 78.11466 },
+  { id: 'trichy', name: 'Trichy', state: 'Tamil Nadu', addr: '1st Floor, Shop No.4, "Vignesh Plaza", A-6, Thillai Nagar, Trichy – 620018', phone: '0431-4220235', email: 'trichy@shriramfs.in', q: 'Thillai Nagar Tiruchirappalli 620018', lat: 10.82225, lon: 78.68340 },
+  { id: 'somajiguda', name: 'Hyderabad – Somajiguda', state: 'Telangana', addr: '6-3-570/1&2, 2nd Floor, Rock Vista, Rock Dale Compound, Somajiguda, Hyderabad – 500082', phone: '040-45461234', email: 'somajiguda@shriramfs.in', q: 'Somajiguda Rock Dale Hyderabad 500082', lat: 17.42551, lon: 78.45852 },
+  { id: 'kukatpally', name: 'Hyderabad – Kukatpally', state: 'Telangana', addr: '#15-29-1000/H-14/1, Flat No.101, PKR Complex, Road No.1, KPHB Colony, Kukatpally, Hyderabad – 500072', phone: '040-40211540 / 40063713', email: 'kukatpally@shriramfs.in', q: 'KPHB Colony Kukatpally Hyderabad 500072', lat: 17.49380, lon: 78.40177 },
+  { id: 'vizag', name: 'Visakhapatnam', state: 'Andhra Pradesh', addr: '#47-3-7, GF-1, Roshini Palace, 5th Lane, Dwarka Nagar, Visakhapatnam – 530016', phone: '0891-2540053 / 2712808', email: 'vizag@shriramfs.in', q: 'Dwaraka Nagar Visakhapatnam 530016', lat: 17.72859, lon: 83.30930 },
+  { id: 'kurnool', name: 'Kurnool', state: 'Andhra Pradesh', addr: 'Shop No.20 & 21, Bhupal Complex, Kurnool – 518001', phone: '08518-278282 / 227095', email: 'kurnool@shriramfs.in', q: 'Bhupal Complex Kurnool 518001', lat: 15.83093, lon: 78.04254 },
+  { id: 'vijayawada', name: 'Vijayawada', state: 'Andhra Pradesh', addr: '1st Floor, Om Square, Plot No.89, Near Gupta Kalyana Mandapam, Vijayawada – 520010', phone: '0866-2490719 / 2490720 / 2490721', email: 'vijayawada@shriramfs.in', q: 'Om Square Vijayawada 520010', lat: 16.51249, lon: 80.62073 },
+  { id: 'surat', name: 'Surat', state: 'Gujarat', addr: 'G-16, D Block, International Trade Centre, Majura-Gate Ring Road, Surat – 395002', phone: '0261-4081400 / 401 / 402 / 403', email: 'surat@shriramfs.in', q: 'International Trade Centre Majura Gate Ring Road Surat 395002', lat: 21.18096, lon: 72.81839 },
+  { id: 'ghatkopar', name: 'Mumbai – Ghatkopar', state: 'Maharashtra', addr: 'No.409/410/411, 4th Floor, Swastik Disa Business Park, LBS Marg, Behind Vadhani Industrial Estate, Ghatkopar West, Mumbai – 400086', phone: '022-61462900', email: 'ghatkopar@shriramfs.in', q: 'Swastik Disa Business Park LBS Marg Ghatkopar West Mumbai 400086', lat: 19.08974, lon: 72.90480 },
+  { id: 'andheri', name: 'Mumbai – Andheri', state: 'Maharashtra', addr: '101-104, A Wing, Dynasty Business Park, J B Nagar, Andheri-Kurla Road, Andheri East, Mumbai – 400059', phone: '022-69032903', email: 'andheri@shriramfs.in', q: 'Dynasty Business Park JB Nagar Andheri East Mumbai 400059', lat: 19.10677, lon: 72.86394 },
+  { id: 'connaughtplace', name: 'New Delhi – Connaught Place', state: 'Delhi', addr: 'Flat No.704, 7th Floor, Rohit House, Tolstoy Marg, Connaught Place, New Delhi – 110001', phone: '011-41252100 to 106', email: 'connaughtplace@shriramfs.in', q: 'Rohit House Tolstoy Marg Connaught Place New Delhi 110001', lat: 28.63140, lon: 77.21938 },
+  { id: 'kolkata', name: 'Kolkata', state: 'West Bengal', addr: '2, Brabourne Road, Govind Bhavan, 7th Floor, Kolkata – 700001', phone: '033-46013385 / 83', email: 'kolkata@shriramfs.in', q: 'Brabourne Road Govind Bhavan Kolkata 700001', lat: 22.57193, lon: 88.34905 },
+];
+/* unique states in first-seen order, sorted A–Z (drives the grouped card list + dropdown) */
+const branchStates = [...new Set(branches.map((b) => b.state))].sort();
+/* first branch phone number → tel: href (mirrors the client-side telHref) */
+const telHref = (p) => 'tel:' + p.split('/')[0].replace(/[^0-9+]/g, '');
+/* keyless OpenStreetMap embed showing the whole country (initial "all branches" view) */
+const OSM_INDIA_SRC = 'https://www.openstreetmap.org/export/embed.html?bbox=68,6,98,37&layer=mapnik';
 ---
 
 <BaseLayout seo={seo} mainClass="rev-rise-scale">
@@ -300,11 +338,45 @@ const seo = {
       <button class="btn btn-primary btn-xl" type="button" id="bs-search">Search</button>
     </div>
     <div class="map-wrap reveal" id="map-wrap">
-      <iframe id="branch-map" title="Map view – enter state and city to locate branches" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        src="https://maps.google.com/maps?q=Shriram%20Financial%20Services%20Pvt%20Ltd%2C%20India&z=5&output=embed"></iframe>
+      <iframe id="branch-map" title="Map of all Shriram Financial Services branches across India" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        src={OSM_INDIA_SRC}></iframe>
     </div>
 
-    <div class="branch-groups reveal" id="branch-groups"></div>
+    <div class="branch-groups reveal" id="branch-groups">
+      {branchStates.map((s) => (
+        <div class="branch-group">
+          <p class="branch-gcat">{s}</p>
+          <div class="branch-grid">
+            {branches.filter((b) => b.state === s).map((b) => (
+              <article class="card branch-card" data-id={b.id} data-state={b.state} data-name={b.name} data-lat={b.lat} data-lon={b.lon}>
+                <div class="bc-head"><h3>{b.name}</h3></div>
+                <p class="bc-addr">{b.addr}</p>
+                <div class="bc-meta">
+                  <a href={telHref(b.phone)}>
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                    {b.phone}
+                  </a>
+                  <a href={`mailto:${b.email}`}>
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                    {b.email}
+                  </a>
+                </div>
+                <div class="bc-actions">
+                  <button class="btn btn-secondary bc-map" type="button" data-map={b.id}>
+                    <svg class="btn-ico" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+                    View on map
+                  </button>
+                  <a class="btn btn-secondary directions" href={`https://maps.google.com/?q=${encodeURIComponent(b.q)}`} target="_blank" rel="noopener">
+                    <svg class="btn-ico" viewBox="0 0 24 24" fill="none"><path d="M21 3 3 10.5l7.2 2.3 2.3 7.2L21 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                    Directions
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
 
     <div class="cta-box dark reveal">
       <div class="ct-tt">
@@ -930,12 +1002,9 @@ const seo = {
     gap: 24px;
     align-items: stretch;
   }
-  /* light cards - no whole-card hover; only the buttons/links inside have a subtle hover */
+  /* Surface (bg/border/24px radius/--container-pad) comes from the shared .card class;
+     only the branch-specific vertical layout is declared here. No whole-card hover. */
   .branch-card {
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-border-card);
-    border-radius: 20px;
-    padding: 24px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -985,19 +1054,28 @@ const seo = {
   }
   .bc-actions {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 16px;
     margin-top: 4px;
   }
-  /* .bc-map / .directions: layout-only now - fill, border, height, radius and
-     hover all come from the shared .btn .btn-secondary family. */
+  /* Both buttons stretch to share the card width equally, 16px between them.
+     Fill/border/height/radius/hover still come from the shared .btn family; we only
+     override its 220px min-width so the pair can shrink side-by-side in a narrow card. */
+  .bc-map,
   .directions {
-    flex: none;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   /* ---------- Downloads: category groups, card grid, search + chip toolbar and
      empty state now live in global.css (.doc-group/.doc-cat/.doc-toolbar/.doc-search/
      .doc-chips/.doc-chip/.doc-empty) - shared with /regulatorydocuments/investor-charter. ---------- */
+  /* Align the Downloads cards to the canonical .card geometry (24px radius,
+     --container-pad) here on Contact Us. Scoped to this page so the shared .doc-card
+     base (20px/24px) still governs /regulatorydocuments/investor-charter. */
+  .doc-card {
+    border-radius: 24px;
+    padding: var(--container-pad);
+  }
 
   /* ---------- final CTA (dark, centered - shared with About).
      Button is the shared .btn .btn-primary - no page-local button styling remains. ---------- */
@@ -1211,36 +1289,26 @@ const seo = {
       });
     }
 
-    /* ----- Branch locator: full branch directory drives an interactive (draggable) map ----- */
-    var BRANCHES = [
-      { id: 'indiranagar', name: 'Bangalore – Indiranagar', state: 'Karnataka', addr: '#415, 1st Floor, 7th Cross, Domlur, Bangalore – 560071', phone: '080-41153138 / 22951020 / 25350963', email: 'indiranagar@shriramfs.in', q: 'Domlur Indiranagar Bangalore 560071' },
-      { id: 'malleshwaram', name: 'Bangalore – Malleshwaram', state: 'Karnataka', addr: 'No.8, 1st Floor, Between 3rd & 4th Main, 17th Cross Road, Margosa Road, Malleshwaram, Bangalore – 560003', phone: '080-23446764 / 22951019 / 23469641', email: 'malleshwaram@shriramfs.in', q: 'Malleshwaram 17th Cross Margosa Road Bangalore 560003' },
-      { id: 'basavanagudi', name: 'Bangalore – Basavanagudi', state: 'Karnataka', addr: 'No.34, First Floor, Annapoorna Complex, South End Road, Basavanagudi, Bangalore – 560004', phone: '080-22445282 / 26547271 / 26540491', email: 'basavanagudi@shriramfs.in', q: 'South End Road Basavanagudi Bangalore 560004' },
-      { id: 'vijayanagar', name: 'Bangalore – Vijayanagar', state: 'Karnataka', addr: 'No.201/E, 2nd Floor, 1st Main Road, 1st Stage, Vijayanagar, Bangalore – 560104', phone: '080-22951026 / 23117202 / 23111026', email: 'vijayanagar@shriramfs.in', q: 'Vijayanagar 1st Stage Bangalore 560104' },
-      { id: 'hubli', name: 'Hubli', state: 'Karnataka', addr: 'No.S-1, 2nd Floor, R.R. Mahalaxmi Mansion, Pinto Road, Desai Cross, Hubli – 580020', phone: '0836-2257010 / 2257011 / 2257012', email: 'hubli@shriramfs.in', q: 'Desai Cross Pinto Road Hubli 580020' },
-      { id: 'mangalore', name: 'Mangalore', state: 'Karnataka', addr: 'D.No.4/6/548/6(1), 2nd Floor, Pramod Automobiles Building, KRR Road, Karangalpady, Mangalore – 575003', phone: '0824-2411123 / 2411124 / 2422717', email: 'mangalore@shriramfs.in', q: 'Karangalpady KRR Road Mangalore 575003' },
-      { id: 'shimoga', name: 'Shimoga', state: 'Karnataka', addr: 'Sree Karthik Plaza, 3rd Floor, Opp. Laxmi Galaxy, Above ICICI Bank, Nehru Road, Durgigudi, Shimoga – 577201', phone: '08182-261002 / 261003 / 261005', email: 'shimoga@shriramfs.in', q: 'Durgigudi Nehru Road Shivamogga 577201' },
-      { id: 'chennai', name: 'Chennai – Mylapore', state: 'Tamil Nadu', addr: '3rd Floor, 221, Thiru Vi Ka Salai, Royapettah High Road, Luz, Near Vidhya Mandir School, Mylapore, Chennai – 600004', phone: '044-42983690 / 42983643', email: 'chennai@shriramfs.in', q: 'Royapettah High Road Luz Mylapore Chennai 600004' },
-      { id: 'coimbatore', name: 'Coimbatore', state: 'Tamil Nadu', addr: 'No.114/A/1, T.V. Samy Road West, R.S. Puram, Coimbatore – 641002', phone: '0422-4313625', email: 'coimbatore@shriramfs.in', q: 'TV Samy Road West RS Puram Coimbatore 641002' },
-      { id: 'madurai', name: 'Madurai', state: 'Tamil Nadu', addr: 'Unit No: B-1, No.16 & 17, KRV Arcade – A R Plaza, Block-H, North Veli Street, Madurai – 625001', phone: '0452-4380935', email: 'madurai@shriramfs.in', q: 'North Veli Street Madurai 625001' },
-      { id: 'trichy', name: 'Trichy', state: 'Tamil Nadu', addr: '1st Floor, Shop No.4, "Vignesh Plaza", A-6, Thillai Nagar, Trichy – 620018', phone: '0431-4220235', email: 'trichy@shriramfs.in', q: 'Thillai Nagar Tiruchirappalli 620018' },
-      { id: 'somajiguda', name: 'Hyderabad – Somajiguda', state: 'Telangana', addr: '6-3-570/1&2, 2nd Floor, Rock Vista, Rock Dale Compound, Somajiguda, Hyderabad – 500082', phone: '040-45461234', email: 'somajiguda@shriramfs.in', q: 'Somajiguda Rock Dale Hyderabad 500082' },
-      { id: 'kukatpally', name: 'Hyderabad – Kukatpally', state: 'Telangana', addr: '#15-29-1000/H-14/1, Flat No.101, PKR Complex, Road No.1, KPHB Colony, Kukatpally, Hyderabad – 500072', phone: '040-40211540 / 40063713', email: 'kukatpally@shriramfs.in', q: 'KPHB Colony Kukatpally Hyderabad 500072' },
-      { id: 'vizag', name: 'Visakhapatnam', state: 'Andhra Pradesh', addr: '#47-3-7, GF-1, Roshini Palace, 5th Lane, Dwarka Nagar, Visakhapatnam – 530016', phone: '0891-2540053 / 2712808', email: 'vizag@shriramfs.in', q: 'Dwaraka Nagar Visakhapatnam 530016' },
-      { id: 'kurnool', name: 'Kurnool', state: 'Andhra Pradesh', addr: 'Shop No.20 & 21, Bhupal Complex, Kurnool – 518001', phone: '08518-278282 / 227095', email: 'kurnool@shriramfs.in', q: 'Bhupal Complex Kurnool 518001' },
-      { id: 'vijayawada', name: 'Vijayawada', state: 'Andhra Pradesh', addr: '1st Floor, Om Square, Plot No.89, Near Gupta Kalyana Mandapam, Vijayawada – 520010', phone: '0866-2490719 / 2490720 / 2490721', email: 'vijayawada@shriramfs.in', q: 'Om Square Vijayawada 520010' },
-      { id: 'surat', name: 'Surat', state: 'Gujarat', addr: 'G-16, D Block, International Trade Centre, Majura-Gate Ring Road, Surat – 395002', phone: '0261-4081400 / 401 / 402 / 403', email: 'surat@shriramfs.in', q: 'International Trade Centre Majura Gate Ring Road Surat 395002' },
-      { id: 'ghatkopar', name: 'Mumbai – Ghatkopar', state: 'Maharashtra', addr: 'No.409/410/411, 4th Floor, Swastik Disa Business Park, LBS Marg, Behind Vadhani Industrial Estate, Ghatkopar West, Mumbai – 400086', phone: '022-61462900', email: 'ghatkopar@shriramfs.in', q: 'Swastik Disa Business Park LBS Marg Ghatkopar West Mumbai 400086' },
-      { id: 'andheri', name: 'Mumbai – Andheri', state: 'Maharashtra', addr: '101-104, A Wing, Dynasty Business Park, J B Nagar, Andheri-Kurla Road, Andheri East, Mumbai – 400059', phone: '022-69032903', email: 'andheri@shriramfs.in', q: 'Dynasty Business Park JB Nagar Andheri East Mumbai 400059' },
-      { id: 'connaughtplace', name: 'New Delhi – Connaught Place', state: 'Delhi', addr: 'Flat No.704, 7th Floor, Rohit House, Tolstoy Marg, Connaught Place, New Delhi – 110001', phone: '011-41252100 to 106', email: 'connaughtplace@shriramfs.in', q: 'Rohit House Tolstoy Marg Connaught Place New Delhi 110001' },
-      { id: 'kolkata', name: 'Kolkata', state: 'West Bengal', addr: '2, Brabourne Road, Govind Bhavan, 7th Floor, Kolkata – 700001', phone: '033-46013385 / 83', email: 'kolkata@shriramfs.in', q: 'Brabourne Road Govind Bhavan Kolkata 700001' },
-    ];
-
+    /* ----- Branch locator: the server-rendered directory (frontmatter `branches`)
+       drives the dropdowns + a keyless OpenStreetMap embed. Branch data is read back
+       from the rendered cards, so there is a single source of truth. ----- */
     var stateSel = document.getElementById('bs-state'),
       branchSel = document.getElementById('bs-branch'),
       mapWrap = document.getElementById('map-wrap'),
       mapFrame = document.getElementById('branch-map'),
       groupsEl = document.getElementById('branch-groups');
+
+    var BRANCHES = groupsEl
+      ? Array.prototype.slice.call(groupsEl.querySelectorAll('.branch-card')).map(function (c) {
+          return {
+            id: c.getAttribute('data-id'),
+            name: c.getAttribute('data-name'),
+            state: c.getAttribute('data-state'),
+            lat: parseFloat(c.getAttribute('data-lat')),
+            lon: parseFloat(c.getAttribute('data-lon')),
+          };
+        })
+      : [];
 
     if (BRANCHES.length && stateSel && branchSel && mapFrame && groupsEl) {
       var byId = {};
@@ -1256,27 +1324,24 @@ const seo = {
       });
       states.sort();
 
-      var PHONE_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l1.5 5-2 1.5a11 11 0 0 0 5 5l1.5-2 5 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-      var MAIL_SVG = '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-      /* "View on map" = location pin; "Directions" = a navigation arrow (distinct icons) */
-      var PIN_SVG = '<svg class="btn-ico" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>';
-      var NAV_SVG = '<svg class="btn-ico" viewBox="0 0 24 24" fill="none"><path d="M21 3 3 10.5l7.2 2.3 2.3 7.2L21 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-
-      function esc(s) {
-        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      }
-      function telHref(p) {
-        return 'tel:' + p.split('/')[0].replace(/[^0-9+]/g, '');
-      }
-
-      /* default map view: every branch plotted across India */
-      var ALL_SRC = 'https://maps.google.com/maps?q=' + encodeURIComponent('Shriram Financial Services Pvt Ltd, India') + '&z=5&output=embed';
+      /* keyless OpenStreetMap embeds: whole-country default + a tight box around one branch */
+      var INDIA_SRC = 'https://www.openstreetmap.org/export/embed.html?bbox=68,6,98,37&layer=mapnik';
       function showAll() {
-        mapFrame.src = ALL_SRC;
+        mapFrame.src = INDIA_SRC;
         mapFrame.title = 'Map of all Shriram Financial Services branches across India';
       }
       function mapSrc(b) {
-        return 'https://maps.google.com/maps?q=' + encodeURIComponent(b.q) + '&z=15&output=embed';
+        var dLat = 0.006,
+          dLon = 0.01;
+        var bbox =
+          (b.lon - dLon).toFixed(5) +
+          ',' +
+          (b.lat - dLat).toFixed(5) +
+          ',' +
+          (b.lon + dLon).toFixed(5) +
+          ',' +
+          (b.lat + dLat).toFixed(5);
+        return 'https://www.openstreetmap.org/export/embed.html?bbox=' + bbox + '&layer=mapnik&marker=' + b.lat + ',' + b.lon;
       }
       function zoomTo(b, scrollToMap) {
         mapWrap.classList.add('loading');
@@ -1310,31 +1375,6 @@ const seo = {
           branchSel.appendChild(o);
         });
       }
-
-      /* render the state-grouped "All Branches" card grid (states A–Z) */
-      var html = '';
-      states.forEach(function (s) {
-        html += '<div class="branch-group"><p class="branch-gcat">' + esc(s) + '</p><div class="branch-grid">';
-        BRANCHES.filter(function (b) {
-          return b.state === s;
-        }).forEach(function (b) {
-          html +=
-            '<article class="branch-card" data-id="' + b.id + '">' +
-            '<div class="bc-head"><h3>' + esc(b.name) + '</h3></div>' +
-            '<p class="bc-addr">' + esc(b.addr) + '</p>' +
-            '<div class="bc-meta">' +
-            '<a href="' + telHref(b.phone) + '">' + PHONE_SVG + esc(b.phone) + '</a>' +
-            '<a href="mailto:' + esc(b.email) + '">' + MAIL_SVG + esc(b.email) + '</a>' +
-            '</div>' +
-            '<div class="bc-actions">' +
-            '<button class="btn btn-secondary bc-map" type="button" data-map="' + b.id + '">' + PIN_SVG + 'View on map</button>' +
-            '<a class="btn btn-secondary directions" href="https://maps.google.com/?q=' + encodeURIComponent(b.q) + '" target="_blank" rel="noopener">' + NAV_SVG + 'Directions</a>' +
-            '</div>' +
-            '</article>';
-        });
-        html += '</div></div>';
-      });
-      groupsEl.innerHTML = html;
 
       /* wire interactions - selecting jumps the map to that branch (no card highlight) */
       stateSel.addEventListener('change', function () {
