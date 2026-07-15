@@ -36,9 +36,6 @@ const company: SmGroup = {
   blurb: 'Who we are and how to get started with Shriram.',
   links: [
     { label: 'Home', href: '/' },
-    { label: 'About Us', href: '/about-us' },
-    { label: 'Open a Demat Account', href: '/open-demat-account' },
-    { label: 'Become a Partner', href: '/become-a-partner' },
   ],
 };
 
@@ -68,23 +65,7 @@ const navGroups: SmGroup[] = megaNavSections.map((s) => {
   return { title: s.heading, blurb: blurbs[s.id] ?? '', links };
 });
 
-// Legal & compliance - curated real pages (kept out of the mega-nav).
-const legal: SmGroup = {
-  title: 'Legal & Compliance',
-  blurb: 'Policies, charters and regulatory disclosures.',
-  links: [
-    { label: 'Regulatory Documents', href: '/regulatorydocuments' },
-    { label: 'Investor Charter', href: '/regulatorydocuments/investor-charter' },
-    { label: 'Mandatory Member Details', href: '/regulatorydocuments/mandatory-member-details' },
-    { label: 'Privacy Policy', href: '/privacy-policy' },
-    { label: 'Terms & Conditions', href: '/terms-and-conditions' },
-    { label: 'Terms of Use - Purse', href: '/terms-of-use-purse' },
-    { label: 'Grievance Redressal', href: '/grievance-redressal' },
-    { label: 'SEBI SCORES', href: 'https://scores.sebi.gov.in' },
-  ],
-};
-
-const groups: SmGroup[] = [company, ...navGroups, legal];
+const groups: SmGroup[] = [company, ...navGroups];
 
 const seo = {
   title: 'Sitemap - All Pages',

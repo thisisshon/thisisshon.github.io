@@ -42,6 +42,10 @@ export interface MegaNavSection {
 /* / Support). Content parity with the legacy app.js-injected panel.   */
 /* ------------------------------------------------------------------ */
 
+/* LEAN TEST HARNESS: this repo is trimmed to a handful of representative pages
+ * for exercising Proofkit (index / equity / sip-calculator / nps). The nav below
+ * only references those kept pages so nothing 404s. The full production nav lives
+ * in the main site repo. */
 export const megaNavSections: MegaNavSection[] = [
   {
     id: 'products',
@@ -53,52 +57,11 @@ export const megaNavSections: MegaNavSection[] = [
         linkGroups: [
           [
             { label: 'Equity', href: '/equity' },
-            { label: 'Currency', href: '/currency' },
-            { label: 'Commodities', href: '/commodities' },
-            { label: 'Margin Trading Facility (MTF)', href: '/mtf' },
-            { label: 'Derivatives', href: '/derivatives' },
-            { label: 'Bonds', href: '/bonds' },
-            { label: 'Global Investing', href: '/global-investing' },
-          ],
-          [
-            { label: 'Mutual Funds', href: '/mutual-funds' },
-            { label: 'ETFs', href: '/etf' },
             { label: 'National Pension Scheme (NPS)', href: '/nps' },
-            { label: 'NFO', href: '/nfo' },
-            { label: 'IPO', href: '/ipo' },
-            { label: 'Fixed Deposit', href: '/fixed-deposit' },
-          ],
-        ],
-      },
-      {
-        title: 'Featured',
-        linkGroups: [
-          [
-            { label: 'Loan Against Mutual Funds', href: '/loan-against-mutual-fund' },
-            { label: 'Loan Against Stocks', href: '/loan-against-shares' },
           ],
         ],
       },
     ],
-    viewAll: { label: 'View All Products', href: '/products' },
-  },
-  {
-    id: 'research-centre',
-    label: 'Research Centre',
-    heading: 'Research Centre',
-    columns: [
-      {
-        title: 'All Researches',
-        linkGroups: [
-          [
-            { label: 'Technical Research', href: '/technical-analysis' },
-            { label: 'Fundamental Research', href: '/fundamental-analysis' },
-            { label: 'Mutual Fund Research', href: '/mutual-fund-analysis' },
-          ],
-        ],
-      },
-    ],
-    viewAll: { label: 'View Research', href: '/research-hub' },
   },
   {
     id: 'calculators',
@@ -110,31 +73,6 @@ export const megaNavSections: MegaNavSection[] = [
         linkGroups: [
           [
             { label: 'SIP Calculator', href: '/sip-calculator' },
-            { label: 'Lumpsum Calculator', href: '/lumpsum-calculator' },
-            { label: 'Fixed Deposit Calculator', href: '/fd-calculator' },
-            { label: 'SWP Calculator', href: '/swp-calculator' },
-            { label: 'NPS Calculator', href: '/nps-calculator' },
-          ],
-        ],
-      },
-    ],
-    viewAll: { label: 'View All Calculators', href: '/calculators' },
-  },
-  {
-    id: 'support',
-    label: 'Support',
-    heading: 'Support',
-    columns: [
-      {
-        title: 'Get Help',
-        linkGroups: [
-          [
-            { label: 'FAQs', href: '/faqs' },
-            { label: 'Contact Us', href: '/contact-us' },
-            { label: 'Branch Locator', href: '/contact-us#branch-locator' },
-            { label: 'Downloads', href: '/contact-us#downloads' },
-            { label: 'Grievance Redressal', href: '/grievance-redressal' },
-            { label: 'Regulatory & Compliance', href: '/regulatorydocuments' },
           ],
         ],
       },
@@ -153,16 +91,14 @@ export interface PrimaryNavItem extends NavLink {
 }
 
 export const primaryNav: PrimaryNavItem[] = [
-  { label: 'Products', href: '/products', panel: 'products' },
-  { label: 'Research Centre', href: '/research-hub', panel: 'research-centre' },
-  { label: 'Calculators', href: '/calculators', panel: 'calculators' },
-  { label: 'Support', href: '/contact-us', panel: 'support' },
-  { label: 'Become a Partner', href: '/become-a-partner' },
+  { label: 'Products', href: '/equity', panel: 'products' },
+  { label: 'Calculators', href: '/sip-calculator', panel: 'calculators' },
+  { label: 'NPS', href: '/nps' },
 ];
 
 export const headerActions = {
   login: { label: 'Login', href: '#' },
-  cta: { label: 'Open A Demat Account', href: '/open-demat-account' },
+  cta: { label: 'Open A Demat Account', href: '/' },
 };
 
 /* ------------------------------------------------------------------ */
@@ -189,67 +125,21 @@ export const footerBrand = {
 export const footerColumns: FooterColumn[] = [
   {
     title: 'Products',
-    wide: true,
     links: [
       { label: 'Equity', href: '/equity' },
-      { label: 'Currency', href: '/currency' },
-      { label: 'Commodities', href: '/commodities' },
-      { label: 'MTF', href: '/mtf' },
-      { label: 'Derivatives', href: '/derivatives' },
-      { label: 'Bonds', href: '/bonds' },
-      { label: 'Global Investing', href: '/global-investing' },
-      { label: 'Mutual Funds', href: '/mutual-funds' },
-      { label: 'ETFs', href: '/etf' },
       { label: 'NPS', href: '/nps' },
-      { label: 'NFO', href: '/nfo' },
-      { label: 'IPO', href: '/ipo' },
-      { label: 'Fixed Deposit', href: '/fixed-deposit' },
-      { label: 'LAMF', href: '/loan-against-mutual-fund' },
-      { label: 'LAS', href: '/loan-against-shares' },
-    ],
-  },
-  {
-    title: 'Legal & Compliance',
-    links: [
-      { label: 'Regulatory Documents', href: '/regulatorydocuments' },
-      { label: 'Investor Charter', href: '/regulatorydocuments/investor-charter' },
-      { label: 'Mandatory Member Details', href: '/regulatorydocuments/mandatory-member-details' },
-      { label: 'Grievance Redressal', href: '/grievance-redressal' },
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'Terms & Conditions', href: '/terms-and-conditions' },
-      { label: 'Terms of Use Mobile App', href: '/terms-of-use-purse' },
-      { label: 'SEBI SCORES', href: 'https://scores.sebi.gov.in' },
-    ],
-  },
-  {
-    title: 'Research',
-    links: [
-      { label: 'Research Centre', href: '/research-hub' },
-      { label: 'Technical Research', href: '/technical-analysis' },
-      { label: 'Fundamental Research', href: '/fundamental-analysis' },
-      { label: 'Mutual Fund Research', href: '/mutual-fund-analysis' },
     ],
   },
   {
     title: 'Calculators',
     links: [
       { label: 'SIP Calculator', href: '/sip-calculator' },
-      { label: 'Lumpsum Calculator', href: '/lumpsum-calculator' },
-      { label: 'SWP Calculator', href: '/swp-calculator' },
-      { label: 'FD Calculator', href: '/fd-calculator' },
-      { label: 'NPS Calculator', href: '/nps-calculator' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About Us', href: '/about-us' },
-      { label: 'FAQs', href: '/faqs' },
-      { label: 'Contact Us', href: '/contact-us' },
-      { label: 'Become a Partner', href: '/become-a-partner' },
-      { label: 'Open Demat Account', href: '/open-demat-account' },
-      { label: 'Explore Antara', href: '/antara' },
-      { label: 'Karnataka Bank Customers', href: '/karnataka-bank-customers' },
+      { label: 'Home', href: '/' },
       { label: 'Site Map', href: '/sitemap' },
     ],
   },
