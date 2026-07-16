@@ -23,6 +23,11 @@
  * THIN ADAPTER: all behaviour + injected styles live in the framework-neutral core
  * (./core/overlay.js). This file only bridges the build-time Worker URL to the core
  * and loads it; BaseLayout renders it site-wide, dormant until review mode is armed.
+ *
+ * CONDITIONAL LOAD (v3): across 4,000+ host pages the overlay must not eagerly pull a
+ * second bundle for real visitors. An inline pre-check dynamically imports the core ONLY
+ * when this tab is (or is about to be) a review session: `reviewMode` armed, a pending
+ * `pkAutoReview` arrival, or a `#c=` deep link. Everyone else downloads nothing.
  */
 import { WORKER_URL } from './config';
 ---
@@ -30,5 +35,15 @@ import { WORKER_URL } from './config';
 {/* Bridge the build-time Worker URL to the framework-neutral core (window global). */}
 <script is:inline set:html={`window.PROOFKIT_WORKER_URL=${JSON.stringify(WORKER_URL)}`}></script>
 
-{/* Bundled + deferred module - one shared cached file, dormant for real visitors. */}
-<script>import './core/overlay.js';</script>
+{/* Conditional dynamic import — the core bundle loads only for an armed/arriving/deep-linked
+    review tab, so real visitors on the other 3,999 pages never fetch it. */}
+<script>
+  (() => {
+    try {
+      const armed = sessionStorage.getItem('reviewMode') === '1';
+      const auto = sessionStorage.getItem('pkAutoReview') === '1';
+      const deep = /[#&]c=/.test(location.hash);
+      if (armed || auto || deep) import('./core/overlay.js');
+    } catch (e) { /* storage blocked → stay dormant (never eager-load) */ }
+  })();
+</script>

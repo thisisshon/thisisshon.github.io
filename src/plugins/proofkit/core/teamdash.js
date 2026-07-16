@@ -1,5 +1,6 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
-    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initLocalTheme, mountThemeToggle, ensureDemoReset, isTeamEnabled } from './config.js';
+    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initLocalTheme, mountThemeToggle, ensureDemoReset, isTeamEnabled,
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Each team member
@@ -41,10 +42,18 @@
       createdAt: c.createdAt, team: c.team || '', toTeam: c.toTeam || '',
       name: c.name || '', comment: c.comment, changeTo: c.changeTo || '',
       aiPrompt: c.aiPrompt || '',
+      // v3 structured payload (Feature 1/8/4) — every field defaults when missing so
+      // pre-v3 records mask cleanly (mirrors the Worker's maskForTeam pass-through).
+      commentType: c.commentType || 'general',
+      templateFields: (c.templateFields && typeof c.templateFields === 'object') ? c.templateFields : {},
+      summary: c.summary || '',
+      expectedOutcome: c.expectedOutcome || '',
+      imageId: c.imageId || '',
       page: c.page, anchor: c.anchor || {},
       // the real-time state machine (to_be_initiated | in_progress | deployed_live | reopened)
       teamStatus: c.teamStatus || 'to_be_initiated', teamStatusAt: c.teamStatusAt || '',
-      reopenReason: c.reopenReason || '',
+      // reopen is an enum + optional note (Feature 3); the raiser sees the reason label + note
+      reopenReason: c.reopenReason || '', reopenNote: c.reopenNote || '',
       history: Array.isArray(c.history) ? c.history : [],
     });
     const luid = () => (crypto.randomUUID ? crypto.randomUUID() : 'n_' + Date.now() + '_' + Math.random().toString(16).slice(2));
@@ -70,9 +79,15 @@
       const nextIter = maxIter + 1;
       const sub = {
         id: luid(), ticket: baseTicket ? baseTicket + '-' + (nextIter - 1) : '', createdAt: now,
-        teamStatus: 'to_be_initiated', teamStatusAt: now, iteration: nextIter, reopenReason: '',
+        teamStatus: 'to_be_initiated', teamStatusAt: now, iteration: nextIter,
+        // fresh pass: the reopen reason/note belonged to the prior iteration, so reset them.
+        reopenReason: '', reopenNote: '',
         parentId: rootId, team: r.team || '', toTeam: r.toTeam || '',
         name: r.name || 'anonymous', comment: r.comment || '', changeTo: r.changeTo || '',
+        // carry the v3 structured payload forward so the next iteration keeps its typed data.
+        commentType: r.commentType || 'general',
+        templateFields: (r.templateFields && typeof r.templateFields === 'object') ? r.templateFields : {},
+        summary: r.summary || '', expectedOutcome: r.expectedOutcome || '', imageId: r.imageId || '',
         aiPrompt: r.aiPrompt || '', page: r.page, anchor: r.anchor || {},
         history: [{ status: 'to_be_initiated', at: now, event: 'resubmitted', iteration: nextIter }],
       };
@@ -122,12 +137,72 @@
       return { ok: true, updated };
     }
 
+    // ---- LOCAL writer: a Quick-questions reply (Feature 6, mirror of POST /comments
+    // with a parentId). A reply chains to the origin root, is iteration 1, and NEVER
+    // changes the ticket's status/iteration. It fires a `kind:'reply'` notification to
+    // the OTHER side (contract §4): replier === raiser (root.team) ⇒ notify toTeam, else
+    // notify team — so whoever asked the question, the other party is pinged.
+    function localReply(root, text) {
+      const key = 'rvc:' + root.page.path;
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      const rootId = root.parentId || root.id;
+      const now = new Date().toISOString();
+      const reply = {
+        id: luid(), parentId: rootId, iteration: 1, createdAt: now,
+        team: team(), toTeam: root.toTeam || '', name: getSession().team || team() || 'anonymous',
+        comment: String(text || '').slice(0, 4000), changeTo: '',
+        commentType: 'general', templateFields: {}, summary: '', expectedOutcome: '', imageId: '',
+        aiPrompt: '', page: root.page, anchor: root.anchor || {},
+        teamStatus: root.teamStatus || 'to_be_initiated', teamStatusAt: '',
+        reopenReason: '', reopenNote: '', history: [],
+      };
+      arr.push(reply);
+      localStorage.setItem(key, JSON.stringify(arr));
+      const target = (team() === (root.team || '')) ? (root.toTeam || '') : (root.team || '');
+      if (target) {
+        const where = (root.page && root.page.title) || (root.page && root.page.path) || 'a page';
+        const notif = {
+          id: luid(), createdAt: now, updatedAt: now, team: target, kind: 'reply',
+          chainId: rootId, commentId: reply.id, ticket: root.ticket || '', fromTeam: team() || '',
+          path: (root.page && root.page.path) || '/', pageName: where,
+          summary: (team() || 'Someone') + ' replied' + (root.ticket ? ' on #' + root.ticket : '') + ': “' + reply.comment.slice(0, 80) + '”',
+          readTeam: false, readAdmin: false,
+        };
+        let ex = []; try { ex = JSON.parse(localStorage.getItem('rvc-notifications') || '[]'); } catch {}
+        ex.push(notif);
+        localStorage.setItem('rvc-notifications', JSON.stringify(ex));
+      }
+      return maskLocal(reply);
+    }
+
+    // ---- LOCAL saved views (Feature 11) — the team's shared quick-select filter sets.
+    // Stored under one 'rvc-views' map keyed by team (mirrors the Worker's per-caller
+    // `views:<team>` KV key), so each team reads/writes only its own set. POST replaces.
+    function localGetViews(t) {
+      let map = {}; try { map = JSON.parse(localStorage.getItem('rvc-views') || '{}'); } catch {}
+      const v = map && map[t]; return Array.isArray(v) ? v : [];
+    }
+    function localSaveViews(t, views) {
+      let map = {}; try { map = JSON.parse(localStorage.getItem('rvc-views') || '{}'); } catch {}
+      if (!map || typeof map !== 'object') map = {};
+      map[t] = Array.isArray(views) ? views : [];
+      try { localStorage.setItem('rvc-views', JSON.stringify(map)); } catch {}
+      return { ok: true, views: map[t] };
+    }
+
     const store = LOCAL
       ? {
           comments: async () => localComments(team()),
           notifs: async () => localNotifs(team()),
           markRead: async (ids, read = true) => localMarkRead(ids, read),
           resubmit: async (rec) => localResubmit(rec),
+          // Quick-questions reply (Feature 6) — no ticket, no status change.
+          reply: async (root, text) => localReply(root, text),
+          // Saved views (Feature 11), scoped to the signed-in team.
+          getViews: async () => localGetViews(team()),
+          saveViews: async (views) => localSaveViews(team(), views),
+          // Screenshot dataURL (Feature 4) stored under rvc-img:<id> in demo mode.
+          image: async (id) => { try { return { dataUrl: localStorage.getItem('rvc-img:' + id) || '' }; } catch { return { dataUrl: '' }; } },
         }
       : {
           comments: () => apiFetch('/comments?team=' + encodeURIComponent(team())),
@@ -135,6 +210,17 @@
           markRead: (ids, read = true) => apiFetch('/notifications/read', { method: 'POST', body: JSON.stringify({ ids, team: team(), read }) }),
           // Content re-raises a reopened ticket. Contract body: { id }.
           resubmit: (rec) => apiFetch('/resubmit', { method: 'POST', body: JSON.stringify({ id: rec.id }) }),
+          // A reply is POST /comments with a parentId — the Worker skips the ticket/arrival
+          // notif and fires a kind:'reply' notification to the other side (contract §4).
+          reply: (root, text) => apiFetch('/comments', { method: 'POST', body: JSON.stringify({
+            parentId: root.parentId || root.id, comment: text, team: team(), toTeam: root.toTeam || '',
+            page: root.page, anchor: root.anchor || {},
+          }) }),
+          // Saved views — GET returns the caller's set, POST replaces it (Feature 11).
+          getViews: () => apiFetch('/views'),
+          saveViews: (views) => apiFetch('/views', { method: 'POST', body: JSON.stringify({ views }) }),
+          // Screenshot dataURL by id (Feature 4).
+          image: (id) => apiFetch('/image?id=' + encodeURIComponent(id)),
         };
 
     // ---- helpers ----
@@ -150,6 +236,52 @@
         return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())} | ${d.getDate()} ${MONTHS[d.getMonth()]}, ${d.getFullYear()}`;
       } catch { return String(iso || ''); }
     };
+
+    // ---- change-type vocab (Feature 1) — shared from config; `general` = no typed fields ----
+    const typeMeta = (t) => COMMENT_TYPES.find((x) => x.value === t) || null;
+    const typeLabel = (c) => { const m = typeMeta(c && c.commentType); return (m && c.commentType !== 'general') ? m.label : ''; };
+    const fieldsFor = (t) => (TYPE_FIELDS[t] || []);
+    // The one-line preview: the record's server-rendered summary, else derived locally.
+    const summaryOf = (c) => c.summary || renderSummary(c.commentType || 'general', c.templateFields || {}, c.comment || '');
+    // The reopen label the RAISER sees (enum label; falls back to any legacy free-text reason).
+    const reopenLabelOf = (c) => reopenReasonLabel(c && c.reopenReason) || (c && c.reopenReason) || '';
+    // A single detail field row (shared by renderDetail + typedFieldRows).
+    const fieldRow = (k, vHtml) => `<div class="tmd-field"><div class="tmd-field-k">${k}</div><div class="tmd-field-v">${vHtml}</div></div>`;
+    // Typed template-field rows for the detail (labelled rows, NEVER raw JSON; §3).
+    function typedFieldRows(c) {
+      const t = c.commentType || 'general';
+      if (t === 'general') return '';
+      const tf = c.templateFields || {};
+      return fieldsFor(t).map((f) => {
+        const v = tf[f.key];
+        if (v == null || String(v).trim() === '') return '';
+        return fieldRow(esc(f.label), esc(v));
+      }).join('');
+    }
+
+    // ---- screenshot thumbnails (Feature 4) — thin-infra: fetch the dataURL by id and
+    // fill the placeholder in place. ANY miss/failure ⇒ a "preview unavailable" tile
+    // (a screenshot never blocks anything). Marked data-hydrated so a poll re-render
+    // that re-emits the same markup doesn't re-fetch.
+    async function loadImage(imageId) {
+      if (!imageId) return '';
+      try { const j = await store.image(imageId); return (j && j.dataUrl) || ''; }
+      catch { return ''; }
+    }
+    async function hydrateThumbs(root) {
+      if (!root) return;
+      const els = root.querySelectorAll('[data-imgid]:not([data-hydrated])');
+      for (const el of els) {
+        el.dataset.hydrated = '1';
+        const url = await loadImage(el.dataset.imgid);
+        if (url) el.innerHTML = `<img src="${esc(url)}" alt="Element preview" loading="lazy">`;
+        else { el.classList.add('is-empty'); el.innerHTML = `<span class="tmd-thumb-ph">preview unavailable</span>`; }
+      }
+    }
+    // A thumbnail tile (small on cards, large in detail). Empty imageId ⇒ nothing.
+    const thumbTile = (imageId, big) => imageId
+      ? `<span class="tmd-thumb${big ? ' tmd-thumb-lg' : ''}" data-imgid="${esc(imageId)}"><span class="tmd-thumb-ph">preview…</span></span>`
+      : '';
 
     // ---- the real-time status, framed for the RAISER (Content): everything Content
     // submitted sits "with builder" until it goes live or is bounced back. ----
@@ -217,7 +349,10 @@
       if (e === 'resubmitted' || e === 'resubmit') return 'Resubmitted for another pass';
       if (e === 'team-start' || e === 'start' || st === 'in_progress') return 'Builder started — in progress';
       if (e === 'team-complete' || e === 'complete' || st === 'deployed_live') return 'Deployed live';
-      if (e === 'team-reopen' || e === 'reopen' || st === 'reopened') return 'Reopened by Builder' + (h.reason ? ' — ' + h.reason : '');
+      if (e === 'team-reopen' || e === 'reopen' || st === 'reopened') {
+        const label = reopenReasonLabel(h.reason) || h.reason || '';
+        return 'Reopened by Builder' + (label ? ' — ' + label : '') + (h.note ? ' (' + h.note + ')' : '');
+      }
       return 'Status → ' + (st || '');
     }
 
@@ -226,6 +361,8 @@
     let search = '', sort = 'new', fromFilter = '', entryDetail = null;
     let landed = false; // set once we've landed on the first visible tab (post first load)
     let lastSig = '';   // signature of the last-rendered data — lets polling skip no-op re-renders
+    // Feature 11 (Team views): the team's shared saved filter sets, loaded once.
+    let savedViews = [], activeViewName = '', viewsLoaded = false;
     const dataSig = () => JSON.stringify([comments, notes]);
 
     // Iteration members of a chain (root + resubmit sub-tickets), oldest→newest by iteration.
@@ -262,7 +399,9 @@
     function matchesSearch(c) {
       if (!search) return true;
       const a = c.anchor || {};
-      return [c.comment, c.changeTo, c.page && c.page.path, c.name, c.team, c.reopenReason, a.snippet, a.tag]
+      const tf = c.templateFields || {};
+      return [c.comment, c.changeTo, c.summary, c.expectedOutcome, c.page && c.page.path, c.name, c.team,
+        c.reopenReason, reopenLabelOf(c), c.reopenNote, a.snippet, a.tag, ...Object.values(tf)]
         .filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase());
     }
     function matchesNoteSearch(n) {
@@ -298,6 +437,8 @@
 
     // ---- data ----
     async function loadData() {
+      // Feature 11: pull the team's saved "Team views" ONCE (not on every 5s poll).
+      if (!viewsLoaded) { viewsLoaded = true; loadViews().then(() => renderViewChips()); }
       const [c, n] = await Promise.all([store.comments(), store.notifs()]);
       comments = Array.isArray(c) ? c : [];
       notes = Array.isArray(n) ? n : [];
@@ -336,6 +477,8 @@
       const dn = nav('delivery'); if (dn && dn.firstChild) dn.firstChild.textContent = 'Active';
     }
 
+    // A status-token dot (STATUS_COLORS: teamStatus → --pk-* token) leading a count tile.
+    const statusDot = (s) => `<span class="tmd-count-dot" style="background:var(${STATUS_COLORS[s] || '--pk-muted'})"></span>`;
     function counts() {
       const rs = roots();
       const inFlight = rs.filter((c) => teamStatusOf(c) === 'to_be_initiated' || teamStatusOf(c) === 'in_progress').length;
@@ -343,9 +486,9 @@
       const reop = reopenedRoots().length;
       const el = $('#tmd-counts');
       if (el) el.innerHTML =
-        `<span class="tmd-count tmd-count-inprog"><b>${inFlight}</b> With builder</span>` +
-        `<span class="tmd-count tmd-count-done"><b>${live}</b> Deployed live</span>` +
-        `<span class="tmd-count tmd-count-reopened"><b>${reop}</b> Reopened</span>`;
+        `<span class="tmd-count tmd-count-inprog"><b>${inFlight}</b>${statusDot('in_progress')} With builder</span>` +
+        `<span class="tmd-count tmd-count-done"><b>${live}</b>${statusDot('deployed_live')} Deployed live</span>` +
+        `<span class="tmd-count tmd-count-reopened"><b>${reop}</b>${statusDot('reopened')} Reopened</span>`;
       updateActiveBadge();
     }
     // The Active (bounceback) category only exists when Builder has reopened something.
@@ -362,11 +505,17 @@
     // The reopen band on an Active card: Builder's reason + a Resubmit action. Content can
     // clarify in context via "Open Pin" (the on-page overlay is the add/edit surface), then
     // resubmit to spawn the next iteration back into Builder's queue.
+    // The reopen band (Feature 3): a "Reopened: <label>" badge with the enum reason +
+    // Builder's note, both visible to the raiser, and the Resubmit action.
     function reopenBand(root) {
       const id = esc(root.id);
-      const reason = root.reopenReason ? esc(root.reopenReason) : 'No reason given.';
+      const label = reopenLabelOf(root);
+      const note = (root.reopenNote || '').trim();
       return `<div class="tmd-ack">` +
-        `<span class="tmd-ack-lbl">Reopened by <b>${esc(root.toTeam || 'Builder')}</b> — ${reason}</span>` +
+        `<div class="tmd-ack-main">` +
+          `<span class="tmd-ack-lbl"><span class="tmd-reopen-badge">Reopened${label ? ': ' + esc(label) : ''}</span> by <b>${esc(root.toTeam || 'Builder')}</b></span>` +
+          (note ? `<span class="tmd-ack-note">“${esc(note)}”</span>` : '') +
+        `</div>` +
         `<span class="tmd-ack-btns">` +
           `<button type="button" class="tmd-ack-btn tmd-ack-conclude" data-resubmit="${id}">Resubmit</button>` +
         `</span>` +
@@ -375,6 +524,8 @@
 
     function card(root) {
       const a = root.anchor || {};
+      const tl = typeLabel(root);        // '' for general (zero regression)
+      const sum = summaryOf(root);       // one-line typed preview
       const replies = repliesOf(root);
       const repliesHtml = replies.length
         ? `<div class="tmd-replies">` + replies.map((r) =>
@@ -394,6 +545,8 @@
             `<div class="tmd-card-main">` +
               `<div class="tmd-card-top">` +
                 `<div class="tmd-card-title">` +
+                  (tl ? `<p class="tmd-typeline"><span class="tmd-type-chip">${esc(tl)}</span>` +
+                    (sum && sum !== root.comment ? `<span class="tmd-type-sum">${esc(sum)}</span>` : '') + `</p>` : '') +
                   `<p class="tmd-comment">${esc(root.comment)}` +
                     (replies.length ? ` <span class="tmd-n">${replies.length + 1} comments</span>` : '') + `</p>` +
                   (a.snippet
@@ -404,6 +557,7 @@
                 `</div>` +
                 (dir ? `<p class="tmd-raised">${dir}</p>` : '') +
               `</div>` +
+              (root.imageId ? `<div class="tmd-media">${thumbTile(root.imageId, false)}</div>` : '') +
               (root.changeTo ? `<div class="tmd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
               (isReopened ? reopenBand(root) : '') +
               `<div class="tmd-card-actions">` +
@@ -444,7 +598,7 @@
         : '<span class="tmd-chips-from">From</span>' + one('All Teams', '') + present.map((t) => one(t, t)).join('');
     }
 
-    // ---- comment detail (comment · AI prompt · full iteration timeline) ----
+    // ---- comment detail (typed fields · screenshot · AI prompt · timeline · quick questions) ----
     function renderDetail() {
       const c = roots().find((x) => x.id === entryDetail);
       const host = $('#tmd-list');
@@ -452,30 +606,40 @@
       const a = c.anchor || {};
       const where = a.snippet ? '“' + esc(a.snippet) + '”' + (a.tag ? ' · ' + esc(a.tag) : '') : (a.tag ? esc(a.tag) : '—');
       const hist = chainHistory(c);
-      const replies = repliesOf(c);
+      const replies = repliesOf(c);            // Feature 6: the quick-questions thread
+      const tl = typeLabel(c);                 // change-type chip label ('' for general)
+      const sum = summaryOf(c);                // one-line typed preview
+      const reopLabel = reopenLabelOf(c);      // reopen enum label the raiser sees
+      const reopened = teamStatusOf(c) === 'reopened';
+      // Feature 8: the team's own success criteria (they submitted it) — read-only here.
+      const outcome = needsExpectedOutcome(c.commentType) ? (c.expectedOutcome || '') : '';
       const field = (k, vHtml) => `<div class="tmd-field"><div class="tmd-field-k">${k}</div><div class="tmd-field-v">${vHtml}</div></div>`;
       const timeline = `<ol class="tmd-timeline">` + hist.map((h, i) =>
         `<li class="tmd-tl${i === hist.length - 1 ? ' is-current' : ''}">` +
           `<span class="tmd-tl-iter">-${h.iteration || 1}</span>` +
           `<span class="tmd-tl-event">${esc(eventLabel(h))}</span>` +
           `<span class="tmd-tl-time">${esc(fmt(h.at))}</span></li>`).join('') + `</ol>`;
-      const repliesHtml = replies.length
-        ? `<div class="tmd-field"><div class="tmd-field-k">Replies</div><div class="tmd-replies">` + replies.map((r) =>
-            `<div class="tmd-reply">${teamChip(r.team)}<div class="tmd-rtxt">${esc(r.comment)}</div>` +
-            `<div class="tmd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div></div>`
-        : '';
-      const reopened = teamStatusOf(c) === 'reopened';
       host.innerHTML =
         `<button class="tmd-back" id="tmd-back">← Back to list</button>` +
         `<article class="tmd-detail">` +
           `<h2 class="tmd-detail-title">${esc(c.comment)}</h2>` +
-          `<div class="tmd-detail-chips">${statusChip(c)}${c.toTeam ? '<span class="tmd-from">with ' + teamChip(c.toTeam) + '</span>' : ''}` +
+          `<div class="tmd-detail-chips">${statusChip(c)}` +
+            (tl ? `<span class="tmd-type-chip">${esc(tl)}</span>` : '') +
+            (reopened ? `<span class="tmd-reopen-badge">Reopened${reopLabel ? ': ' + esc(reopLabel) : ''}</span>` : '') +
+            (c.toTeam ? '<span class="tmd-from">with ' + teamChip(c.toTeam) + '</span>' : '') +
             `<a class="tmd-slug" href="${esc(c.page.path)}?review=1#c=${esc(c.id)}" target="_blank" rel="noopener">Open pin</a></div>` +
-          (reopened
-            ? `<div class="tmd-ack"><span class="tmd-ack-lbl">Reopened by <b>${esc(c.toTeam || 'Builder')}</b> — ${c.reopenReason ? esc(c.reopenReason) : 'No reason given.'}</span>` +
-              `<span class="tmd-ack-btns"><button type="button" class="tmd-ack-btn tmd-ack-conclude" data-resubmit="${esc(c.id)}">Resubmit</button></span></div>`
+          // Feature 8: prominent Success-criteria callout for layout-tweak / image-swap.
+          (outcome
+            ? `<div class="tmd-criteria"><div class="tmd-criteria-k">Success criteria</div><div class="tmd-criteria-v">${esc(outcome)}</div></div>`
             : '') +
+          // Feature 3: the reopen band — badge + reason label + Builder's note + Resubmit.
+          (reopened ? reopenBand(c) : '') +
+          // Feature 4: the full screenshot (large), placeholder on miss/failure.
+          (c.imageId ? `<div class="tmd-field"><div class="tmd-field-k">Screenshot</div><div class="tmd-detail-media">${thumbTile(c.imageId, true)}</div></div>` : '') +
           `<div class="tmd-fields">` +
+            // Feature 1: the one-line summary + labelled typed-field rows (never raw JSON).
+            (tl && sum && sum !== c.comment ? field('Summary', esc(sum)) : '') +
+            typedFieldRows(c) +
             field('Ticket', c.ticket ? `<span class="tmd-ticket">#${esc(c.ticket)}</span>` : '—') +
             field('Iteration', String(c.iteration || 1)) +
             field('Page', `<a class="tmd-slug" href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a> <span style="color:var(--pk-muted)">${esc(c.page.path)}</span>`) +
@@ -489,12 +653,38 @@
                 ? `<div class="tmd-prompt-box">${esc(localPrompt(c))}</div><button class="tmd-copyprompt" type="button">Copy prompt</button>`
                 : `<div class="tmd-field-v" style="color:var(--pk-muted);font-style:italic">Generating…</div>`) + `</div>` +
             `<div class="tmd-field"><div class="tmd-field-k">Iteration timeline</div>${timeline}</div>` +
-            repliesHtml +
           `</div>` +
+          // Feature 6: Quick questions — a reply thread fenced off from the status info above.
+          // The team can post replies (parentId); posting NEVER changes status/iteration.
+          `<section class="tmd-qq">` +
+            `<div class="tmd-qq-head"><h3 class="tmd-qq-title">Quick questions</h3>` +
+              `<span class="tmd-qq-sub">Ask Builder — replies never change status.</span></div>` +
+            (replies.length
+              ? `<div class="tmd-qq-thread">` + replies.map((r) =>
+                  `<div class="tmd-reply">${teamChip(r.team)}<div class="tmd-rtxt">${esc(r.comment)}</div>` +
+                  `<div class="tmd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
+              : `<p class="tmd-qq-empty">No questions yet.</p>`) +
+            `<div class="tmd-qq-compose">` +
+              `<textarea class="tmd-qq-input" placeholder="Write a quick question…" rows="2"></textarea>` +
+              `<button class="tmd-ack-btn tmd-qq-send" type="button">Post reply</button>` +
+            `</div>` +
+          `</section>` +
         `</article>`;
       $('#tmd-back').addEventListener('click', () => { entryDetail = null; render(); });
       const cp = $('.tmd-copyprompt');
       if (cp) cp.addEventListener('click', () => copyToClip(localPrompt(c), cp, 'Copied ✓'));
+      // Feature 6: post a quick-question reply (status untouched).
+      const send = host.querySelector('.tmd-qq-send');
+      const input = host.querySelector('.tmd-qq-input');
+      if (send && input) send.addEventListener('click', async () => {
+        const text = input.value.trim();
+        if (!text) { input.focus(); return; }
+        send.disabled = true; send.textContent = 'Posting…';
+        try { await store.reply(c, text); await loadData(); }
+        catch (e) { send.disabled = false; send.textContent = 'Post reply'; alert('Could not post — ' + e.message); }
+      });
+      // Feature 4: hydrate the full-size screenshot thumbnail in place.
+      hydrateThumbs(host);
     }
 
     // Shared "By Page" grouping: bucket items by page path (A–Z), each a titled .tmd-grid.
@@ -531,6 +721,7 @@
       if (!rs.length) emp.textContent = search ? 'No items match your search.'
         : (filter !== 'all' || fromFilter) ? 'Nothing in this filter.'
         : 'Nothing submitted yet.';
+      hydrateThumbs(host);   // Feature 4: fill card thumbnails in place
     }
 
     // ACTIVE tab — reopened items awaiting Content's clarify + resubmit.
@@ -548,10 +739,16 @@
         body = `<div class="tmd-grid">${rs.map(card).join('')}</div>`;
       }
       host.innerHTML = body;
+      hydrateThumbs(host);   // Feature 4: fill card thumbnails in place
     }
 
+    // A small speech-bubble glyph marks a Quick-questions reply notification (Feature 6).
+    const REPLY_ICO = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
     function noteItem(n) {
       const unread = n.readTeam === false;
+      // Feature 6: a reply notification is flagged distinctly ("Reply"); everything else
+      // is a status update and carries no chip.
+      const chip = n.kind === 'reply' ? `<span class="tmd-chip tmd-chip-reply">${REPLY_ICO} Reply</span>` : '';
       return `<article class="tmd-note${unread ? ' is-unread' : ''}">` +
         `<span class="tmd-note-dot"></span>` +
         `<div class="tmd-note-body">` +
@@ -559,6 +756,7 @@
           `<div class="tmd-note-meta">` +
             `<a class="tmd-slug" href="${esc(n.path || '/')}" target="_blank" rel="noopener">${esc(pageName(n.path || '/'))}</a>` +
             `<span class="tmd-time">${esc(fmt(n.updatedAt || n.createdAt))}</span>` +
+            chip +
             (n.commentId ? `<a class="tmd-openpin" href="${esc(n.path || '/')}?review=1#c=${esc(n.commentId)}" target="_blank" rel="noopener">Open Pin</a>` : '') +
           `</div>` +
         `</div>` +
@@ -597,6 +795,56 @@
       if (!list.length) emp.textContent = search ? 'No notifications match your search.' : 'No notifications yet.';
     }
 
+    // ---- Team views (Feature 11): capture / apply / persist the current filter set ----
+    // A view captures the full Completed/Active filter state {search, sort, status filter,
+    // from-team, By-Page, tab}. Shared per team key (store.getViews/saveViews scope to the
+    // signed-in team — Worker `views:<team>` KV or demo `rvc-views` under the team key).
+    const currentFilterState = () => ({ search, sort, filter, fromFilter, byPage, view });
+    function applyView(v) {
+      const f = (v && v.filters) || {};
+      search = f.search || ''; sort = f.sort || 'new'; filter = f.filter || 'all';
+      fromFilter = f.fromFilter || ''; byPage = !!f.byPage;
+      activeViewName = v ? v.name : '';
+      const se = $('#tmd-search'); if (se) se.value = search;
+      if (sortDD && sortDD.setValue) sortDD.setValue(sort);
+      const bp = $('#tmd-bypage'); if (bp) bp.classList.toggle('is-active', byPage);
+      const ff = $('#tmd-filters');
+      if (ff) ff.querySelectorAll('.tmd-filter').forEach((x) => x.classList.toggle('is-active', x.dataset.filter === filter));
+      setView(f.view || 'comments');   // reproduce the exact tab too
+      render();
+    }
+    function renderViewChips() {
+      const host = $('#tmd-views'); if (!host) return;
+      if (!savedViews.length) { host.hidden = true; host.innerHTML = ''; return; }
+      host.hidden = false;
+      host.innerHTML = `<span class="tmd-views-lbl">Team views</span>` +
+        savedViews.map((v, i) =>
+          `<span class="tmd-viewchip${v.name === activeViewName ? ' is-active' : ''}">` +
+            `<button type="button" class="tmd-viewchip-go" data-i="${i}">${esc(v.name)}</button>` +
+            `<button type="button" class="tmd-viewchip-x" data-del="${i}" aria-label="Delete view">×</button>` +
+          `</span>`).join('');
+      host.querySelectorAll('.tmd-viewchip-go').forEach((b) =>
+        b.addEventListener('click', () => applyView(savedViews[+b.dataset.i])));
+      host.querySelectorAll('.tmd-viewchip-x').forEach((b) =>
+        b.addEventListener('click', async () => {
+          const i = +b.dataset.del; const removed = savedViews[i];
+          const next = savedViews.filter((_, x) => x !== i);
+          try { await store.saveViews(next); savedViews = next; if (removed && removed.name === activeViewName) activeViewName = ''; renderViewChips(); }
+          catch (e) { alert('Could not delete view — ' + e.message); }
+        }));
+    }
+    async function saveCurrentView() {
+      const name = (prompt('Name this view (shared with your team):') || '').trim();
+      if (!name) return;
+      const next = savedViews.filter((v) => v.name !== name).concat([{ name, filters: currentFilterState() }]);
+      try { await store.saveViews(next); savedViews = next; activeViewName = name; renderViewChips(); }
+      catch (e) { alert('Could not save view — ' + e.message); }
+    }
+    async function loadViews() {
+      try { const v = await store.getViews(); savedViews = Array.isArray(v) ? v : []; }
+      catch { savedViews = []; }
+    }
+
     // ---- resubmit ----
     async function doResubmit(btn) {
       const rec = roots().find((c) => c.id === btn.dataset.resubmit); if (!rec) return;
@@ -617,6 +865,8 @@
       const inDetail = view === 'comments' && entryDetail;
       if (filters) filters.hidden = view !== 'comments';   // status filters belong to Completed
       if (view !== 'comments') $('#tmd-teamchips').hidden = true;
+      // Feature 11: "Save view" captures the filter state — meaningful on Completed/Active only.
+      const sv = $('#tmd-saveview'); if (sv) sv.hidden = view === 'notifs';
       if (view === 'comments') {
         searchEl.placeholder = 'Search submitted items, pages…';
         note.hidden = true;
@@ -655,6 +905,7 @@
       $('#tmd-view-notifs').hidden = detail || view !== 'notifs';
       $('#tmd-view-delivery').hidden = detail || view !== 'delivery';
       $('#tmd-empty').hidden = true;
+      renderViewChips();   // Feature 11: keep the saved "Team views" chips in sync
       if (detail) { const c = $('#tmd-controls'); if (c) c.hidden = true; renderDetail(); renderHeader(); return; }
       if (view === 'notifs') renderNotes();
       else if (view === 'delivery') renderActive();
@@ -666,6 +917,7 @@
     // Completed/Active primary: reset Search, Sort, status filter, From-team and By Page.
     function clearFilters() {
       search = ''; sort = 'new'; filter = 'all'; fromFilter = ''; byPage = false;
+      activeViewName = ''; // dropping the filters drops the active saved-view highlight
       $('#tmd-search').value = '';
       sortDD.setValue('new');
       $('#tmd-bypage').classList.remove('is-active');
@@ -784,6 +1036,9 @@
       if (view === 'notifs') markAllRead();
       else clearFilters();
     });
+    // Feature 11: capture the current filter set as a shared Team view.
+    const saveViewBtn = $('#tmd-saveview');
+    if (saveViewBtn) saveViewBtn.addEventListener('click', () => saveCurrentView());
     // Keyboard-open a card's detail (links/buttons inside pass through).
     $('.tmd-content').addEventListener('keydown', (e) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;

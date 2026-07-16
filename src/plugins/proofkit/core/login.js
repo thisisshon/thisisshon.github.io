@@ -34,6 +34,7 @@
           '<input class="rvd-login-input" type="password" placeholder="Password" autocomplete="current-password">' +
           '<div class="rvd-login-err" hidden></div>' +
           '<div class="rvd-login-actions"><button type="button" class="rvd-login-btn">Login</button></div>' +
+          '<div class="rvd-login-brand">Proofkit</div>' +
           '</div>';
         const input = loginEl.querySelector('.rvd-login-input');
         const go = () => tryLogin(input);

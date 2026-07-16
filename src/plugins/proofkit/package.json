@@ -1,8 +1,8 @@
 {
   "name": "proofkit",
-  "version": "2.24.1",
+  "version": "3.0.0",
   "private": true,
-  "description": "Proofkit — a self-contained, toggleable, portable content-review tool: an on-page click-to-comment overlay + admin dashboard + Cloudflare Worker. A framework-neutral core/ (plain JS/CSS + standalone HTML) with a thin Astro adapter, injectable into any Astro / Claude Code website project — or any stack via the standalone entries.",
+  "description": "Proofkit — a self-contained, toggleable, portable content-review tool: an on-page click-to-comment overlay + admin dashboard + Cloudflare Worker, built on a real-time teamStatus state machine (routes /review /reviewdash /teamdash) with change-type templates, batch draft tray, reopen reason enums, element screenshots, status-coloured pins, quick-question replies, duplicate detection, expected-outcome, group-by-page, location hints, team views and insights. A framework-neutral core/ (plain JS/CSS + standalone HTML) with a thin Astro adapter, injectable into any Astro / Claude Code website project — or any stack via the standalone entries.",
   "keywords": ["content-review", "annotation", "overlay", "review-tool", "astro", "framework-neutral", "claude-code", "plugin"],
   "type": "module",
   "proofkit": {
@@ -30,10 +30,11 @@
       "worker": "worker/worker.js"
     },
     "hostSeams": [
-      "one gated line in the shared layout (renders <ProofkitOverlay /> when PROOFKIT_ENABLED)",
-      "src/pages/review.astro route shim",
+      "one gated line in the shared layout ({PROOFKIT_ENABLED && <ProofkitOverlay />})",
+      "src/pages/review.astro route shim (login)",
       "src/pages/reviewdash.astro route shim (admin dashboard)",
       "src/pages/teamdash.astro route shim (per-team dashboard)",
+      "the /<page>/review block in src/pages/404.astro",
       "PUBLIC_REVIEW_WORKER_URL build env (CI) — optional, enables shared store"
     ],
     "hostRequirements": [

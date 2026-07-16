@@ -13,8 +13,6 @@ import Footer from '../components/site/Footer.astro';
 import MegaNav from '../components/site/MegaNav.astro';
 import ProofkitOverlay from '../plugins/proofkit/Overlay.astro';
 import { PROOFKIT_ENABLED } from '../plugins/proofkit/config';
-import ProofkitOverlay3 from '../plugins/proofkit-v3/Overlay.astro';
-import { PROOFKIT_ENABLED as PROOFKIT3_ENABLED } from '../plugins/proofkit-v3/config';
 import { fullTitle, type SEO } from '../lib/seo';
 
 interface Props {
@@ -108,11 +106,6 @@ const title = fullTitle(seo.title);
         tool is switched on (PROOFKIT_ENABLED in the plugin's config.ts).
         See src/plugins/proofkit/README.md. */}
     {PROOFKIT_ENABLED && <ProofkitOverlay />}
-
-    {/* Proofkit 3.0 overlay — the isolated v3 clone (src/plugins/proofkit-v3/),
-        own routes (/review3 + /reviewdash3 + /teamdash3), own storage keys, own
-        gate. Dormant for everyone; v3 arms only via /review3 sign-in. */}
-    {PROOFKIT3_ENABLED && <ProofkitOverlay3 />}
 
     <script>
       // Scroll reveal (progressive enhancement) - parity with legacy app.js.

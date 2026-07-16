@@ -15,3 +15,6 @@
   .rvd-login-btn{height:44px;padding:0 24px;border:none;border-radius:8px;background:var(--pk-red);
     color:var(--pk-on-accent);font:600 14px/1 Outfit;cursor:pointer}
   .rvd-login-btn:disabled{opacity:.6;cursor:default}
+  /* Proofkit brand footer (brand only — no version noise) */
+  .rvd-login-brand{margin-top:20px;padding-top:16px;border-top:1px solid var(--pk-hair);
+    text-align:center;font:700 11px/1 Outfit;letter-spacing:1.4px;text-transform:uppercase;color:var(--pk-muted)}

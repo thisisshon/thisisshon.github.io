@@ -6,6 +6,83 @@ outdated copy when re-syncing the package (see `INSTALL.md` → "Updating an exi
 
 The version is the package's, not the host site's — it travels with the folder.
 
+## 3.0.0 — 2026-07-15 — major release: real-time review workflow + twelve new features
+
+Proofkit 3.0 is a **major release** — the real-time review workflow plus **twelve new features**
+riding one shared refactor of the ticket-creation flow and both dashboards. It is an **in-place
+upgrade from 2.24.x**: same routes (`/review` · `/reviewdash` · `/teamdash`), same storage keys, same
+Worker (`shriram-review`) and the **same KV namespace** — existing tickets are preserved and every
+record is backward-compatible (new fields default in). The 2.24 real-time model (`teamStatus` state
+machine — `to_be_initiated → in_progress → deployed_live`, `reopen → reopened → resubmit` iteration
+loop; no deploy gate, no bucket) is unchanged. Every new record field **defaults when missing** and
+every behaviour has **localStorage demo-mode parity** — 3.0 runs end-to-end with **no Worker
+deployed** (the intended default until the Worker is deployed).
+
+### Overlay load-gating
+
+- **Overlay load-gating:** `Overlay.astro` pulls the core via a **conditional dynamic import** (only
+  when `reviewMode === '1'`, `pkAutoReview`, or a `#c=` deep link is present), so the overlay costs
+  nothing on the 4,000 host pages until review mode is armed.
+
+### The twelve features
+
+- **F1 — Change-type templates.** Composer type selector (`copy-fix` · `image-swap` · `link-fix` ·
+  `layout-tweak` · `general`); per-type `templateFields`; server-rendered `summary`; `general` =
+  untouched 2.x freeform (zero regression). `copy-fix.newText` mirrors legacy `changeTo`;
+  `image-swap.currentImage` / `link-fix.currentUrl` auto-fill from the clicked element. `genPrompt`
+  facts gain `comment_type` / `template_fields` / `expected_outcome`.
+- **F2 — Batch submit + draft tray.** Element clicks create local **drafts**, not POSTs; a "Pending
+  pins (n)" tray edits/removes them; **Submit all** POSTs an array to `POST /comments`
+  (`201 { results:[{ ok, rec?, error? }] }`, per-item, retry-failed-only); `batchId` groups a submit;
+  exiting with drafts confirms-discard. Demo store gets the same batch semantics.
+- **F3 — Reopen reason enums.** `/team-status` reopen is now `{ id, action:'reopen', reason:<enum>,
+  note? }` — enum `needs-clarification | wrong-element | design-mismatch | other`, `note` required
+  iff `other`, validated client **and** server (400 on violation). Reason label badges on cards +
+  timeline; a reopen modal replaces the freeform prompt.
+- **F4 — Element screenshots.** At draft time, `html2canvas` (CDN dynamic import, capture-time only)
+  grabs the element + ~100px context, downscaled to a ≤480px JPEG; `POST /image` stores it under KV
+  `img:<uuid>` (dataURL, ≤200KB) and returns `imageId`; `GET /image?id=X` reads it back. Images live
+  **outside** the page array. Thumbnails on cards, full-size in detail; any capture failure ⇒
+  "preview unavailable", never blocks submission. Demo: `rvc-img:<id>` with a quota try/catch.
+- **F5 — Status-coloured pins.** Overlay pins painted by `teamStatus` — amber (TBI) / blue
+  (in-progress) / green (deployed) / soft-red (reopened). **Prereq shipped:** the overlay was rewired
+  off the dead `open/resolved/closed` `status` field onto `teamStatus`; deployed-live roots hide
+  unless deep-linked.
+- **F6 — Quick-question replies.** The existing `parentId` reply thread repurposed as a lightweight
+  Quick-questions channel — no ticket, no arrival notif, no status/iteration change; fires a distinct
+  `kind:'reply'` notification to the other side (debounced, target = the opposite party). Rendered as
+  a distinct section on both dashboards.
+- **F7 — Duplicate detection.** On composer open, an in-memory scan of open same-page roots flags a
+  same-`anchor.selector` match or a pin within 48px with a **non-blocking** "Similar comment already
+  open — view" strip. Never blocks submission.
+- **F8 — Expected outcome.** `layout-tweak` / `image-swap` require `expectedOutcome` (validated both
+  sides); surfaced as a "Success criteria" callout on the detail.
+- **F9 — Group by page.** Team Queue toggle clustering by `page.path` with per-page counts; off
+  restores the flat sort. Optional `GET /comments?groupBy=page` (grouping is primarily client-side).
+- **F10 — Location hints.** Detail surfaces `anchor.selector` as a copyable "Likely location" with a
+  best-effort caption; long selectors clamp with the full value on the copy.
+- **F11 — Team views.** `GET`/`POST /views` (KV `views:<team>`, `views:__admin`) persist saved
+  filter sets; "Save view" captures search/sort/status-tab/team-chips/group-by as quick-select chips;
+  shared per team key (labelled "Team views"). Demo: `rvc-views`.
+- **F12 — Insights / metrics.** Admin-only "Insights" nav item — date-range picker, stat tiles +
+  CSS-bar charts. `GET /metrics?from=&to=` returns `deployedPerPage`, `volumeByType`,
+  `avgHoursToDeploy{global,perPage}`, `reopenRate{global,perType}`, `openTrend[]`, computed from a
+  **rollup** KV key `metrics` (events array capped at 5000 FIFO, read-modify-written on every
+  transition) — never a full `page:` scan.
+
+### Record shape (backward-compatible; missing ⇒ default)
+
+New/changed fields: `commentType` (default `general`), `templateFields` (`{}`), `summary`,
+`expectedOutcome` (required iff layout/image), `batchId`, `imageId`, `reopenReason` (enum),
+`reopenNote` (required iff `other`); `history[]` reopen entries gain `reason?` / `note?`.
+`maskForTeam` passes the structured 3.0 fields (+ existing `aiPrompt`) through to teams.
+
+### Package identity
+
+`VERSION` → `3.0.0`; `package.json` version → `3.0.0`. Docs (`README.md` / `INSTALL.md` /
+`REMOVAL.md` / `data/README.md` / `scripts/README.md`) updated for the twelve features; the 2.x
+history below is retained verbatim.
+
 ## 2.24.1 — 2026-07-15 — Brand mark: Proofkit dot logo on both dashboards
 
 Cosmetic. Swaps the chat-bubble SVG mark for the **Proofkit dot** — a brand-red disc with a soft red

@@ -2,12 +2,15 @@
 
 **A self-contained, toggleable, portable content-review tool.** An on-page
 click-to-comment overlay for reviewing the **live** site plus **two dashboards** — an
-**admin** dashboard and a per-**team** dashboard — backed by a Cloudflare Worker.
-Non-technical teams (Product / SEO / Marketing / Content) walk the real site, drop numbered
-comments on any element, and admins triage them — each with an auto-generated, developer-ready
-**AI change-prompt**. Actioned changes move through a **deploy gate**: admins mark them complete
-into a silent bucket, then **Deploy** publishes the bucket and notifies each team — so a team only
-ever sees a change once it's actually live.
+**admin/Builder** dashboard and a per-**team** dashboard — backed by a Cloudflare Worker.
+Non-technical teams (Content / Product / SEO / Marketing) walk the real site, drop numbered
+comments on any element, and the Builder actions them — each with an auto-generated,
+developer-ready **AI change-prompt**. Every ticket moves through a **real-time state machine**
+(`to_be_initiated → in_progress → deployed_live`, with a `reopen → reopened → resubmit`
+iteration loop) that both sides watch live — no batch deploy gate, no silent bucket.
+
+**Version 3.0** carries **twelve features** built around one shared ticket-creation refactor (see
+*What's new in 3.0* below), on top of the real-time review workflow.
 
 Proofkit is a **versioned package**: the whole tool is one folder (`proofkit/`) that zips up
 and drops into any Astro / Claude Code website project. It lives inside its host repo as the
@@ -15,19 +18,43 @@ canonical source (so it stays seamlessly integrated), and the zip is just an exp
 folder. See **`INSTALL.md`** to add it to a project and **`CHANGELOG.md`** / **`VERSION`** for
 release tracking.
 
-- **Version:** see `VERSION`.
+- **Version:** see `VERSION` (`3.0.0`).
 - **Turn it on/off:** one line — `PROOFKIT_ENABLED` in `config.ts`.
 - **Theme it:** one line — `THEME` in `config.ts` (`red-moon` | `dark-cream`); the active theme's
-  `--pk-*` tokens reskin both the dashboard and the on-page overlay.
+  `--pk-*` tokens reskin both dashboards and the on-page overlay.
 - **Move it:** copy the folder + add four thin seams (one layout line + three route shims — see
-  `INSTALL.md`), or use `scripts/sync.mjs`
-  (`push` / `pull` / `check`) to copy it between projects with a semver guard.
+  `INSTALL.md`), or use `scripts/sync.mjs` (`push` / `pull` / `check`) to copy it between projects
+  with a semver guard.
 
 > **⚠️ Keep the docs current.** `README.md` (what it does) + `INSTALL.md` (how to integrate) are
 > the source of truth that travels with the package. **Any change to the tool's behaviour, files,
 > config, endpoints, or auth must be reflected here — and the version bumped** (`VERSION` +
 > `package.json` + a `CHANGELOG.md` entry) — otherwise the "portable + documented + updatable"
 > promise breaks the next time someone lifts it.
+
+---
+
+## What's new in 3.0 (the twelve features)
+
+All twelve ride one shared refactor of the ticket-creation flow and the two dashboards. Every new
+record field **defaults when missing** (`|| ''` posture), so records from 2.24 render unchanged, and
+every behaviour has **localStorage demo-mode parity** — the tool works end-to-end before a Worker is
+deployed.
+
+| # | Feature | What it adds |
+|---|---|---|
+| 1 | **Change-type templates** | The composer gains a **type selector** (5 chips): `copy-fix` · `image-swap` · `link-fix` · `layout-tweak` · `general`. Each type swaps the field set (`templateFields`); `general` is the untouched 2.x freeform textarea (zero regression). Structured fields feed a rendered `summary` **and** the AI change-prompt. |
+| 2 | **Batch submit + draft tray** | Clicking an element now creates a **draft** (local array), not an immediate POST. A **"Pending pins (n)"** tray in the dock lets you edit/remove drafts, then **Submit all** POSTs the batch in one call (per-item results, retry-failed-only on partial failure). Exiting review with drafts pending prompts a confirm-discard. |
+| 3 | **Reopen reason enums** | Reopen is now a **modal with a reason dropdown** — *Needs clarification · Wrong element · Design mismatch · Other* — plus a note field (required only for **Other**). Replaces the freeform prompt; the reason label badges on cards + the timeline. Enforced client **and** server. |
+| 4 | **Element screenshots** | At draft creation the overlay captures the pinned element (+~100px context) via **html2canvas** (loaded on-demand from CDN, only at capture time), downscales to a ≤480px JPEG, and stores it under KV key **`img:<uuid>`** — **outside** the page array. Thumbnail on cards, full-size in detail. Any capture failure ⇒ "preview unavailable", never blocks submission. |
+| 5 | **Status-coloured pins** | On-page pins paint by `teamStatus`: **amber** = to-be-initiated, **blue** = in-progress, **green** = deployed-live, **soft-red** = reopened. (Prereq: the overlay was rewired off the dead `open/resolved/closed` `status` field onto `teamStatus`.) Deployed-live roots hide from the page unless deep-linked. |
+| 6 | **Quick-question replies** | The existing `parentId` reply thread is repurposed as a lightweight **Quick questions** channel — a reply **never** mints a ticket, **never** changes status/iteration, and fires a distinct **`kind:'reply'`** notification to the other side. One mechanism, no second thread structure. |
+| 7 | **Duplicate detection** | Opening the composer scans in-memory open root comments on the same page; a same-`anchor.selector` match **or** a pin within 48px raises a **non-blocking** "Similar comment already open — view" strip that links to the thread. Never blocks submission. |
+| 8 | **Expected outcome** | `layout-tweak` and `image-swap` require an **`expectedOutcome`** ("success criteria") — validated client **and** server, surfaced as a prominent callout on the ticket detail. It is the manual-replacement signal that the retired auto-validation used to provide. |
+| 9 | **Group by page** | A **"Group by page"** toggle on the Team Queue clusters tickets by `page.path` with per-page counts; toggle off restores the flat sort. |
+| 10 | **Location hints** | Ticket detail surfaces the stored `anchor.selector` as a copyable **"Likely location"** with a best-effort caption (long selectors clamp with the full value on the copy). Nearly free — the selector already prefers `data-cms`/`id` component boundaries. |
+| 11 | **Team views** | **Save view** captures the current filters (search, sort, status tab, team chips, group-by) as a named chip; views persist via `GET`/`POST /views` (KV `views:<team>`, `views:__admin` for admin). Shared per **team key**, not per person — hence "Team views". |
+| 12 | **Insights / metrics** | A new admin **Insights** nav item: a date-range picker + stat tiles and CSS-bar charts for five metrics (deployed-per-page, volume-by-type, avg hours-to-deploy, reopen rate, open trend). Backed by `GET /metrics`, which reads a **rollup** KV key (`metrics`) maintained on every state transition — never a full scan. |
 
 ---
 
@@ -48,103 +75,144 @@ Beneath this master switch the tool has its normal runtime gates (they only matt
 until someone signs in at `/review`, which arms review mode for the tab (`reviewMode`); the
 Comment dock never appears before that. `?review=0` signs out. Plus the two Worker passwords (below).
 
+> **Load-gating.** `Overlay.astro` pulls the overlay core via a **conditional dynamic
+> import** — the bundle only loads when `reviewMode === '1'`, `pkAutoReview` is set, or a `#c=`
+> deep link is present — so the 4,000 host pages don't pay for an eager bundle.
+
 ---
 
 ## What it does (use cases & abilities)
 
 **On-page overlay** (`Overlay.astro`, injected site-wide by the host layout)
 - Sign in at `/review` to arm the tab; the host's back-to-top FAB (see `HIDE_SELECTORS`) is then
-  replaced by a **Comment** button on every page. Before sign-in nothing renders (no Comment
-  button), and it never arms on the tool's own `/review` + `/reviewdash` pages.
-- The Comment button opens a two-field login — a **Team** dropdown (sourced from `config.ts`
-  `TEAMS`, sorted alphabetically) and a **Key** (the shared passcode, validated against the
-  Worker). The chosen team is session-global for the tab (stored in `TEAM_KEY`), so it is picked
-  **once at login**, not per comment.
+  replaced by a **Comment** button on every page. Before sign-in nothing renders, and it never
+  arms on the tool's own `/review` / `/reviewdash` / `/teamdash` pages.
+- The Comment button opens a two-field login — a **Team** dropdown (from `config.ts` `TEAMS`,
+  disabled teams greyed via `TEAM_ENABLED`) and a **Key** (validated against the Worker). The
+  chosen team is session-global for the tab (`pkTeam`/`pkKey`), picked **once at login**.
 - Enter review → the page desaturates (grayscale) but stays scrollable; existing comments show as
-  **numbered pins** anchored to their elements (pins re-project each frame, so they track reflow;
-  they fall back to page coords if the selector no longer matches).
-- Click any element to **add a comment**: name, free-text, and — for the Content team — a
-  "change it to…" replacement field (the team comes from the login, shown as a chip). Threaded
-  **replies** on each pin.
+  **numbered pins** anchored to their elements, **coloured by `teamStatus`** (F5). Pins re-project
+  each frame so they track reflow; they fall back to page coords if the selector no longer matches.
+- Click any element to **draft a comment** (F2): pick a **change type** (F1) → fill the
+  type-specific fields → required **expected outcome** for layout/image types (F8). A
+  **duplicate-pin warning** (F7) and an auto-captured **element screenshot** (F4) attach at draft
+  time. Drafts collect in the **Pending pins (n)** tray; **Submit all** POSTs the batch.
 - A comment navigator (count + prev/next) and deep links (`#c=<id>`) that jump to a pin.
-- **Add-only** — comments are never edited or deleted from the page (that's admin-side).
+- **Quick questions** (F6): threaded `parentId` replies on any pin — no ticket, no status change.
+- **Add-only** — comments are never edited or deleted from the page (that's Builder-side).
 
-**Admin dashboard** (`Login.astro` = `/review`, `Dashboard.astro` = `/reviewdash`)
-- **Two doors in.** Either sign in directly at `/review` (the password gate; on success it redirects
-  to `/reviewdash`, which keeps its own gate so hitting it directly still prompts), **or** pick
-  **Builder** in the `/teamdash` login dropdown and enter the admin password — that identity
-  (`config.ts` `ADMIN_TEAM = 'Builder'`) maps to admin and redirects to `/reviewdash`. Builder is a
-  login identity only — it is **not** in `TEAMS` (so it never appears in team filters), though it *is*
-  a directable target in the composer's "Direct to" (the default: on-site changes go to Builder).
-  Full access — every team's comments. (`Design` is now an ordinary team, not admin.)
-- Left-sidebar IA: **Overview · Deploy · Notifications · Master Log**.
-- Overview tabs: **All / By Page / Open / In Bucket / Deployed / Closed**; team-colour filter chips;
-  live counts; 30s auto-refresh + on-focus refresh. The **All** tab is the active worklist —
-  open + in-bucket only; **deployed/published items are excluded** (they stay under the Deployed tab
-  and in Master Log). Overview cards are built for large content: a clamped comment body with
-  Show more/less, a height-capped Change-to callout, collapsible replies, and wrap-safe containers.
-- **Master Log** is the full record — a per-entry table (When / Page / Element / Team / Status /
-  Prompt) of **all** root entries, including deployed ones. Each row has a **"View more"** drill-in
-  detail view showing everything about the entry (comment, Change-to copy, page link, element/anchor,
-  reviewer + team, AI change-prompt, current status + validation) plus a **status-history timeline**
-  built from the comment's `history` (past → current, each stamped) — synthesized from the timestamps
-  for older records that predate the field. The AI change-prompt is a precise, ready-to-hand-to-a-dev
-  instruction generated by the Worker (with a copy button).
-- Admins set a comment's **working status** — **Mark Complete** / re-open / **Close** — and **delete**
-  threads. Mark Complete runs **completion validation** (below) and moves the comment into the
-  **deploy bucket** (silent — the team still sees *Pending*).
-- **Deploy** view — the bucket of completed/closed-but-unpublished comments + a batch **Deploy**
-  button; deploying publishes the whole bucket and fires the team notifications.
-- **Notifications** view — the full deploy/notification feed with unread tracking and a
-  per-notification **read/unread toggle** (plus "Mark all read").
+**Admin / Builder dashboard** (`Login.astro` = `/review`, `Dashboard.astro` = `/reviewdash`)
+- **Two doors in.** Either sign in directly at `/review` (redirects to `/reviewdash`, which keeps
+  its own gate), **or** pick **Builder** in the `/teamdash` login dropdown and enter the admin
+  password. Builder (`config.ts` `ADMIN_TEAM = 'Builder'`) is a login identity only — not in
+  `TEAMS`, so it never appears in team filters, though it *is* the default "Direct to" target.
+- **Team Queue** — one unified list of every ticket directed at Builder in a non-terminal
+  iteration: search · sort · filter-by-page · **Group by page** (F9) · mark-all-read. Cards render
+  **typed fields** per change type (never raw JSON), the `summary` as the list line, a
+  **thumbnail** (F4) when an `imageId` is present, and a **reopen-reason badge** (F3) when reopened.
+- **Ticket detail** — the full iteration timeline (`-1`, `-2`, …) merged across the resubmit chain,
+  the **AI change-prompt** (copy button), the **"Success criteria"** callout (F8), the
+  **"Likely location"** copyable selector (F10), the full-size screenshot (F4), and the
+  **Quick questions** reply section (F6), visually distinct from status actions.
+- **Actions** — **Start** (`to_be_initiated → in_progress`) · **Mark Complete** (`in_progress →
+  deployed_live` — complete **is** deployed live, immediate, no bucket) · **Reopen** (opens the
+  reason modal, F3) · **delete**.
+- **Saved views** (F11) — **Save view** captures the current filters as a quick-select chip.
+- **Insights** (F12) — admin-only date-range analytics (five metrics, stat tiles + bar charts).
+- **Notifications** — the live feed with unread tracking + read/unread toggle; `kind:'reply'`
+  items render distinctly (icon/label "Reply").
 
-**Team dashboard** (`TeamDashboard.astro` = `/teamdash`) — *new in 2.5.0*
+**Team dashboard** (`TeamDashboard.astro` = `/teamdash`)
 - **One route for every team.** A team signs in with **its own team key** and picks its team; the
   Worker returns **only that team's** comments (server-side isolation via the masked
   `GET /comments?team=X`) and that team's notifications. The team is identified by the **login key,
-  not the URL** — there is no per-team URL to leak or guess.
-- Teams see a **masked** view: each comment shows only `published ? publishedStatus : 'open'` — i.e.
-  *Pending* until a change is actually Deployed, then *Done* — never the admin's working status,
-  validation, or AI prompt.
-- A **Notifications** feed tells the team when their comments go live (one per published root comment,
-  created on Deploy), with unread badges and a per-notification **read/unread toggle**.
-
-**The deploy-gated lifecycle** — *new in 2.5.0*
-
-Every comment now carries **two truths**: the admin's **working** `status` (`open` | `completed` |
-`closed`, admin-only) and **what the team sees** (`published ? publishedStatus : 'open'`). Nothing
-the admin does is team-visible until **Deploy**:
-
-```
-Comment posted (team)   status='open', published=false        → team sees "Pending"
-  ↓ admin actions it in code, rebuilds the live site
-Mark Complete           status='completed'  (runs validation)  → sits in the DEPLOY BUCKET (silent)
-Deploy (batch)          published=true, publishedStatus=status → notifications fire → team sees "Done"
-```
-
-- **Completion validation** (content changes only). On Mark Complete, if the comment carries
-  replacement copy (`changeTo`), the Worker fetches the **live page** (`ALLOW_ORIGIN` + path) and
-  confirms the new copy is present — `validation.method = 'content-copy-match'`; otherwise `'manual'`.
-  The result is stored on `validation:{ ok, method, detail, checkedAt }` and shown on the admin card
-  (a ⚠ flag if not yet verified on the live page). Completing is **allowed even when unverified** — the
-  site may be redeployed afterwards, and the admin can re-run Mark Complete to re-check.
-- **Notifications** are created **only by Deploy**, one per newly-published root comment, in the KV
-  key `notifications`. Both the admin (all) and each team (own) read their feed; unread is tracked per
-  audience (`readAdmin` / `readTeam`).
+  not the URL** — no per-team URL to leak or guess.
+- **Completed** tab (default) — everything the team raised or was directed, with live status
+  labels (*With builder – TBI* · *…in progress* · *Deployed live*), search · sort · **By page** ·
+  status sub-filters. **Active** tab surfaces `reopened` tickets with the Builder's **reason label**
+  (F3) + a **Resubmit** action (spawns the next iteration).
+- Same **typed-field rendering, thumbnails, quick-questions, reopen badges, saved views** (own
+  team) and **reply notifications** as the Builder side. No Insights, no admin actions.
 
 **Two-tier auth** (enforced server-side by the Worker)
-- **Reviewer key** — add comments + read a page's pins, and (on `/teamdash`) read the signing team's
-  own comments + notifications. Either a **per-team key** from the `TEAM_KEYS` var (a JSON map
-  `{"Product":"…","SEO":"…"}` in `wrangler.toml`; the team's key both authenticates **and** scopes the
-  team-only reads to that team) or the single shared `REVIEW_PASS` fallback (no team scope).
-- **Admin** (`ADMIN_PASS`) — the admin dashboard: read ALL comments, set status, deploy, delete, all
-  notifications. Admin ⊃ reviewer (an admin may read any team's scoped feed too).
+- **Reviewer key** — add comments + read a page's pins, and (on `/teamdash`) read the signing
+  team's own comments + notifications. Either a **per-team key** from `TEAM_KEYS` (a JSON map
+  `{"Content":"…","SEO":"…"}` in `wrangler.toml`) or the shared `REVIEW_PASS` fallback.
+- **Admin** (`ADMIN_PASS`) — the Builder dashboard: read ALL comments, drive the state machine,
+  reopen, delete, metrics, all notifications. Admin ⊃ reviewer.
 
 **Storage modes**
-- **Shared/live** — when `WORKER_URL` is set (via `PUBLIC_REVIEW_WORKER_URL`), everyone reads/writes
-  the same Cloudflare KV store.
-- **Local demo** — when it's unset, comments live in the browser's `localStorage`, so the whole flow
-  is testable before the backend exists (any password is accepted).
+- **Shared/live** — when `WORKER_URL` is set (via `PUBLIC_REVIEW_WORKER_URL`), everyone
+  reads/writes the same Cloudflare KV store on the `shriram-review` Worker.
+- **Local demo** — until the Worker is deployed, so unless `PUBLIC_REVIEW_WORKER_URL` is set,
+  comments live in the browser's `localStorage` and every 3.0 behaviour (batch, screenshots, reopen
+  enums, views, metrics) has full demo parity (any password accepted).
+
+---
+
+## The real-time lifecycle
+
+Every ticket carries a single **`teamStatus`** that both sides watch live (5s poll). There is **no
+deploy gate and no bucket** — *Complete* is *Deployed live*, immediately.
+
+```
+Comment drafted → Submit all (team)   teamStatus='to_be_initiated'   → "With builder – TBI"
+  ↓ Builder: Start
+                  teamStatus='in_progress'                            → "With builder – in progress"
+  ↓ Builder: Mark Complete   (manual self-attestation — no auto-validation)
+                  teamStatus='deployed_live'   (terminal for this iteration) → "Deployed live"
+  ↓ Builder: Reopen  {reason:<enum>, note?}                           → "Reopened: <label>"
+  ↓ Raiser/Admin: Resubmit   → new sub-ticket (shared parent id, -1/-2/…), iteration++
+                  teamStatus='to_be_initiated'   (loop repeats; prior iteration kept for history)
+```
+
+Each transition appends to `history[]` as `{ status, at, event, iteration, reason?, note? }`.
+**Quick-question replies** (F6) sit outside this machine entirely — they never change status or
+iteration.
+
+---
+
+## The record shape (backward-compatible; missing ⇒ default)
+
+Every 3.0 field defaults when absent, so records from 2.24 render unchanged.
+
+```js
+{
+  // Feature 1 — change-type templates
+  commentType: 'copy-fix'|'image-swap'|'link-fix'|'layout-tweak'|'general',  // default 'general'
+  templateFields: {},   // type-specific (see table below); {} for general
+  summary: '',          // one-line plain-text preview, server-rendered when the client omits it
+  // Feature 8 — expected outcome
+  expectedOutcome: '',  // REQUIRED (client+server) iff commentType ∈ {layout-tweak, image-swap}
+  // Feature 2 — batch
+  batchId: '',          // client uuid grouping one Submit-all
+  // Feature 4 — screenshots (stored OUTSIDE the page array)
+  imageId: '',          // '' = none; image lives under KV `img:<imageId>` as a dataURL string
+  // Feature 3 — reopen enum + note
+  reopenReason: 'needs-clarification'|'wrong-element'|'design-mismatch'|'other'|'',
+  reopenNote: '',       // REQUIRED (client+server) iff reopenReason === 'other'
+  // carried from 2.24: teamStatus, teamStatusAt, iteration, parentId, history[], ticket,
+  //                    id, createdAt, sessionId, team, toTeam, name, comment, changeTo,
+  //                    aiPrompt, page, anchor
+}
+```
+
+`history[]` entries gain the same `reason?` / `note?` on reopen. `maskForTeam` passes the
+structured 3.0 fields through (`commentType, templateFields, summary, expectedOutcome, imageId,
+reopenReason, reopenNote`) plus the existing `aiPrompt` — teams see their own structured data.
+
+**`commentType → templateFields`** (Feature 1)
+
+| type | `templateFields` | notes |
+|---|---|---|
+| `copy-fix` | `{ currentText, newText }` | `newText` mirrors into the legacy `changeTo` so 2.x rendering / AI-prompt logic keeps working |
+| `image-swap` | `{ currentImage, replacementDesc }` | `currentImage` auto-filled client-side (element `src`/`alt`/selector), read-only; **requires `expectedOutcome`** |
+| `link-fix` | `{ currentUrl, newUrl }` | `currentUrl` auto-filled from the clicked `<a>` when available |
+| `layout-tweak` | `{ whatToChange }` | **requires `expectedOutcome`** |
+| `general` | `{}` | EXACTLY the 2.x freeform behaviour — zero regression |
+
+The AI change-prompt (`genPrompt`) facts now include `comment_type`, `template_fields` and
+`expected_outcome`, so the structured detail flows into the dev-ready prompt.
 
 ---
 
@@ -154,19 +222,25 @@ Deploy (batch)          published=true, publishedStatus=status → notifications
 proofkit/
   config.ts        THE switch + all site-specific values (teams, colours, hide-selectors,
                    worker URL, route SEO). The one file to edit when porting.
-  Overlay.astro    On-page click-to-comment overlay (injected site-wide by the host layout).
+  Overlay.astro    On-page click-to-comment overlay (dynamic-import gated; injected site-wide).
   Login.astro      The /review auth gate (guts; rendered by the route shim).
-  Dashboard.astro  The /reviewdash ADMIN dashboard (guts; rendered by the route shim).
+  Dashboard.astro  The /reviewdash admin/Builder dashboard (guts; rendered by the route shim).
   TeamDashboard.astro  The /teamdash per-TEAM dashboard (guts; rendered by the route shim).
+  core/            Framework-neutral core (config.js, overlay.js, dashboard.*, teamdash.*,
+                   login.*, design/tokens.css + components.css). Shares COMMENT_TYPES /
+                   TYPE_FIELDS / REOPEN_REASONS / STATUS_COLORS / renderSummary() from config.js.
   worker/
     worker.js      Cloudflare Worker: KV comment store + notifications + two-tier auth +
-                   deploy gate + completion validation + AI prompt gen.
-    wrangler.toml  Worker config (name, ALLOW_ORIGIN, KV id, TEAM_KEYS, AI binding).
+                   real-time state machine + AI prompt gen + image (img:) + views + metrics.
+    wrangler.toml  Worker config (name = "shriram-review", ALLOW_ORIGIN, KV id, TEAM_KEYS, AI).
   README.md        This file — what Proofkit is.
   INSTALL.md       How to drop it into a project (human + Claude Code agent steps).
   CHANGELOG.md     Release history. Bump on every change.
-  VERSION          Semver — the number a host compares to detect an outdated copy.
+  VERSION          Semver (3.0.0) — the number a host compares to detect an outdated copy.
   package.json     Package identity (name, version, entrypoints, host requirements).
+  REMOVAL.md       The clean-removal checklist (unwire, keep folder + data).
+  data/            Contained review snapshots (see data/README.md).
+  scripts/         Dev-only sync tool (excluded from the shipped copy).
 ```
 
 **Host-project seams** (unavoidable — Astro requires route files under `src/pages/`, and the
@@ -180,85 +254,64 @@ overlay must be injected by the shared layout). Each is thin and gated by `PROOF
 | Team dashboard route | `src/pages/teamdash.astro` | ~15-line shim → `<ProofkitTeamDashboard />` when enabled, stub when off |
 | Worker URL (CI) | build env | bakes `PUBLIC_REVIEW_WORKER_URL` into the build |
 
-See **`INSTALL.md`** for the exact seam code and the Claude Code install prompt.
-
-Design-token note: `Dashboard.astro` / `TeamDashboard.astro` CSS references host tokens
-(`--color-cream-*`, `--color-olive-900`, `--color-surface-dark-card`) with hard-coded fallbacks,
-and the overlay uses
-the `Outfit` font with a `system-ui` fallback stack. It renders fine without those tokens; restyle
-for brand parity.
+See **`INSTALL.md`** for the exact seam code.
 
 ---
 
 ## The Worker (backend)
 
-**Not part of the Astro build** — it deploys separately to Cloudflare Workers. Until it's deployed,
-Proofkit runs in **local-demo mode** (browser `localStorage`).
+**Not part of the Astro build** — it deploys separately to Cloudflare Workers as
+`shriram-review` with its KV namespace. Until it's deployed, Proofkit runs in **local-demo mode**
+(browser `localStorage`).
 
 All commands run from `proofkit/worker/`.
 
 1. **Install Wrangler & log in** — `npm install -g wrangler` then `wrangler login`.
-2. **Create the KV store** and paste the printed id into `wrangler.toml` (`[[kv_namespaces]]`):
-   `wrangler kv namespace create COMMENTS`.
-3. **Set the site origin** in `wrangler.toml` → `ALLOW_ORIGIN` (e.g. `https://owner.github.io`; `*`
-   only for testing). Also set a project-specific `name`. **`ALLOW_ORIGIN` has two roles:** it's the
-   CORS lock **and** the base URL the Worker fetches when validating a completed content change — so
-   it must be the real live origin (not `*`) for content-copy-match auto-verification to work.
-4. **Set the passwords:** put the per-team reviewer keys in `wrangler.toml` → `TEAM_KEYS` (a JSON
-   map), and set the admin password with `wrangler secret put ADMIN_PASS`. (Optionally
-   `wrangler secret put REVIEW_PASS` for one shared reviewer key too.)
+2. **Bind the KV store** — set the `COMMENTS` namespace id in `wrangler.toml` (`[[kv_namespaces]]`).
+   For a fresh install, `wrangler kv namespace create COMMENTS` and paste the id; when upgrading an
+   existing Proofkit, keep the existing binding so prior tickets are preserved.
+3. **Set the site origin** in `wrangler.toml` → `ALLOW_ORIGIN` (the real live origin; `*` only for
+   testing). The `name` is already `shriram-review`.
+4. **Set the passwords:** per-team reviewer keys in `TEAM_KEYS` (JSON map), and
+   `wrangler secret put ADMIN_PASS`. (Optionally `wrangler secret put REVIEW_PASS`.)
 5. **Deploy:** `wrangler deploy` → prints the Worker URL.
-6. **Wire it up** — expose that URL to the build as `PUBLIC_REVIEW_WORKER_URL` (CI env var, or a
-   git-ignored `.env`). `config.ts` reads it as `WORKER_URL`.
+6. **Wire it up** — expose that URL to the build as `PUBLIC_REVIEW_WORKER_URL`. `config.ts` reads
+   it as `WORKER_URL`; the standalone `core/*.html` entries read `window.PROOFKIT_WORKER_URL`.
 
 ### Endpoints (reference)
 
 Auth via header `X-Review-Pass`. "reviewer" = a valid team key or `REVIEW_PASS`; "team X" = the
-team whose `TEAM_KEYS` value equals the pass. Admin ⊇ reviewer.
+team whose `TEAM_KEYS` value equals the pass. Admin ⊇ reviewer. All 2.24 endpoints keep working;
+3.0 adds/changes the rows marked **NEW**/**CHANGED**.
 
 | Method | Path | Purpose | Auth |
 |---|---|---|---|
-| `POST` | `/comments` | add a comment | reviewer |
+| `POST` | `/comments` | **CHANGED (F2)** — accepts a single object **or an array**; array ⇒ per-item processing (one bad item never blocks the rest), `201 { results:[{ ok, rec?, error? }] }` in input order. Validates per item (non-empty comment, enum `commentType`, `expectedOutcome` for layout/image); replies (`parentId`) skip ticket + arrival notif and fire a `kind:'reply'` notif to the other side. | reviewer |
 | `GET` | `/comments?path=/x` | list one page's comments (overlay pins) | reviewer |
-| `GET` | `/comments` | list ALL comments (admin dashboard) | admin |
+| `GET` | `/comments` | list ALL comments (Builder dashboard); optional **`?groupBy=page`** (F9, grouping is primarily client-side) | admin |
 | `GET` | `/comments?team=X` | one team's comments, **masked** (team dashboard) | admin **or** team X |
-| `POST` | `/status` | set the working status (`open` / `completed` / `closed`); `completed` runs validation | admin |
-| `POST` | `/resolve` | **back-compat alias** of `/status` (legacy `resolved` ⇒ `completed`) | admin |
-| `POST` | `/deploy` | publish the whole bucket (completed+closed, unpublished) + fire notifications | admin |
+| `POST` | `/team-status` | drive the state machine: `start` · `complete` · **CHANGED (F3)** `reopen` now `{ id, action:'reopen', reason:<enum>, note? }` — non-enum reason ⇒ 400, `note` required iff `other` ⇒ 400; stores both on record + history, human reason label in `statusSummary` | admin |
+| `POST` | `/resubmit` | raiser/admin resubmits a `reopened` ticket → new iteration | reviewer/admin |
+| `POST` | `/image` | **NEW (F4)** — body `{ id?, dataUrl }` (≤200KB after client downscale); stores KV `img:<uuid>`, returns `{ imageId }`. Never required for comment creation. | reviewer |
+| `GET` | `/image?id=X` | **NEW (F4)** — returns `{ dataUrl }` or 404 | reviewer |
+| `GET` / `POST` | `/views` | **NEW (F11)** — saved views, KV `views:<team>` (`views:__admin` for admin). `POST { views:[{ name, filters }] }` replaces the caller's set; scoped to the caller's auth. | reviewer/admin |
+| `GET` | `/metrics?from=ISO&to=ISO` | **NEW (F12)** — reads the rollup KV `metrics` (full-scan fallback when absent); returns `{ deployedPerPage, volumeByType, avgHoursToDeploy:{ global, perPage }, reopenRate:{ global, perType }, openTrend:[{ date, count }] }` | admin |
 | `POST` | `/delete` | delete a whole thread (root + replies) | admin |
-| `GET` | `/notifications` | the deploy/notification feed — all | admin |
-| `GET` | `/notifications?team=X` | the notification feed — team X's | admin **or** team X |
-| `POST` | `/notifications/read` | mark notifications read/unread — body `{ ids, read?:boolean=true }`, `read:false` un-reads (`readAdmin` if admin, `readTeam` if team) | reviewer |
+| `GET` | `/notifications` (+`?team=X`) | the notification feed (`kind:'reply'` items included) | admin **or** team X |
+| `POST` | `/notifications/read` | mark notifications read/unread — `{ ids, read?:boolean=true }` | reviewer |
 
-**Comment-record fields** (KV `page:<encoded path>` → array; all backward-compatible, missing ⇒
-default): `status` (`open` | `completed` | `closed` — the admin's working status), `published`,
-`publishedStatus` (snapshot at Deploy — what the team sees), `completedAt`, `closedAt`, `publishedAt`,
-`validation` (`{ ok, method:'content-copy-match'|'manual', detail, checkedAt }`),
-`history` (an audit trail — an array of `{ status, at, event, published }` where `event` ∈
-`'created' | 'status' | 'deployed'`, appended on create, on `/status`, and on Deploy; older records
-missing it are synthesized in the UI from the timestamps), plus the existing
-`id / createdAt / parentId / sessionId / team / name / comment / changeTo / aiPrompt / page / anchor`.
-The **masked** team projection (`GET /comments?team=X`) collapses `status` to
-`published ? (publishedStatus||'open') : 'open'` and omits `aiPrompt`, `validation`, and the working
-status/timestamps.
-
-**Notifications** live under the single KV key `notifications` (array), created only by `/deploy` —
-one per newly-published root comment: `{ id, createdAt, team, commentId, path, pageName,
-publishedStatus, summary, readTeam, readAdmin }`.
-
-The team-visible status therefore has **two values** — *Pending* (`open`) and *Done* (published
-`completed`/`closed`); the admin's richer working lifecycle stays behind the deploy gate.
+**Rollup maintenance (F12):** every state transition (`/team-status`, `/resubmit`, creation) also
+read-modify-writes the KV `metrics` key — an events array of `{ at, event, page, commentType,
+iteration }` capped at 5000 (FIFO) — so metrics compute from the rollup, not by scanning every
+`page:` key at 4,000-page scale.
 
 ### AI change-prompt provider
 
-The Worker generates each comment's dev-ready change-prompt. The provider is **pluggable** (env,
-no code change):
+The Worker generates each comment's dev-ready change-prompt (now enriched with `comment_type`,
+`template_fields`, `expected_outcome`). The provider is **pluggable** (env, no code change):
 
-- **Cloudflare Workers AI** (default) — needs the `[ai]` binding. Override the model with an
-  `AI_MODEL` var in `wrangler.toml` (default `@cf/meta/llama-3.3-70b-instruct-fp8-fast`).
-- **Anthropic (Claude)** — set the `ANTHROPIC_API_KEY` secret (`wrangler secret put
-  ANTHROPIC_API_KEY`); the Worker then calls Claude instead. Model overridable via the
-  `ANTHROPIC_MODEL` var (default `claude-haiku-4-5-20251001`).
+- **Cloudflare Workers AI** (default) — needs the `[ai]` binding; override the model with `AI_MODEL`.
+- **Anthropic (Claude)** — set `ANTHROPIC_API_KEY` (+ optional `ANTHROPIC_MODEL`).
 
 Either way it falls back to a deterministic instruction if the call errors or no provider is set.
 
@@ -266,6 +319,6 @@ Either way it falls back to a deterministic instruction if the call errors or no
 
 ## Retiring the tool
 
-- Set `PROOFKIT_ENABLED = false` in `config.ts` (removes it from the site output), **or** delete the
-  `proofkit/` folder + the four seams to remove it from the codebase entirely.
-- `wrangler delete` the Worker and `wrangler kv namespace delete` the store.
+- Set `PROOFKIT_ENABLED = false` in `config.ts` (removes it from the site output), **or** follow
+  `REMOVAL.md` to unwire the four seams while keeping the folder + its `data/` snapshot.
+- `wrangler delete` the `shriram-review` Worker and `wrangler kv namespace delete` its store.

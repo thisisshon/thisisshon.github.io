@@ -12,7 +12,17 @@
  * ONE file to edit when turning Proofkit on/off or porting it into an Astro project.
  * See ./README.md (what it is) and ./INSTALL.md (how to drop it into a project).
  */
-import type { SEO } from '../../lib/seo';
+/**
+ * Minimal SEO shape the v3 route shims read (title / path / noindex). Declared
+ * LOCALLY (not imported from a host `src/lib/seo.ts`) so this package is fully
+ * self-contained and ports into ANY Astro project with no external type dependency.
+ */
+export interface SEO {
+  title: string;
+  description?: string;
+  path: string;
+  noindex?: boolean;
+}
 
 /* Re-export the framework-neutral runtime core so existing `./config` imports keep
  * working unchanged. Edit tool DATA + THEMING (teams, colours, skins, the light
@@ -33,6 +43,16 @@ export {
   DEFAULT_THEME,
   LIGHT_THEME,
   themeVars,
+  // v3 shared comment vocabulary (features 1/3/5/8) — re-exported so Astro
+  // adapters importing from '../config' get the same single source as core/config.js.
+  COMMENT_TYPES,
+  TYPE_FIELDS,
+  EXPECTED_OUTCOME_TYPES,
+  needsExpectedOutcome,
+  REOPEN_REASONS,
+  reopenReasonLabel,
+  STATUS_COLORS,
+  renderSummary,
 } from './core/config.js';
 
 /**

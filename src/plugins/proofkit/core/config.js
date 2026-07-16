@@ -182,6 +182,121 @@ export const TEAM_COLORS = {
 export const HIDE_SELECTORS = ['.to-top'];
 
 /* --------------------------------------------------------------------------
+ * COMMENT VOCABULARY (v3 features 1/3/5/8) — the ONE shared source of truth for
+ * comment types, their per-type template fields, reopen reasons, teamStatus →
+ * token colours, and the one-line summary renderer. The overlay composer, both
+ * dashboards, AND the demo store all import THESE (never re-declare the strings)
+ * so a label/enum change is a single edit. Every consumer defaults gracefully
+ * when a field is missing (the `|| ''` posture everything else here keeps).
+ * ------------------------------------------------------------------------ */
+
+/** The five comment types (Feature 1) as `{ value, label }`. `general` = the
+ *  original freeform behaviour (zero regression); the other four swap the field
+ *  set below. Order = the order the composer chips render in. */
+export const COMMENT_TYPES = [
+  { value: 'copy-fix', label: 'Copy fix' },
+  { value: 'image-swap', label: 'Image swap' },
+  { value: 'link-fix', label: 'Link fix' },
+  { value: 'layout-tweak', label: 'Layout tweak' },
+  { value: 'general', label: 'General' },
+];
+
+/**
+ * Per-type template-field meta (Feature 1, §3). Keyed by commentType; each entry
+ * is an ordered array of field descriptors the composer renders into
+ * `record.templateFields`:
+ *   { key, label, placeholder, autoFill, required, readOnly? }
+ * - `autoFill` true ⇒ the overlay pre-fills it from the clicked element
+ *   (`currentImage` from src/alt/selector, `currentUrl` from the <a> href) and
+ *   shows it read-only. `general` carries no template fields (freeform textarea).
+ * NOTE: `layout-tweak` + `image-swap` ALSO require the separate `expectedOutcome`
+ * record field (Feature 8) — that lives on the record, not in templateFields, so
+ * it is not listed here; see EXPECTED_OUTCOME_TYPES.
+ */
+export const TYPE_FIELDS = {
+  'copy-fix': [
+    { key: 'currentText', label: 'Current text', placeholder: 'The text as it reads now', autoFill: false, required: false },
+    { key: 'newText', label: 'Change to', placeholder: 'The corrected text', autoFill: false, required: true },
+  ],
+  'image-swap': [
+    { key: 'currentImage', label: 'Current image', placeholder: 'Auto-filled from the clicked image', autoFill: true, required: false, readOnly: true },
+    { key: 'replacementDesc', label: 'Replacement', placeholder: 'Describe the image that should replace it', autoFill: false, required: true },
+  ],
+  'link-fix': [
+    { key: 'currentUrl', label: 'Current URL', placeholder: 'Auto-filled from the clicked link', autoFill: true, required: false },
+    { key: 'newUrl', label: 'New URL', placeholder: 'Where it should point', autoFill: false, required: true },
+  ],
+  'layout-tweak': [
+    { key: 'whatToChange', label: 'What to change', placeholder: 'Describe the layout/spacing change', autoFill: false, required: true },
+  ],
+  'general': [],
+};
+
+/** Comment types that additionally require the `expectedOutcome` field (Feature 8),
+ *  enforced client- + server-side. Derived once so no consumer hardcodes the set. */
+export const EXPECTED_OUTCOME_TYPES = ['layout-tweak', 'image-swap'];
+
+/** True when `commentType` needs an `expectedOutcome` (Feature 8). */
+export function needsExpectedOutcome(commentType) {
+  return EXPECTED_OUTCOME_TYPES.indexOf(commentType) !== -1;
+}
+
+/** Reopen reasons (Feature 3) as `{ value, label }` ×4 — the enum the reopen
+ *  modal offers and the Worker validates. `other` additionally requires a note. */
+export const REOPEN_REASONS = [
+  { value: 'needs-clarification', label: 'Needs clarification' },
+  { value: 'wrong-element', label: 'Wrong element' },
+  { value: 'design-mismatch', label: 'Design mismatch' },
+  { value: 'other', label: 'Other' },
+];
+
+/** Human label for a reopen-reason value ('' when unknown/blank). */
+export function reopenReasonLabel(v) {
+  const r = REOPEN_REASONS.find((x) => x.value === v);
+  return r ? r.label : (v || '');
+}
+
+/** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
+ *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
+export const STATUS_COLORS = {
+  to_be_initiated: '--pk-amber',
+  in_progress: '--pk-blue',
+  deployed_live: '--pk-green',
+  reopened: '--pk-softred',
+};
+
+/**
+ * Render the one-line plain-text `summary` for a comment (Feature 1, §3). Shared by
+ * the client (optimistic list line) AND the demo store (mirrors the Worker's
+ * server-side render), so both produce identical text. Every field defaults when
+ * missing; an empty typed summary falls back to the first 80 chars of the freeform
+ * comment so a card is never blank.
+ *   copy-fix:     "current → new"
+ *   link-fix:     "old → new"
+ *   image-swap:   "swap <currentImage>: <replacementDesc>"
+ *   layout-tweak: "<whatToChange>"
+ *   general:      first 80 chars of the comment
+ */
+export function renderSummary(commentType, templateFields, comment) {
+  const f = templateFields || {};
+  const s = (v) => String(v == null ? '' : v).trim();
+  const arrow = (a, b) => { a = s(a); b = s(b); return a && b ? a + ' → ' + b : (a || b); };
+  const fallback = () => s(comment).slice(0, 80);
+  switch (commentType) {
+    case 'copy-fix': return arrow(f.currentText, f.newText) || fallback();
+    case 'link-fix': return arrow(f.currentUrl, f.newUrl) || fallback();
+    case 'image-swap': {
+      const img = s(f.currentImage) || 'image';
+      const desc = s(f.replacementDesc);
+      return (desc ? 'swap ' + img + ': ' + desc : 'swap ' + img) || fallback();
+    }
+    case 'layout-tweak': return s(f.whatToChange) || fallback();
+    case 'general':
+    default: return fallback();
+  }
+}
+
+/* --------------------------------------------------------------------------
  * THEMING — --pk-* token skins + a runtime light/dark toggle.
  *
  * Each skin is a block of `--pk-*` custom properties. They used to inject once
@@ -474,7 +589,7 @@ export function buildPanelLogin(opts) {
       '</div>' +
       '<div class="pk-login-err" hidden></div>' +
       '<button type="button" class="pk-login-btn">Authenticate</button>' +
-      '<div class="pk-login-brand">' + PK_MARK + '<span>ProoofKit</span></div>' +
+      '<div class="pk-login-brand">' + PK_MARK + '<span>Proofkit</span></div>' +
     '</div>';
   const q = (s) => el.querySelector(s);
   // Team = a custom (non-native) dropdown, full-width inside the card.

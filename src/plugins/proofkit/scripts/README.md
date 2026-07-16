@@ -61,15 +61,18 @@ not land in target projects.
 
 ## After a `push`
 
-Copying the package is not the whole install. The target project still needs the three
+Copying the package is not the whole install. The target project still needs the
 host seams, documented in [`../INSTALL.md`](../INSTALL.md):
 
 1. The gated line in the shared layout — `{PROOFKIT_ENABLED && <ProofkitOverlay />}`
-2. `src/pages/review.astro` route shim
-3. `src/pages/reviewdash.astro` route shim
+2. `src/pages/review.astro` route shim (login)
+3. `src/pages/reviewdash.astro` route shim (admin/Builder dashboard)
+4. `src/pages/teamdash.astro` route shim (per-team dashboard)
 
-Then set `PUBLIC_REVIEW_WORKER_URL` and deploy the worker. `sync.mjs` prints this same
-reminder after every successful `push`/`pull`.
+Then (optionally) set `PUBLIC_REVIEW_WORKER_URL` and deploy the `shriram-review`
+worker; leave it unset to stay in localStorage demo mode.
+`sync.mjs` prints a short reminder after every successful `push`/`pull` (its printed text
+lists the three route shims — see INSTALL.md for the full seam set).
 
 ## Exit codes
 

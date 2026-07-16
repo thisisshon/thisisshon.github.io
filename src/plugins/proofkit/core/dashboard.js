@@ -1,6 +1,8 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
     ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession,
-    initTheme, mountThemeToggle, ensureDemoReset, isTeamEnabled } from './config.js';
+    initTheme, mountThemeToggle, ensureDemoReset, isTeamEnabled,
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
+    reopenReasonLabel, needsExpectedOutcome } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter); apply the
@@ -44,7 +46,7 @@
       complete: { from: ['in_progress'], to: 'deployed_live' },
       reopen: { from: ['in_progress', 'deployed_live'], to: 'reopened' },
     };
-    function localTeamAction(rec, action, reason) {
+    function localTeamAction(rec, action, reason, note) {
       const key = 'rvc:' + rec.page.path;
       const arr = JSON.parse(localStorage.getItem(key) || '[]');
       const r = arr.find((x) => x.id === rec.id);
@@ -57,27 +59,35 @@
       r.teamStatus = step.to; r.teamStatusAt = now;
       if (!Array.isArray(r.history)) r.history = [];
       const h = { status: step.to, at: now, event: 'team-' + action, iteration: r.iteration };
-      if (action === 'reopen') { h.reason = reason || ''; r.reopenReason = reason || ''; }
+      // v3 (Feature 3): reopen carries the enum reason + optional note; both land on the
+      // record AND the history entry so the raiser sees the label + note in the timeline.
+      if (action === 'reopen') {
+        h.reason = reason || ''; if (note) h.note = note;
+        r.reopenReason = reason || ''; r.reopenNote = note || '';
+      }
       r.history.push(h);
       localStorage.setItem(key, JSON.stringify(arr));
       if (action === 'complete' || action === 'reopen') {
-        const n = localStatusNotif(r, step.to, action === 'reopen' ? reason : '');
+        const n = localStatusNotif(r, step.to, action === 'reopen' ? reason : '', action === 'reopen' ? note : '');
         if (n) { let ex = []; try { ex = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch {}
           ex.push(n); localStorage.setItem(NOTIF_KEY, JSON.stringify(ex)); }
       }
       return { ...r };
     }
-    // A status notification to the RAISING team when Builder deploys live or reopens.
-    function localStatusNotif(r, next, reason) {
+    // A status notification to the RAISING team when Builder deploys live or reopens. The
+    // reopen summary shows the human reason LABEL (mirrors the Worker's statusSummary).
+    function localStatusNotif(r, next, reason, note) {
       const where = (r.page && r.page.title) || (r.page && r.page.path) || 'a page';
       const tick = r.ticket ? '#' + r.ticket + ' ' : '';
+      const reasonLabel = reason ? (reopenReasonLabel(reason) || reason) : '';
       const summary = next === 'reopened'
-        ? 'Builder reopened ' + tick + 'on ' + where + (reason ? ': ' + reason : '') + '.'
+        ? 'Builder reopened ' + tick + 'on ' + where + (reasonLabel ? ': ' + reasonLabel : '') + '.'
         : tick + 'on ' + where + ' was deployed live.';
       return {
         id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
         team: r.team || '', kind: 'status', chainId: r.parentId || r.id, commentId: r.id,
-        ticket: r.ticket || '', teamStatus: next, iteration: r.iteration || 1, reason: reason || '',
+        ticket: r.ticket || '', teamStatus: next, iteration: r.iteration || 1,
+        reason: reason || '', reasonLabel, note: note || '',
         fromTeam: r.toTeam || '', path: (r.page && r.page.path) || '/', pageName: where,
         summary, readTeam: false, readAdmin: false,
       };
@@ -113,6 +123,83 @@
       localStorage.setItem(key, JSON.stringify(arr));
       return { ...r };
     }
+    // ---- LOCAL Quick-questions reply (Feature 6; mirror of POST /comments with a parentId) ----
+    // A reply chains to the origin root, is iteration 1, and NEVER changes status/iteration.
+    // It fires a kind:'reply' notification to the OTHER side: Builder replying pings the raiser
+    // (root.team); a raiser's reply pings the receiver (root.toTeam). Contract §4.
+    function localReply(root, text) {
+      const key = 'rvc:' + root.page.path;
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      const rootId = root.parentId || root.id;
+      const now = new Date().toISOString();
+      const me = getSession().team || ADMIN_TEAM;
+      const reply = {
+        id: uid(), parentId: rootId, iteration: 1, createdAt: now,
+        team: me, toTeam: root.toTeam || '', name: me,
+        comment: String(text || '').slice(0, 4000), changeTo: '',
+        commentType: 'general', templateFields: {}, summary: '', expectedOutcome: '', imageId: '',
+        aiPrompt: '', page: root.page, anchor: root.anchor || {},
+        teamStatus: root.teamStatus || 'to_be_initiated', teamStatusAt: '',
+        reopenReason: '', reopenNote: '', history: [],
+      };
+      arr.push(reply);
+      localStorage.setItem(key, JSON.stringify(arr));
+      const target = (me === (root.team || '')) ? (root.toTeam || '') : (root.team || '');
+      if (target) {
+        const where = (root.page && root.page.title) || (root.page && root.page.path) || 'a page';
+        const notif = {
+          id: uid(), createdAt: now, updatedAt: now, team: target, kind: 'reply',
+          chainId: rootId, commentId: reply.id, ticket: root.ticket || '', fromTeam: me,
+          path: (root.page && root.page.path) || '/', pageName: where,
+          summary: me + ' replied' + (root.ticket ? ' on #' + root.ticket : '') + ': “' + reply.comment.slice(0, 80) + '”',
+          readTeam: false, readAdmin: false,
+        };
+        let ex = []; try { ex = JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]'); } catch {}
+        ex.push(notif); localStorage.setItem(NOTIF_KEY, JSON.stringify(ex));
+      }
+      return { ...reply };
+    }
+
+    // ---- LOCAL saved "team views" (Feature 11) — admin's shared quick-select filter sets.
+    // Stored under one 'rvc-views' map keyed by scope (mirrors the Worker's views:<scope>
+    // KV key); admin uses the '__admin' scope. POST replaces the whole set.
+    const VIEWS_KEY = 'rvc-views';
+    const VIEWS_SCOPE = '__admin';
+    function localGetViews() {
+      let map = {}; try { map = JSON.parse(localStorage.getItem(VIEWS_KEY) || '{}'); } catch {}
+      const v = map && map[VIEWS_SCOPE]; return Array.isArray(v) ? v : [];
+    }
+    function localSaveViews(views) {
+      let map = {}; try { map = JSON.parse(localStorage.getItem(VIEWS_KEY) || '{}'); } catch {}
+      if (!map || typeof map !== 'object') map = {};
+      map[VIEWS_SCOPE] = Array.isArray(views) ? views : [];
+      try { localStorage.setItem(VIEWS_KEY, JSON.stringify(map)); } catch {}
+      return { ok: true, views: map[VIEWS_SCOPE] };
+    }
+
+    // ---- LOCAL screenshot fetch (Feature 4) — dataURL by id from rvc-img:<id>. ----
+    function localImage(id) {
+      try { return { dataUrl: localStorage.getItem('rvc-img:' + id) || '' }; }
+      catch { return { dataUrl: '' }; }
+    }
+
+    // ---- LOCAL metrics (Feature 12) — compute the SAME five aggregates the Worker's
+    // GET /metrics returns, client-side, from every local record's history[]. Mirrors the
+    // Worker's metricsEvents fallback + computeMetrics so demo mode shows real Insights.
+    function localMetricsEvents() {
+      const out = [];
+      for (const r of localAll()) {
+        if (r.parentId && !r.ticket) continue;   // a reply — not a ticket
+        const hist = Array.isArray(r.history) ? r.history : [];
+        const page = (r.page && r.page.path) || '/';
+        const ct = r.commentType || 'general';
+        for (const h of hist) out.push({ at: h.at || r.createdAt, event: h.event || '', page, commentType: ct, iteration: h.iteration || r.iteration || 1 });
+      }
+      out.sort((a, b) => (a.at < b.at ? -1 : 1));
+      return out;
+    }
+    function localMetrics(from, to) { return computeMetrics(localMetricsEvents(), from, to); }
+
     // No-Worker gate: check the session password against the configured review password.
     const localGuard = async () => {
       if (!(await checkReviewPassword(getSession().key || ''))) throw new Error('unauthorized');
@@ -120,28 +207,52 @@
     const store = LOCAL
       ? {
           all: async () => { await localGuard(); return localAll(); },
-          // Builder drives the status machine: start | complete | reopen(reason).
-          teamAction: async (rec, action, reason) => { await localGuard(); return localTeamAction(rec, action, reason); },
+          // Builder drives the status machine: start | complete | reopen(reason, note).
+          teamAction: async (rec, action, reason, note) => { await localGuard(); return localTeamAction(rec, action, reason, note); },
           notifications: async () => { await localGuard(); return localNotifs(); },
           markRead: async (ids, read = true) => { await localGuard(); return localMarkRead(ids, read); },
           del: async (rec) => { await localGuard(); localDelete(rec); return { ok: true }; },
           setTeams: async (rec, team, toTeam) => { await localGuard(); return localSetTeams(rec, team, toTeam); },
+          // Quick-questions reply (Feature 6) — no ticket, no status change.
+          reply: async (root, text) => { await localGuard(); return localReply(root, text); },
+          // Screenshot dataURL by id (Feature 4).
+          image: async (id) => { await localGuard(); return localImage(id); },
+          // Saved "team views" (Feature 11), admin-scoped.
+          getViews: async () => { await localGuard(); return localGetViews(); },
+          saveViews: async (views) => { await localGuard(); return localSaveViews(views); },
+          // Insights aggregates (Feature 12) — computed client-side from local records.
+          metrics: async (from, to) => { await localGuard(); return localMetrics(from, to); },
         }
       : {
           all: () => apiFetch('/comments'),
-          // Contract body: { id, action:'start'|'complete'|'reopen', reason? }. No `path`.
-          teamAction: (rec, action, reason) => apiFetch('/team-status', { method: 'POST', body: JSON.stringify({ id: rec.id, action, reason }) }),
+          // Contract body: { id, action:'start'|'complete'|'reopen', reason?, note? }. No `path`.
+          teamAction: (rec, action, reason, note) => apiFetch('/team-status', { method: 'POST', body: JSON.stringify({ id: rec.id, action, reason, note }) }),
           notifications: () => apiFetch('/notifications'),
           markRead: (ids, read = true) => apiFetch('/notifications/read', { method: 'POST', body: JSON.stringify({ ids, read }) }),
           del: (rec) => apiFetch('/delete', { method: 'POST', body: JSON.stringify({ id: rec.parentId || rec.id, path: rec.page.path }) }),
           setTeams: (rec, team, toTeam) => apiFetch('/teams', { method: 'POST', body: JSON.stringify({ id: rec.id, path: rec.page.path, team, toTeam }) }),
+          // A reply is POST /comments with a parentId — the Worker skips the ticket/arrival
+          // notif and fires a kind:'reply' notification to the other side (contract §4).
+          reply: (root, text) => apiFetch('/comments', { method: 'POST', body: JSON.stringify({
+            parentId: root.parentId || root.id, comment: text, team: getSession().team || ADMIN_TEAM,
+            toTeam: root.toTeam || '', page: root.page, anchor: root.anchor || {},
+          }) }),
+          // Screenshot dataURL by id (Feature 4).
+          image: (id) => apiFetch('/image?id=' + encodeURIComponent(id)),
+          // Saved views (Feature 11) — GET returns the caller's set, POST replaces it.
+          getViews: () => apiFetch('/views'),
+          saveViews: (views) => apiFetch('/views', { method: 'POST', body: JSON.stringify({ views }) }),
+          // Insights aggregates (Feature 12, admin) — GET /metrics?from&to.
+          metrics: (from, to) => apiFetch('/metrics?from=' + encodeURIComponent(from || '') + '&to=' + encodeURIComponent(to || '')),
         };
 
-    let login = null, refreshTimer = null;
+    let login = null, refreshTimer = null, viewsLoaded = false;
 
     async function loadData() {
       all = await store.all();
       try { notifs = await store.notifications(); } catch (e) { notifs = notifs || []; }
+      // Feature 11: pull the admin's saved "Team views" ONCE (not on every 5s poll).
+      if (!viewsLoaded) { viewsLoaded = true; loadViews().then(() => { if (view === 'dash') renderViewChips(); }); }
       // Polling runs every ~5s; skip the whole re-render when the data is byte-identical to
       // what's already on screen — stops the entry animation replaying (and the DOM churn /
       // scroll jump) on every idle poll. Only repaint when something actually changed.
@@ -265,6 +376,47 @@
         `<span class="rvd-route-arrow" aria-label="directed to">→</span>${teamChip(c.toTeam)}`;
     };
 
+    // ---- change-type vocab (Feature 1) — shared from config; `general` = no typed fields ----
+    const typeMeta = (t) => COMMENT_TYPES.find((x) => x.value === t) || null;
+    const typeLabel = (c) => { const m = typeMeta(c && c.commentType); return (m && c.commentType !== 'general') ? m.label : ''; };
+    const fieldsFor = (t) => (TYPE_FIELDS[t] || []);
+    // One-line card preview: the server-rendered summary, else derived locally (§3).
+    const summaryOf = (c) => c.summary || renderSummary(c.commentType || 'general', c.templateFields || {}, c.comment || '');
+    // The reopen reason LABEL (enum → human), falling back to any legacy free-text reason.
+    const reopenLabelOf = (c) => reopenReasonLabel(c && c.reopenReason) || (c && c.reopenReason) || '';
+    // Typed template-field rows for the detail (labelled rows, NEVER raw JSON; §3).
+    function typedFieldRows(c) {
+      const t = c.commentType || 'general';
+      if (t === 'general') return '';
+      const tf = c.templateFields || {};
+      return fieldsFor(t).map((f) => {
+        const v = tf[f.key];
+        if (v == null || String(v).trim() === '') return '';
+        return `<div class="rvd-field"><div class="rvd-field-k">${esc(f.label)}</div><div class="rvd-field-v">${esc(v)}</div></div>`;
+      }).join('');
+    }
+
+    // ---- screenshot thumbnails (Feature 4) — thin-infra: fetch the dataURL by id and fill
+    // the placeholder in place. ANY miss/failure ⇒ a "preview unavailable" tile (a screenshot
+    // never blocks anything). data-hydrated stops a poll re-render from re-fetching. ----
+    async function loadImage(imageId) {
+      if (!imageId) return '';
+      try { const j = await store.image(imageId); return (j && j.dataUrl) || ''; } catch { return ''; }
+    }
+    async function hydrateThumbs(root) {
+      if (!root) return;
+      const els = root.querySelectorAll('[data-imgid]:not([data-hydrated])');
+      for (const el of els) {
+        el.dataset.hydrated = '1';
+        const url = await loadImage(el.dataset.imgid);
+        if (url) el.innerHTML = `<img src="${esc(url)}" alt="Element preview" loading="lazy">`;
+        else { el.classList.add('is-empty'); el.innerHTML = `<span class="rvd-thumb-ph">preview unavailable</span>`; }
+      }
+    }
+    const thumbTile = (imageId, big) => imageId
+      ? `<span class="rvd-thumb${big ? ' rvd-thumb-lg' : ''}" data-imgid="${esc(imageId)}"><span class="rvd-thumb-ph">preview…</span></span>`
+      : '';
+
     // ---- real-time status (Builder framing) ----
     const TEAM_STATUS = {
       to_be_initiated: ['tbi', 'TBI'],
@@ -289,6 +441,9 @@
     const chainOf = (c) => c.parentId || c.id;
 
     let all = [], notifs = [], tab = 'all', teamFilter = '', entryDetail = null, view = 'dash', search = '', sort = 'new';
+    // Feature 11 (Team views) + Feature 12 (Insights) state.
+    let savedViews = [], activeViewName = '';
+    let metricsData = null, metricsFrom = '', metricsTo = '';
     const sel = new Set();
     let selectMode = false;
     let lastSig = '';   // signature of the last-rendered data — lets polling skip no-op re-renders
@@ -304,7 +459,9 @@
     function matchesSearch(c) {
       if (!search) return true;
       const a = c.anchor || {};
-      return [c.comment, c.changeTo, c.page && c.page.path, c.name, c.team, c.toTeam, c.reopenReason, a.snippet, a.tag]
+      const tf = c.templateFields || {};
+      return [c.comment, c.changeTo, c.summary, c.expectedOutcome, c.page && c.page.path, c.name, c.team, c.toTeam,
+        c.reopenReason, reopenLabelOf(c), c.reopenNote, a.snippet, a.tag, ...Object.values(tf)]
         .filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase());
     }
     function sortRoots(rs) {
@@ -407,10 +564,15 @@
       if (e === 'resubmitted' || e === 'resubmit') return 'Resubmitted (TBI)';
       if (e === 'team-start' || e === 'start' || st === 'in_progress') return 'Started — in progress';
       if (e === 'team-complete' || e === 'complete' || st === 'deployed_live') return 'Deployed live';
-      if (e === 'team-reopen' || e === 'reopen' || st === 'reopened') return 'Reopened' + (h.reason ? ' — ' + h.reason : '');
+      if (e === 'team-reopen' || e === 'reopen' || st === 'reopened') {
+        const label = reopenReasonLabel(h.reason) || h.reason || '';
+        return 'Reopened' + (label ? ' — ' + label : '') + (h.note ? ' (' + h.note + ')' : '');
+      }
       return 'Status → ' + (st || '');
     }
 
+    // A status token dot (STATUS_COLORS: teamStatus → --pk-* token) leading a count tile.
+    const statusDot = (s) => `<span class="rvd-count-dot" style="background:var(${STATUS_COLORS[s] || '--pk-muted'})"></span>`;
     function counts() {
       const rs = roots();
       const tbi = rs.filter((c) => teamStatusOf(c) === 'to_be_initiated').length;
@@ -418,10 +580,10 @@
       const live = rs.filter((c) => teamStatusOf(c) === 'deployed_live').length;
       const reop = rs.filter((c) => teamStatusOf(c) === 'reopened').length;
       $('#rvd-counts').innerHTML =
-        `<span class="rvd-count"><b>${tbi}</b> TBI</span>` +
-        `<span class="rvd-count"><b>${prog}</b> In Progress</span>` +
-        `<span class="rvd-count"><b>${live}</b> Deployed live</span>` +
-        `<span class="rvd-count"><b>${reop}</b> Reopened</span>`;
+        `<span class="rvd-count"><b>${tbi}</b>${statusDot('to_be_initiated')} TBI</span>` +
+        `<span class="rvd-count"><b>${prog}</b>${statusDot('in_progress')} In Progress</span>` +
+        `<span class="rvd-count"><b>${live}</b>${statusDot('deployed_live')} Deployed live</span>` +
+        `<span class="rvd-count"><b>${reop}</b>${statusDot('reopened')} Reopened</span>`;
       updateBadges();
     }
     function updateBadges() {
@@ -451,12 +613,18 @@
             `<div class="rvd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
         : '';
       const selected = sel.has(root.id);
+      const tl = typeLabel(root);          // '' for general (zero regression)
+      const sum = summaryOf(root);         // one-line typed preview
+      const isReopened = teamStatusOf(root) === 'reopened';
+      const reopLabel = reopenLabelOf(root);
       return (
         `<article class="rvd-item${selectMode && selected ? ' is-selected' : ''}" data-state="${displayState(root)}">` +
           `<div class="rvd-card-top">` +
             (selectMode ? `<input type="checkbox" class="rvd-sel" data-id="${id}"${selected ? ' checked' : ''} aria-label="Select">` : '') +
             (isNew(root) ? `<span class="rvd-chip rvd-new">New</span>` : '') +
             statusChip(root) +
+            (tl ? `<span class="rvd-typechip">${esc(tl)}</span>` : '') +
+            (isReopened ? `<span class="rvd-reopen-badge">Reopened${reopLabel ? ': ' + esc(reopLabel) : ''}</span>` : '') +
             (iter > 1 ? `<span class="rvd-iter">Iter ${iter}</span>` : '') +
             `<span class="rvd-loc">` +
               `<a class="rvd-slug" href="${esc(root.page.path)}" target="_blank" rel="noopener">${esc(pageName(root.page.path))}</a>` +
@@ -464,9 +632,13 @@
             `</span>` +
           `</div>` +
           `<div class="rvd-card-body">` +
+            // Feature 1: the one-line summary is the card preview; the freeform comment sits
+            // below it (clamped). For `general` the summary == the comment, so it is skipped.
+            (tl && sum && sum !== root.comment ? `<div class="rvd-summary">${esc(sum)}</div>` : '') +
             `<div class="rvd-comment-text rvd-clamp">${esc(root.comment)}</div>` +
             `<button class="rvd-morebtn" type="button" hidden>Show more</button>` +
             (a.snippet ? `<div class="rvd-snip">on “${esc(a.snippet)}”</div>` : '') +
+            (root.imageId ? `<div class="rvd-media">${thumbTile(root.imageId, false)}</div>` : '') +
           `</div>` +
           routeRow(root) +
           (root.changeTo ? `<div class="rvd-change"><span>Change to</span><div>${esc(root.changeTo)}</div></div>` : '') +
@@ -503,16 +675,61 @@
       return ''; // reopened → with the raiser (Content)
     }
 
+    // ---- reopen modal (Feature 3) — reason dropdown (the 4 REOPEN_REASONS labels) + a note
+    // field shown ALWAYS but REQUIRED only when the reason is "Other" (client-enforced; the
+    // Worker enforces it too). Replaces the old freeform prompt. `onConfirm({reason, note})`
+    // fires once validated; `sub` optionally captions how many tickets it applies to. ----
+    function openReopenModal(onConfirm, sub) {
+      const el = document.createElement('div'); el.className = 'pk-reopen';
+      el.innerHTML =
+        `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Reopen ticket">` +
+          `<h2 class="pk-reopen-title">Reopen</h2>` +
+          `<p class="pk-reopen-sub">${esc(sub || 'Bounce this back to the raising team with a reason.')}</p>` +
+          `<div class="pk-reopen-field"><span class="pk-reopen-label">Reason</span><div class="rvd-reopen-reason"></div></div>` +
+          `<div class="pk-reopen-field"><span class="pk-reopen-label">Note<span class="rvd-reopen-req" hidden> · required</span></span>` +
+            `<textarea class="pk-reopen-note" placeholder="Add context for the raising team (required for “Other”)"></textarea></div>` +
+          `<div class="pk-reopen-err" hidden></div>` +
+          `<div class="pk-reopen-actions">` +
+            `<button type="button" class="rvd-editbtn rvd-reopen-cancel">Cancel</button>` +
+            `<button type="button" class="rvd-editbtn rvd-editsave rvd-reopen-go">Reopen</button>` +
+          `</div>` +
+        `</div>`;
+      document.body.appendChild(el);
+      let reason = '';
+      const req = el.querySelector('.rvd-reopen-req');
+      const err = el.querySelector('.pk-reopen-err');
+      const note = el.querySelector('.pk-reopen-note');
+      const syncReq = () => { req.hidden = reason !== 'other'; };
+      const reasonDD = buildDropdown({
+        block: true, placeholder: 'Select a reason',
+        items: REOPEN_REASONS.map((r) => ({ value: r.value, label: r.label })),
+        onSelect: (v) => { reason = v; syncReq(); err.hidden = true; },
+      });
+      el.querySelector('.rvd-reopen-reason').appendChild(reasonDD.el);
+      const close = () => el.remove();
+      el.querySelector('.rvd-reopen-cancel').addEventListener('click', close);
+      el.addEventListener('click', (e) => { if (e.target === el) close(); });
+      document.addEventListener('keydown', function onEsc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onEsc); } });
+      el.querySelector('.rvd-reopen-go').addEventListener('click', () => {
+        const n = note.value.trim();
+        if (!reason) { err.textContent = 'Please choose a reason.'; err.hidden = false; return; }
+        if (reason === 'other' && !n) { err.textContent = 'A note is required when the reason is “Other”.'; err.hidden = false; return; }
+        close();
+        onConfirm({ reason, note: n });
+      });
+      reasonDD.focus();
+    }
+
     // ---- status actions ----
     async function doTeamAction(rec, action) {
-      let reason;
       if (action === 'reopen') {
-        reason = prompt('Reason for reopening (required — shown to the raising team):');
-        if (reason == null) return;
-        reason = reason.trim();
-        if (!reason) { alert('A reason is required to reopen.'); return; }
+        openReopenModal(async ({ reason, note }) => {
+          try { Object.assign(rec, await store.teamAction(rec, 'reopen', reason, note)); counts(); render(); lastSig = dataSig(); }
+          catch (e) { alert('Could not update — ' + e.message); }
+        });
+        return;
       }
-      try { Object.assign(rec, await store.teamAction(rec, action, reason)); counts(); render(); lastSig = dataSig(); }
+      try { Object.assign(rec, await store.teamAction(rec, action)); counts(); render(); lastSig = dataSig(); }
       catch (e) { alert('Could not update — ' + e.message); }
     }
     async function rowDelete(root) {
@@ -664,29 +881,71 @@
             `</li>`).join('') + `</ol>`
         : '—';
       const acts = lifecycleActions(c);
+      const tl = typeLabel(c);
+      const sum = summaryOf(c);
+      const isReopened = teamStatusOf(c) === 'reopened';
+      const reopLabel = reopenLabelOf(c);
+      // Feature 8: success-criteria callout for layout-tweak / image-swap.
+      const outcome = needsExpectedOutcome(c.commentType) ? (c.expectedOutcome || '') : '';
+      // Feature 10: the best-effort location hint (CSS selector), clamped + copyable.
+      const selector = (a.selector || '').trim();
+      // Feature 6: the quick-questions reply thread.
+      const replies = repliesOf(c);
       $('#rvd-entries').innerHTML =
         `<button class="rvd-back" id="rvd-back">← Back to Master Log</button>` +
         `<article class="rvd-detail">` +
           `<h2 class="rvd-detail-title">${esc(c.comment)}</h2>` +
-          `<div class="rvd-detail-chips">${statusChip(c)}${routeChips(c)}` +
+          `<div class="rvd-detail-chips">${statusChip(c)}` +
+            (tl ? `<span class="rvd-typechip">${esc(tl)}</span>` : '') +
+            (isReopened ? `<span class="rvd-reopen-badge">Reopened${reopLabel ? ': ' + esc(reopLabel) : ''}</span>` : '') +
+            routeChips(c) +
             `<a class="rvd-slug" href="${esc(c.page.path)}?review=1#c=${esc(c.id)}" target="_blank" rel="noopener">Open pin</a></div>` +
+          (outcome
+            ? `<div class="rvd-criteria"><div class="rvd-criteria-k">Success criteria</div><div class="rvd-criteria-v">${esc(outcome)}</div></div>`
+            : '') +
           (acts ? `<div class="rvd-detail-acts">${acts}</div>` : '') +
+          (c.imageId ? `<div class="rvd-field"><div class="rvd-field-k">Screenshot</div><div class="rvd-detail-media">${thumbTile(c.imageId, true)}</div></div>` : '') +
           `<div class="rvd-fields">` +
+            (tl && sum && sum !== c.comment ? field('Summary', esc(sum)) : '') +
+            typedFieldRows(c) +
             field('Ticket', c.ticket ? `<span class="rvd-ticket">${esc(c.ticket)}</span>` : '—') +
             field('Iteration', String(c.iteration || 1)) +
             field('Page', `<a href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a> <span style="color:var(--pk-muted)">${esc(c.page.path)}</span>`) +
             field('Element / anchor', where) +
+            (selector
+              ? `<div class="rvd-field"><div class="rvd-field-k">Likely location</div>` +
+                `<div class="rvd-lochint"><code class="rvd-selector" title="${esc(selector)}">${esc(selector)}</code>` +
+                `<button class="rvd-a rvd-loc-copy" type="button" data-sel="${esc(selector)}">Copy</button></div>` +
+                `<div class="rvd-lochint-cap">Best-effort CSS selector captured at review time — verify in context.</div></div>`
+              : '') +
             field('From (raised by)', esc(c.name || 'anonymous') + (c.team ? ' · ' + esc(c.team) : '')) +
             field('Directed to', c.toTeam ? teamChip(c.toTeam) : '—') +
             field('Submitted', esc(fmt(c.createdAt))) +
             (c.changeTo ? `<div class="rvd-field"><div class="rvd-field-k">Change to</div><div class="rvd-change"><div>${esc(c.changeTo)}</div></div></div>` : '') +
-            (c.reopenReason && teamStatusOf(c) === 'reopened' ? field('Reopen reason', esc(c.reopenReason)) : '') +
+            (isReopened && (reopLabel || c.reopenNote)
+              ? field('Reopen reason', `<span class="rvd-reopen-badge">Reopened${reopLabel ? ': ' + esc(reopLabel) : ''}</span>` + (c.reopenNote ? `<div class="rvd-reopen-note">“${esc(c.reopenNote)}”</div>` : ''))
+              : '') +
             field('Current status', esc(statusLabel(c))) +
             `<div class="rvd-field"><div class="rvd-field-k">AI prompt</div>` +
               (c.aiPrompt ? `<div class="rvd-field-prompt">${esc(c.aiPrompt)}</div>`
                           : `<div class="rvd-field-v" style="color:var(--pk-muted);font-style:italic">Generating — usually ready within seconds of submit. Refresh in a moment.</div>`) + `</div>` +
             `<div class="rvd-field"><div class="rvd-field-k">Iteration timeline</div>${timeline}</div>` +
           `</div>` +
+          // Feature 6: Quick questions — a reply thread visually FENCED OFF from the status
+          // controls above. Posting a reply never changes status/iteration.
+          `<section class="rvd-qq">` +
+            `<div class="rvd-qq-head"><h3 class="rvd-qq-title">Quick questions</h3>` +
+              `<span class="rvd-qq-sub">Ask the raising team — replies never change status.</span></div>` +
+            (replies.length
+              ? `<div class="rvd-qq-thread">` + replies.map((r) =>
+                  `<div class="rvd-reply">${teamChip(r.team)}<div class="rvd-rtxt">${esc(r.comment)}</div>` +
+                  `<div class="rvd-rmeta">${esc(fmt(r.createdAt))}</div></div>`).join('') + `</div>`
+              : `<p class="rvd-qq-empty">No questions yet.</p>`) +
+            `<div class="rvd-qq-compose">` +
+              `<textarea class="rvd-qq-input" placeholder="Write a quick question…" rows="2"></textarea>` +
+              `<button class="rvd-a rvd-qq-send" type="button">Post reply</button>` +
+            `</div>` +
+          `</section>` +
         `</article>`;
       $('#rvd-back').addEventListener('click', () => { entryDetail = null; render(); });
       $('#rvd-entries').querySelectorAll('.rvd-detail-acts .rvd-a[data-action]').forEach((btn) => {
@@ -696,6 +955,20 @@
           await doTeamAction(rec, btn.dataset.action);
         });
       });
+      // Feature 10: copy the FULL selector (the clamp is cosmetic; the button holds the value).
+      const lc = $('#rvd-entries').querySelector('.rvd-loc-copy');
+      if (lc) lc.addEventListener('click', () => copyToClip(lc.dataset.sel, lc, 'Copied ✓'));
+      // Feature 6: post a quick-question reply (status untouched).
+      const send = $('#rvd-entries').querySelector('.rvd-qq-send');
+      const input = $('#rvd-entries').querySelector('.rvd-qq-input');
+      if (send && input) send.addEventListener('click', async () => {
+        const text = input.value.trim();
+        if (!text) { input.focus(); return; }
+        send.disabled = true; send.textContent = 'Posting…';
+        try { await store.reply(c, text); await loadData(); }
+        catch (e) { send.disabled = false; send.textContent = 'Post reply'; alert('Could not post — ' + e.message); }
+      });
+      hydrateThumbs($('#rvd-entries'));
     }
 
     // ---- Notifications (admin: all), newest first, unread flagged ----
@@ -726,10 +999,15 @@
         });
       });
     }
+    // A small speech-bubble glyph marks a Quick-questions reply notification.
+    const REPLY_ICO = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
     function notifItem(n) {
       const unread = n.readAdmin === false;
       let chip;
-      if (n.kind === 'status' && TEAM_STATUS[n.teamStatus]) {
+      if (n.kind === 'reply') {
+        // Feature 6: render a reply notification distinctly (icon + "Reply" label).
+        chip = `<span class="rvd-chip rvd-chip-reply">${REPLY_ICO} Reply</span>`;
+      } else if (n.kind === 'status' && TEAM_STATUS[n.teamStatus]) {
         const [cls, label] = TEAM_STATUS[n.teamStatus];
         chip = `<span class="rvd-chip ${cls}">${label}</span>`;
       } else if (n.kind === 'directed') {
@@ -758,13 +1036,19 @@
       $('#rvd-view-dash').hidden = view !== 'dash';
       $('#rvd-view-entries').hidden = view !== 'entries';
       $('#rvd-view-notifs').hidden = view !== 'notifs';
+      const iv = $('#rvd-view-insights'); if (iv) iv.hidden = view !== 'insights';
       const dep = $('#rvd-view-deploy'); if (dep) dep.hidden = true;
       if (view === 'entries') { renderEntries(); return; }
       if (view === 'notifs') { renderNotifs(); return; }
+      if (view === 'insights') { renderInsights(); return; }
 
+      // Feature 11: the saved "Team views" quick-select chips sit atop the list.
+      renderViewChips();
       const host = $('#rvd-list');
       const rs = currentRoots();
 
+      // Feature 9: "By Page" is the group-by-page mechanism (per-page count header); the
+      // "All" tab is the flat sort. Toggling between them loses no data (both read `rs`).
       if (tab === 'page') {
         const paths = [...new Set(rs.map((c) => c.page.path))].sort();
         host.innerHTML = paths.map((p) => {
@@ -773,7 +1057,7 @@
           const progN = group.filter((c) => teamStatusOf(c) === 'in_progress').length;
           return `<div class="rvd-group"><h2 class="rvd-gh">` +
             `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(pageName(p))}</a>` +
-            `<span class="rvd-gh-rollup">${tbiN} TBI · ${progN} in progress</span>` +
+            `<span class="rvd-gh-rollup">${group.length} open · ${tbiN} TBI · ${progN} in progress</span>` +
             `<span class="rvd-gh-actions"><button class="rvd-gh-copy" data-page="${esc(p)}">Copy prompts</button></span>` +
             `</h2><div class="rvd-grid">${group.map(card).join('')}</div></div>`;
         }).join('');
@@ -787,6 +1071,169 @@
       if (!rs.length) emp.textContent = search ? 'No tickets match your search.' : 'Nothing in the Team Queue.';
       bindActions();
       updateSelectToggle();
+      hydrateThumbs(host);
+    }
+
+    // ---- Team views (Feature 11): capture / apply / persist the current filter set ----
+    // A view captures {search, sort, tab (group-by), teamFilter}. Shared per admin key.
+    const currentFilterState = () => ({ search, sort, tab, teamFilter });
+    function applyView(v) {
+      const f = (v && v.filters) || {};
+      search = f.search || ''; sort = f.sort || 'new'; tab = f.tab || 'all'; teamFilter = f.teamFilter || '';
+      activeViewName = v ? v.name : '';
+      const se = $('#rvd-search'); if (se) se.value = search;
+      if (sortDD && sortDD.setValue) sortDD.setValue(sort);
+      $('#rvd-tabs').querySelectorAll('.rvd-tab').forEach((t) => t.classList.toggle('is-active', t.dataset.tab === tab));
+      buildTeamChips();
+      render();
+    }
+    function renderViewChips() {
+      const host = $('#rvd-views'); if (!host) return;
+      if (!savedViews.length) { host.hidden = true; host.innerHTML = ''; return; }
+      host.hidden = false;
+      host.innerHTML = `<span class="rvd-views-lbl">Team views</span>` +
+        savedViews.map((v, i) =>
+          `<span class="rvd-viewchip${v.name === activeViewName ? ' is-active' : ''}">` +
+            `<button type="button" class="rvd-viewchip-go" data-i="${i}">${esc(v.name)}</button>` +
+            `<button type="button" class="rvd-viewchip-x" data-del="${i}" aria-label="Delete view">×</button>` +
+          `</span>`).join('');
+      host.querySelectorAll('.rvd-viewchip-go').forEach((b) =>
+        b.addEventListener('click', () => applyView(savedViews[+b.dataset.i])));
+      host.querySelectorAll('.rvd-viewchip-x').forEach((b) =>
+        b.addEventListener('click', async () => {
+          const i = +b.dataset.del; const removed = savedViews[i];
+          const next = savedViews.filter((_, x) => x !== i);
+          try { await store.saveViews(next); savedViews = next; if (removed && removed.name === activeViewName) activeViewName = ''; renderViewChips(); }
+          catch (e) { alert('Could not delete view — ' + e.message); }
+        }));
+    }
+    async function saveCurrentView() {
+      const name = (prompt('Name this view (shared with everyone on this key):') || '').trim();
+      if (!name) return;
+      const next = savedViews.filter((v) => v.name !== name).concat([{ name, filters: currentFilterState() }]);
+      try { await store.saveViews(next); savedViews = next; activeViewName = name; renderViewChips(); }
+      catch (e) { alert('Could not save view — ' + e.message); }
+    }
+    async function loadViews() {
+      try { const v = await store.getViews(); savedViews = Array.isArray(v) ? v : []; }
+      catch { savedViews = []; }
+    }
+
+    // ---- Insights (Feature 12) — the five aggregates. computeMetrics mirrors the Worker's
+    // exact algorithm so demo mode (localMetrics) and a deployed Worker return identical shapes. ----
+    function computeMetrics(events, from, to) {
+      const evs = (Array.isArray(events) ? events : [])
+        .filter((e) => e && e.at && (!from || e.at >= from) && (!to || e.at <= to))
+        .slice().sort((a, b) => (a.at < b.at ? -1 : 1));
+      const deployedPerPage = {}, volumeByType = {}, reopenByType = {};
+      let createdTotal = 0, reopenTotal = 0;
+      const pendingByPage = {}, deployDeltas = [], perPageDeltas = {}, byDay = {};
+      for (const e of evs) {
+        const page = e.page || '/', ct = e.commentType || 'general', day = String(e.at).slice(0, 10);
+        if (!byDay[day]) byDay[day] = { opened: 0, deployed: 0 };
+        if (e.event === 'created' || e.event === 'resubmitted') {
+          if (e.event === 'created') { createdTotal++; volumeByType[ct] = (volumeByType[ct] || 0) + 1; }
+          (pendingByPage[page] || (pendingByPage[page] = [])).push(e.at);
+          byDay[day].opened++;
+        } else if (e.event === 'team-complete') {
+          deployedPerPage[page] = (deployedPerPage[page] || 0) + 1;
+          byDay[day].deployed++;
+          const q = pendingByPage[page];
+          if (q && q.length) {
+            const startAt = q.shift();
+            const hours = (Date.parse(e.at) - Date.parse(startAt)) / 3600000;
+            if (isFinite(hours) && hours >= 0) { deployDeltas.push(hours); (perPageDeltas[page] || (perPageDeltas[page] = [])).push(hours); }
+          }
+        } else if (e.event === 'team-reopen') {
+          reopenTotal++; reopenByType[ct] = (reopenByType[ct] || 0) + 1;
+        }
+      }
+      const mean = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0);
+      const round2 = (n) => Math.round(n * 100) / 100;
+      const avgPerPage = {};
+      for (const p of Object.keys(perPageDeltas)) avgPerPage[p] = round2(mean(perPageDeltas[p]));
+      const reopenPerType = {};
+      for (const t of Object.keys(volumeByType)) reopenPerType[t] = volumeByType[t] ? round2((reopenByType[t] || 0) / volumeByType[t]) : 0;
+      for (const t of Object.keys(reopenByType)) if (reopenPerType[t] === undefined) reopenPerType[t] = 0;
+      let openRunning = 0;
+      const openTrend = Object.keys(byDay).sort().map((d) => { openRunning += byDay[d].opened - byDay[d].deployed; return { date: d, count: openRunning }; });
+      return {
+        deployedPerPage, volumeByType,
+        avgHoursToDeploy: { global: round2(mean(deployDeltas)), perPage: avgPerPage },
+        reopenRate: { global: createdTotal ? round2(reopenTotal / createdTotal) : 0, perType: reopenPerType },
+        openTrend,
+      };
+    }
+
+    // A token-styled CSS bar chart from [label, value, displayValue] rows, sorted desc.
+    function barChart(title, rows, fill) {
+      if (!rows.length) return `<div class="pk-bars"><div class="rvd-ins-h">${esc(title)}</div><p class="rvd-ins-empty">No data in range.</p></div>`;
+      const max = Math.max(...rows.map((r) => r[1]), 0) || 1;
+      const body = rows.map((r) => {
+        const pct = Math.max(2, Math.round((r[1] / max) * 100));
+        return `<div class="pk-bar-row"><span class="pk-bar-key" title="${esc(r[0])}">${esc(r[0])}</span>` +
+          `<span class="pk-bar-track"><span class="pk-bar-fill${fill ? ' pk-bar-fill--' + fill : ''}" style="--pct:${pct}%"></span></span>` +
+          `<span class="pk-bar-val">${esc(r[2] != null ? r[2] : r[1])}</span></div>`;
+      }).join('');
+      return `<div class="pk-bars"><div class="rvd-ins-h">${esc(title)}</div>${body}</div>`;
+    }
+    const entriesOf = (obj) => Object.keys(obj || {}).map((k) => [k, obj[k]]).sort((a, b) => b[1] - a[1]);
+
+    function fillInsights() {
+      const host = $('#rvd-ins-body'); if (!host) return;
+      const m = metricsData;
+      if (!m) { host.innerHTML = `<p class="rvd-ins-empty">Loading…</p>`; return; }
+      const totalTickets = Object.values(m.volumeByType || {}).reduce((s, x) => s + x, 0);
+      const totalDeploys = Object.values(m.deployedPerPage || {}).reduce((s, x) => s + x, 0);
+      const tiles =
+        `<div class="pk-tiles">` +
+          `<div class="pk-tile"><div class="pk-tile-val">${totalTickets}</div><div class="pk-tile-label">Tickets raised</div></div>` +
+          `<div class="pk-tile"><div class="pk-tile-val">${totalDeploys}</div><div class="pk-tile-label">Edits deployed</div></div>` +
+          `<div class="pk-tile"><div class="pk-tile-val">${m.avgHoursToDeploy.global}h</div><div class="pk-tile-label">Avg time to deploy</div></div>` +
+          `<div class="pk-tile"><div class="pk-tile-val">${Math.round((m.reopenRate.global || 0) * 100)}%</div><div class="pk-tile-label">Reopen rate</div></div>` +
+        `</div>`;
+      const deployRows = entriesOf(m.deployedPerPage).map((r) => [pageName(r[0]), r[1]]);
+      const typeRows = entriesOf(m.volumeByType).map((r) => { const meta = typeMeta(r[0]); return [meta ? meta.label : r[0], r[1]]; });
+      const perPageRows = entriesOf(m.avgHoursToDeploy.perPage).map((r) => [pageName(r[0]), r[1], r[1] + 'h']);
+      const reopenRows = entriesOf(m.reopenRate.perType).map((r) => { const meta = typeMeta(r[0]); return [meta ? meta.label : r[0], r[1], Math.round(r[1] * 100) + '%']; });
+      const trendRows = (m.openTrend || []).map((d) => [d.date, d.count]);
+      host.innerHTML = tiles +
+        barChart('Edits deployed · by page', deployRows, 'green') +
+        barChart('Ticket volume · by type', typeRows, 'blue') +
+        barChart('Avg hours to deploy · by page', perPageRows, 'amber') +
+        barChart('Reopen rate · by type', reopenRows, 'softred') +
+        barChart('Open-ticket trend · by day', trendRows, '');
+    }
+    async function loadMetrics() {
+      const host = $('#rvd-ins-body'); if (host) host.innerHTML = `<p class="rvd-ins-empty">Loading…</p>`;
+      try {
+        const to = metricsTo ? metricsTo + 'T23:59:59.999Z' : '';
+        metricsData = await store.metrics(metricsFrom || '', to);
+      } catch (e) { metricsData = null; if (host) host.innerHTML = `<p class="rvd-ins-empty">Could not load insights — ${esc(e.message)}</p>`; return; }
+      fillInsights();
+    }
+    let insightsBuilt = false;
+    function renderInsights() {
+      const host = $('#rvd-view-insights'); if (!host) return;
+      if (!insightsBuilt) {
+        host.innerHTML =
+          `<div class="rvd-ins-head"><div><h2>Insights</h2>` +
+            `<p class="rvd-deploy-explain">Aggregate ticket metrics across every page. Pick a date range to focus.</p></div>` +
+            `<div class="rvd-ins-range">` +
+              `<label class="rvd-ins-lbl">From<input type="date" id="rvd-ins-from" class="rvd-ins-date"></label>` +
+              `<label class="rvd-ins-lbl">To<input type="date" id="rvd-ins-to" class="rvd-ins-date"></label>` +
+              `<button type="button" id="rvd-ins-apply" class="rvd-a">Apply</button>` +
+              `<button type="button" id="rvd-ins-clear" class="rvd-a">Clear</button>` +
+            `</div>` +
+          `</div>` +
+          `<div class="pk-insights" id="rvd-ins-body"></div>`;
+        insightsBuilt = true;
+        const fromEl = $('#rvd-ins-from'), toEl = $('#rvd-ins-to');
+        fromEl.value = metricsFrom; toEl.value = metricsTo;
+        $('#rvd-ins-apply').addEventListener('click', () => { metricsFrom = fromEl.value; metricsTo = toEl.value; loadMetrics(); });
+        $('#rvd-ins-clear').addEventListener('click', () => { metricsFrom = ''; metricsTo = ''; fromEl.value = ''; toEl.value = ''; loadMetrics(); });
+      }
+      loadMetrics();
     }
 
     function updateBulk() {
@@ -892,6 +1339,8 @@
     // ---- toolbar: search / sort / export / copy-all-prompts ----
     $('#rvd-search').addEventListener('input', (e) => { search = e.target.value.trim(); render(); });
     $('#rvd-selectall').addEventListener('click', () => setSelectMode(!selectMode));
+    // Feature 11: "Save view" captures the current filter set as a shared Team view.
+    const saveViewBtn = $('#rvd-saveview'); if (saveViewBtn) saveViewBtn.addEventListener('click', () => saveCurrentView());
     const IC = {
       newest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>',
       oldest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>',
@@ -923,6 +1372,20 @@
     $('#rvd-copy-mount').appendChild(copyDD.el);
 
     // ---- bulk actions on the selected tickets (Start / Mark Complete / Reopen) ----
+    // Reopen goes through the shared modal (Feature 3), one reason/note applied to the batch.
+    async function runBulk(act, recs, extra) {
+      [...$('#rvd-bulk').querySelectorAll('.rvd-bulk-a')].forEach((x) => (x.disabled = true));
+      try {
+        for (const rec of recs) {
+          if (act === 'start') { Object.assign(rec, await store.teamAction(rec, 'start')); }
+          else if (act === 'complete') { Object.assign(rec, await store.teamAction(rec, 'complete')); }
+          else if (act === 'reopen') { Object.assign(rec, await store.teamAction(rec, 'reopen', extra.reason, extra.note)); }
+          else if (act === 'delete') { await store.del(rec); const rid = rec.parentId || rec.id; all = all.filter((c) => c.id !== rid && c.parentId !== rid); }
+        }
+        sel.clear(); updateBulk(); counts(); render(); lastSig = dataSig();
+      } catch (err) { alert('Bulk action failed — ' + err.message); }
+      finally { [...$('#rvd-bulk').querySelectorAll('.rvd-bulk-a')].forEach((x) => (x.disabled = false)); }
+    }
     $('#rvd-bulk').addEventListener('click', async (e) => {
       const b = e.target.closest('.rvd-bulk-a'); if (!b) return;
       const act = b.dataset.act;
@@ -931,24 +1394,12 @@
       if (!recs.length) return;
       if (act === 'copy') { copyToClip(promptsText(recs), b, 'Copied ✓'); return; }
       if (act === 'delete' && !confirm(`Delete ${recs.length} ticket chain${recs.length > 1 ? 's' : ''} (all iterations + replies)? This cannot be undone.`)) return;
-      let reason;
       if (act === 'reopen') {
-        reason = prompt('Reason for reopening the selected tickets (required):');
-        if (reason == null) return;
-        reason = reason.trim();
-        if (!reason) { alert('A reason is required to reopen.'); return; }
+        openReopenModal(({ reason, note }) => runBulk('reopen', recs, { reason, note }),
+          `Reopen ${recs.length} selected ticket${recs.length > 1 ? 's' : ''} with one reason.`);
+        return;
       }
-      [...$('#rvd-bulk').querySelectorAll('.rvd-bulk-a')].forEach((x) => (x.disabled = true));
-      try {
-        for (const rec of recs) {
-          if (act === 'start') { Object.assign(rec, await store.teamAction(rec, 'start')); }
-          else if (act === 'complete') { Object.assign(rec, await store.teamAction(rec, 'complete')); }
-          else if (act === 'reopen') { Object.assign(rec, await store.teamAction(rec, 'reopen', reason)); }
-          else if (act === 'delete') { await store.del(rec); const rid = rec.parentId || rec.id; all = all.filter((c) => c.id !== rid && c.parentId !== rid); }
-        }
-        sel.clear(); updateBulk(); counts(); render(); lastSig = dataSig();
-      } catch (err) { alert('Bulk action failed — ' + err.message); }
-      finally { [...$('#rvd-bulk').querySelectorAll('.rvd-bulk-a')].forEach((x) => (x.disabled = false)); }
+      runBulk(act, recs, {});
     });
     $('#rvd-bulk-clear').addEventListener('click', () => { sel.clear(); updateBulk(); render(); });
 

@@ -62,6 +62,7 @@
         <button class="rvd-nav is-active" data-view="dash">Team Queue</button>
         <button class="rvd-nav" data-view="notifs">Notifications<span class="rvd-navbadge rvd-navbadge-alert" id="rvd-badge-notifs" hidden>0</span></button>
         <button class="rvd-nav" data-view="entries">Master Log</button>
+        <button class="rvd-nav" data-view="insights">Insights</button>
         <div class="rvd-teamview">
           <span class="rvd-teamview-label">Team dashboards</span>
           <div id="rvd-teamview-mount"></div>
@@ -75,9 +76,12 @@
             <input id="rvd-search" class="rvd-search" type="search" placeholder="Search comments, pages, reviewers…" autocomplete="off" spellcheck="false" />
             <div id="rvd-sort-mount"></div>
             <span class="rvd-toolbar-sp"></span>
+            <button id="rvd-saveview" class="rvd-selectall" type="button">Save view</button>
             <button id="rvd-selectall" class="rvd-selectall" type="button">Select</button>
             <div id="rvd-copy-mount"></div>
           </div>
+          <!-- Saved "Team views" (Feature 11): quick-select filter chips, shared per key -->
+          <div class="rvd-views" id="rvd-views" hidden></div>
           <div class="rvd-tabs" id="rvd-tabs" role="tablist">
             <button class="rvd-tab is-active" data-tab="all">All</button>
             <button class="rvd-tab" data-tab="page">By Page</button>
@@ -93,6 +97,9 @@
         <div id="rvd-view-entries" hidden>
           <div id="rvd-entries"></div>
         </div>
+
+        <!-- Insights (Feature 12): admin-only aggregate metrics + date-range picker -->
+        <div id="rvd-view-insights" hidden></div>
 
         <p id="rvd-empty" class="rvd-empty" hidden>No comments yet.</p>
       </div>

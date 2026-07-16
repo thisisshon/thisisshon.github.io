@@ -486,3 +486,84 @@
   /* native <option> menus */
   :root[data-pk-theme="light"] .rvd .rvd-sort option,
   :root[data-pk-theme="light"] .rvd-login-select option{background:var(--pk-card);color:var(--pk-ink)}
+
+  /* ============================================================
+     V3 FEATURES (F1/F3/F4/F6/F8/F10/F11/F12) — admin-dashboard-specific styles. Every
+     colour is a --pk-* token (the reopen modal + insights bars/tiles reuse the shared
+     .pk-* classes in design/components.css; these are the rvd-scoped extras).
+     ============================================================ */
+  /* status-token dot on each count tile (STATUS_COLORS) */
+  .rvd .rvd-count-dot{display:inline-block;width:8px;height:8px;border-radius:9999px;margin:0 6px 1px 0;vertical-align:middle}
+  /* F1 — change-type chip (card + detail) */
+  .rvd .rvd-typechip{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:9999px;
+    background:var(--pk-blue-bg);color:var(--pk-blue-ink);border:1px solid var(--pk-blue-ink);
+    font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+  /* F1 — the one-line summary preview above the freeform comment */
+  .rvd .rvd-summary{font:600 13px/1.45 var(--pk-font);color:var(--pk-body);overflow-wrap:anywhere}
+  /* F3 — "Reopened: <label>" badge on cards + detail */
+  .rvd .rvd-reopen-badge{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:9999px;
+    background:var(--pk-new-bg);color:var(--pk-new-ink);border:1px solid var(--pk-softred);
+    font:700 9px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+  .rvd .rvd-reopen-note{margin-top:6px;font:500 13px/1.5 var(--pk-font);color:var(--pk-body);font-style:italic}
+  /* F4 — screenshot thumbnails (small on cards, large in detail) */
+  .rvd .rvd-media{margin-top:4px}
+  .rvd .rvd-thumb{display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
+    width:120px;height:80px;background:var(--pk-input);border:1px solid var(--pk-hair)}
+  .rvd .rvd-thumb.rvd-thumb-lg{width:100%;max-width:420px;height:auto;min-height:120px}
+  .rvd .rvd-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .rvd .rvd-thumb.rvd-thumb-lg img{object-fit:contain}
+  .rvd .rvd-thumb.is-empty{border-style:dashed}
+  .rvd .rvd-thumb-ph{font:600 10px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted);text-align:center;padding:0 8px}
+  .rvd .rvd-detail-media{display:flex}
+  /* F8 — "Success criteria" callout (prominent) */
+  .rvd .rvd-criteria{padding:14px 16px;background:var(--pk-done-bg);border:1px solid var(--pk-green);border-left:3px solid var(--pk-green)}
+  .rvd .rvd-criteria-k{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-done-ink);margin-bottom:6px}
+  .rvd .rvd-criteria-v{font:500 14px/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
+  /* F10 — location hint: clamped selector + copy button */
+  .rvd .rvd-lochint{display:flex;align-items:center;gap:8px;min-width:0}
+  .rvd .rvd-selector{flex:1;min-width:0;max-width:100%;padding:6px 10px;background:var(--pk-input);border:1px solid var(--pk-hair);
+    font:500 12px/1.4 var(--pk-font);color:var(--pk-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rvd .rvd-loc-copy{flex:none}
+  .rvd .rvd-lochint-cap{margin-top:6px;font:400 11px/1.4 var(--pk-font);color:var(--pk-muted)}
+  /* F6 — Quick questions: a reply thread fenced off from the status controls */
+  .rvd .rvd-qq{margin-top:8px;padding-top:20px;border-top:1px solid var(--pk-hair);display:flex;flex-direction:column;gap:12px}
+  .rvd .rvd-qq-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .rvd .rvd-qq-title{margin:0;font:700 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+  .rvd .rvd-qq-sub{font:400 12px/1.4 var(--pk-font);color:var(--pk-muted)}
+  .rvd .rvd-qq-thread{display:flex;flex-direction:column;gap:12px;padding-left:16px;border-left:2px solid var(--pk-hair)}
+  .rvd .rvd-qq-empty{margin:0;font:400 13px/1.4 var(--pk-font);color:var(--pk-muted)}
+  .rvd .rvd-qq-compose{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+  .rvd .rvd-qq-input{flex:1 1 240px;min-width:180px;padding:10px 12px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+    background:var(--pk-input);color:var(--pk-ink);font:500 14px/1.5 var(--pk-font);resize:vertical}
+  .rvd .rvd-qq-input:focus{outline:none;border-color:var(--pk-red)}
+  .rvd .rvd-qq-send{flex:none}
+  /* F6 — reply notification chip (icon + "Reply") */
+  .rvd .rvd-chip-reply{gap:6px;background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
+  .rvd .rvd-chip-reply svg{flex:none}
+  /* F11 — saved "Team views" quick-select chips */
+  .rvd .rvd-views{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
+  .rvd .rvd-views[hidden]{display:none}
+  .rvd .rvd-views-lbl{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
+  .rvd .rvd-viewchip{display:inline-flex;align-items:center;height:30px;border:1px solid var(--pk-hair);border-radius:9999px;
+    background:var(--pk-elev);overflow:hidden}
+  .rvd .rvd-viewchip.is-active{border-color:var(--pk-red)}
+  .rvd .rvd-viewchip-go{height:100%;padding:0 4px 0 14px;border:none;background:transparent;cursor:pointer;
+    color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
+  .rvd .rvd-viewchip.is-active .rvd-viewchip-go{color:var(--pk-red)}
+  .rvd .rvd-viewchip-x{height:100%;width:26px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font-size:16px;line-height:1}
+  /* F12 — Insights: header + date-range picker (the tiles/bars are shared .pk-* classes) */
+  .rvd .rvd-ins-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+  .rvd .rvd-ins-head h2{margin:0 0 8px;font:700 14px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+  .rvd .rvd-ins-range{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+  .rvd .rvd-ins-lbl{display:flex;flex-direction:column;gap:4px;font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd .rvd-ins-date{height:42px;padding:0 12px;border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);
+    color:var(--pk-ink);font:500 13px/1 var(--pk-font);color-scheme:dark}
+  :root[data-pk-theme="light"] .rvd .rvd-ins-date{color-scheme:light}
+  .rvd .rvd-ins-date:focus{outline:none;border-color:var(--pk-red)}
+  .rvd .rvd-ins-h{font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);margin-bottom:4px}
+  .rvd .rvd-ins-empty{margin:0;font:400 13px/1.4 var(--pk-font);color:var(--pk-muted)}
+  @media (min-width:1024px) and (hover:hover){
+    .rvd .rvd-loc-copy:hover,.rvd .rvd-qq-send:hover{border-color:var(--pk-red);color:var(--pk-red)}
+    .rvd .rvd-viewchip:not(.is-active):hover{border-color:var(--pk-red)}
+    .rvd .rvd-viewchip-x:hover{color:var(--pk-softred)}
+  }

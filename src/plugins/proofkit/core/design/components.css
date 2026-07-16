@@ -190,3 +190,95 @@
 .pk-tt[aria-checked="true"] .pk-tt-thumb{ transform:translate(22px,-50%); }
 .pk-tt:focus-visible{outline:2px solid var(--pk-red);outline-offset:3px;border-radius:8px}
 @media (min-width:1024px) and (hover:hover){.pk-tt:hover .pk-tt-track{border-color:var(--pk-body)}}
+
+/* ===========================================================================
+   V3 FEATURE PRIMITIVES (features 1/2/3/7/12) — token-bound shared classes for
+   the type-selector chips, the draft tray, the duplicate-warning strip, the
+   reopen modal, and the insights bar charts. Every colour is a --pk-* role, so
+   all five re-skin across Red Moon / Dark Cream / Light with nothing hardcoded.
+   The overlay composer + both dashboards compose these (never re-declare them).
+   =========================================================================== */
+
+/* ---- TYPE SELECTOR (Feature 1) — the 5 comment-type chips in the composer ---- */
+.pk-typesel{display:flex;flex-wrap:wrap;gap:8px}
+.pk-typechip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:6px 14px;
+  border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
+  font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+  transition:border-color .12s,color .12s,background .12s}
+.pk-typechip svg{width:16px;height:16px;flex:none}
+.pk-typechip[aria-pressed="true"],.pk-typechip.is-active{border-color:var(--pk-red);background:var(--pk-red);color:var(--pk-on-accent)}
+.pk-typechip:focus-visible{outline:none;border-color:var(--pk-red)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-typechip:hover{border-color:var(--pk-red);color:var(--pk-ink)}
+  .pk-typechip[aria-pressed="true"]:hover,.pk-typechip.is-active:hover{color:var(--pk-on-accent)}
+}
+
+/* ---- DRAFT TRAY (Feature 2) — "Pending pins (n)" dock panel ---- */
+.pk-tray{display:flex;flex-direction:column;background:var(--pk-card);border:1px solid var(--pk-hair);
+  border-left:2px solid var(--pk-red);box-shadow:var(--pk-shadow-md)}
+.pk-tray-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--pk-hair);cursor:pointer;
+  font:700 12px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-tray-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+  border-radius:var(--pk-radius-full);background:var(--pk-red);color:var(--pk-on-accent);
+  font:700 11px/1 var(--pk-font)}
+.pk-tray-list{display:flex;flex-direction:column;gap:1px;max-height:300px;overflow:auto;background:var(--pk-hair)}
+.pk-tray-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--pk-card)}
+.pk-tray-item-body{flex:1;min-width:0}
+.pk-tray-item-summary{font:600 13px/1.4 var(--pk-font);color:var(--pk-ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-tray-item-meta{margin-top:4px;font:600 10px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-tray-item-actions{display:flex;gap:8px;flex:none}
+.pk-tray-iconbtn{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;margin:-14px -12px;
+  padding:0;border:0;background:none;color:var(--pk-muted);cursor:pointer;transition:color .12s}
+.pk-tray-iconbtn svg{width:16px;height:16px}
+@media (min-width:1024px) and (hover:hover){.pk-tray-iconbtn:hover{color:var(--pk-red)}}
+.pk-tray-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--pk-hair)}
+.pk-tray-item.is-failed{border-left:2px solid var(--pk-softred)}
+.pk-tray-item.is-failed .pk-tray-item-meta{color:var(--pk-softred)}
+
+/* ---- DUPLICATE-WARNING STRIP (Feature 7) — non-blocking "similar open" notice ---- */
+.pk-dupwarn{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:var(--pk-open-bg);border:1px solid var(--pk-amber);border-left:3px solid var(--pk-amber);
+  color:var(--pk-open-ink);font:600 12px/1.4 var(--pk-font)}
+.pk-dupwarn svg{width:16px;height:16px;flex:none;color:var(--pk-amber)}
+.pk-dupwarn-link{margin-left:auto;flex:none;color:var(--pk-open-ink);text-decoration:underline;
+  font-weight:700;cursor:pointer;background:none;border:0;font:inherit}
+
+/* ---- REOPEN MODAL (Feature 3) — reason dropdown + note, replaces the prompt ---- */
+.pk-reopen{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:rgba(6,6,6,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
+.pk-reopen-card{width:440px;max-width:100%;background:var(--pk-card);color:var(--pk-ink);
+  border:1px solid var(--pk-hair);border-top:2px solid var(--pk-softred);box-shadow:var(--pk-shadow-lg);
+  padding:28px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;
+  animation:pk-login-pop .2s ease both}
+.pk-reopen-title{margin:0;font:600 20px/1.2 var(--pk-font);letter-spacing:-.01em;color:var(--pk-ink)}
+.pk-reopen-sub{margin:-8px 0 0;font:400 13px/1.5 var(--pk-font);color:var(--pk-body)}
+.pk-reopen-field{display:flex;flex-direction:column;gap:8px}
+.pk-reopen-label{font:700 10px/1 var(--pk-font);letter-spacing:1.4px;text-transform:uppercase;color:var(--pk-muted)}
+.pk-reopen-note{width:100%;min-height:88px;padding:12px 14px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 14px/1.5 var(--pk-font);resize:vertical}
+.pk-reopen-note:focus{outline:none;border-color:var(--pk-red)}
+.pk-reopen-note::placeholder{color:var(--pk-muted)}
+.pk-reopen-err{margin:-8px 0 0;font:600 13px/1.4 var(--pk-font);color:var(--pk-softred)}
+.pk-reopen-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+
+/* ---- INSIGHTS BARS (Feature 12) — the CSS bar charts + stat tiles ---- */
+.pk-insights{display:flex;flex-direction:column;gap:24px}
+.pk-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.pk-tile{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:20px}
+.pk-tile-val{font:600 28px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums}
+.pk-tile-label{margin-top:8px;font:700 10px/1.3 var(--pk-font);letter-spacing:1.2px;text-transform:uppercase;color:var(--pk-muted)}
+.pk-bars{display:flex;flex-direction:column;gap:12px}
+.pk-bar-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;gap:12px}
+.pk-bar-key{font:600 12px/1.3 var(--pk-font);color:var(--pk-body);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-bar-track{position:relative;height:12px;background:var(--pk-input);border:1px solid var(--pk-hair);overflow:hidden}
+.pk-bar-fill{position:absolute;inset:0 auto 0 0;width:var(--pct,0%);background:var(--pk-red);
+  transition:width .4s var(--pk-ease)}
+/* status-keyed fills so a per-status chart reads by colour (reuse teamStatus tokens) */
+.pk-bar-fill--amber{background:var(--pk-amber)}
+.pk-bar-fill--blue{background:var(--pk-blue)}
+.pk-bar-fill--green{background:var(--pk-green)}
+.pk-bar-fill--softred{background:var(--pk-softred)}
+.pk-bar-val{font:600 12px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums;text-align:right}

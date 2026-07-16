@@ -4,7 +4,11 @@
  *
  * Storage model:
  *   page:<encoded path>  - JSON array of comment records for that page.
- *   notifications        - JSON array of notification records (status pushes + arrivals).
+ *   notifications        - JSON array of notification records (status pushes + arrivals + replies).
+ *   img:<uuid>           - a single screenshot dataURL string (Feature 4; ≤200KB, thin-infra).
+ *   views:<team>         - a team's saved views (Feature 11); admin uses views:__admin.
+ *   metrics              - rollup events array {at,event,page,commentType,iteration} (Feature 12),
+ *                          FIFO-capped at 5000; metrics compute from this, not a full page scan.
  * The dashboard lists every `page:` key.
  *
  * Auth: every request sends header `X-Review-Pass: <key>`.
@@ -36,7 +40,7 @@
  *   ALLOW_ORIGIN  - the exact site origin (CORS lock).
  *
  * Endpoints (see ./worker/CONTRACT or the package CONTRACT for the full table):
- *   POST /comments             add a comment                   -> the saved record
+ *   POST /comments             add a comment (object OR array)  -> record | {results:[{ok,rec?,error?}]}
  *   GET  /comments?path=/x     one page's comments (reviewer)  -> record[]
  *   GET  /comments             ALL comments (admin)            -> record[]
  *   GET  /comments?team=X      team-scoped, masked             -> record[]
@@ -44,6 +48,11 @@
  *   POST /resubmit             Content re-raises a reopened    -> the masked sub-ticket
  *   POST /teams                admin re-routes From/To teams   -> the updated record
  *   POST /delete               delete a whole thread (admin)   -> {ok, removed}
+ *   POST /image                store a screenshot dataURL (rev) -> {imageId}
+ *   GET  /image?id=X           read a screenshot dataURL (rev)  -> {dataUrl} | 404
+ *   GET  /views                caller's saved views (reviewer)  -> view[]
+ *   POST /views                replace caller's saved views     -> {ok, views}
+ *   GET  /metrics?from&to      aggregate insights (admin)       -> {deployedPerPage,...}
  *   GET  /notifications        all (admin) / ?team=X (team)    -> notification[]
  *   POST /notifications/read   mark notifications read         -> {ok, updated}
  *   GET  /settings             global settings (public)        -> {theme}
@@ -87,6 +96,7 @@ export default {
     const keyFor = (path) => 'page:' + encodeURIComponent(path || '/');
     const NOTIF_KEY = 'notifications';
     const SETTINGS_KEY = 'settings';
+    const METRICS_KEY = 'metrics';   // rollup events for the Insights endpoint (Feature 12)
 
     try {
       // ---- global settings (theme) ----
@@ -150,56 +160,24 @@ export default {
       }
 
       // ---- add a comment (reviewer) ----
+      // v3 (Feature 2): the body is a single record OBJECT **or an ARRAY** (one Submit-all
+      // batch). An array is processed per-item — one bad item never blocks the rest — and
+      // returns `201 { results: [{ ok, rec? , error? }] }` in input order. A single object
+      // returns the saved record (201) or a 400 with the validation error, exactly as v2.
       if (request.method === 'POST' && url.pathname === '/comments') {
         if (!isReviewer) return deny();
-        const b = await request.json();
-        const comment = String(b.comment || '').trim();
-        if (!comment) return json({ error: 'empty comment' }, 400, cors);
-        const path = (b.page && b.page.path) || '/';
-        const nowIso = new Date().toISOString();
-        // Ticket number: YYMMDD + a 4-digit per-day serial (0001–9999). The serial is a
-        // per-day counter kept in KV (`ticketseq:<YYMMDD>`), incremented once per comment
-        // (root OR reply — every raised comment is tagged). e.g. 2026-07-14 → 2607140001.
-        const ticket = await nextTicket(kv, nowIso);
-        const rec = {
-          id: crypto.randomUUID(),
-          ticket,                       // human-facing ticket number (YYMMDD + 4-digit serial)
-          createdAt: nowIso,
-          // The real-time status state machine. The receiver (toTeam) is 'Builder' in Phase 1.
-          //   to_be_initiated -> in_progress -> deployed_live (terminal); reopen -> reopened.
-          // Builder drives it via /team-status; Content re-raises a reopened one via /resubmit.
-          teamStatus: 'to_be_initiated', teamStatusAt: '',
-          iteration: 1,                // 1 for the original; each resubmit spawns iteration N+1
-          reopenReason: '',            // last Builder bounce-back reason (set on reopen)
-          history: [{ status: 'to_be_initiated', at: nowIso, event: 'created', iteration: 1 }], // full transition trail
-          parentId: b.parentId || null, // set on replies AND on resubmit sub-tickets -> chains to the origin root
-          sessionId: b.sessionId ? String(b.sessionId).slice(0, 64) : '', // groups a review sitting
-          team: b.team ? String(b.team).slice(0, 40) : '',      // FROM: the reviewer's own team
-          toTeam: b.toTeam ? String(b.toTeam).slice(0, 40) : '', // TO: the team this is directed to for action
-          name: String(b.name || 'anonymous').slice(0, 80),
-          comment: comment.slice(0, 4000),
-          changeTo: b.changeTo ? String(b.changeTo).slice(0, 4000) : '', // Content: suggested new copy
-          aiPrompt: '', // filled in the background (Workers AI) within seconds of submit
-          page: {
-            path,
-            url: (b.page && b.page.url) || '',
-            title: (b.page && b.page.title) || '',
-            slug: (b.page && b.page.slug) || 'page',
-          },
-          anchor: b.anchor || {},
-        };
-        const arr = JSON.parse((await kv.get(keyFor(path))) || '[]');
-        arr.push(rec);
-        await kv.put(keyFor(path), JSON.stringify(arr));
-        // Generate the AI change-prompt in the background so it's ready in seconds.
-        if (!rec.parentId) ctx.waitUntil(genPrompt(env, kv, keyFor, rec));
-        // Arrival notification: tell the DIRECTED team a new review just landed in their
-        // inbox. Only for a real team (has a TEAM_KEYS entry) — Builder/admin already sees
-        // everything in the Overview — and only root comments (replies don't re-notify).
-        if (!rec.parentId && rec.toTeam && TEAM_KEYS[rec.toTeam]) {
-          ctx.waitUntil(fireArrivalNotif(kv, NOTIF_KEY, rec));
+        const body = await request.json();
+        if (Array.isArray(body)) {
+          const results = [];
+          for (const item of body) {
+            const r = await createComment(env, kv, ctx, keyFor, NOTIF_KEY, METRICS_KEY, TEAM_KEYS, item);
+            results.push(r.ok ? { ok: true, rec: r.rec } : { ok: false, error: r.error });
+          }
+          return json({ results }, 201, cors);
         }
-        return json(rec, 201, cors);
+        const r = await createComment(env, kv, ctx, keyFor, NOTIF_KEY, METRICS_KEY, TEAM_KEYS, body);
+        if (!r.ok) return json({ error: r.error }, 400, cors);
+        return json(r.rec, 201, cors);
       }
 
       // ---- list comments ----
@@ -263,19 +241,28 @@ export default {
       }
 
       // ---- Builder drives the status state machine ----
-      // Body: { id, action:'start'|'complete'|'reopen', reason? }. No `path` — the record
-      // is located by id. The receiver (toTeam, i.e. Builder) or admin may drive it.
+      // Body: { id, action:'start'|'complete'|'reopen', reason?, note? }. No `path` — the
+      // record is located by id. The receiver (toTeam, i.e. Builder) or admin may drive it.
       //   start    : to_be_initiated -> in_progress
       //   complete : in_progress     -> deployed_live   (manual, unvalidated self-attestation)
-      //   reopen   : in_progress|deployed_live -> reopened  (requires a non-empty reason)
+      //   reopen   : in_progress|deployed_live -> reopened
+      // v3 (Feature 3): reopen `reason` is an ENUM (needs-clarification|wrong-element|
+      // design-mismatch|other); a non-enum reason is rejected 400. `note` is REQUIRED iff
+      // reason === 'other' (400 otherwise), and is stored on the record + history entry.
       // The change is pushed to the RAISER (Content) debounced 5s (see pushStatusNotif).
       if (request.method === 'POST' && url.pathname === '/team-status') {
         if (!isReviewer) return deny();
         const b = await request.json();
         const action = b.action;
         if (!['start', 'complete', 'reopen'].includes(action)) return json({ error: 'bad action' }, 400, cors);
-        const reason = String(b.reason || '').trim();
-        if (action === 'reopen' && !reason) return json({ error: 'reason required' }, 400, cors);
+        let reason = '';
+        let note = '';
+        if (action === 'reopen') {
+          reason = String(b.reason || '').trim();
+          if (!REOPEN_REASONS[reason]) return json({ error: 'bad reason' }, 400, cors);
+          note = String(b.note || '').trim().slice(0, 2000);
+          if (reason === 'other' && !note) return json({ error: 'note required' }, 400, cors);
+        }
         const found = await findById(kv, b.id);
         if (!found) return json({ error: 'not found' }, 404, cors);
         const { key, arr, rec } = found;
@@ -295,19 +282,26 @@ export default {
         const nowIso = new Date().toISOString();
         const iter = rec.iteration || 1;
         rec.teamStatus = next; rec.teamStatusAt = nowIso;
-        if (action === 'reopen') rec.reopenReason = reason;
+        if (action === 'reopen') { rec.reopenReason = reason; rec.reopenNote = note; }
         if (!Array.isArray(rec.history)) rec.history = [];
         const h = { status: next, at: nowIso, event: 'team-' + action, iteration: iter };
-        if (action === 'reopen') h.reason = reason;
+        if (action === 'reopen') { h.reason = reason; if (note) h.note = note; }
         rec.history.push(h);
         await kv.put(key, JSON.stringify(arr));
+        // append a rollup event for the Insights endpoint (Feature 12) — best-effort
+        ctx.waitUntil(appendRollup(kv, METRICS_KEY, {
+          at: nowIso, event: 'team-' + action, page: (rec.page && rec.page.path) || '/',
+          commentType: rec.commentType || 'general', iteration: iter,
+        }));
+        // the human label backs the notification summary; the enum stays on `reason`
+        const reasonLabel = action === 'reopen' ? (REOPEN_REASONS[reason] || reason) : '';
         // push the change to the raiser (Content), coalesced within a 5s window
         ctx.waitUntil(pushStatusNotif(kv, NOTIF_KEY, {
           chainId: rec.parentId || rec.id, commentId: rec.id, ticket: rec.ticket || '',
           team: rec.team || '', fromTeam: rec.toTeam || '', teamStatus: next, iteration: iter,
-          reason: action === 'reopen' ? reason : '',
+          reason: action === 'reopen' ? reason : '', reasonLabel, note,
           path: (rec.page && rec.page.path) || '/', pageName: pageNameOf(rec),
-          summary: statusSummary(rec, next, reason),
+          summary: statusSummary(rec, next, reasonLabel),
         }));
         return json(maskForTeam(rec), 200, cors);
       }
@@ -345,13 +339,20 @@ export default {
           createdAt: nowIso,
           teamStatus: 'to_be_initiated', teamStatusAt: nowIso,
           iteration: nextIter,
-          reopenReason: '',
+          reopenReason: '', reopenNote: '',
           parentId: rootId,            // chains the sub-ticket to the origin root (reuses parentId)
           sessionId: rec.sessionId || '',
           team: rec.team || '', toTeam: rec.toTeam || '',
           name: rec.name || 'anonymous',
           comment: rec.comment || '',
           changeTo: rec.changeTo || '',
+          // v3: carry the structured Feature-1/8/4 fields forward onto the new iteration
+          commentType: rec.commentType || 'general',
+          templateFields: rec.templateFields || {},
+          summary: rec.summary || '',
+          expectedOutcome: rec.expectedOutcome || '',
+          imageId: rec.imageId || '',
+          batchId: rec.batchId || '',
           aiPrompt: rec.aiPrompt || '',
           page: rec.page,
           anchor: rec.anchor || {},
@@ -359,6 +360,11 @@ export default {
         };
         arr.push(sub);
         await kv.put(key, JSON.stringify(arr));
+        // append a rollup event for the Insights endpoint (Feature 12) — best-effort
+        ctx.waitUntil(appendRollup(kv, METRICS_KEY, {
+          at: nowIso, event: 'resubmitted', page: (sub.page && sub.page.path) || '/',
+          commentType: sub.commentType || 'general', iteration: nextIter,
+        }));
         // push the fresh iteration to the receiver (Builder), coalesced within a 5s window
         ctx.waitUntil(pushStatusNotif(kv, NOTIF_KEY, {
           chainId: rootId, commentId: sub.id, ticket: sub.ticket, team: sub.toTeam || '',
@@ -401,6 +407,65 @@ export default {
         return json({ ok: true, updated }, 200, cors);
       }
 
+      // ---- screenshot store (Feature 4, thin-infra) ----
+      // Images live OUTSIDE the page array (which is re-read on every overlay/dashboard load)
+      // — each is a single KV `img:<uuid>` holding the raw dataURL string. POST stores one
+      // (≤200KB after the client's downscale) and returns its id; the comment record only ever
+      // carries `imageId`. Reviewer auth; never required to create a comment.
+      if (url.pathname === '/image') {
+        if (!isReviewer) return deny();
+        if (request.method === 'POST') {
+          const b = await request.json();
+          const dataUrl = String(b.dataUrl || '');
+          if (!dataUrl) return json({ error: 'no image' }, 400, cors);
+          if (dataUrl.length > IMAGE_MAX_BYTES) return json({ error: 'image too large' }, 413, cors);
+          const imageId = b.id ? String(b.id).slice(0, 64) : crypto.randomUUID();
+          await kv.put('img:' + imageId, dataUrl);
+          return json({ imageId }, 201, cors);
+        }
+        if (request.method === 'GET') {
+          const id = url.searchParams.get('id');
+          if (!id) return json({ error: 'id required' }, 400, cors);
+          const dataUrl = await kv.get('img:' + String(id).slice(0, 64));
+          if (!dataUrl) return json({ error: 'not found' }, 404, cors);
+          return json({ dataUrl }, 200, cors);
+        }
+      }
+
+      // ---- saved "team views" (Feature 11) ----
+      // Views are shared per team key (not per person — see the caveat in the plan). KV key
+      // is `views:<team>` for a team key and `views:__admin` for the admin. POST replaces the
+      // caller's whole set (simple CRUD-by-replace). Scoped strictly to the caller's auth: a
+      // team key only ever touches its own team's views. A keyless shared reviewer (REVIEW_PASS,
+      // no team) has no scope, so it is denied.
+      if (url.pathname === '/views') {
+        if (!isReviewer) return deny();
+        const scopeKey = isTeamKey ? ('views:' + passTeam) : (isAdmin ? 'views:__admin' : null);
+        if (!scopeKey) return deny();
+        if (request.method === 'GET') {
+          const v = JSON.parse((await kv.get(scopeKey)) || '[]');
+          return json(Array.isArray(v) ? v : [], 200, cors);
+        }
+        if (request.method === 'POST') {
+          const b = await request.json();
+          const views = sanitizeViews(b.views);
+          await kv.put(scopeKey, JSON.stringify(views));
+          return json({ ok: true, views }, 200, cors);
+        }
+      }
+
+      // ---- aggregate insights (Feature 12, admin only) ----
+      // Computes the five aggregates from the `metrics` rollup (an events array maintained on
+      // every state transition), NOT by scanning every page: key. Falls back to a full scan
+      // (deriving the same events from each record's history[]) when the rollup key is absent.
+      if (request.method === 'GET' && url.pathname === '/metrics') {
+        if (!isAdmin) return deny();
+        const from = url.searchParams.get('from') || '';
+        const to = url.searchParams.get('to') || '';
+        const events = await metricsEvents(kv, METRICS_KEY);
+        return json(computeMetrics(events, from, to), 200, cors);
+      }
+
       return json({ error: 'not found' }, 404, cors);
     } catch (err) {
       return json({ error: 'server error', detail: String(err && err.message) }, 500, cors);
@@ -419,6 +484,29 @@ function json(obj, status, cors) {
 // `updatedAt` (see pushStatusNotif), so freshly-changed tickets resurface to the top.
 const byRecent = (a, b) => ((a.updatedAt || a.createdAt) < (b.updatedAt || b.createdAt) ? 1 : -1);
 const pageNameOf = (r) => (r.page && r.page.title) || (r.page && r.page.path) || 'a page';
+
+// ---- v3 shared vocab (single source in the Worker; mirrored client-side in core/config.js) ----
+// The change-type enum (Feature 1). 'general' == the exact v2 freeform behaviour.
+const COMMENT_TYPES = ['copy-fix', 'image-swap', 'link-fix', 'layout-tweak', 'general'];
+// The whitelisted template-field keys per type (§3). Unknown keys are dropped, values capped.
+const TYPE_FIELD_KEYS = {
+  'copy-fix': ['currentText', 'newText'],
+  'image-swap': ['currentImage', 'replacementDesc'],
+  'link-fix': ['currentUrl', 'newUrl'],
+  'layout-tweak': ['whatToChange'],
+  'general': [],
+};
+// Types that MUST carry an expectedOutcome (Feature 8) — enforced client + server.
+const OUTCOME_REQUIRED = new Set(['layout-tweak', 'image-swap']);
+// The reopen-reason enum -> human label (Feature 3). The enum is stored; the label backs the UI.
+const REOPEN_REASONS = {
+  'needs-clarification': 'Needs clarification',
+  'wrong-element': 'Wrong element',
+  'design-mismatch': 'Design mismatch',
+  'other': 'Other',
+};
+const IMAGE_MAX_BYTES = 200 * 1024;   // dataURL length cap after the client downscale (Feature 4)
+const METRICS_CAP = 5000;             // FIFO cap on the rollup events array (Feature 12)
 
 // ENABLED_TEAMS is an optional JSON array of enabled team names. Returns null when it is
 // unset / empty / malformed (meaning "all teams enabled"), else the array of names.
@@ -490,6 +578,8 @@ async function pushStatusNotif(kv, NOTIF_KEY, info) {
       latest.teamStatus = info.teamStatus;
       latest.iteration = info.iteration || 1;
       latest.reason = info.reason || '';
+      latest.reasonLabel = info.reasonLabel || '';
+      latest.note = info.note || '';
       latest.fromTeam = info.fromTeam || '';
       latest.path = info.path || '/';
       latest.pageName = info.pageName || 'a page';
@@ -509,6 +599,8 @@ async function pushStatusNotif(kv, NOTIF_KEY, info) {
         teamStatus: info.teamStatus,
         iteration: info.iteration || 1,
         reason: info.reason || '',
+        reasonLabel: info.reasonLabel || '',
+        note: info.note || '',
         fromTeam: info.fromTeam || '',
         path: info.path || '/',
         pageName: info.pageName || 'a page',
@@ -567,13 +659,21 @@ function maskForTeam(r) {
     name: r.name || '',       // reviewer identity
     comment: r.comment,
     changeTo: r.changeTo || '',
+    // v3 structured fields (Feature 1/8/4) — teams see their own typed data
+    commentType: r.commentType || 'general',
+    templateFields: r.templateFields || {},
+    summary: r.summary || '',
+    expectedOutcome: r.expectedOutcome || '',
+    imageId: r.imageId || '',
+    batchId: r.batchId || '',
     aiPrompt: r.aiPrompt || '',       // ready-to-hand-to-a-dev change instruction
     page: r.page,
     anchor: r.anchor || {},
     // the real-time state machine
     teamStatus: r.teamStatus || 'to_be_initiated',
     teamStatusAt: r.teamStatusAt || '',
-    reopenReason: r.reopenReason || '', // last Builder bounce-back reason
+    reopenReason: r.reopenReason || '', // last Builder bounce-back reason (enum value)
+    reopenNote: r.reopenNote || '',     // free-text note (required only when reason === 'other')
     history: Array.isArray(r.history) ? r.history : [], // full transition trail for the timeline
   };
 }
@@ -626,6 +726,11 @@ async function genPrompt(env, kv, keyFor, rec) {
     css_selector: a.selector || '',
     reviewer_note: rec.comment || '',
     exact_new_content: rec.changeTo || '',
+    // v3 (Feature 1/8): the structured change-type context so the AI prompt improves,
+    // never regresses, over the freeform baseline.
+    comment_type: rec.commentType || 'general',
+    template_fields: rec.templateFields || {},
+    expected_outcome: rec.expectedOutcome || '',
   };
   const system =
     'You convert a website content-review note into ONE precise, developer-ready change instruction to paste into a coding agent. ' +
@@ -685,4 +790,291 @@ async function genAnthropic(env, system, facts) {
   if (!res.ok) throw new Error('anthropic ' + res.status);
   const j = await res.json();
   return String((j.content && j.content[0] && j.content[0].text) || '').trim();
+}
+
+// Validate + persist ONE comment record (root or reply). Returns { ok:true, rec } or
+// { ok:false, error }. Shared by the single-object and the array (batch) POST /comments paths
+// so one bad item in a batch never blocks the rest. Every new v3 field defaults when missing.
+async function createComment(env, kv, ctx, keyFor, NOTIF_KEY, METRICS_KEY, TEAM_KEYS, b) {
+  b = b || {};
+  const comment = String(b.comment || '').trim();
+  if (!comment) return { ok: false, error: 'empty comment' };
+  // Feature 1: change-type + type-specific template fields.
+  const commentType = b.commentType ? String(b.commentType) : 'general';
+  if (!COMMENT_TYPES.includes(commentType)) return { ok: false, error: 'bad commentType' };
+  const templateFields = sanitizeTemplateFields(commentType, b.templateFields);
+  // Feature 8: expectedOutcome is required for layout-tweak / image-swap.
+  const expectedOutcome = String(b.expectedOutcome || '').trim().slice(0, 4000);
+  if (OUTCOME_REQUIRED.has(commentType) && !expectedOutcome) return { ok: false, error: 'expectedOutcome required' };
+  const isReply = !!b.parentId;
+  const path = (b.page && b.page.path) || '/';
+  const nowIso = new Date().toISOString();
+  // Feature 6 (replies): a reply is the Quick-questions channel — NO ticket number, NO arrival
+  // notif, never changes status/iteration. Roots still get a per-day ticket serial.
+  const ticket = isReply ? '' : await nextTicket(kv, nowIso);
+  // copy-fix mirrors its newText into legacy `changeTo` so v2-era rendering + genPrompt keep working.
+  const changeTo = commentType === 'copy-fix' && templateFields.newText
+    ? String(templateFields.newText).slice(0, 4000)
+    : (b.changeTo ? String(b.changeTo).slice(0, 4000) : '');
+  // Server-render the one-line summary when the client omits it (§3).
+  const summary = (b.summary ? String(b.summary) : renderSummary(commentType, templateFields, comment)).slice(0, 300);
+  const rec = {
+    id: crypto.randomUUID(),
+    ticket,                       // '' for a reply; YYMMDD + 4-digit serial for a root
+    createdAt: nowIso,
+    teamStatus: 'to_be_initiated', teamStatusAt: '',
+    iteration: 1,
+    reopenReason: '', reopenNote: '',
+    history: [{ status: 'to_be_initiated', at: nowIso, event: 'created', iteration: 1 }],
+    parentId: b.parentId || null,
+    sessionId: b.sessionId ? String(b.sessionId).slice(0, 64) : '',
+    team: b.team ? String(b.team).slice(0, 40) : '',
+    toTeam: b.toTeam ? String(b.toTeam).slice(0, 40) : '',
+    name: String(b.name || 'anonymous').slice(0, 80),
+    comment: comment.slice(0, 4000),
+    changeTo,
+    // v3 structured fields (Feature 1/8/2/4) — all default when missing
+    commentType,
+    templateFields,
+    summary,
+    expectedOutcome,
+    batchId: b.batchId ? String(b.batchId).slice(0, 64) : '',   // groups one Submit-all (Feature 2)
+    imageId: b.imageId ? String(b.imageId).slice(0, 64) : '',   // screenshot ref (Feature 4)
+    aiPrompt: '',
+    page: {
+      path,
+      url: (b.page && b.page.url) || '',
+      title: (b.page && b.page.title) || '',
+      slug: (b.page && b.page.slug) || 'page',
+    },
+    anchor: b.anchor || {},
+  };
+  const key = keyFor(path);
+  const arr = JSON.parse((await kv.get(key)) || '[]');
+  arr.push(rec);
+  await kv.put(key, JSON.stringify(arr));
+  if (!isReply) {
+    // AI change-prompt in the background so it's ready in seconds.
+    ctx.waitUntil(genPrompt(env, kv, keyFor, rec));
+    // Arrival notification for the DIRECTED team (real team only — Builder/admin sees all).
+    if (rec.toTeam && TEAM_KEYS[rec.toTeam]) ctx.waitUntil(fireArrivalNotif(kv, NOTIF_KEY, rec));
+    // Rollup event for Insights (Feature 12) — only real tickets, not replies.
+    ctx.waitUntil(appendRollup(kv, METRICS_KEY, {
+      at: nowIso, event: 'created', page: path, commentType, iteration: 1,
+    }));
+  } else {
+    // Feature 6: a reply fires a kind:'reply' notif to the OTHER side, coalesced 5s. The
+    // target flips on who replied: the raiser's reply notifies the receiver (toTeam), the
+    // receiver's reply notifies the raiser (team). Resolved off the reply's root record.
+    const root = arr.find((r) => r.id === rec.parentId) || null;
+    if (root) {
+      const raiser = root.team || '';
+      const target = (rec.team || '') === raiser ? (root.toTeam || '') : (root.team || '');
+      if (target) {
+        ctx.waitUntil(pushReplyNotif(kv, NOTIF_KEY, {
+          chainId: root.parentId || root.id, commentId: rec.id, ticket: root.ticket || '',
+          team: target, fromTeam: rec.team || '',
+          path, pageName: pageNameOf(rec),
+          summary: `New reply ${root.ticket ? '#' + root.ticket + ' ' : ''}on ${pageNameOf(rec)}` + (rec.team ? ` from ${rec.team}` : ''),
+        }));
+      }
+    }
+  }
+  return { ok: true, rec };
+}
+
+// Whitelist + cap the per-type template fields (Feature 1, §3). Unknown types / keys collapse
+// to {}; each value is coerced to a capped string. currentImage/currentUrl are client-auto-filled.
+function sanitizeTemplateFields(commentType, tf) {
+  const keys = TYPE_FIELD_KEYS[commentType] || [];
+  const src = tf && typeof tf === 'object' ? tf : {};
+  const out = {};
+  for (const k of keys) {
+    if (src[k] !== undefined && src[k] !== null) out[k] = String(src[k]).slice(0, 4000);
+  }
+  return out;
+}
+
+// Server-rendered one-line summary when the client omits it (§3). Plain text, no markup.
+function renderSummary(commentType, tf, comment) {
+  tf = tf || {};
+  if (commentType === 'copy-fix') return `${tf.currentText || ''} → ${tf.newText || ''}`.trim();
+  if (commentType === 'link-fix') return `${tf.currentUrl || ''} → ${tf.newUrl || ''}`.trim();
+  if (commentType === 'image-swap') return `swap ${tf.currentImage || 'image'}: ${tf.replacementDesc || ''}`.trim();
+  if (commentType === 'layout-tweak') return String(tf.whatToChange || '').trim();
+  return String(comment || '').slice(0, 80);
+}
+
+// Feature 11: sanitise a saved-views set — cap the list length + each view's name; keep
+// `filters` as an opaque object (the client owns its shape).
+function sanitizeViews(views) {
+  if (!Array.isArray(views)) return [];
+  return views.slice(0, 50).map((v) => ({
+    name: String((v && v.name) || '').slice(0, 80),
+    filters: v && typeof v.filters === 'object' && v.filters ? v.filters : {},
+  }));
+}
+
+// Feature 6: coalesced (5s) reply notification to the OTHER side. Mirrors pushStatusNotif's
+// debounce so a burst of quick questions collapses to one card; keyed by chainId + team on
+// kind:'reply'. Never changes status/iteration — it is the Quick-questions channel.
+async function pushReplyNotif(kv, NOTIF_KEY, info) {
+  try {
+    const now = Date.now();
+    const nowIso = new Date(now).toISOString();
+    const all = JSON.parse((await kv.get(NOTIF_KEY)) || '[]');
+    let latest = null;
+    for (const n of all) {
+      if (n.kind !== 'reply') continue;
+      if (n.chainId !== info.chainId || n.team !== info.team) continue;
+      if (!latest || (n.updatedAt || n.createdAt) > (latest.updatedAt || latest.createdAt)) latest = n;
+    }
+    const within = latest && (now - Date.parse(latest.updatedAt || latest.createdAt)) < DEBOUNCE_MS;
+    if (within) {
+      latest.updatedAt = nowIso;
+      latest.commentId = info.commentId;
+      latest.ticket = info.ticket || '';
+      latest.fromTeam = info.fromTeam || '';
+      latest.path = info.path || '/';
+      latest.pageName = info.pageName || 'a page';
+      latest.summary = info.summary || '';
+      latest.readTeam = false;
+      latest.readAdmin = false;
+    } else {
+      all.push({
+        id: crypto.randomUUID(),
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        team: info.team,             // who should see it (the OTHER side)
+        kind: 'reply',
+        chainId: info.chainId,       // the origin root id — coalescing key
+        commentId: info.commentId,   // the reply record
+        ticket: info.ticket || '',
+        fromTeam: info.fromTeam || '',
+        path: info.path || '/',
+        pageName: info.pageName || 'a page',
+        summary: info.summary || '',
+        readTeam: false,
+        readAdmin: false,
+      });
+    }
+    await kv.put(NOTIF_KEY, JSON.stringify(all));
+  } catch (e) { /* best-effort; a missed reply notif never blocks the write */ }
+}
+
+// Feature 12: append one rollup event to the `metrics` key (read-modify-write, non-atomic,
+// matching the store's posture). FIFO-capped at METRICS_CAP so the key stays bounded. Metrics
+// compute from this instead of scanning every page: key. Best-effort — a dropped event only
+// slightly skews aggregates, never blocks the state change.
+async function appendRollup(kv, METRICS_KEY, event) {
+  try {
+    const arr = JSON.parse((await kv.get(METRICS_KEY)) || '[]');
+    arr.push({
+      at: event.at || new Date().toISOString(),
+      event: event.event || '',
+      page: event.page || '/',
+      commentType: event.commentType || 'general',
+      iteration: event.iteration || 1,
+    });
+    if (arr.length > METRICS_CAP) arr.splice(0, arr.length - METRICS_CAP);
+    await kv.put(METRICS_KEY, JSON.stringify(arr));
+  } catch (e) { /* best-effort */ }
+}
+
+// Return the rollup events array. Prefer the maintained `metrics` key; when it is absent
+// (never written yet, or a store that predates v3) derive the same events by scanning every
+// record's history[] — the documented one-time full-scan fallback. Replies (parentId set with
+// no ticket) carry no metric-worthy history and are skipped.
+async function metricsEvents(kv, METRICS_KEY) {
+  const raw = await kv.get(METRICS_KEY);
+  if (raw) {
+    try { const a = JSON.parse(raw); if (Array.isArray(a)) return a; } catch (e) {}
+  }
+  const out = [];
+  const all = await readAll(kv);
+  for (const r of all) {
+    if (r.parentId && !r.ticket) continue;   // a reply — not a ticket
+    const hist = Array.isArray(r.history) ? r.history : [];
+    const page = (r.page && r.page.path) || '/';
+    const ct = r.commentType || 'general';
+    for (const h of hist) {
+      out.push({ at: h.at || r.createdAt, event: h.event || '', page, commentType: ct, iteration: h.iteration || r.iteration || 1 });
+    }
+  }
+  out.sort((a, b) => (a.at < b.at ? -1 : 1));
+  return out;
+}
+
+// Compute the five aggregates (Feature 12) from the events array, optionally windowed by
+// [from,to] (ISO). Deterministic + dependency-free.
+//   deployedPerPage  : # of deploys (team-complete) per page
+//   volumeByType     : # of created tickets per commentType
+//   avgHoursToDeploy : mean hours created->deploy, global + per page (FIFO-paired per page)
+//   reopenRate       : team-reopen count / created count, global + per commentType
+//   openTrend        : per-day open count = cumulative(created+resubmitted) - cumulative(deploys)
+function computeMetrics(events, from, to) {
+  const evs = (Array.isArray(events) ? events : [])
+    .filter((e) => e && e.at && (!from || e.at >= from) && (!to || e.at <= to))
+    .slice()
+    .sort((a, b) => (a.at < b.at ? -1 : 1));
+
+  const deployedPerPage = {};
+  const volumeByType = {};
+  const reopenByType = {};
+  let createdTotal = 0, reopenTotal = 0;
+  const pendingByPage = {};   // page -> FIFO queue of open timestamps, paired off on deploy
+  const deployDeltas = [];    // hours, global
+  const perPageDeltas = {};   // page -> [hours]
+  const byDay = {};           // date -> { opened, deployed }
+
+  for (const e of evs) {
+    const page = e.page || '/';
+    const ct = e.commentType || 'general';
+    const day = String(e.at).slice(0, 10);
+    if (!byDay[day]) byDay[day] = { opened: 0, deployed: 0 };
+    if (e.event === 'created' || e.event === 'resubmitted') {
+      if (e.event === 'created') { createdTotal++; volumeByType[ct] = (volumeByType[ct] || 0) + 1; }
+      (pendingByPage[page] || (pendingByPage[page] = [])).push(e.at);
+      byDay[day].opened++;
+    } else if (e.event === 'team-complete') {
+      deployedPerPage[page] = (deployedPerPage[page] || 0) + 1;
+      byDay[day].deployed++;
+      const q = pendingByPage[page];
+      if (q && q.length) {
+        const startAt = q.shift();
+        const hours = (Date.parse(e.at) - Date.parse(startAt)) / 3600000;
+        if (isFinite(hours) && hours >= 0) {
+          deployDeltas.push(hours);
+          (perPageDeltas[page] || (perPageDeltas[page] = [])).push(hours);
+        }
+      }
+    } else if (e.event === 'team-reopen') {
+      reopenTotal++;
+      reopenByType[ct] = (reopenByType[ct] || 0) + 1;
+    }
+  }
+
+  const mean = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0);
+  const round2 = (n) => Math.round(n * 100) / 100;
+
+  const avgPerPage = {};
+  for (const p of Object.keys(perPageDeltas)) avgPerPage[p] = round2(mean(perPageDeltas[p]));
+
+  const reopenPerType = {};
+  for (const t of Object.keys(volumeByType)) reopenPerType[t] = volumeByType[t] ? round2((reopenByType[t] || 0) / volumeByType[t]) : 0;
+  for (const t of Object.keys(reopenByType)) if (reopenPerType[t] === undefined) reopenPerType[t] = 0;
+
+  let openRunning = 0;
+  const openTrend = Object.keys(byDay).sort().map((d) => {
+    openRunning += byDay[d].opened - byDay[d].deployed;
+    return { date: d, count: openRunning };
+  });
+
+  return {
+    deployedPerPage,
+    volumeByType,
+    avgHoursToDeploy: { global: round2(mean(deployDeltas)), perPage: avgPerPage },
+    reopenRate: { global: createdTotal ? round2(reopenTotal / createdTotal) : 0, perType: reopenPerType },
+    openTrend,
+  };
 }

@@ -73,9 +73,12 @@
             <input id="tmd-search" class="tmd-search" type="search" placeholder="Search comments, pages, reviewers…" autocomplete="off" spellcheck="false" />
             <div id="tmd-sort-mount"></div>
             <button class="tmd-tbtn" id="tmd-bypage" type="button">By Page</button>
+            <button class="tmd-tbtn" id="tmd-saveview" type="button">Save view</button>
             <span class="tmd-toolbar-sp"></span>
             <button class="tmd-tbtn tmd-tbtn--primary" id="tmd-primary" type="button">Clear filters</button>
           </div>
+          <!-- Saved "Team views" quick-select chips (Feature 11) — shared per team key -->
+          <div class="tmd-views" id="tmd-views" hidden></div>
           <!-- Status filter tabs — Completed tab only -->
           <div class="tmd-filters" id="tmd-filters" role="tablist">
             <button class="tmd-filter is-active" data-filter="all">All</button>

@@ -26,6 +26,7 @@ ENABLED_TEAMS = '["Content"]'
 # then paste the printed id below.
 [[kv_namespaces]]
 binding = "COMMENTS"
+# Reuses the existing COMMENTS store so prior tickets are preserved (records are backward-compatible).
 id = "324f355edd5e4c71b29d3e5e7424d9f5"
 
 # Workers AI - generates the developer-ready change prompt for each entry.

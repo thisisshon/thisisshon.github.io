@@ -19,7 +19,6 @@
  * /<page>/review paths on static hosting.)
  */
 import { PROOFKIT_ENABLED } from '../plugins/proofkit/config';
-import { PROOFKIT_ENABLED as PROOFKIT3_ENABLED } from '../plugins/proofkit-v3/config';
 ---
 
 <!doctype html>
@@ -36,19 +35,6 @@ import { PROOFKIT_ENABLED as PROOFKIT3_ENABLED } from '../plugins/proofkit-v3/co
           var m = path.match(/^(.*)\/review$/);
           if (m) {
             try { sessionStorage.setItem('pkAutoReview', '1'); } catch (e) {}
-            location.replace(m[1] || '/');
-          }
-        })();
-      </script>
-    )}
-    {PROOFKIT3_ENABLED && (
-      <script is:inline>
-        (() => {
-          /* Proofkit 3.0 (isolated clone) — same trick for /<page>/review3. */
-          var path = location.pathname.replace(/\/+$/, '');
-          var m = path.match(/^(.*)\/review3$/);
-          if (m) {
-            try { sessionStorage.setItem('pk3AutoReview', '1'); } catch (e) {}
             location.replace(m[1] || '/');
           }
         })();

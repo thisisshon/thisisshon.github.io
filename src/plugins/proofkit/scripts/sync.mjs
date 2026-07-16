@@ -99,6 +99,7 @@ Package copied. The target still needs these host seams (see ${PKG_REL}/INSTALL.
   1. The gated line in the shared layout:  {PROOFKIT_ENABLED && <ProofkitOverlay />}
   2. Route shim:  ${join('src', 'pages', 'review.astro')}
   3. Route shim:  ${join('src', 'pages', 'reviewdash.astro')}
+  4. Route shim:  ${join('src', 'pages', 'teamdash.astro')}
 Then set PUBLIC_REVIEW_WORKER_URL and deploy the worker.
 Target: ${resolve(targetRoot)}`);
 }
