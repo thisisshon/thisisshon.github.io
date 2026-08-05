@@ -99,7 +99,7 @@ export const WORKER_URL =
  * "no gate at all", so replace rather than empty it if you rely on this path.
  * ------------------------------------------------------------------------ */
 export const REVIEW_PASSWORD_SHA256 =
-  '82289e2eca0355445a2631fe050e90a6e8f201d9fa0b7abd06eae1b1496e0e0a';
+  '747a8f398395dde8e524d9f983784bd8441c5cfe4307b5a079be5412ee65c314';   // = SHA-256("website")
 
 /** SHA-256 hex digest (Web Crypto — browsers + Workers). */
 export async function sha256Hex(s) {
@@ -191,6 +191,19 @@ export function nextLocalTicket(iso) {
 /* --------------------------------------------------------------------------
  * Teams + chip colours.
  * ------------------------------------------------------------------------ */
+/* --------------------------------------------------------------------------
+ * Host project branding. Proofkit ships unbranded: these default to '' and every
+ * surface that renders them omits the element entirely when they are empty.
+ *
+ * Set them to label the boards with whose site is under review — useful when one
+ * person reviews several properties. Deliberately NOT the tool's own name, which
+ * is always "Proofkit".
+ * ------------------------------------------------------------------------ */
+/** Full host-project name, shown in the dashboard lead line. '' = omit. */
+export const PROJECT_NAME = '';
+/** Short form, shown as the sidebar/HUD tag. '' = omit. */
+export const PROJECT_SHORT = '';
+
 export const TEAMS = ['Product', 'SEO', 'Marketing', 'Content', 'Design', 'Business'];
 
 /**

@@ -22,7 +22,7 @@
  * overlay at review time (design/tokens.css). Class names live under the host
  * root so nothing leaks onto the marketing page.
  * ======================================================================== */
-import { pageName, getSession, ADMIN_TEAM, TEAM_COLORS, STATUS_COLORS, renderSummary,
+import { pageName, getSession, ADMIN_TEAM, TEAM_COLORS, STATUS_COLORS, renderSummary, PROJECT_SHORT,
   BASE, TEAM_BASE, boardBase,
   COMMENT_TYPES, TYPE_FIELDS, ENABLED_TEAMS, needsScreenshot,
   // light/dark: the HUD follows the reviewer's setting — see the SKIN block in mountHud
@@ -353,7 +353,7 @@ function html() {
   const team = (getSession().team) || 'Reviewer';
   return `
   <div class="hud-top">
-    <div class="brand"><span class="brand-mark"></span><span class="brand-word">Proofkit</span><span class="brand-proj">Shriram FS</span></div>
+    <div class="brand"><span class="brand-mark"></span><span class="brand-word">Proofkit</span>${PROJECT_SHORT ? `<span class="brand-proj">${esc(PROJECT_SHORT)}</span>` : ''}</div>
     <div class="top-center"><b>${esc(page)}</b> · ${esc(location.pathname)}</div>
     <div class="top-r">
       <span class="top-team">${esc(team)}</span>

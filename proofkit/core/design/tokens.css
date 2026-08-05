@@ -137,7 +137,7 @@
   /* always-white ink for text/icons sitting ON a coloured fill (brand/deploy buttons,
      badges, pins) — stays white in every skin, unlike --pk-ink which flips for light. */
   --pk-on-accent:#ffffff;
-  /* Shriram brand gold (the "Shriram FS" wordmark tag) */
+  /* accent gold (the host-project wordmark tag) */
   --pk-brand-gold:#f3b83f;
 
   /* accent presets (skin-agnostic) — the admin appearance picker's theme swatches.

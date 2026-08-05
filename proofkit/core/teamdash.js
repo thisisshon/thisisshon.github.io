@@ -3,7 +3,15 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome } from './config.js';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
+
+  // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
+  // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
+  // name was hardcoded into the markup of every entry.
+  document.querySelectorAll('[data-pk-project-short]').forEach((el) => {
+    if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
+  });
+
   import { createCardRenderer } from './card.js';
   import { ICON } from './icons.js';
   import { pkConfirm, pkAlert, pkPrompt } from './modal.js';
