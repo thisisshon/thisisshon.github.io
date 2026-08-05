@@ -1,7 +1,7 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     BASE, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
-    ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession,
+    ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
     initTheme, buildThemeToggle, getTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled,
@@ -39,9 +39,9 @@
     const teamEnabled = (t) => { try { return typeof isTeamEnabled === 'function' ? !!isTeamEnabled(t) : true; } catch { return true; } };
 
     async function apiFetch(path, opts = {}) {
-      const headers = { 'Content-Type': 'application/json' };
-      const pass = getSession().key; // the one shared session key
-      if (pass) headers['X-Review-Pass'] = pass;
+      // 6.0: an account token when this tab is unlocked, else the legacy team key. Additive —
+      // a browser with no account behaves exactly as before.
+      const headers = { 'Content-Type': 'application/json', ...authHeaders() };
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
       if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -371,6 +371,17 @@
           },
           // Contract body: { id, action:'start'|'complete'|'reopen', reason?, note? }. No `path`.
           teamAction: (rec, action, reason, note, redirectTo) => apiFetch('/team-status', { method: 'POST', body: JSON.stringify({ id: rec.id, action, reason, note, redirectTo: redirectTo || '' }) }),
+          // 6.0 accounts — Builder-only account administration. The Builder can create, reset,
+          // unlock and disable, but no endpoint ever returns a PIN or its hash.
+          usersList: () => apiFetch('/admin/users'),
+          userCreate: (u) => apiFetch('/admin/users', { method: 'POST', body: JSON.stringify(u) }),
+          userUpdate: (u) => apiFetch('/admin/users/update', { method: 'POST', body: JSON.stringify(u) }),
+          userResetPin: (email, pin) => apiFetch('/admin/users/reset', { method: 'POST', body: JSON.stringify({ email, pin }) }),
+          userUnlock: (email) => apiFetch('/admin/users/unlock', { method: 'POST', body: JSON.stringify({ email }) }),
+          resetsList: () => apiFetch('/admin/resets'),
+          resetApprove: (id, pin) => apiFetch('/admin/resets/approve', { method: 'POST', body: JSON.stringify({ id, pin }) }),
+          resetDismiss: (id) => apiFetch('/admin/resets/dismiss', { method: 'POST', body: JSON.stringify({ id }) }),
+          accountAudit: (email) => apiFetch('/admin/audit' + (email ? '?email=' + encodeURIComponent(email) : '')),
           notifications: () => apiFetch('/notifications'),
           markRead: (ids, read = true) => apiFetch('/notifications/read', { method: 'POST', body: JSON.stringify({ ids, read }) }),
           markThreadsRead: (items, read = true) => apiFetch('/comments/read', { method: 'POST', body: JSON.stringify({ items, read }) }),
@@ -2287,6 +2298,7 @@
         { k: 'behavior', label: 'Behavior' },
         { k: 'notifications', label: 'Notifications' },
         { k: 'data', label: 'Data & maintenance' },
+        { k: 'people', label: 'People' },
         { k: 'teams', label: 'Teams' },
         { k: 'projects', label: 'Projects' },
         { k: 'about', label: 'About' },
@@ -2387,6 +2399,13 @@
           card('Maintenance', 'Reset preferences or local data.',
             row('Reset preferences', 'Restore Settings to defaults (theme unaffected).', actBtn('reset-prefs', 'Reset', 'pk-a--quiet')) +
             (LOCAL ? row('Clear demo data', 'Delete all locally-stored demo tickets.', actBtn('clear-demo', 'Clear', 'danger')) : ''));
+      } else if (settingsSection === 'people') {
+        // 6.0 — per-person accounts. Same rule as Teams: PINs are hashed server-side and never
+        // returned, so this screen can ASSIGN one but can never show an existing one. Filled async.
+        html =
+          `<div id="pk-people-resets"></div>` +
+          `<div id="pk-people-list"><section class="pk-set-card"><div class="pk-set-card-b">Loading…</div></section></div>` +
+          `<div style="margin-top:12px"><button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button></div>`;
       } else if (settingsSection === 'teams') {
         // Phase A — team management. Keys are hashed server-side and never returned, so this screen
         // can SET a password but never show an existing one. Rows are filled async (see below).
@@ -2433,6 +2452,111 @@
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
 
       // Phase A: async-fill the Teams list + wire every action.
+      // ---- People (6.0 accounts) ------------------------------------------------------------
+      if (settingsSection === 'people') {
+        // A PIN the Builder assigns is shown ONCE here and never retrievable afterwards — the
+        // server stores only a PBKDF2 hash. Same posture as team passwords.
+        const showPinOnce = (email, pin, what) => pkAlert(
+          `${what} for ${email}:\n\n${pin}\n\nHand this over now — it is stored hashed and cannot be shown again. ` +
+          `They must replace it the first time they sign in.`);
+        const askPin = async (title) => {
+          const v = prompt(title + '\n\n6–12 digits. Not a repeated digit or a run (e.g. 123456).');
+          return v === null ? null : String(v).trim();
+        };
+
+        const fillPeople = async () => {
+          const listHost = $('#pk-people-list');
+          const resetHost = $('#pk-people-resets');
+          if (!listHost) return;
+
+          // Pending forgot-PIN requests come first — this is the Builder's action queue.
+          try {
+            const pending = await store.resetsList();
+            resetHost.innerHTML = !pending.length ? '' : card(
+              'PIN reset requests', `${pending.length} waiting for you.`,
+              pending.map((r) => row(esc(r.email), `${esc(r.name || '')}${r.team ? ' · ' + esc(r.team) : ''} · requested ${esc((r.requested_at || '').slice(0, 16).replace('T', ' '))}`,
+                `<span class="pk-u-inlinerow">` +
+                  `<button class="pk-a pk-a--primary" type="button" data-reset-approve="${esc(r.id)}" data-reset-email="${esc(r.email)}">Approve &amp; assign PIN</button>` +
+                  `<button class="pk-a" type="button" data-reset-dismiss="${esc(r.id)}">Dismiss</button>` +
+                `</span>`)).join(''));
+          } catch (e) { resetHost.innerHTML = ''; }
+
+          let list;
+          try { list = await store.usersList(); }
+          catch (e) { listHost.innerHTML = card('People', '', `<p class="pk-empty--inline">Could not load accounts — ${esc(e.message)}</p>`); return; }
+          if (!list.length) {
+            listHost.innerHTML = card('People', 'Nobody has an account yet.',
+              `<p class="pk-empty--inline">Add a person to give them an email + PIN login. Until then, team keys still work.</p>`);
+            return;
+          }
+
+          const personRow = (u) => {
+            const locked = u.hardLocked || (u.lockedUntil && Date.parse(u.lockedUntil) > Date.now());
+            const bits = [];
+            if (u.role === 'builder') bits.push('Builder');
+            if (u.team) bits.push(esc(u.team));
+            if (u.status !== 'active') bits.push('disabled');
+            if (!u.hasPin) bits.push('no PIN set');
+            if (u.mustChangePin) bits.push('must change PIN');
+            if (locked) bits.push(u.hardLocked ? 'LOCKED' : 'temporarily locked');
+            if (u.lastLoginAt) bits.push('last in ' + esc(u.lastLoginAt.slice(0, 10)));
+            return row(esc(u.email), bits.join(' · ') || 'active',
+              `<span class="pk-u-inlinerow">` +
+                `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>` +
+                (locked ? `<button class="pk-a" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>` : '') +
+                `<button class="pk-a" type="button" data-person-toggle="${esc(u.email)}" data-person-status="${esc(u.status)}">${u.status === 'active' ? 'Disable' : 'Enable'}</button>` +
+              `</span>`);
+          };
+          const active = list.filter((u) => u.status === 'active');
+          const off = list.filter((u) => u.status !== 'active');
+          listHost.innerHTML =
+            card('People', `${active.length} active account${active.length === 1 ? '' : 's'}. PINs are stored hashed — they can be replaced, never read back.`,
+              active.map(personRow).join('') || `<p class="pk-empty--inline">No active accounts.</p>`) +
+            (off.length ? card('Disabled', 'Signed out immediately and cannot sign back in.', off.map(personRow).join('')) : '');
+        };
+        fillPeople();
+
+        panel.addEventListener('click', async (e) => {
+          const t = e.target.closest('[data-person-reset],[data-person-unlock],[data-person-toggle],[data-reset-approve],[data-reset-dismiss]');
+          if (!t) return;
+          try {
+            if (t.dataset.personReset) {
+              const pin = await askPin('New PIN for ' + t.dataset.personReset);
+              if (!pin) return;
+              await store.userResetPin(t.dataset.personReset, pin);
+              await showPinOnce(t.dataset.personReset, pin, 'New PIN');
+            } else if (t.dataset.personUnlock) {
+              await store.userUnlock(t.dataset.personUnlock);
+            } else if (t.dataset.personToggle) {
+              await store.userUpdate({ email: t.dataset.personToggle, status: t.dataset.personStatus === 'active' ? 'disabled' : 'active' });
+            } else if (t.dataset.resetApprove) {
+              const email = t.dataset.resetEmail || '';
+              const pin = await askPin('One-time PIN for ' + email);
+              if (!pin) return;
+              await store.resetApprove(t.dataset.resetApprove, pin);
+              await showPinOnce(email, pin, 'One-time PIN');
+            } else if (t.dataset.resetDismiss) {
+              await store.resetDismiss(t.dataset.resetDismiss);
+            }
+            fillPeople();
+          } catch (err) { pkAlert('That did not work — ' + err.message); }
+        });
+
+        const addBtn = $('#pk-person-add');
+        if (addBtn) addBtn.addEventListener('click', async () => {
+          const email = (prompt('Email address for the new person:') || '').trim();
+          if (!email) return;
+          const team = (prompt('Which team? (blank = Builder-only access)') || '').trim();
+          const pin = await askPin('Initial PIN for ' + email);
+          if (!pin) return;
+          try {
+            await store.userCreate({ email, team, pin, role: team ? 'member' : 'builder' });
+            await showPinOnce(email, pin, 'Initial PIN');
+            fillPeople();
+          } catch (err) { pkAlert('Could not create that account — ' + err.message); }
+        });
+      }
+
       if (settingsSection === 'teams') {
         const ticketsFor = (name) => roots().filter((c) => (c.team || '') === name || (c.toTeam || '') === name).length;
         const genKey = () => {

@@ -1,7 +1,7 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
 
@@ -74,9 +74,9 @@
 
     // ---- transport: Worker (X-Review-Pass) or the localStorage demo store ----
     async function apiFetch(path, opts = {}) {
-      const headers = { 'Content-Type': 'application/json' };
-      const pass = getSession().key; // the one shared session key
-      if (pass) headers['X-Review-Pass'] = pass;
+      // 6.0: an account token when this tab is unlocked, else the legacy team key. Additive —
+      // a browser with no account behaves exactly as before.
+      const headers = { 'Content-Type': 'application/json', ...authHeaders() };
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
       if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
       if (!res.ok) throw new Error('HTTP ' + res.status);

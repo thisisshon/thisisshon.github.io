@@ -1,0 +1,1225 @@
+// GENERATED from components.css by scripts/build-css-modules.mjs — do not edit.
+// Edit components.css and re-run that script.
+export default `/* ===========================================================================
+   PROOFKIT DESIGN COMPONENTS — reusable, token-bound classes.
+
+   Built entirely on design/tokens.css (the pk color roles), so every component
+   re-skins automatically across Red Moon / Dark Cream / Light. These are the
+   shared, scalable primitives new surfaces should compose (the /reviewdash/product
+   showcase uses them); the dashboards keep their own rvd-/tmd- CSS for now and can
+   migrate onto these over time. Namespaced under pk- so nothing here leaks.
+   =========================================================================== */
+
+/* ---- eyebrow: the uppercase tracked micro-label (voltage red) ---- */
+.pk-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font:700 11px/1.4 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-red-ink);
+}
+.pk-eyebrow::before{content:"";width:8px;height:8px;background:var(--pk-red);flex:none}
+
+/* ---- buttons: sharp corners, uppercase tracked, one voltage ---- */
+.pk-btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:48px;padding:0 24px;border:1px solid transparent;border-radius:0;cursor:pointer;text-decoration:none;
+  font:700 13px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;white-space:nowrap;
+  transition:background .15s var(--pk-ease),border-color .15s,color .15s,transform .15s;
+}
+.pk-btn svg{width:18px;height:18px;flex:none}
+.pk-btn--primary{background:var(--pk-red);color:var(--pk-on-accent)}
+.pk-btn--ghost{background:transparent;border-color:var(--pk-hair);color:var(--pk-ink)}
+/* --md = the dashboards' 40px top-bar size; --icon = square icon-only (refresh/logout) */
+.pk-btn--md{height:40px;padding:0 20px;font-size:12px;letter-spacing:.12em}
+.pk-btn--icon{width:40px;padding:0}
+@media (min-width:1024px) and (hover:hover){
+  .pk-btn--primary:hover{background:var(--pk-red-2)}
+  .pk-btn--ghost:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+}
+
+/* ---- card: the elevated surface ---- */
+.pk-card{
+  background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
+  padding:24px;color:var(--pk-ink);transition:border-color .15s,background .15s;
+}
+@media (min-width:1024px) and (hover:hover){
+  .pk-card--hover:hover{border-left-color:var(--pk-red);background:var(--pk-elev)}
+}
+
+/* ---- chip / tag: the pill ---- */
+.pk-chip{
+  display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:var(--pk-radius-full);
+  border:1px solid var(--pk-hair);background:transparent;
+  font:700 10px/1 var(--pk-font);letter-spacing:1px;text-transform:uppercase;color:var(--pk-body);
+}
+.pk-chip--red{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
+.pk-chip--green{color:var(--pk-green);border-color:var(--pk-green)}
+
+/* ---- status-token dot leading a count tile ----
+   Colour is a MODIFIER CLASS, not an inline style: the host enforces \`style-src 'self'\`
+   (VAPT T4/A2), which drops style attributes, so an inline background rendered the dot
+   invisible. One class per STATUS_COLORS key — keep the two in sync. ---- */
+.pk-count-dot{display:inline-block;width:var(--pk-space-3);height:var(--pk-space-3);
+  border-radius:var(--pk-radius-full);margin:0 6px 1px 0;vertical-align:middle;
+  background:var(--pk-muted)}
+.pk-count-dot--to_be_initiated{background:var(--pk-amber)}
+.pk-count-dot--in_progress{background:var(--pk-blue)}
+.pk-count-dot--deployed_live{background:var(--pk-green)}
+.pk-count-dot--reopened{background:var(--pk-softred)}
+.pk-count-dot--disregarded{background:var(--pk-muted)}
+.pk-count-dot--needs_clarification{background:var(--pk-clarify)}
+
+/* ---- CSP replacements for former inline \`style=\` attributes ----
+   The host enforces \`style-src 'self'\` (VAPT T4/A2), which drops style attributes, so any
+   markup-level styling must be a class. Dynamic values (team colours, percentages, accent
+   swatches) can't be enumerated — those are applied through CSSOM (\`el.style.*\`), which CSP
+   does NOT police; see \`paintDynamic()\` in the dashboards / HUD. ---- */
+.pk-u-req{color:var(--pk-softred);font-weight:700}
+.pk-u-opt{color:var(--pk-muted)}
+.pk-u-count{font-weight:500;color:var(--pk-muted)}
+.pk-u-pending{color:var(--pk-muted);font-style:italic}
+.pk-u-errtext{color:var(--pk-softred);font:600 13px/1.4 var(--pk-font)}
+.pk-u-inlinerow{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pk-u-projid{width:78px}
+.pk-u-projname{width:104px}
+.pk-u-secgap{margin-top:var(--pk-space-3)}
+.pk-u-flex1{flex:1}
+.pk-u-zpct{min-width:56px;justify-content:center}
+.pk-u-h3dup{margin:var(--pk-space-3h) 0 var(--pk-space-3)}
+.pk-u-h3frag{margin:var(--pk-space-4) 0 var(--pk-space-3)}
+.pk-u-duptile{display:block;text-align:left;margin-bottom:var(--pk-space-3)}
+.pk-u-duprow{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.pk-u-list{margin:var(--pk-space-3) 0 0;padding-left:18px;color:var(--pk-body)}
+.pk-u-list-flush{padding-left:18px;color:var(--pk-body)}
+/* auto-verification chip (was inline border-color/color per status) */
+.pk-status-chip--verified{border-color:var(--pk-green-ink);color:var(--pk-green-ink)}
+.pk-status-chip--mismatch{border-color:var(--pk-softred);color:var(--pk-softred)}
+.pk-status-chip--unreachable{border-color:var(--pk-muted);color:var(--pk-muted)}
+/* on-page overlay status chip — one class per STATUS_COLORS key (was inline background/colour) */
+.pk-status-chip--st-to_be_initiated{background:var(--pk-amber);color:var(--pk-canvas)}
+.pk-status-chip--st-in_progress{background:var(--pk-blue-fill);color:var(--pk-on-accent)}
+.pk-status-chip--st-deployed_live{background:var(--pk-green);color:var(--pk-on-accent)}
+.pk-status-chip--st-reopened{background:var(--pk-softred);color:var(--pk-on-accent)}
+.pk-status-chip--st-disregarded{background:var(--pk-muted);color:var(--pk-on-accent)}
+.pk-status-chip--st-needs_clarification{background:var(--pk-clarify);color:var(--pk-on-accent)}
+/* team filter chip: underline-only variant; the team colour itself comes via CSSOM */
+.pk-tchip--ghost{background:transparent;border:1.5px solid transparent}
+.pk-tchip--none{border-bottom-color:var(--pk-hair);color:var(--pk-body)}
+
+/* ---- read-only change-type badge on cards + detail (NOT .pk-typechip, the overlay
+   selector button below — one hyphen apart). Faithful merge of .tmd-type-chip / .rvd-typechip;
+   the off-grid 22/10/9px sizing is a Phase-4 type-scale normalization, kept literal for now. ---- */
+.pk-type-chip{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:var(--pk-radius-full);
+  background:var(--pk-blue-bg);color:var(--pk-blue-ink);border:var(--pk-border-hair) solid var(--pk-blue-ink);
+  font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+
+/* ---- "Reopened: <label>" badge (+ clarify variant) on cards + detail. Faithful merge of
+   .tmd-reopen-badge / .rvd-reopen-badge (+ .tmd-clarify-badge). ---- */
+.pk-reopen-badge{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:var(--pk-radius-full);
+  background:var(--pk-new-bg);color:var(--pk-new-ink);border:var(--pk-border-hair) solid var(--pk-softred);
+  font:700 9px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.pk-reopen-badge--clarify{background:var(--pk-clarify-bg);color:var(--pk-clarify-ink);border-color:var(--pk-clarify)}
+
+/* ---- per-team identity chip — colour via a per-team modifier bound to --pk-team-*-bg/-ink
+   (no runtime inline style, borderless). base = dashboards; --compact = overlay popover. ---- */
+.pk-team-chip{display:inline-flex;align-items:center;justify-content:center;min-width:var(--pk-chip-w);box-sizing:border-box;
+  padding:var(--pk-space-2) var(--pk-space-3);border-radius:var(--pk-radius-full);
+  font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.pk-team-chip--compact{padding:2px var(--pk-space-3);border-radius:var(--pk-radius-full);letter-spacing:.02em}
+.pk-team-chip--product{background:var(--pk-team-product-bg);color:var(--pk-team-product-ink)}
+.pk-team-chip--seo{background:var(--pk-team-seo-bg);color:var(--pk-team-seo-ink)}
+.pk-team-chip--marketing{background:var(--pk-team-marketing-bg);color:var(--pk-team-marketing-ink)}
+.pk-team-chip--content{background:var(--pk-team-content-bg);color:var(--pk-team-content-ink)}
+.pk-team-chip--design{background:var(--pk-team-design-bg);color:var(--pk-team-design-ink)}
+.pk-team-chip--business{background:var(--pk-team-business-bg);color:var(--pk-team-business-ink)}
+.pk-team-chip--builder{background:var(--pk-team-builder-bg);color:var(--pk-team-builder-ink)}
+.pk-team-chip--none{background:var(--pk-team-none-bg);color:var(--pk-team-none-ink)}
+
+/* ---- status chip — the ticket's team-status pill (unifies .tmd-chip/.rvd-chip/.rv-chip) ---- */
+.pk-status-chip{padding:4px 12px;border-radius:var(--pk-radius-full);font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:var(--pk-chip-w);box-sizing:border-box}
+.pk-status-chip.open,.pk-status-chip.tbi{background:var(--pk-open-bg);color:var(--pk-open-ink)}
+.pk-status-chip.inprog,.pk-status-chip.bucket{background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
+.pk-status-chip.resolved,.pk-status-chip.deployed,.pk-status-chip.verified{background:var(--pk-done-bg);color:var(--pk-done-ink)}
+.pk-status-chip.reopened,.pk-status-chip.rvd-new{background:var(--pk-new-bg);color:var(--pk-new-ink)}
+.pk-status-chip.clarify{background:var(--pk-clarify-bg);color:var(--pk-clarify-ink)}
+.pk-status-chip.closed,.pk-status-chip.disregarded{background:var(--pk-closed-bg);color:var(--pk-closed-ink)}
+.pk-status-chip--reply{gap:6px;background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
+.pk-status-chip--reply svg{flex:none}
+.pk-status-chip--revoked{background:var(--pk-closed-bg);color:var(--pk-closed-ink);text-decoration:line-through}
+button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid transparent;transition:filter .15s,border-color .15s}
+.pk-status-chip--set .pk-status-chip-chev{width:12px;height:12px;margin-right:-2px;opacity:.8}
+.rvd-log .pk-status-chip{min-width:0;padding:4px 10px}
+@media (min-width:1024px) and (hover:hover){
+  button.pk-status-chip--set:hover{filter:brightness(1.12);border-color:var(--pk-hair)}
+}
+
+/* ---- Quick questions (F6): a reply thread fenced off from the status controls.
+   -sub base is overridden by the admin dcard coupling (stays scoped in dashboard.css);
+   admin send:hover stays scoped there too, to out-specify .rvd .rvd-a:hover. ---- */
+.pk-qq{margin-top:var(--pk-space-3);padding-top:var(--pk-space-4h);border-top:var(--pk-border-hair) solid var(--pk-hair);display:flex;flex-direction:column;gap:var(--pk-space-3h)}
+.pk-qq-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pk-qq-title{margin:0;font:700 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-qq-sub{font:400 12px/1.4 var(--pk-font);color:var(--pk-muted)}
+.pk-qq-thread{display:flex;flex-direction:column;gap:var(--pk-space-3h);padding-left:var(--pk-space-4);border-left:var(--pk-border-strong) solid var(--pk-hair)}
+.pk-qq-compose{display:flex;gap:var(--pk-space-3);align-items:flex-end;flex-wrap:wrap}
+.pk-qq-input{flex:1 1 240px;min-width:180px;padding:10px 12px;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 14px/1.5 var(--pk-font);resize:vertical}
+.pk-qq-input:focus{outline:none;border-color:var(--pk-red)}
+.pk-qq-send{flex:none}
+.pk-qq-canned{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--pk-space-3h)}
+.pk-qq-preset{padding:5px 10px;background:var(--pk-elev);border:var(--pk-border-hair) solid var(--pk-hair);cursor:pointer;
+  font:500 11px/1.2 var(--pk-font);color:var(--pk-body);border-radius:var(--pk-radius-full);transition:border-color .15s,color .15s}
+@media (min-width:1024px) and (hover:hover){
+  .pk-qq-send:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  .pk-qq-preset:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+}
+
+/* ---- nav badge — count pill on a sidebar nav item. base = blue; --alert flips red.
+   18px pill + .02em kept literal (no rung/token fits). ---- */
+.pk-navbadge{display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 var(--pk-space-2);border-radius:var(--pk-radius-full);
+  background:var(--pk-blue-fill);color:var(--pk-on-accent);
+  font:var(--pk-w-bold) var(--pk-text-3xs)/var(--pk-lh-none) var(--pk-font);
+  letter-spacing:.02em;vertical-align:middle;font-variant-numeric:tabular-nums}
+.pk-navbadge[hidden]{display:none}
+.pk-navbadge--alert{background:var(--pk-red)}
+
+/* ---- sidebar nav item (flex so the badge sits inline via gap; ::before = active accent bar) ---- */
+.pk-nav{position:relative;text-align:left;height:46px;padding:0 var(--pk-space-4);border:none;border-radius:0;
+  background:transparent;cursor:pointer;color:var(--pk-body);display:flex;align-items:center;gap:var(--pk-space-3);
+  font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:color .15s,background .15s}
+.pk-nav[hidden]{display:none}
+.pk-nav::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:2px;background:transparent;transition:background .15s}
+.pk-nav.is-active{color:var(--pk-ink);background:var(--pk-active-bg)}
+.pk-nav.is-active::before{background:var(--pk-red)}
+@media (min-width:1024px) and (hover:hover){.pk-nav:hover{color:var(--pk-ink)}}
+
+/* ---- app-shell structural containers (byte-identical across both dashboards) ---- */
+.pk-app{max-width:none;margin:0}
+.pk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-5) var(--pk-space-6);flex-wrap:wrap;
+  padding:4px 0 var(--pk-space-5);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-top-l{min-width:0;flex:1 1 420px}
+.pk-top-r{display:flex;flex-direction:column;align-items:flex-end;gap:var(--pk-space-4);flex:none}
+.pk-brand{display:flex;align-items:center;gap:var(--pk-space-3h);flex-wrap:wrap;min-width:0;justify-content:flex-end}
+.pk-mark{display:block;flex:none;width:11px;height:11px;border-radius:50%;background:var(--pk-red);box-shadow:0 0 0 4px var(--pk-ring-red)}
+.pk-word{font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
+.pk-bar{margin:var(--pk-space-6) 0 var(--pk-space-3)}
+.pk-shell{display:flex;gap:var(--pk-space-6);align-items:flex-start;margin-top:28px}
+.pk-side{flex:none;width:184px;display:flex;flex-direction:column;gap:2px;position:sticky;top:var(--pk-space-5);
+  height:calc(100vh - var(--pk-space-5) - clamp(20px,5vw,48px));overflow-y:auto;overscroll-behavior:contain}
+.pk-content{flex:1;min-width:0}
+@media (max-width:768px){
+  .pk-shell{flex-direction:column;gap:var(--pk-space-5)}
+  .pk-side{flex-direction:row;width:auto;position:static;flex-wrap:wrap;align-items:center}
+}
+
+/* ---- action buttons (outline family): distinct sizes, one token-bound skin ---- */
+.pk-tbtn{height:42px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+  color:var(--pk-body);font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;box-sizing:border-box;
+  display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s,filter .15s}
+.pk-tbtn[hidden]{display:none}
+.pk-tbtn.is-active{border-color:var(--pk-red);color:var(--pk-red-ink)}
+.pk-tbtn--primary{border-color:var(--pk-red);background:var(--pk-red);color:var(--pk-on-accent)}
+.pk-tbtn:disabled{opacity:.5;cursor:default}
+.pk-tbtn--primary:disabled{background:var(--pk-elev);border-color:var(--pk-hair);color:var(--pk-muted);opacity:1}
+.tmd .pk-tbtn{width:140px;flex:none} /* team's fixed-width toolbar buttons */
+.pk-selectall{height:42px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;cursor:pointer;
+  background:var(--pk-input);color:var(--pk-body);font:600 12px/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:border-color .15s,color .15s}
+/* 32px outline actions: openpin (link) + .pk-a (button) share a size */
+.pk-openpin,.pk-a{height:32px;padding:0 var(--pk-space-4);border-radius:0;border:var(--pk-border-hair) solid var(--pk-hair);background:transparent;
+  color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+  display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;transition:border-color .15s,color .15s}
+.pk-a{cursor:pointer;color:var(--pk-body)}
+.pk-a--quiet{color:var(--pk-muted)}
+.pk-bulk-a{height:34px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+  color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
+.pk-bulk-a.danger{color:var(--pk-softred)}
+.pk-prompt-btn{height:30px;padding:0 var(--pk-space-3h);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;white-space:nowrap;cursor:pointer;
+  background:transparent;color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
+.pk-deploy-btn{flex:none;height:44px;padding:0 var(--pk-space-5);border:var(--pk-border-hair) solid var(--pk-deploy);border-radius:0;background:var(--pk-deploy);
+  color:var(--pk-on-accent);font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  display:inline-flex;align-items:center;transition:background .15s,border-color .15s,opacity .15s}
+.pk-deploy-btn:disabled{opacity:.45;cursor:default}
+/* tab (underline) */
+.pk-tab{height:46px;padding:0 var(--pk-space-4);border:none;background:none;cursor:pointer;margin-bottom:-1px;
+  font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
+  border-bottom:var(--pk-border-strong) solid transparent;transition:color .15s,border-color .15s}
+.pk-tab.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
+.pk-tab-n{color:var(--pk-muted);font-weight:700}
+.pk-tab.is-active .pk-tab-n{color:var(--pk-red-ink)}
+/* link-style buttons (no chrome) */
+.pk-morebtn,.pk-repliestoggle{align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;
+  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+.pk-morebtn[hidden]{display:none}
+.pk-repliestoggle{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
+.pk-repliestoggle .pk-caret{transition:transform .15s}
+.pk-repliestoggle.is-open .pk-caret{transform:rotate(90deg)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-tbtn:not(.pk-tbtn--primary):not(:disabled):hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  .pk-tbtn--primary:not(:disabled):hover{filter:brightness(1.08)}
+  .pk-selectall:hover,.pk-openpin:hover,.pk-a:hover,.pk-bulk-a:hover,.pk-prompt-btn:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  .pk-a--quiet:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
+  .pk-deploy-btn:not(:disabled):hover{background:var(--pk-deploy-hover);border-color:var(--pk-deploy-hover)}
+  .pk-tab:hover{color:var(--pk-ink)}
+  .pk-morebtn:hover,.pk-repliestoggle:hover{color:var(--pk-red-ink)}
+}
+
+/* ---- master-log table (admin spec: thead-bg header, 12/10 cells, last-row reset) ---- */
+.pk-logwrap{overflow-x:auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0}
+.pk-log{width:100%;border-collapse:collapse;font-size:12px;background:var(--pk-card);table-layout:auto}
+.pk-log th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--pk-muted);padding:12px 10px;white-space:nowrap;border-bottom:var(--pk-border-hair) solid var(--pk-hair);background:var(--pk-thead-bg)}
+.pk-log td{padding:12px 10px;border-bottom:var(--pk-border-hair) solid var(--pk-hair);vertical-align:middle;color:var(--pk-body)}
+.pk-log tbody tr:last-child td{border-bottom:none}
+.pk-log td.num{font-weight:700;text-align:center;color:var(--pk-ink);font-variant-numeric:tabular-nums}
+.pk-logrow{cursor:pointer;transition:background .12s}
+.pk-log-morecell{width:44px;text-align:center}
+.pk-entrieshead{display:flex;justify-content:space-between;align-items:center;gap:var(--pk-space-3h);margin-bottom:var(--pk-space-4)}
+.pk-entrieshead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-ticket{font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--pk-red-ink);white-space:nowrap}
+.pk-log .pk-ticket{font-weight:700}
+@media (min-width:1024px) and (hover:hover){
+  .pk-logrow:hover{background:var(--pk-elev)}
+  .pk-slug:hover{color:var(--pk-red-ink);border-color:var(--pk-red)}
+}
+
+/* ---- headline + top-bar meta ---- */
+.pk-h1{margin:0;font-size:clamp(30px,4.4vw,44px);line-height:1.04;font-weight:500;letter-spacing:-.02em;color:var(--pk-ink)}
+.pk-h1-hi{color:var(--pk-red-ink)}          /* admin "Builder" highlight */
+.pk-h1-team{color:var(--pk-red-ink)}        /* team's own name highlight */
+.pk-h1-unlock{color:var(--pk-red-ink);vertical-align:baseline;margin-left:.15em}
+.pk-lead{margin:16px 0 0;font-size:14px;line-height:1.6;color:var(--pk-body)}
+.rvd .pk-lead{margin-top:12px;color:var(--pk-muted)} /* admin subtitle is dimmer/tighter */
+.pk-lead-brand{font-weight:700;color:var(--pk-body)}
+.pk-lead-sep{color:var(--pk-hair);margin:0 8px}
+.pk-team-hi{color:var(--pk-blue)}
+.pk-tag-brand{color:var(--pk-brand-gold)}
+:root[data-pk-theme="light"] .pk-tag-brand{color:var(--pk-muted)}
+.pk-headtoggle{flex:none;display:inline-flex;align-items:center;justify-content:center;width:46px;overflow:visible}
+.pk-actions{display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap}
+
+/* ---- toolbar + tabs row ---- */
+.pk-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4)}
+.rvd .pk-toolbar{margin-bottom:var(--pk-space-5)} /* admin toolbar slightly taller gap */
+.pk-toolbar-sp{flex:1 1 0;min-width:0}
+.pk-tabsrow{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--pk-space-4) var(--pk-space-5);flex-wrap:wrap;
+  border-bottom:var(--pk-border-hair) solid var(--pk-hair);margin-bottom:var(--pk-space-5)}
+.pk-tabsrow[hidden]{display:none}
+.pk-tabs{display:flex;gap:2px;flex-wrap:wrap}
+.pk-statuschips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:var(--pk-space-4)}
+.pk-statuschips[hidden]{display:none}
+
+/* ---- stat-count tiles (grid of headline numbers) ---- */
+.pk-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--pk-hair);border:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-count{background:var(--pk-canvas);padding:var(--pk-space-5) var(--pk-space-5);border-radius:0;
+  display:flex;flex-direction:column;align-items:flex-start;gap:var(--pk-space-3);
+  font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted);animation:pk-rise .5s var(--pk-ease-rise) both}
+.pk-count:nth-child(2){animation-delay:.07s}
+.pk-count:nth-child(3){animation-delay:.14s}
+.pk-count b{font-size:clamp(30px,4vw,42px);font-weight:700;line-height:.95;letter-spacing:-.02em;color:var(--pk-ink);font-variant-numeric:tabular-nums}
+.pk-count-lbl{display:flex;align-items:center;gap:6px}
+.pk-count-lbl .pk-count-dot{margin:0;flex:none}
+.pk-count-tbi b,.pk-count-pending b{color:var(--pk-amber)}
+.pk-count-inprog b{color:var(--pk-blue)}
+.pk-count-clarify b{color:var(--pk-clarify)}
+.pk-count-clarify{cursor:pointer}
+.pk-count-done b{color:var(--pk-green)}
+.pk-count-reopened b{color:var(--pk-red-ink)}
+.pk-count-btn{cursor:pointer;text-align:left;width:100%;margin:0;border:0;font-family:var(--pk-font);font-size:11px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted);transition:background .15s ease}
+.pk-count-btn:focus-visible{outline:2px solid var(--pk-red);outline-offset:-2px}
+@media (max-width:560px){.pk-counts{grid-template-columns:1fr}}
+@media (min-width:1024px) and (hover:hover){.pk-count-btn:hover{background:var(--pk-elev)}}
+
+/* ==== the ticket detail screen (revamped: sticky bar · 2-col grid · collapsible cards · side rail) ==== */
+/* full-width column shell — the surfaces are the .pk-dcard cards inside, not the article itself */
+.pk-detailwrap{display:flex;flex-direction:column;gap:var(--pk-space-4)}
+.pk-detail{display:flex;flex-direction:column;gap:var(--pk-space-5);max-width:none;background:none;border:none;padding:0}
+.pk-detail-head{display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.pk-detail-title{margin:0;font-size:18px;font-weight:600;line-height:1.4;color:var(--pk-ink);overflow-wrap:anywhere}
+.pk-detail-chips{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3)}
+.pk-detail-comment{font-size:15px;line-height:1.6}
+/* success-criteria callout (raiser's expected outcome — prominent, read-only) */
+.pk-criteria{padding:14px 16px;background:var(--pk-done-bg);border:var(--pk-border-hair) solid var(--pk-green);border-left:var(--pk-border-strong) solid var(--pk-green)}
+.pk-criteria-k{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-done-ink);margin-bottom:6px}
+.pk-criteria-v{font:500 14px/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
+/* pin-number chip on the detail header */
+.pk-pinno{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:var(--pk-radius-full);
+  background:var(--pk-hair);color:var(--pk-ink);font:700 11px/1 var(--pk-font);white-space:nowrap}
+/* fields (label over value stack) */
+.pk-fields{display:flex;flex-direction:column;gap:var(--pk-space-4)}
+.pk-field{display:flex;flex-direction:column;gap:var(--pk-space-2);min-width:0}
+.pk-field-k{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-field-v{font-size:14px;line-height:1.55;color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.pk-field-v a{color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-field-prompt,.pk-prompt-box{white-space:pre-wrap;background:var(--pk-input);border:var(--pk-border-hair) solid var(--pk-hair);border-left:var(--pk-border-strong) solid var(--pk-red);
+  padding:var(--pk-space-4);font:400 12px/1.6 var(--pk-font);color:var(--pk-body);overflow-wrap:anywhere;max-height:280px;overflow-y:auto}
+/* connected-rail timeline */
+.pk-timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.pk-tl{position:relative;padding:0 0 var(--pk-space-4) var(--pk-space-5)}
+.pk-tl:last-child{padding-bottom:0}
+.pk-tl::before{content:"";position:absolute;left:4px;top:16px;bottom:-4px;width:2px;background:var(--pk-hair)}
+.pk-tl:last-child::before{display:none}
+.pk-tl::after{content:"";position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:var(--pk-radius-full);background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
+.pk-tl.is-current::after{border-color:var(--pk-red);background:var(--pk-red)}
+.pk-tl-event{display:block;font:700 11px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-ink)}
+.pk-tl-time{display:block;margin-top:2px;font-size:12px;color:var(--pk-muted)}
+.pk-tl-iter{font-weight:700;font-size:11px;line-height:1;font-family:var(--pk-font);font-variant-numeric:tabular-nums;color:var(--pk-red-ink);flex:none;min-width:24px}
+/* sticky action bar (prev/next + actions) */
+.pk-detail-bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3);
+  flex-wrap:nowrap;padding:10px 0;background:var(--pk-canvas);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-detail-bar-l{flex:none;display:flex;align-items:center;gap:14px}
+.pk-detail-bar-r{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;justify-content:flex-end}
+.pk-detail-bar .pk-backlink{margin:0}
+.pk-detail-acts{display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;margin:0}
+/* prev/next stepper */
+.pk-detail-step{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
+.pk-detail-pos{font:700 11px/1 var(--pk-font);letter-spacing:.06em;color:var(--pk-muted);min-width:44px;text-align:center}
+.pk-stepbtn{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:var(--pk-border-hair) solid var(--pk-hair);
+  background:var(--pk-card);color:var(--pk-body);font-size:16px;line-height:1;cursor:pointer;transition:border-color .15s,color .15s}
+.pk-stepbtn:disabled{opacity:.4;cursor:default}
+.pk-detail-more{width:38px;padding:0;justify-content:center}
+.pk-detail-more svg{display:block}
+@media (min-width:1024px) and (hover:hover){.pk-stepbtn:not(:disabled):hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
+/* 2-column grid (main + 340px side rail) */
+.pk-detail-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:var(--pk-space-4);align-items:start}
+.pk-detail-main{display:flex;flex-direction:column;gap:var(--pk-space-4);min-width:0}
+.pk-detail-side{display:flex;flex-direction:column;gap:var(--pk-space-4);min-width:0;position:sticky;top:64px}
+/* collapsible detail card */
+.pk-dcard{background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);border-left:var(--pk-border-strong) solid var(--pk-red)}
+.pk-dcard-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;
+  background:transparent;border:none;cursor:pointer;color:var(--pk-ink);text-align:left;font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase}
+.pk-dcard-h-static{cursor:default}
+.pk-dcard-h > span{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
+.pk-dcard-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;
+  border-radius:var(--pk-radius-full);background:var(--pk-elev);color:var(--pk-muted);font:700 10px/1 var(--pk-font);letter-spacing:0}
+.pk-dcard-chev{color:var(--pk-muted);transition:transform .18s}
+.pk-dcard.is-collapsed .pk-dcard-chev{transform:rotate(-90deg)}
+.pk-dcard-b{padding:0 16px 16px}
+.pk-dcard-h-static + .pk-dcard-b{padding-top:2px}
+.pk-dcard.is-collapsed .pk-dcard-b{display:none}
+/* side-rail meta list */
+.pk-dmeta{margin:0;display:flex;flex-direction:column;align-items:stretch;gap:var(--pk-space-3)}
+.pk-dmeta-row{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pk-dmeta-row dt{margin:0;font:700 9px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-dmeta-row dd{margin:0;font-size:13px;line-height:1.5;color:var(--pk-ink);overflow-wrap:anywhere}
+.pk-dmeta-row dd a{color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-dmeta-sub{display:block;margin-top:2px;font-size:11px;color:var(--pk-muted);overflow-wrap:anywhere}
+.pk-prompt-copybtn{margin-left:auto}
+/* quick-questions rendered as a detail card (both dashboards): shed the standalone .pk-qq
+   top-decoration, keep the card frame, space the thread/compose inside the body */
+.pk-dcard.pk-qq{margin-top:0;padding-top:0;border-top:none;border-left-color:var(--pk-hair)}
+.pk-dcard.pk-qq .pk-dcard-h .pk-qq-sub{margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0}
+.pk-dcard.pk-qq .pk-dcard-b{display:flex;flex-direction:column;gap:var(--pk-space-3h)}
+.pk-copyprompt{margin-top:var(--pk-space-3);height:34px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+  color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
+@media (max-width:900px){.pk-detail-grid{grid-template-columns:1fr}.pk-detail-side{position:static}}
+@media (max-width:560px){.pk-detail-bar{position:static}.pk-detail-bar-r{width:100%;justify-content:flex-start}}
+@media (min-width:1024px) and (hover:hover){.pk-copyprompt:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
+
+/* ---- reply row (F6 quick-question thread items inside .pk-qq-thread) ---- */
+.pk-reply{position:relative;display:flex;flex-direction:column;gap:var(--pk-space-2);align-items:flex-start;min-width:0;padding-right:28px}
+.pk-reply-txt{font-size:var(--pk-text-md);line-height:var(--pk-lh-body);color:var(--pk-ink);overflow-wrap:anywhere}
+.pk-reply-meta{font-size:var(--pk-text-xs);color:var(--pk-muted)}
+.pk-reply-x{position:absolute;top:0;right:0;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm);background:transparent;color:var(--pk-muted);cursor:pointer;
+  font:400 16px/1 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
+.pk-reply-x:disabled{opacity:.5;cursor:default}
+@media (min-width:1024px) and (hover:hover){
+  .pk-reply-x:hover{color:var(--pk-softred);border-color:var(--pk-softred)}
+}
+
+/* ---- segmented toggle (Inbound|Outbound · Cards|Table). 42px toolbar height kept literal. ---- */
+.pk-seg{display:inline-flex;height:42px;flex:0 0 auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;overflow:hidden}
+.pk-seg[hidden]{display:none}
+.pk-segbtn{height:100%;padding:0 var(--pk-space-4);border:none;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
+  font:600 12px/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:background .15s,color .15s}
+.pk-segbtn + .pk-segbtn{border-left:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-segbtn.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
+@media (min-width:1024px) and (hover:hover){.pk-segbtn:not(.is-active):hover{color:var(--pk-red-ink)}}
+
+/* ---- toolbar search input ---- */
+.pk-search{flex:1 1 220px;min-width:180px;height:42px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);
+  border-radius:0;background:var(--pk-input);color:var(--pk-ink);font:400 14px/var(--pk-lh-body) var(--pk-font)}
+.pk-search::placeholder{color:var(--pk-muted)}
+.pk-search:focus{outline:none;border-color:var(--pk-red)}
+.tmd .pk-search{flex-grow:4} /* team toolbar gives search more grow (layout coupling) */
+
+/* ---- from/to team-filter picker: collapsed control + body-mounted reveal rail ---- */
+.pk-teamchips{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--pk-space-3)}
+.pk-teamchips[hidden]{display:none}
+.pk-chips-from{align-self:center;font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
+.pk-tchip{height:30px;padding:0 var(--pk-space-4);border:var(--pk-border-strong) solid transparent;border-radius:0;cursor:pointer;
+  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+  display:inline-flex;align-items:center;justify-content:center;min-width:96px;box-sizing:border-box;
+  transition:background .15s,color .15s,border-color .15s}
+.pk-chips-more{height:30px;width:30px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  border:var(--pk-border-strong) solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;transition:border-color .15s,color .15s}
+.pk-chips-more svg{display:block}
+.pk-chips-overlay{position:fixed;inset:0;z-index:2147483300;background:var(--pk-scrim-veil);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;transition:opacity .2s var(--pk-ease)}
+.pk-chips-overlay.is-open{opacity:1;transition:opacity .22s var(--pk-ease) .16s}
+.pk-chips-rail{position:fixed;z-index:1;display:inline-flex;align-items:center;white-space:nowrap;max-width:calc(100vw - 24px)}
+.pk-chips-rail .pk-chips-from{margin-right:8px}
+.pk-chips-reveal{display:inline-flex;align-items:center;overflow:hidden;width:0;transition:width .34s var(--pk-ease)}
+.pk-chips-reveal .pk-tchip{margin-left:8px}
+.pk-chips-rail .pk-chips-more{margin-left:8px}
+.pk-chips-rail .pk-chips-more svg{transition:transform .34s var(--pk-ease)}
+.pk-chips-rail .pk-chips-more.is-open svg{transform:rotate(180deg)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-chips-more:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  .pk-tchip:hover{transform:translateY(-1px)}
+}
+
+/* ---- saved "Team views" quick-select row (F11) — faithful merge of the
+   .tmd-viewchip / .rvd-viewchip family (container styled by class, selected by id in JS). ---- */
+.pk-views{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4)}
+.pk-views[hidden]{display:none}
+.pk-views-lbl{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
+.pk-viewchip{display:inline-flex;align-items:center;height:30px;border:var(--pk-border-hair) solid var(--pk-hair);
+  border-radius:var(--pk-radius-full);background:var(--pk-elev);overflow:hidden}
+.pk-viewchip.is-active{border-color:var(--pk-red)}
+.pk-viewchip-go{height:100%;padding:0 4px 0 14px;border:none;background:transparent;cursor:pointer;
+  color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
+.pk-viewchip.is-active .pk-viewchip-go{color:var(--pk-red-ink)}
+.pk-viewchip-x{height:100%;width:26px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font-size:16px;line-height:1}
+@media (min-width:1024px) and (hover:hover){
+  .pk-viewchip:not(.is-active):hover{border-color:var(--pk-red)}
+  .pk-viewchip-x:hover{color:var(--pk-softred)}
+}
+
+/* ---- edit-history version trail (newest first) — faithful merge of .rvd-ver / .tmd-ver;
+   the -meta label takes the admin dashboard's fuller type spec. ---- */
+.pk-versions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pk-ver{padding:10px 12px;background:var(--pk-elev);border:var(--pk-border-hair) solid var(--pk-hair);border-left:3px solid var(--pk-hair)}
+.pk-ver-meta{font:700 11px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted)}
+.pk-ver-txt{margin-top:3px;font-size:13px;color:var(--pk-ink)}
+.pk-ver-sub{margin-top:3px;font-size:12px;color:var(--pk-muted)}
+
+/* ---- status-filter chip row (filter cards by review status) — faithful merge of
+   .rvd-schip / .tmd-schip (byte-identical forks). Container (.rvd-statuschips) stays scoped. ---- */
+.pk-schip{height:32px;padding:0 12px;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+  color:var(--pk-body);font:600 11px/1 var(--pk-font);letter-spacing:.03em;display:inline-flex;align-items:center;gap:6px;
+  transition:border-color .15s,color .15s,background .15s}
+.pk-schip.is-active{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
+.pk-schip--smart:not(.is-active){border-color:var(--pk-red);color:var(--pk-red-ink)}
+.pk-schip-n{font-weight:700;font-size:10px;opacity:.75}
+.pk-schip.is-active .pk-schip-n{opacity:1}
+.pk-schip--more{color:var(--pk-muted);gap:4px}
+/* The caret is a DOWN chevron at rest; point it RIGHT when closed and LEFT when open, so the
+   affordance reads as "expand outward / collapse back" rather than a dropdown. Both boards must
+   feed this the SAME down-chevron path — a right-chevron here rotates to up/down instead. */
+.pk-schip--more svg{transition:transform .22s var(--pk-ease);transform:rotate(-90deg)}
+.pk-schip--more.is-open svg{transform:rotate(90deg)}
+/* The revealed chips sweep in FROM the More button — they travel the way the caret just pointed,
+   so the disclosure reads as one motion instead of a row that pops. Staggered by position, capped
+   at a handful of steps so a long overflow list never feels slow. \`--i\` is set per chip in JS. */
+@keyframes pk-schip-in{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.pk-schip--extra{animation:pk-schip-in .2s var(--pk-ease) both;animation-delay:calc(var(--i,0) * 28ms)}
+@media (prefers-reduced-motion: reduce){
+  .pk-schip--more svg{transition:none}
+  .pk-schip--extra{animation:none}
+}
+
+/* ---- naked "← Back" link (detail views) — faithful merge of .rvd-back / .tmd-back ---- */
+.pk-backlink{margin-bottom:var(--pk-space-4);background:none;border:none;cursor:pointer;padding:0;
+  font:700 11px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+
+/* ---- empty state: block (list) + inline (qq / insights) variants ---- */
+.pk-empty{margin:64px 0;text-align:center;color:var(--pk-muted);font-size:14px;letter-spacing:.02em}
+.pk-empty--inline{margin:0;font:400 13px/1.4 var(--pk-font);color:var(--pk-muted)}
+
+/* ---- "Change to" callout — base (dashboard) + --scroll (admin long text) + --compact (overlay popover) ---- */
+.pk-callout{padding:var(--pk-space-3h) var(--pk-space-4);border-radius:0;background:var(--pk-callout-bg);border:var(--pk-border-hair) solid var(--pk-callout-line);border-left:var(--pk-border-strong) solid var(--pk-amber)}
+.pk-callout span{display:block;font-size:10px;font-weight:700;text-transform:uppercase;
+  color:var(--pk-amber);letter-spacing:.12em;margin-bottom:var(--pk-space-2)}
+.pk-callout div{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--pk-ink)}
+.pk-callout--scroll div{overflow-wrap:anywhere;max-height:140px;overflow-y:auto}
+.pk-callout--compact{margin-top:2px;padding:var(--pk-space-3);border-radius:var(--pk-radius-md);
+  border-left:var(--pk-border-hair) solid var(--pk-callout-line)}
+.pk-callout--compact span{letter-spacing:.04em;margin-bottom:2px}
+
+/* ---- shared hover states for the above (desktop only) ---- */
+@media (min-width:1024px) and (hover:hover){
+  .pk-schip:not(.is-active):hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  .pk-backlink:hover{color:var(--pk-red-ink)}
+}
+
+/* ---- row action menu — fixed, body-mounted (admin + team). --rise = admin-only entrance anim. ---- */
+.pk-rowmenu{position:fixed;z-index:2147483400;min-width:200px;display:flex;flex-direction:column;gap:2px;padding:var(--pk-space-3);
+  background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);box-shadow:var(--pk-shadow-md)}
+.pk-rowmenu--rise{animation:pk-dd-panel .16s var(--pk-ease) both}
+.pk-rowmenu-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;white-space:nowrap;border:0;border-radius:0;
+  cursor:pointer;padding:11px 14px;background:transparent;color:var(--pk-body);
+  font:600 12px/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
+.pk-rowmenu-item .pk-mi{flex:none;color:var(--pk-muted);transition:color .12s}
+.pk-rowmenu-item.danger{color:var(--pk-softred)}
+.pk-rowmenu-item.danger .pk-mi{color:var(--pk-softred)}
+.pk-rowmenu-sep{height:1px;margin:6px 6px;background:var(--pk-hair)}
+@media (min-width:1024px) and (hover:hover){.pk-rowmenu-item:hover{background:var(--pk-elev);color:var(--pk-ink)}
+  .pk-rowmenu-item:hover .pk-mi{color:var(--pk-ink)}
+  .pk-rowmenu-item.danger:hover{color:var(--pk-softred)}
+  .pk-rowmenu-item.danger:hover .pk-mi{color:var(--pk-softred)}}
+
+/* ---- detail media / screenshot thumbnails (small on cards, large in detail) ---- */
+.pk-media{margin-top:var(--pk-space-2)}
+.pk-detail-media{display:flex;flex-wrap:wrap;gap:var(--pk-space-4);align-items:flex-start}
+.pk-shot{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pk-shot figcaption{font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-thumb{display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
+  width:120px;height:80px;background:var(--pk-input);border:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-thumb.pk-thumb-lg{width:100%;max-width:420px;height:auto;min-height:120px}
+.pk-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pk-thumb.pk-thumb-lg img{object-fit:contain}
+.pk-thumb.is-empty{border-style:dashed}
+.pk-thumb-ph{font:600 10px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted);text-align:center;padding:0 var(--pk-space-3)}
+.pk-thumb-zoom{cursor:zoom-in}
+
+/* ---- card list grid: vertical card-list container + staggered entry cascade ---- */
+.pk-grid{display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.pk-grid > .pkc-card{animation:pk-rise .45s var(--pk-ease-rise) both}
+.pk-grid > .pkc-card:nth-child(2){animation-delay:.04s}
+.pk-grid > .pkc-card:nth-child(3){animation-delay:.08s}
+.pk-grid > .pkc-card:nth-child(4){animation-delay:.12s}
+.pk-grid > .pkc-card:nth-child(5){animation-delay:.16s}
+.pk-grid > .pkc-card:nth-child(6){animation-delay:.20s}
+.pk-grid > .pkc-card:nth-child(7){animation-delay:.23s}
+.pk-grid > .pkc-card:nth-child(n+8){animation-delay:.26s}
+
+/* ---- notification list + card (Mark-read toggle stays a per-dashboard fork) ---- */
+.pk-notes{display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.pk-notif{display:flex;align-items:flex-start;gap:var(--pk-space-3h);padding:var(--pk-space-4) var(--pk-space-4);
+  border-radius:0;background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);
+  border-left:var(--pk-border-strong) solid var(--pk-hair);transition:border-color .15s,background .15s}
+.pk-notif.is-unread{border-left-color:var(--pk-red);background:var(--pk-elev)}
+.pk-notif.is-clickable{cursor:pointer}
+.pk-notif.is-clickable:focus-visible{outline:none;border-left-color:var(--pk-red);background:var(--pk-elev)}
+/* The clickable notification row answers the pointer the same way the queue card does — surface
+   up, hairline firmed. This row starts on --pk-card (a step above the card's well), so it lifts
+   to --pk-elev rather than --pk-hover. The unread left stroke survives the hover: red means
+   UNREAD on this row, and hovering a read one must never counterfeit it. */
+@media (min-width:1024px) and (hover:hover){
+  .pk-notif.is-clickable:hover{background:var(--pk-elev);border-color:var(--pk-hover-line)}
+  .pk-notif.is-clickable.is-unread:hover{border-left-color:var(--pk-red)}
+}
+.pk-notif-dot{flex:none;width:var(--pk-space-3);height:var(--pk-space-3);margin-top:var(--pk-space-3);
+  border-radius:var(--pk-radius-full);background:transparent}
+.pk-notif.is-unread .pk-notif-dot{background:var(--pk-red)}
+.pk-notif-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.pk-notif-sum{font-size:var(--pk-text-md);line-height:var(--pk-lh-body);color:var(--pk-ink);
+  font-weight:var(--pk-w-medium);overflow-wrap:anywhere}
+.pk-notif-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3)}
+
+/* ---- Comments-view per-thread read/unread bar ---- */
+.pk-thread-head{display:flex;justify-content:flex-end;margin-bottom:var(--pk-space-3h)}
+.pk-thread-item{display:flex;flex-direction:column;gap:6px;animation:pk-rise .45s var(--pk-ease-rise) both}
+.pk-thread-mark{display:flex;align-items:center;gap:var(--pk-space-3)}
+.pk-thread-dot{flex:none;width:var(--pk-space-3);height:var(--pk-space-3);border-radius:var(--pk-radius-full);background:transparent}
+.pk-thread-item.is-unread .pk-thread-dot{background:var(--pk-red)}
+.pk-thread-toggle{flex:none;margin-left:auto}
+
+/* ---- By-Page group (collapse-hides its grid + notes) ---- */
+.pk-group{margin-bottom:var(--pk-space-6)}
+.pk-gh{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4);font-size:var(--pk-text-sm);font-weight:var(--pk-w-semibold);
+  letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
+.pk-gh a{color:var(--pk-ink);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-gh span{font-size:var(--pk-text-xs);font-weight:var(--pk-w-medium);color:var(--pk-muted);letter-spacing:0;text-transform:none}
+.pk-gh-toggle{display:inline-flex;align-items:center;justify-content:center;width:var(--pk-space-4h);height:var(--pk-space-4h);padding:0;
+  margin-left:-2px;border:0;background:transparent;color:var(--pk-muted);cursor:pointer;flex:none}
+.pk-gh-caret{width:0;height:0;border-left:5px solid currentColor;border-top:4px solid transparent;
+  border-bottom:4px solid transparent;transform:rotate(90deg);transition:transform .12s ease}
+.pk-group.is-collapsed .pk-gh-caret{transform:rotate(0deg)}
+.pk-group.is-collapsed .pk-grid,
+.pk-group.is-collapsed .pk-notes{display:none}
+
+/* ---- hairline divider ---- */
+.pk-hr{height:1px;background:var(--pk-hair);border:0;margin:0}
+
+/* ---- shared page-entry cascade: the staggered rise both dashboards animate their
+   structural bands / cards / tiles with (paired with --pk-ease-rise). One keyframe,
+   loaded on every route, replaces the per-dashboard rvd-rise / tmd-rise copies. ---- */
+@keyframes pk-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* View-enter: a lateral slide+fade played when a content view is navigated to (e.g. nav → Settings). */
+@keyframes pk-view-slide{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+.pk-view-enter{animation:pk-view-slide .3s var(--pk-ease-rise) both}
+@media (prefers-reduced-motion:reduce){.pk-view-enter{animation:none}}
+
+/* ---- select / dropdown: squared, spacious, token-bound, one chevron ----
+   The canonical dropdown for the whole tool. Existing dashboard/overlay/login
+   selects mirror this look in their own scoped CSS (they can't all beat their
+   local specificity); new surfaces should just use .pk-select. */
+.pk-select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  height:48px;padding:0 44px 0 16px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background-color:var(--pk-input);color:var(--pk-ink);cursor:pointer;
+  font:600 13px/1 var(--pk-font);letter-spacing:.04em;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center;
+  transition:border-color .15s var(--pk-ease);
+}
+.pk-select:focus{outline:none;border-color:var(--pk-red)}
+.pk-select option{background:var(--pk-card);color:var(--pk-ink)}
+.pk-select--sm{height:42px;padding:0 40px 0 16px;background-position:right 14px center;font-size:12px}
+
+/* ---------------------------------------------------------------------------
+   PANEL LOGIN (.pk-login) — the shared, modern auth card both dashboards use.
+   Tall minimal portrait, a soft brand-red glow up top, standout squared fields,
+   an Authenticate button, and the ProofKit logo at the bottom. Built by
+   config.js buildPanelLogin(); each surface wires its own submit.
+   --------------------------------------------------------------------------- */
+.pk-login{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
+.pk-login-card{position:relative;width:408px;max-width:100%;
+  background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);border-radius:0;
+  padding:56px 48px 24px;box-shadow:var(--pk-shadow-lg);box-sizing:border-box;
+  display:flex;flex-direction:column;align-items:center;text-align:center;animation:pk-login-pop .2s ease both}
+@keyframes pk-login-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+/* content sits above the glow via DOM order (no z-index, so a field never becomes a
+   stacking context that would trap its custom-dropdown menu below sibling fields) */
+.pk-login-card > *{position:relative}
+/* minimal background visual: one soft brand-red glow from the top, in its OWN clipped
+   layer (first child → painted behind) so the card can overflow (dropdown menus escape) */
+.pk-login-glow{position:absolute;top:0;left:0;right:0;height:170px;overflow:hidden;pointer-events:none}
+.pk-login-glow::before{content:"";position:absolute;top:-140px;left:50%;width:340px;height:320px;
+  transform:translateX(-50%);background:radial-gradient(circle,var(--pk-red),transparent 68%);opacity:.2}
+/* close (✕) — top-right, generously spaced from the card edge, above the glow */
+.pk-login-close{position:absolute;top:16px;right:16px;z-index:2;display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;padding:0;border:none;border-radius:8px;background:transparent;color:var(--pk-muted);
+  cursor:pointer;line-height:0;transition:background .15s ease,color .15s ease}
+.pk-login-close:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
+@media (min-width:1024px) and (hover:hover){.pk-login-close:hover{background:var(--pk-hair);color:var(--pk-ink)}}
+.pk-login-eyebrow{font:700 11px/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;color:var(--pk-red-ink)}
+.pk-login-title{margin:16px 0 0;font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--pk-ink)}
+.pk-login-sub{margin:12px 0 32px;font-size:14px;line-height:1.5;color:var(--pk-body)}
+.pk-login-field{width:100%;text-align:left;margin-bottom:16px}
+.pk-login-label{display:block;margin-bottom:8px;font:700 10px/1 var(--pk-font);letter-spacing:var(--pk-track-1);
+  text-transform:uppercase;color:var(--pk-muted)}
+.pk-login-input{width:100%;height:56px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 15px/1 var(--pk-font);transition:border-color .15s,box-shadow .15s}
+.pk-login-input::placeholder{color:var(--pk-muted);font-weight:400}
+.pk-login-input:focus{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
+.pk-login-select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:44px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 16px center}
+.pk-login-select option{background:var(--pk-card);color:var(--pk-ink)}
+.pk-login-err{width:100%;margin:-4px 0 16px;font-size:13px;font-weight:600;color:var(--pk-softred);text-align:left}
+.pk-login-btn{position:relative;overflow:hidden;width:100%;height:54px;border:none;border-radius:0;background:var(--pk-red);color:var(--pk-on-accent);
+  font:700 13px/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;cursor:pointer;transition:background .15s}
+.pk-login-btn:disabled{opacity:.6;cursor:default}
+/* very subtle "securing" shimmer while authenticating (stays vivid, not dimmed) */
+.pk-login-btn.is-busy{opacity:1;cursor:default}
+.pk-login-btn.is-busy::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
+  background:linear-gradient(90deg,transparent,var(--pk-on-accent),transparent);
+  transform:translateX(-100%);animation:pk-login-shimmer 1.5s ease-in-out infinite}
+@keyframes pk-login-shimmer{100%{transform:translateX(100%)}}
+.pk-login-brand{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  margin-top:40px;padding-top:24px;border-top:1px solid var(--pk-hair);
+  font:700 11px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-login-brand svg{width:16px;height:16px;flex:none}
+@media (min-width:1024px) and (hover:hover){.pk-login-btn:hover{background:var(--pk-red-2)}}
+
+/* ---------------------------------------------------------------------------
+   CUSTOM DROPDOWN (.pk-dropdown) — a non-native, fully themed dropdown built by
+   config.js buildDropdown(). Sharp corners, spaced items, colour-themed via
+   tokens (red accent on the selected item). Replaces native <select> menus so
+   the open list matches the tool instead of the OS chrome.
+   --------------------------------------------------------------------------- */
+.pk-dropdown{position:relative;display:inline-block;font-family:var(--pk-font)}
+.pk-dropdown--block{display:block;width:100%}
+.pk-dropdown-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  height:48px;padding:0 16px;min-width:170px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);cursor:pointer;
+  font:600 13px/1 var(--pk-font);letter-spacing:.04em;transition:border-color .15s var(--pk-ease)}
+.pk-dropdown--sm .pk-dropdown-trigger{height:42px;min-width:0;padding:0 16px;font-size:12px}
+.pk-dropdown-trigger:focus-visible{outline:none;border-color:var(--pk-red)}
+.pk-dropdown.is-open .pk-dropdown-trigger{border-color:var(--pk-red)}
+.pk-dropdown-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-dropdown-label.is-placeholder{color:var(--pk-muted)}
+.pk-dropdown-chev{width:16px;height:16px;flex:none;color:var(--pk-muted);transition:transform .18s var(--pk-ease)}
+.pk-dropdown.is-open .pk-dropdown-chev{transform:rotate(180deg)}
+.pk-dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:100%;z-index:210;display:none;
+  flex-direction:column;gap:2px;padding:8px;box-sizing:border-box;
+  background:var(--pk-card);border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-md)}
+.pk-dropdown-menu--right{left:auto;right:0}
+/* OPEN — the panel appears and its options STACK into place one after another. Timings are
+   half what they were: a 6-item menu used to take ~565ms to settle, which read as sluggish
+   on a menu you open to make one quick pick. Same curves, same shape, twice the pace. */
+.pk-dropdown.is-open .pk-dropdown-menu{display:flex;animation:pk-dd-panel .08s var(--pk-ease) both}
+.pk-dropdown.is-open .pk-dropdown-item{animation:pk-dd-stack .17s var(--pk-spring) backwards;animation-delay:calc(var(--i,0)*22ms)}
+@keyframes pk-dd-panel{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes pk-dd-stack{from{opacity:0;transform:translateY(-18px) scale(.85)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .pk-dropdown.is-open .pk-dropdown-menu,.pk-dropdown.is-open .pk-dropdown-item{animation:none}}
+.pk-dropdown-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;white-space:nowrap;
+  border:0;border-radius:0;cursor:pointer;padding:12px 16px;background:transparent;color:var(--pk-body);
+  font:600 12px/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
+.pk-dropdown-sep{height:1px;margin:4px 8px;background:var(--pk-hair);flex:none}
+.pk-dropdown-ico{display:flex;flex:none}
+.pk-dropdown-ico svg{width:16px;height:16px;display:block}
+.pk-dropdown-item[aria-selected="true"]{background:var(--pk-elev);color:var(--pk-red-ink)}
+.pk-dropdown-item:focus-visible{outline:none;background:var(--pk-elev);color:var(--pk-ink)}
+@media (min-width:1024px) and (hover:hover){.pk-dropdown-item:hover{background:var(--pk-elev);color:var(--pk-ink)}}
+/* Gated-off item (e.g. a team parked via TEAM_ENABLED): muted + inert, no hover. */
+.pk-dropdown-item[aria-disabled="true"]{color:var(--pk-muted);opacity:.5;cursor:not-allowed}
+@media (min-width:1024px) and (hover:hover){.pk-dropdown-item[aria-disabled="true"]:hover{background:transparent;color:var(--pk-muted)}}
+
+/* ---------------------------------------------------------------------------
+   THE LIGHT/DARK TOGGLE (.pk-tt) — control DOM is built by config.js
+   buildThemeToggle(); these are its styles. One moon glyph rides the thumb; the
+   thumb is ALWAYS the brand red and slides fully INSIDE the track between states.
+   --------------------------------------------------------------------------- */
+.pk-tt{
+  --tt-w:46px; --tt-h:24px; --tt-thumb:18px; --tt-pad:4px;
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:48px;height:48px;margin:-12px;padding:0;border:0;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.pk-tt-track{
+  position:relative;width:var(--tt-w);height:var(--tt-h);border-radius:var(--pk-radius-full);
+  background:var(--pk-input);border:1px solid var(--pk-hair);
+  box-shadow:var(--pk-shadow-inset);transition:background .4s var(--pk-ease),border-color .3s;
+}
+.pk-tt-thumb{
+  position:absolute;top:50%;left:var(--tt-pad);width:var(--tt-thumb);height:var(--tt-thumb);border-radius:50%;
+  transform:translateY(-50%);display:flex;align-items:center;justify-content:center;color:var(--pk-on-accent);
+  background:var(--pk-red);box-shadow:var(--pk-shadow-sm);
+  transition:transform .4s var(--pk-spring);
+}
+.pk-tt-thumb svg{width:11px;height:11px;display:block}
+/* checked = light mode: thumb slides right, staying fully inside the track.
+   travel = track(46) - thumb(18) - pad(3) - pad(3) = 22px */
+.pk-tt[aria-checked="true"] .pk-tt-thumb{ transform:translate(22px,-50%); }
+.pk-tt:focus-visible{outline:2px solid var(--pk-red);outline-offset:3px;border-radius:8px}
+@media (min-width:1024px) and (hover:hover){.pk-tt:hover .pk-tt-track{border-color:var(--pk-body)}}
+
+/* Rail variant (.pk-tt--row) — the same track+thumb, laid out as a full-width labelled
+   row that borrows the dropdown trigger's box (48px, 1px hair, 16px inset, --pk-input)
+   so the colour-mode switch stacks flush under the Jump-To-Team picker. Overrides only
+   the base's icon-button box; the checked/thumb behaviour above still applies. */
+.pk-tt--row{width:100%;height:48px;margin:0;padding:0 16px;box-sizing:border-box;
+  justify-content:space-between;gap:12px;border:1px solid var(--pk-hair);
+  background:var(--pk-input);color:var(--pk-ink);transition:border-color .15s var(--pk-ease)}
+.pk-tt--row .pk-tt-lbl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:600 13px/1 var(--pk-font);letter-spacing:.04em}
+.pk-tt--row .pk-tt-track{flex:none}
+.pk-tt--row:focus-visible{outline:none;border-radius:0;border-color:var(--pk-red)}
+@media (min-width:1024px) and (hover:hover){.pk-tt--row:hover{border-color:var(--pk-body)}}
+
+/* Shared logout icon — used by both dashboards' icon-only "Log out" button. The arrow
+   slides out through the door on hover (the door stays put). Same 16px glyph as refresh. */
+.pk-logout-ico{display:block;overflow:visible}
+.pk-logout-ico .pk-logout-out{transition:transform .22s var(--pk-ease,cubic-bezier(.4,0,.2,1)),opacity .22s}
+@media (min-width:1024px) and (hover:hover){
+  .pk-logout:hover .pk-logout-ico .pk-logout-out{transform:translateX(3px)}
+}
+
+/* Shared refresh hover — a small, quick nudge-rotation on hover (the full spin is reserved
+   for the click-triggered \`.is-refreshing\` state). Used by both dashboards' refresh button. */
+.pk-refresh .ico-sync{transform-origin:50% 50%;transition:transform .2s var(--pk-ease,cubic-bezier(.4,0,.2,1))}
+@media (min-width:1024px) and (hover:hover){
+  .pk-refresh:not(.is-refreshing):hover .ico-sync{transform:rotate(-38deg)}
+}
+
+/* ===========================================================================
+   V3 FEATURE PRIMITIVES (features 1/2/3/7/12) — token-bound shared classes for
+   the type-selector chips, the draft tray, the duplicate-warning strip, the
+   reopen modal, and the insights bar charts. Every colour is a --pk-* role, so
+   all five re-skin across Red Moon / Dark Cream / Light with nothing hardcoded.
+   The overlay composer + both dashboards compose these (never re-declare them).
+   =========================================================================== */
+
+/* ---- TYPE SELECTOR (Feature 1) — the 5 comment-type chips in the composer ---- */
+.pk-typesel{display:flex;flex-wrap:wrap;gap:8px}
+.pk-typechip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:6px 14px;
+  border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
+  font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+  transition:border-color .12s,color .12s,background .12s}
+.pk-typechip svg{width:16px;height:16px;flex:none}
+.pk-typechip[aria-pressed="true"],.pk-typechip.is-active{border-color:var(--pk-red);background:var(--pk-red);color:var(--pk-on-accent)}
+.pk-typechip:focus-visible{outline:none;border-color:var(--pk-red)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-typechip:hover{border-color:var(--pk-red);color:var(--pk-ink)}
+  .pk-typechip[aria-pressed="true"]:hover,.pk-typechip.is-active:hover{color:var(--pk-on-accent)}
+}
+
+/* ---- DRAFT TRAY (Feature 2) — "Pending pins (n)" dock panel ---- */
+.pk-tray{display:flex;flex-direction:column;background:var(--pk-card);border:1px solid var(--pk-hair);
+  border-left:2px solid var(--pk-red);box-shadow:var(--pk-shadow-md)}
+.pk-tray-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--pk-hair);cursor:pointer;
+  font:700 12px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-tray-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+  border-radius:var(--pk-radius-full);background:var(--pk-red);color:var(--pk-on-accent);
+  font:700 11px/1 var(--pk-font)}
+.pk-tray-list{display:flex;flex-direction:column;gap:1px;max-height:300px;overflow:auto;background:var(--pk-hair)}
+.pk-tray-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--pk-card)}
+.pk-tray-item-body{flex:1;min-width:0}
+.pk-tray-item-summary{font:600 13px/1.4 var(--pk-font);color:var(--pk-ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-tray-item-meta{margin-top:4px;font:600 10px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-tray-item-actions{display:flex;gap:8px;flex:none}
+.pk-tray-iconbtn{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;margin:-14px -12px;
+  padding:0;border:0;background:none;color:var(--pk-muted);cursor:pointer;transition:color .12s}
+.pk-tray-iconbtn svg{width:16px;height:16px}
+@media (min-width:1024px) and (hover:hover){.pk-tray-iconbtn:hover{color:var(--pk-red-ink)}}
+.pk-tray-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--pk-hair)}
+.pk-tray-item.is-failed{border-left:2px solid var(--pk-softred)}
+.pk-tray-item.is-failed .pk-tray-item-meta{color:var(--pk-softred)}
+
+/* ---- DUPLICATE-WARNING STRIP (Feature 7) — non-blocking "similar open" notice ---- */
+.pk-dupwarn{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  background:var(--pk-open-bg);border:1px solid var(--pk-amber);border-left:3px solid var(--pk-amber);
+  color:var(--pk-open-ink);font:600 12px/1.4 var(--pk-font)}
+.pk-dupwarn svg{width:16px;height:16px;flex:none;color:var(--pk-amber)}
+.pk-dupwarn-link{margin-left:auto;flex:none;color:var(--pk-open-ink);text-decoration:underline;
+  font-weight:700;cursor:pointer;background:none;border:0;font:inherit}
+
+/* ---- REOPEN MODAL (Feature 3) — reason dropdown + note, replaces the prompt ---- */
+.pk-reopen{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
+.pk-reopen-card{width:440px;max-width:100%;background:var(--pk-card);color:var(--pk-ink);
+  border:1px solid var(--pk-hair);border-top:2px solid var(--pk-softred);box-shadow:var(--pk-shadow-lg);
+  padding:28px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;
+  animation:pk-login-pop .2s ease both}
+.pk-reopen-title{margin:0;font:600 20px/1.2 var(--pk-font);letter-spacing:-.01em;color:var(--pk-ink)}
+.pk-reopen-sub{margin:-8px 0 0;font:400 13px/1.5 var(--pk-font);color:var(--pk-body)}
+.pk-reopen-field{display:flex;flex-direction:column;gap:8px}
+.pk-reopen-label{font:700 10px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-reopen-note{width:100%;min-height:88px;padding:12px 14px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 14px/1.5 var(--pk-font);resize:vertical}
+.pk-reopen-note:focus{outline:none;border-color:var(--pk-red)}
+.pk-reopen-note::placeholder{color:var(--pk-muted)}
+.pk-reopen-err{margin:-8px 0 0;font:600 13px/1.4 var(--pk-font);color:var(--pk-softred)}
+.pk-reopen-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+
+/* ---- INSIGHTS BARS (Feature 12) — the CSS bar charts + stat tiles ---- */
+.pk-insights{display:flex;flex-direction:column;gap:24px}
+.pk-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.pk-tile{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:20px}
+.pk-tile-val{font:600 28px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums}
+.pk-tile-label{margin-top:8px;font:700 10px/1.3 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-bars{display:flex;flex-direction:column;gap:12px}
+.pk-bar-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;gap:12px}
+.pk-bar-key{font:600 12px/1.3 var(--pk-font);color:var(--pk-body);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-bar-track{position:relative;height:12px;background:var(--pk-input);border:1px solid var(--pk-hair);overflow:hidden}
+.pk-bar-fill{position:absolute;inset:0 auto 0 0;width:var(--pct,0%);background:var(--pk-red);
+  transition:width .4s var(--pk-ease)}
+/* status-keyed fills so a per-status chart reads by colour (reuse teamStatus tokens) */
+.pk-bar-fill--amber{background:var(--pk-amber)}
+.pk-bar-fill--blue{background:var(--pk-blue)}
+.pk-bar-fill--green{background:var(--pk-green)}
+.pk-bar-fill--softred{background:var(--pk-softred)}
+.pk-bar-val{font:600 12px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums;text-align:right}
+/* per-team workload table (Insights) */
+.pk-teamtbl{display:flex;flex-direction:column;background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red)}
+.pk-teamtbl-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 90px 110px 130px;gap:12px;align-items:center;
+  padding:10px 16px;border-top:1px solid var(--pk-hair);font:600 13px/1.3 var(--pk-font);color:var(--pk-ink);
+  font-variant-numeric:tabular-nums}
+.pk-teamtbl-row:first-child{border-top:none}
+.pk-teamtbl-row > span:not(:first-child){text-align:right}
+.pk-teamtbl-head{font:700 10px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-teamtbl-team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--pk-body)}
+
+/* ============================================================
+   Settings view — GLOBAL (shared by admin .rvd + team .tmd)
+   ============================================================ */
+.pk-set-head{margin:0 0 16px}
+.pk-set-head .pk-h2{margin:0;font:800 20px/1.2 var(--pk-font);color:var(--pk-ink)}
+.pk-set-sub{margin:6px 0 0;font:400 13px/1.5 var(--pk-font);color:var(--pk-muted);max-width:60ch}
+.pk-set{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;align-items:start;margin-top:8px}
+.pk-set-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:16px}
+.pk-set-tab{padding:10px 14px;border:none;border-left:2px solid transparent;background:transparent;cursor:pointer;
+  text-align:left;color:var(--pk-body);font:600 13px/1.2 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
+.pk-set-tab.is-active{border-left-color:var(--pk-red);color:var(--pk-ink);background:var(--pk-elev)}
+.pk-set-panel{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pk-set-card{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red)}
+.pk-set-card-h{padding:16px 18px 0}
+.pk-set-card-h h3{margin:0;font:700 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-set-card-h p{margin:6px 0 0;font:400 12px/1.5 var(--pk-font);color:var(--pk-muted)}
+.pk-set-card-b{padding:8px 18px 6px}
+.pk-set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--pk-hair)}
+.pk-set-row:last-child{border-bottom:none}
+.pk-set-row-main{min-width:0}
+.pk-set-row-label{font:600 13px/1.3 var(--pk-font);color:var(--pk-ink)}
+.pk-set-row-desc{margin-top:3px;font:400 12px/1.45 var(--pk-font);color:var(--pk-muted)}
+.pk-set-ctl{flex:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+/* switch */
+.pk-set-switch{width:44px;height:24px;padding:0;border:none;border-radius:9999px;background:var(--pk-hair);cursor:pointer;
+  position:relative;transition:background .18s}
+.pk-set-switch[aria-checked="true"]{background:var(--pk-red)}
+.pk-set-switch-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:9999px;background:var(--pk-on-accent);
+  transition:transform .18s}
+.pk-set-switch[aria-checked="true"] .pk-set-switch-thumb{transform:translateX(20px)}
+/* segmented */
+.pk-set-seg{display:inline-flex;border:1px solid var(--pk-hair);overflow:hidden}
+.pk-set-segbtn{padding:7px 14px;border:none;background:transparent;cursor:pointer;color:var(--pk-body);
+  font:600 12px/1 var(--pk-font);transition:background .15s,color .15s}
+.pk-set-segbtn + .pk-set-segbtn{border-left:1px solid var(--pk-hair)}
+.pk-set-segbtn.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
+/* accent swatches */
+.pk-set-swatches{display:inline-flex;gap:8px;flex-wrap:wrap}
+.pk-set-swatch{width:26px;height:26px;padding:0;border:1px solid var(--pk-hair);border-radius:9999px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;background:var(--pk-card)}
+.pk-set-swatch > span{width:16px;height:16px;border-radius:9999px;background:var(--sw,var(--pk-red))}
+.pk-set-swatch-def > span{background:linear-gradient(135deg,var(--pk-muted) 0 50%,var(--pk-hair) 50% 100%)}
+.pk-set-swatch.is-active{border-color:var(--pk-red);box-shadow:0 0 0 2px var(--pk-canvas),0 0 0 3px var(--pk-red)}
+/* pills / tags / ping / kbd */
+.pk-set-pill{display:inline-flex;align-items:center;height:24px;padding:0 10px;background:var(--pk-elev);
+  border:1px solid var(--pk-hair);font:600 12px/1 var(--pk-font);color:var(--pk-body)}
+.pk-set-ping{font:600 12px/1 var(--pk-font);color:var(--pk-muted)}
+.pk-set-teamtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;max-width:320px}
+.pk-set-teamtag{display:inline-flex;align-items:center;height:24px;padding:0 10px;background:var(--pk-elev);
+  border:1px solid var(--pk-hair);font:600 11px/1 var(--pk-font);color:var(--pk-body)}
+.pk-set-teamtag.is-off{opacity:.5}
+/* Was an inline style= in dashboard.js; a class instead, so \`style-src 'self'\` holds. */
+.pk-set-teamtag-meta{color:var(--pk-muted)}
+.pk-set-kbd{display:inline-flex;align-items:center;height:22px;padding:0 8px;background:var(--pk-input);
+  border:1px solid var(--pk-hair);border-bottom-width:2px;border-radius:4px;font:700 11px/1 var(--pk-font);color:var(--pk-ink)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-set-tab:not(.is-active):hover{color:var(--pk-ink)}
+  .pk-set-swatch:hover{border-color:var(--pk-red)}
+}
+@media (max-width:900px){
+  .pk-set{grid-template-columns:1fr}
+  .pk-set-nav{flex-direction:row;flex-wrap:wrap;position:static}
+  .pk-set-tab{border-left:none;border-bottom:2px solid transparent}
+  .pk-set-tab.is-active{border-left:none;border-bottom-color:var(--pk-red)}
+}
+@media (max-width:560px){
+  .pk-set-teamtags{justify-content:flex-start}
+}
+
+/* ===========================================================================
+   REVAMPED TICKET DETAIL (overlayUi === 'new'). Sits alongside the classic
+   .pk-detail-* layout — the dashboard picks one at render time, so the Old
+   view is untouched when the flag is 'old'.
+   Shape: identity + minimal routing text on the right · 2-col grid (main +
+   status/details rail) · the FULL history as a full-width band at the bottom.
+   =========================================================================== */
+.pkd-head{display:flex;flex-direction:row;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-6);flex-wrap:wrap}
+.pkd-id{display:flex;flex-direction:column;gap:var(--pk-space-3h);flex:1 1 420px;min-width:0}
+.pkd-eyebrow{display:inline-flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;
+  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+.pkd-eyebrow b{color:var(--pk-red-ink)}
+.pkd-sep{color:var(--pk-hair)}
+.pkd-sub{display:inline-flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;font-size:var(--pk-text-sm);color:var(--pk-body)}
+.pkd-sub a{color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+/* routing: plain text, no team-tint chips — the flow reads as one line */
+.pkd-route{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--pk-space-3);text-align:right;padding-top:2px}
+.pkd-route-k{font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
+.pkd-route-v{font:var(--pk-w-semibold) var(--pk-text-md)/1 var(--pk-font);color:var(--pk-ink)}
+.pkd-route-v span{color:var(--pk-muted);margin:0 var(--pk-space-2)}
+.pkd-route-i{font:var(--pk-w-medium) var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
+/* status stepper (side rail) */
+.pkd-status{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4);
+  padding-bottom:var(--pk-space-4);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pkd-steps{list-style:none;margin:0;padding:0}
+.pkd-step{position:relative;display:flex;align-items:flex-start;gap:var(--pk-space-3h);padding:var(--pk-space-3) 0}
+.pkd-step::before{content:"";position:absolute;left:11px;top:calc(var(--pk-space-3) + 26px);
+  height:calc(100% - 26px);width:2px;background:var(--pk-hair)}
+.pkd-step:last-child::before{display:none}
+.pkd-step-n{flex:none;width:24px;height:24px;border-radius:var(--pk-radius-full);display:inline-flex;align-items:center;justify-content:center;
+  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);border:var(--pk-border-strong) solid var(--pk-hair);
+  background:var(--pk-card);color:var(--pk-muted);font-variant-numeric:tabular-nums}
+.pkd-step-t{font:var(--pk-w-semibold) var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-muted)}
+.pkd-step.is-done .pkd-step-n{background:var(--pk-green);border-color:var(--pk-green);color:var(--pk-on-accent)}
+.pkd-step.is-done .pkd-step-t{color:var(--pk-ink)}
+.pkd-step.is-current .pkd-step-n{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
+.pkd-step.is-current .pkd-step-t{color:var(--pk-ink)}
+/* full-width timeline band */
+.pkd-ftl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;padding:var(--pk-space-5) var(--pk-space-5) var(--pk-space-4)}
+.pkd-node{position:relative;padding-top:var(--pk-space-5);padding-right:var(--pk-space-4)}
+.pkd-node::before{content:"";position:absolute;left:0;top:5px;right:0;height:2px;background:var(--pk-hair)}
+.pkd-node:last-child::before{right:auto;width:12px}
+.pkd-dot{position:absolute;left:0;top:0;width:12px;height:12px;border-radius:var(--pk-radius-full);
+  background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
+.pkd-node.is-done .pkd-dot{background:var(--pk-green);border-color:var(--pk-green)}
+.pkd-node.is-current .pkd-dot{background:var(--pk-red);border-color:var(--pk-red)}
+.pkd-stage{font:var(--pk-w-bold) var(--pk-text-sm)/1.2 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-ink)}
+.pkd-node.is-current .pkd-stage{color:var(--pk-red-ink)}
+.pkd-actor{margin-top:var(--pk-space-3h);font:var(--pk-w-semibold) var(--pk-text-md)/1.2 var(--pk-font);color:var(--pk-ink)}
+.pkd-when{margin-top:var(--pk-space-2);font:var(--pk-w-regular) var(--pk-text-xs)/1.3 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .pkd-route{align-items:flex-start;text-align:left}
+  .pkd-ftl{grid-template-columns:1fr}
+  .pkd-node{padding-top:0;padding-left:var(--pk-space-5);padding-bottom:var(--pk-space-4)}
+  .pkd-node::before{left:5px;top:14px;bottom:-4px;right:auto;width:2px;height:auto}
+  .pkd-node:last-child::before{display:none}
+}
+
+/* ---- grouped Details accordions (revamped detail rail) ---- */
+.pkd-acc{border-top:var(--pk-border-hair) solid var(--pk-hair)}
+.pkd-acc:first-child{border-top:none}
+.pkd-acc-h{width:100%;display:flex;align-items:center;gap:var(--pk-space-3);padding:var(--pk-space-3h) 0;background:none;border:none;cursor:pointer;
+  font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-red-ink);text-align:left;font-family:var(--pk-font)}
+.pkd-acc-chev{width:14px;height:14px;margin-left:auto;color:var(--pk-muted);transition:transform .18s}
+.pkd-acc.is-collapsed .pkd-acc-chev{transform:rotate(-90deg)}
+.pkd-acc.is-collapsed .pkd-acc-b{display:none}
+.pkd-acc-b{padding-bottom:var(--pk-space-3h)}
+.pkd-acc-h:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
+
+/* ---- side-nav brand block (mirrors the isolated design: mark + wordmark, gold project tag under) ---- */
+.pk-side-brand{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3);
+  padding:0 var(--pk-space-4) var(--pk-space-4h)}
+.pk-side-mark{flex:none;width:11px;height:11px;border-radius:50%;background:var(--pk-red);box-shadow:0 0 0 4px var(--pk-ring-red)}
+.pk-side-word{font-size:var(--pk-text-lg);font-weight:var(--pk-w-bold);letter-spacing:.01em;color:var(--pk-ink)}
+.pk-side-tag{flex-basis:100%;margin-left:23px;font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);
+  letter-spacing:.14em;text-transform:uppercase;color:var(--pk-brand-gold)}
+:root[data-pk-theme="light"] .pk-side-tag{color:var(--pk-muted)}
+/* the side rail is a horizontal wrap on small screens — the brand block would break it */
+@media (max-width:768px){.pk-side-brand{width:100%;padding-bottom:var(--pk-space-3)}}
+
+/* ---- COMPACT HEADER (revamped UI only, keyed off [data-pk-newui] on <html>) --------------
+   The isolated design drops the oversized mode heading and the lead paragraph, and moves the
+   Proofkit mark into the side rail — reclaiming ~160px of vertical space before content. The
+   classic header is untouched when the flag is 'old'. ---------------------------------------- */
+:root[data-pk-newui] .pk-top{align-items:center;padding-top:0;padding-bottom:var(--pk-space-4)}
+:root[data-pk-newui] .pk-h1{font-size:var(--pk-text-xl);line-height:var(--pk-lh-heading);letter-spacing:-.01em}
+:root[data-pk-newui] .pk-lead{display:none}            /* the strapline is chrome, not information */
+:root[data-pk-newui] .pk-top-r .pk-brand{display:none} /* the mark now lives at the top of the side rail */
+:root[data-pk-newui] .pk-top-r{flex-direction:row;align-items:center;gap:var(--pk-space-3)}
+:root[data-pk-newui] .pk-bar{margin-top:var(--pk-space-5)}
+@media (max-width:768px){:root[data-pk-newui] .pk-h1{font-size:var(--pk-text-lg)}}
+
+/* ---- side-nav icons (isolated-design parity: icon + label, badge pushed right) ---- */
+.pk-nav-ico{width:16px;height:16px;flex:none;color:currentColor}
+.pk-nav .pk-navbadge{margin-left:auto}   /* count sits at the far edge, not tight to the label */
+
+/* ---- accent discipline (revamped detail): the red left stroke marks THE REQUEST, not every card.
+   All detail cards read as neutral surfaces like Quick questions; only "The ask" keeps the accent. */
+:root[data-pk-newui] .pk-dcard{border-left-color:var(--pk-hair)}
+:root[data-pk-newui] .pk-dcard--accent{border-left-color:var(--pk-red)}
+
+/* ---- stepper chevrons: real SVGs, not text glyphs. A glyph carries its own baseline metrics,
+   so it never sits truly centred in a fixed-size button however the box is aligned. ---- */
+.pk-stepbtn-ico{width:16px;height:16px;display:block;flex:none}
+
+/* ---- detail toolbar (isolated-design parity): icon-led actions, one red lead action ---- */
+.pk-a-ico{display:inline-flex;align-items:center;justify-content:center;margin-right:6px;flex:none}
+.pk-a-ico svg{width:14px;height:14px;display:block}
+.pk-a--primary{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-a--primary:hover{background:var(--pk-red-2);border-color:var(--pk-red-2);color:var(--pk-on-accent)}
+}
+/* the Copy dropdown sits in the same bar — match the action type ramp */
+:root[data-pk-newui] .pk-detail-bar-r .pk-dropdown-trigger{text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:700}
+
+/* ---- row-menu section headers (categorised ⋮ menu) ---- */
+.pk-rowmenu-h{padding:var(--pk-space-3) var(--pk-space-3h) var(--pk-space-2);
+  font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-rowmenu-h:not(:first-child){margin-top:var(--pk-space-2);border-top:var(--pk-border-hair) solid var(--pk-hair);padding-top:var(--pk-space-3h)}
+
+/* ---- nav count badges: same circle, lighter/smaller digits, optically centred, right-snapped.
+   padding is 2px (not 4px) so a two-digit count still fits inside the 18px min-width and the pill
+   stays a true circle; three digits expand it to a pill, which is the correct fallback.
+   \`margin-left:auto\` snaps every counter to one right edge, so the gutter is set by the longest
+   label + the badge — the counters line up as a column regardless of label length. ---- */
+.pk-nav .pk-navbadge{
+  margin-left:auto;
+  min-width:18px;height:18px;padding:0 2px;
+  font-weight:var(--pk-w-semibold);font-size:9px;line-height:1;letter-spacing:0;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+/* MUST stay below the rule above: \`.pk-navbadge[hidden]{display:none}\` up in the base block ties
+   \`.pk-nav .pk-navbadge\` on specificity (0,2,0) and loses on order, so a badge the JS had already
+   hidden kept its display and every empty counter sat in the rail reading "0" — which reads as an
+   unread item that will not clear. This re-asserts it at (0,3,0) inside the nav. */
+.pk-nav .pk-navbadge[hidden]{display:none}
+
+/* The rail must be wide enough for the LONGEST label plus its counter, otherwise that one row
+   overflows and its badge is pushed past the others — breaking the counter column. 184px left
+   "Notifications" ~8px short; 208px clears it. \`min-width:0\` on the label is a safety net so a
+   longer future label shrinks instead of shoving the badge out again. */
+:root[data-pk-newui] .pk-side{width:208px}
+:root[data-pk-newui] .pk-nav{min-width:0}
+:root[data-pk-newui] .pk-nav > :not(.pk-navbadge):not(.pk-nav-ico){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---- row-menu drill-down (submenu in the same panel) ---- */
+.pk-rowmenu-chev{width:14px;height:14px;margin-left:auto;flex:none;color:var(--pk-muted)}
+.pk-rowmenu-item:hover .pk-rowmenu-chev{color:var(--pk-ink)}
+.pk-rowmenu-back .pk-rowmenu-lbl{font-weight:var(--pk-w-bold);letter-spacing:.06em;text-transform:uppercase;font-size:var(--pk-text-3xs)}
+
+/* ---- team name doubles as the route back to Builder (team board) ---- */
+.pk-h1-teamlink{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;
+  border-bottom:var(--pk-border-strong) solid transparent;transition:border-color .15s}
+.pk-h1-teamlink:hover{border-bottom-color:currentColor}
+.pk-h1-teamlink:focus-visible{outline:2px solid var(--pk-red);outline-offset:3px}
+
+/* ---- side-rail foot: the flexible gap that pins what follows to the rail's bottom ----
+   The rail is a viewport-tall flex column (see .pk-side height above). \`.pk-side-spacer\`
+   is a flexible gap that GROWS to push everything after it to the rail's bottom on tall
+   screens. What that is differs by board: on TEAM it is the icon-only Log out alone; on
+   BUILDER the spacer sits higher — above the hairline — so the whole foot group (rule +
+   "Team dashboards" label + picker + colour mode + Log out) travels down as one block.
+   min-height:40px is the floor: the group never comes within 40px of the last nav item.
+   On short viewports the column overflows, the spacer collapses to that 40px, and the
+   group rides the bottom of the scrolling stack rather than colliding with the nav. The
+   team dropdown opens UPWARD in the rail so the rail's overflow never clips it. */
+.pk-side-spacer{flex:1 1 40px;min-height:40px}
+.pk-side .pk-dropdown-menu{top:auto;bottom:calc(100% + 8px)}
+/* A rail menu opens UPWARD, so its entry has to travel the other way or it reads as falling
+   into place from above: the panel rises from below and the options stack UP from the item
+   nearest the trigger (hence the reversed delay — --n is the item count, set by
+   buildDropdown). Same durations + easings as the downward set. */
+/* …and the chevron points the way the menu will go: UP when closed, sweeping down (same
+   clockwise direction as the default component) once the list is open above it. */
+.pk-side .pk-dropdown-chev{transform:rotate(180deg)}
+.pk-side .pk-dropdown.is-open .pk-dropdown-chev{transform:rotate(360deg)}
+.pk-side .pk-dropdown.is-open .pk-dropdown-menu{animation-name:pk-dd-panel-up}
+.pk-side .pk-dropdown.is-open .pk-dropdown-item{animation-name:pk-dd-stack-up;
+  animation-delay:calc((var(--n,1) - 1 - var(--i,0)) * 22ms)}
+@keyframes pk-dd-panel-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pk-dd-stack-up{from{opacity:0;transform:translateY(18px) scale(.85)}to{opacity:1;transform:none}}
+.pk-side-logout{margin-left:0;display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;flex:none;border:var(--pk-border-hair) solid var(--pk-hair);
+  background:transparent;color:var(--pk-muted);cursor:pointer;transition:border-color .15s,color .15s}
+.pk-side-logout svg{width:18px;height:18px}
+.pk-side-logout:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
+.pk-side-logout:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
+/* Row variant — Log out as a labelled row in the rail's action stack (Builder), sharing the
+   dropdown trigger's box with the colour-mode switch instead of floating at the rail's foot.
+   Hover still reddens (inherited above); the glyph rides the label colour. */
+.pk-side-logout--row{width:100%;height:48px;padding:0 16px;box-sizing:border-box;
+  justify-content:space-between;gap:12px;background:var(--pk-input);color:var(--pk-ink);
+  font:600 13px/1 var(--pk-font);letter-spacing:.04em}
+.pk-side-logout--row svg{width:16px;height:16px;color:var(--pk-muted);transition:color .15s}
+.pk-side-logout--row:hover svg{color:inherit}
+/* Same exit animation as the header's logout (the arrow slides out through the door, the door
+   stays put) — mirrored, because this glyph faces left. */
+@media (min-width:1024px) and (hover:hover){
+  .pk-side-logout--row:hover .pk-logout-ico .pk-logout-out{transform:translateX(-3px)}
+}
+@media (max-width:768px){
+  .pk-side{height:auto;overflow:visible}
+  .pk-side-spacer{display:none}
+  .pk-side .pk-dropdown-menu{top:calc(100% + 8px);bottom:auto}
+}
+
+/* ===========================================================================
+   MOTION PASS — reuse the site's existing vocabulary (pk-rise / pk-dd-panel and
+   the --pk-ease-rise + --pk-dur-* tokens) on the surfaces that had none, so
+   every overlay opens and closes the same way. Deliberately small: 120–180ms,
+   a few px of travel, opacity only where a transform would fight layout.
+   Honours prefers-reduced-motion.
+   =========================================================================== */
+@keyframes pk-fade{from{opacity:0}to{opacity:1}}
+
+/* collapsible card bodies (detail cards + Details accordions) */
+.pk-dcard:not(.is-collapsed) > .pk-dcard-b{animation:pk-rise var(--pk-dur-base) var(--pk-ease-rise) both}
+.pkd-acc:not(.is-collapsed) > .pkd-acc-b{animation:pk-rise var(--pk-dur-base) var(--pk-ease-rise) both}
+
+/* row menus: the panel already rises — give the drilled-in submenu the same entrance */
+.pk-rowmenu-item,.pk-rowmenu-h{animation:pk-fade var(--pk-dur-fast) var(--pk-ease) both}
+
+/* status-chip "More" reveal + saved-view chips */
+.pk-statuschips .pk-schip{animation:pk-fade var(--pk-dur-fast) var(--pk-ease) both}
+
+/* detail view + card list entrances (the list already staggers; match the detail) */
+.pk-detailwrap{animation:pk-rise var(--pk-dur-slow) var(--pk-ease-rise) both}
+
+@media (prefers-reduced-motion:reduce){
+  .pk-dcard > .pk-dcard-b,.pkd-acc > .pkd-acc-b,.pk-rowmenu-item,.pk-rowmenu-h,
+  .pk-statuschips .pk-schip,.pk-detailwrap{animation:none}
+}
+`;

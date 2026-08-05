@@ -1,6 +1,6 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, ADMIN_TEAM, isTeamEnabled,
     BASE, TEAM_BASE, boardBase,
-    getSession, setSession, clearSession, buildPanelLogin, buildDropdown, nextLocalTicket, pageName,
+    getSession, setSession, clearSession, buildPanelLogin, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
     // v3 shared vocabulary (single source of truth in ./config.js — never re-declared here):
     // comment types + per-type template fields, teamStatus→token colours, the summary renderer,
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
@@ -12,8 +12,12 @@
   import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
-  import pkTokensCss from './design/tokens.css?inline';
-  import pkComponentsCss from './design/components.css?inline';
+  // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
+  // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
+  // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
+  // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
+  import pkTokensCss from './design/tokens.css.js';
+  import pkComponentsCss from './design/components.css.js';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
@@ -54,9 +58,9 @@
 
     // ---- storage abstraction (Worker | localStorage demo) ----------------
     async function apiFetch(path, opts = {}) {
-      const headers = { 'Content-Type': 'application/json' };
-      const pass = getSession().key;
-      if (pass) headers['X-Review-Pass'] = pass;
+      // 6.0: an account token when this tab is unlocked, else the legacy team key. Additive —
+      // a browser with no account behaves exactly as before.
+      const headers = { 'Content-Type': 'application/json', ...authHeaders() };
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
       if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
       if (!res.ok) {
@@ -689,6 +693,21 @@
     // ---- enter / exit review mode ---------------------------------------
     const backdrop = document.createElement('div'); backdrop.className = 'rv-backdrop';
 
+    // ---- 5.0: external (extension) mode ---------------------------------------------------
+    // True when the core was armed by the browser extension on a page we do NOT control. The
+    // extension defines window.ProofkitAnchor / window.ProofkitCapture before importing the core,
+    // so their presence is the signal — the same additive-hook convention used for those two.
+    //
+    // This decides which review chrome runs, and it is not cosmetic. The HUD renders the page into
+    // an <iframe> (overlay-hud.js: `.cv-frame`) and puts its grayscale filter on THAT frame. Any
+    // site sending X-Frame-Options or frame-ancestors refuses to be framed — which is most large
+    // sites — so on a foreign origin the HUD canvas is blank. And because the HUD path deliberately
+    // skips the full-page backdrop, the real page never greys either: the reviewer sees nothing
+    // happen at all. On a foreign origin we therefore always take the in-page path, which operates
+    // on the real DOM and needs no framing.
+    const externalMode = () =>
+      !!(window.PROOFKIT_EXTERNAL || window.ProofkitAnchor || window.ProofkitCapture);
+
     // After the HUD is closed the tab stays signed-in but OUT of review. These shortcuts are the
     // way back in without retyping the URL: `r` re-enters review here, `d` opens the dashboard.
     // Ignored while typing, with a modifier held, or once review is running again.
@@ -804,12 +823,19 @@
       // New HUD path: it's self-contained (own B&W canvas + chrome), so DON'T run the Old
       // review chrome — no full-page grayscale backdrop, dock, FAB, or legacy pins. This is
       // why closing the HUD leaves the page in full colour.
-      if (getOverlayUi() === 'new') { reviewOn = true; try { history.replaceState(null, '', reviewUrl()); } catch (e) {} mountNewHud(); return; }
+      //
+      // 5.0: NEVER on a foreign origin. The HUD frames the page, and a site that refuses framing
+      // gets a blank canvas with no grayscale anywhere — see externalMode().
+      if (getOverlayUi() === 'new' && !externalMode()) {
+        reviewOn = true; try { history.replaceState(null, '', reviewUrl()); } catch (e) {} mountNewHud(); return;
+      }
       revealDock();       // authenticated -> the Comment/Save dock is now visible
       reviewOn = true;
       setFab(true);
       nav.style.display = 'flex';
-      try { history.replaceState(null, '', reviewUrl()); } catch (e) {} // address bar → /<page>/review
+      // Only the host site gets the /<page>/review address. Rewriting a foreign site's URL is
+      // visible to the reviewer and can trip that site's own router on an SPA.
+      if (!externalMode()) { try { history.replaceState(null, '', reviewUrl()); } catch (e) {} }
       document.body.appendChild(backdrop);
       pinObserver.observe(document.body, { subtree: true, childList: true, attributes: true,
         attributeFilter: ['class', 'style', 'hidden', 'aria-hidden', 'data-open', 'data-panel', 'open'] });
@@ -842,7 +868,10 @@
       setFab(false);
       nav.style.display = 'none';
       pinObserver.disconnect();
-      try { history.replaceState(null, '', pagePath()); } catch (e) {} // address bar → back to the page
+      // address bar → back to the page. Skipped on a foreign origin: we never rewrote it on entry,
+      // and pagePath() drops the query string — exiting review would silently mutate a URL like
+      // /dp/B0ABC?ref=xyz down to /dp/B0ABC on a site we don't control.
+      if (!externalMode()) { try { history.replaceState(null, '', pagePath()); } catch (e) {} }
       backdrop.remove(); closePop();
       pinEls.forEach((el) => el.remove()); pinEls.clear();
       drafts = []; draftPinEls.forEach((el) => el.remove()); draftPinEls.clear(); renderTray();

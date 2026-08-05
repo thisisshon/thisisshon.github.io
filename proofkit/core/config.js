@@ -137,6 +137,71 @@ export function getSession() {
     return { team, key };
   } catch { return { team: '', key: '' }; }
 }
+/* --------------------------------------------------------------------------
+ * 6.0 — account sessions (email + PIN).
+ *
+ * Two storage tiers, which is what produces the "signed in like a Google account, but PIN per
+ * tab" behaviour:
+ *
+ *   localStorage    the IDENTITY (email, name, team, role). Shared across every tab and window
+ *                   on this origin, and in the extension across every domain. Survives restarts.
+ *   sessionStorage  the TOKEN. Per-tab by definition, so a new tab has none and must re-enter the
+ *                   PIN — while never re-asking who you are.
+ *
+ * The token is what authorises requests; the PIN is exchanged for it once and never stored.
+ * ------------------------------------------------------------------------ */
+const ACCT_ID = 'pkAccount';      // localStorage — identity, shared
+const ACCT_TOK = 'pkAuthToken';   // sessionStorage — token, per tab
+
+/** The signed-in person, or null. Identity only — never a credential. */
+export function getAccount() {
+  try { return JSON.parse(localStorage.getItem(ACCT_ID) || 'null'); } catch (e) { return null; }
+}
+/** This tab's bearer token, or '' when the tab is locked and needs a PIN. */
+export function getAuthToken() {
+  try { return sessionStorage.getItem(ACCT_TOK) || ''; } catch (e) { return ''; }
+}
+/** Remember who is signed in (durable) and unlock THIS tab (per-tab). */
+export function setAccountSession(user, token) {
+  try { localStorage.setItem(ACCT_ID, JSON.stringify(user || null)); } catch (e) {}
+  try { sessionStorage.setItem(ACCT_TOK, token || ''); } catch (e) {}
+}
+/** Lock this tab but keep the identity, so the next prompt asks only for the PIN. */
+export function lockTab() {
+  try { sessionStorage.removeItem(ACCT_TOK); } catch (e) {}
+}
+/** Full sign-out: forget the person everywhere on this origin. */
+export function clearAccount() {
+  try { localStorage.removeItem(ACCT_ID); } catch (e) {}
+  try { sessionStorage.removeItem(ACCT_TOK); } catch (e) {}
+}
+
+/** Exchange email + PIN for a token. Throws with the server's message on failure. */
+export async function accountLogin(workerUrl, email, pin) {
+  const res = await fetch((workerUrl || WORKER_URL).replace(/\/$/, '') + '/auth/login', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, pin }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(body.error || 'Could not sign in.');
+    err.locked = !!body.locked;            // 423: lockout, not a wrong PIN
+    err.retryAfter = body.retryAfter || 0;
+    err.mustChange = false;
+    throw err;
+  }
+  setAccountSession(body.user, body.token);
+  return body;
+}
+
+/** Headers for an authenticated call: bearer token when signed in, else the legacy team key. */
+export function authHeaders() {
+  const t = getAuthToken();
+  if (t) return { Authorization: 'Bearer ' + t };
+  const k = getSession().key;
+  return k ? { 'X-Review-Pass': k } : {};
+}
+
 export function setSession(team, key) {
   try { sessionStorage.setItem('pkTeam', team); sessionStorage.setItem('pkKey', key); } catch {}
   try { localStorage.setItem('pkTeam', team); localStorage.setItem('pkKey', key); } catch {} // shared → adoptable by new tabs
