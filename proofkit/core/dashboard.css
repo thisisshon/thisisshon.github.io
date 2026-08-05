@@ -520,3 +520,225 @@
   }
   /* detail responsive (grid→1col, sticky-bar→static on mobile) lives with the global
      .pk-detail* rules in design/components.css — shared by both dashboards. */
+
+
+/* ---- 7.x visibility matrix (Settings → Visibility) ----------------------------------------
+   Rows are the viewing team, columns the team being viewed. A cell has THREE states, because
+   "follow the mode" has to stay distinguishable from an explicit allow that happens to agree
+   with it — otherwise flipping the project mode would silently rewrite every pair. */
+.pk-vis-wrap { overflow-x: auto; }                 /* many teams > panel width; scroll the grid, not the page */
+.pk-vis-table { border-collapse: collapse; font-size: 12px; }
+.pk-vis-table th { font-weight: 600; color: var(--pk-muted); padding: 6px 10px; text-align: left; white-space: nowrap; }
+.pk-vis-table tbody th { color: var(--pk-ink); }
+.pk-vis-table td { padding: 3px; text-align: center; }
+.pk-vis-self { color: var(--pk-muted); opacity: .5; }
+.pk-vis-cell {
+  width: 30px; height: 30px; border-radius: var(--pk-radius-sm);
+  border: 1px solid var(--pk-hair); background: var(--pk-elev);
+  color: var(--pk-muted); font: 600 12px/1 var(--pk-font); cursor: pointer;
+  transition: background .14s, border-color .14s, color .14s;
+}
+.pk-vis-cell:hover { border-color: var(--pk-muted); }
+.pk-vis-cell.is-on { background: rgba(61,220,132,.14); border-color: var(--pk-green); color: var(--pk-green); }
+.pk-vis-cell:not(.is-on) { background: rgba(218,41,28,.10); border-color: var(--pk-hair); color: var(--pk-softred); }
+/* An explicit choice is ringed, so "pinned open/shut" reads differently from "inherited". */
+.pk-vis-cell.is-set { box-shadow: 0 0 0 2px var(--pk-canvas), 0 0 0 3px currentColor; }
+
+
+/* ---- 7.4: Builder home tiles ---------------------------------------------------------------
+   An index of what Builder mode can do. auto-fit rather than fixed columns so the grid reflows
+   sensibly from a laptop to a wide monitor without a media-query ladder. */
+.pk-tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: 4px; }
+.pk-tile {
+  display: flex; flex-direction: column; gap: 4px; text-align: left;
+  padding: 16px 18px; min-height: 8.5rem;
+  border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-lg);
+  background: var(--pk-card); color: var(--pk-ink); cursor: pointer;
+  transition: border-color .16s, transform .16s, background .16s;
+}
+.pk-tile:hover { border-color: var(--pk-red); transform: translateY(-2px); }
+.pk-tile:focus-visible { outline: 2px solid var(--pk-red); outline-offset: 2px; }
+/* The queue is the only tile that represents work waiting on you, so it leads. */
+.pk-tile.is-wide { grid-column: span 2; }
+.pk-tile.is-accent { background: linear-gradient(180deg, rgba(218,41,28,.10), transparent 70%); border-color: rgba(218,41,28,.35); }
+.pk-tile-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pk-tile-title { font: 650 13px/1.2 var(--pk-font); letter-spacing: .01em; }
+.pk-tile-badge {
+  font: 600 10px/1 var(--pk-font); letter-spacing: .04em; text-transform: uppercase;
+  padding: 4px 7px; border-radius: var(--pk-radius-full);
+  background: var(--pk-red); color: var(--pk-on-accent); white-space: nowrap;
+}
+.pk-tile-stat { font: 700 30px/1.05 var(--pk-font); letter-spacing: -.02em; margin-top: 6px; }
+.pk-tile-sub { font-size: 11.5px; color: var(--pk-body); }
+.pk-tile-desc { margin-top: auto; padding-top: 8px; font-size: 11.5px; color: var(--pk-muted); line-height: 1.45; }
+@media (max-width: 40rem) { .pk-tile.is-wide { grid-column: span 1; } }
+@media (prefers-reduced-motion: reduce) { .pk-tile { transition: none } .pk-tile:hover { transform: none } }
+
+/* ================================================================================================
+ * THE RAIL — sidebar nav, footer controls, and the collapse behaviour.
+ *
+ * Consolidated from twelve appended blocks that had grown to override one another. Three separate
+ * bugs came out of that overlap (controls faded to nothing, the gutter applied twice, the collapsed
+ * state re-adding padding a later rule had cleared), so this is deliberately ONE block and should
+ * stay that way — extend it in place rather than appending a new one.
+ *
+ * THE DOM IT TARGETS (shared with the team boards; not ours to restructure):
+ *   aside.pk-side
+ *     button.pk-nav          [svg.pk-nav-ico][span.pk-nav-txt][span.pk-navbadge?]
+ *     button.pk-side-collapse[svg][span.pk-nav-txt]
+ *     div.pk-side-spacer
+ *     div.rvd-teamview  >  div#rvd-teamview-mount  >  div.pk-dropdown
+ *          button.pk-dropdown-trigger [::before glyph][span.pk-dropdown-label][svg chevron]
+ *          div.pk-dropdown-menu                      <- a POPUP: never treat it as a rail row
+ *     div.rvd-sideactions
+ *          span.rvd-sidetheme > button.pk-side-theme-btn [svg][span.pk-nav-txt]
+ *          button.pk-side-logout--row                    [svg][span]
+ *
+ * THE FOUR RULES THAT MAKE IT WORK — each one existed because a bug proved it necessary:
+ *   1. The gutter is applied ONCE, on the element that paints the border. Wrappers are
+ *      pass-throughs. (Applied twice, footer icons landed outside the 64px clip and vanished.)
+ *   2. Only NAMED LABELS fade. Never `> * :not(svg)` — with these wrappers that resolves to the
+ *      controls themselves, which is how the picker and theme button disappeared while still
+ *      measuring as correctly positioned.
+ *   3. Icons never move: the same left gutter in both states, so nothing slides on toggle.
+ *   4. The popup menu is excluded from every rail rule. It has its own layout.
+ * ============================================================================================== */
+
+:root {
+  --pk-rail-w: 208px;
+  --pk-rail-w-min: 64px;
+  --pk-rail-gutter: 23px;        /* (64 - 18) / 2 — an 18px icon reads centred when collapsed */
+  --pk-rail-row-h: 48px;
+}
+
+/* ---- the rail itself ------------------------------------------------------------------------ */
+.pk-side { overflow: hidden; transition: width .26s cubic-bezier(.4, 0, .2, 1); }
+:root.pk-side-collapsed .pk-side { width: var(--pk-rail-w-min) !important; min-width: var(--pk-rail-w-min); }
+/* `overflow: hidden` is what reveals labels by clipping them — but it would also clip the team
+   popup. Lift it only while that menu is open. */
+.pk-side:has(.rvd-teamview .pk-dropdown.is-open) { overflow: visible; }
+
+/* ---- every row shares one geometry ----------------------------------------------------------
+   Wrappers carry no horizontal spacing; the gutter goes on the elements that draw a box. The
+   popup menu and its items are excluded throughout. */
+.pk-side .rvd-teamview,
+.pk-side .rvd-teamview > *,
+.pk-side .rvd-teamview .pk-dropdown,
+.pk-side .rvd-sideactions,
+.pk-side .rvd-sideactions > *,
+.pk-side .rvd-sidetheme {
+  margin-left: 0 !important; margin-right: 0 !important;
+  padding-left: 0 !important; padding-right: 0 !important;
+  width: 100% !important; max-width: none !important; box-sizing: border-box;
+}
+
+.pk-side .pk-nav,
+.pk-side .pk-side-collapse,
+.pk-side .rvd-teamview .pk-dropdown-trigger,
+.pk-side .pk-side-theme-btn,
+.pk-side .pk-side-logout--row {
+  display: flex !important; align-items: center; gap: 12px;
+  width: 100% !important; box-sizing: border-box;
+  padding-left: var(--pk-rail-gutter) !important; padding-right: 12px !important;
+  justify-content: flex-start !important;
+  white-space: nowrap; overflow: hidden; text-align: left;
+}
+.pk-side .pk-nav-ico,
+.pk-side .pk-side-collapse > svg,
+.pk-side .rvd-teamview .pk-dropdown-trigger > svg,
+.pk-side .pk-side-theme-btn > svg,
+.pk-side .pk-side-logout--row > svg { flex: none; width: 18px; height: 18px; }
+/* stroke-width is a presentation attribute baked into each SVG (some ship 2, some 1.8). CSS wins,
+   so one rule normalises every icon without editing the markup. */
+.pk-side svg { stroke-width: 1.8; }
+
+/* ---- the four footer controls are ONE button, four instances -------------------------------- */
+.pk-side .pk-side-collapse,
+.pk-side .rvd-teamview .pk-dropdown-trigger,
+.pk-side .pk-side-theme-btn,
+.pk-side .pk-side-logout--row {
+  height: var(--pk-rail-row-h) !important;
+  color: var(--pk-body) !important;
+  background: var(--pk-card) !important;
+  border: 1px solid var(--pk-hair) !important;
+  border-radius: var(--pk-radius-md) !important;
+  font: 500 13px/1 var(--pk-font) !important;
+  cursor: pointer;
+  transition: color .14s, border-color .14s, background .14s;
+}
+.pk-side .pk-side-collapse:hover,
+.pk-side .rvd-teamview .pk-dropdown-trigger:hover,
+.pk-side .pk-side-theme-btn:hover,
+.pk-side .pk-side-logout--row:hover {
+  color: var(--pk-ink) !important;
+  border-color: var(--pk-muted) !important;
+  background: var(--pk-elev) !important;
+}
+/* Team picker: glyph and label left, chevron pinned right. */
+.pk-side .rvd-teamview .pk-dropdown-trigger .pk-dropdown-label { margin-right: auto !important; }
+.pk-side .rvd-teamview .pk-dropdown-trigger > svg { margin-left: auto !important; }
+.pk-side .rvd-teamview .pk-dropdown-trigger::before {
+  content: ''; flex: none; width: 18px; height: 18px; background: currentColor;
+  -webkit-mask: var(--pk-teams-glyph) center / contain no-repeat;
+  mask: var(--pk-teams-glyph) center / contain no-repeat;
+}
+:root {
+  --pk-teams-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E");
+}
+/* Log out ships its glyph AFTER the label; every other row has it first. */
+.pk-side .pk-side-logout--row > svg { order: -1; }
+
+/* ---- collapsed: fade the WORDS only ---------------------------------------------------------- */
+.pk-side .pk-nav-txt,
+.pk-side .pk-dropdown-label,
+.pk-side .pk-side-logout--row > span { transition: opacity .13s ease .05s; }
+:root.pk-side-collapsed .pk-side .pk-nav-txt,
+:root.pk-side-collapsed .pk-side .pk-dropdown-label,
+:root.pk-side-collapsed .pk-side .pk-side-logout--row > span {
+  opacity: 0 !important; transition: opacity .11s ease;
+}
+/* Belt and braces: the controls can never be faded by any selector. */
+:root.pk-side-collapsed .pk-side .pk-nav,
+:root.pk-side-collapsed .pk-side .pk-side-collapse,
+:root.pk-side-collapsed .pk-side .rvd-teamview,
+:root.pk-side-collapsed .pk-side .rvd-teamview *,
+:root.pk-side-collapsed .pk-side .rvd-sideactions,
+:root.pk-side-collapsed .pk-side .rvd-sideactions * { opacity: 1; }
+:root.pk-side-collapsed .pk-side .pk-nav-txt,
+:root.pk-side-collapsed .pk-side .pk-dropdown-label,
+:root.pk-side-collapsed .pk-side .pk-side-logout--row > span { opacity: 0 !important; }
+
+/* The picker's trigger takes its width from the label's intrinsic size, so collapsed it stayed
+   170px and its rounded right edge was clipped by the rail. Pin it to the rail width. */
+:root.pk-side-collapsed .pk-side .rvd-teamview .pk-dropdown,
+:root.pk-side-collapsed .pk-side .rvd-teamview .pk-dropdown-trigger {
+  width: var(--pk-rail-w-min) !important; max-width: var(--pk-rail-w-min) !important;
+}
+
+/* The collapse chevron points the way it will move the rail. */
+.pk-side .pk-side-collapse > svg { transition: transform .26s cubic-bezier(.4, 0, .2, 1); }
+:root.pk-side-collapsed .pk-side .pk-side-collapse > svg { transform: rotate(180deg); }
+
+/* ---- the team popup is NOT a rail row -------------------------------------------------------- */
+.pk-side .rvd-teamview .pk-dropdown-menu,
+.pk-side .rvd-teamview .pk-dropdown-menu * {
+  width: auto !important; max-width: none !important;
+  padding: revert !important; margin: revert !important; opacity: revert;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-side, .pk-side *, .pk-side-collapse > svg { transition: none !important; }
+}
+
+/* ---- not the rail, but they live here ------------------------------------------------------- */
+/* `[hidden]` is UA-strength only, so `.pk-counts`'s own display beats it. */
+#rvd-counts[hidden] { display: none !important; }
+
+/* Product name leads; which board you are on is a qualifier, not the title. */
+.pk-h1-mode {
+  display: inline-block; margin-left: 10px;
+  font: 500 12px/1 var(--pk-font); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--pk-muted); vertical-align: middle;
+  padding: 4px 8px; border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-full);
+}
+@media (max-width: 34rem) { .pk-h1-mode { display: block; margin: 6px 0 0; width: max-content; } }

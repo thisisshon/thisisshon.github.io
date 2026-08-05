@@ -2,7 +2,7 @@
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     BASE, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
     ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
-    initTheme, buildThemeToggle, getTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
+    initTheme, buildThemeToggle, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
@@ -373,6 +373,15 @@
           teamAction: (rec, action, reason, note, redirectTo) => apiFetch('/team-status', { method: 'POST', body: JSON.stringify({ id: rec.id, action, reason, note, redirectTo: redirectTo || '' }) }),
           // 6.0 accounts — Builder-only account administration. The Builder can create, reset,
           // unlock and disable, but no endpoint ever returns a PIN or its hash.
+          // 7.x visibility + hierarchy. Enforcement lives server-side in canSee(); these only
+          // read and write the policy the Builder chooses.
+          overview: () => apiFetch('/admin/overview'),
+          visibilityGet: (project) => apiFetch('/admin/visibility?project=' + encodeURIComponent(project || 'default')),
+          visibilityMode: (project, mode) => apiFetch('/admin/visibility/mode', { method: 'POST', body: JSON.stringify({ project, mode }) }),
+          visibilityPair: (project, viewerTeam, subjectTeam, canSee) => apiFetch('/admin/visibility/pair', { method: 'POST', body: JSON.stringify({ project, viewerTeam, subjectTeam, canSee }) }),
+          teamProject: (team, project) => apiFetch('/admin/teams/project', { method: 'POST', body: JSON.stringify({ team, project }) }),
+          projectLinks: () => apiFetch('/admin/project-links'),
+          projectLinkSet: (viewerProject, subjectProject, canSee) => apiFetch('/admin/project-links', { method: 'POST', body: JSON.stringify({ viewerProject, subjectProject, canSee }) }),
           usersList: () => apiFetch('/admin/users'),
           userCreate: (u) => apiFetch('/admin/users', { method: 'POST', body: JSON.stringify(u) }),
           userUpdate: (u) => apiFetch('/admin/users/update', { method: 'POST', body: JSON.stringify(u) }),
@@ -842,16 +851,22 @@
       try { q = new URLSearchParams(location.search); } catch {}
       const legacy = q ? (q.get('ticket') || q.get('detail') || '') : '';
       if (legacy) return { view: 'dash', ticket: legacy };
-      if (!rest.length) return { view: 'dash', ticket: '' };
+      // 7.4: Builder lands on the tiled Home. The queue keeps the internal name 'dash' so every
+      // existing `view === 'dash'` branch is untouched — only its URL moved to /queue. Team boards
+      // parse their own URLs, so their queue stays at their root.
+      if (!rest.length) return { view: 'home', ticket: '' };
       if (rest[0] === 'tickets') return { view: 'dash', ticket: rest[1] || '' };
+      if (rest[0] === 'queue') return { view: 'dash', ticket: '' };
       const v = SEGMENT_VIEWS[rest[0]];
-      return { view: v || 'dash', ticket: '' };
+      return { view: v && v !== 'queue' ? v : 'home', ticket: '' };
     }
     /** The path this board's current state should live at. */
     /** This board's root — Builder is the only identity that renders here. */
     const myBase = () => boardBase(ADMIN_TEAM);
     function pathFor(v, detailId) {
       if (detailId) return myBase() + '/tickets/' + encodeURIComponent(ticketNoOf(detailId));
+      if (v === 'home') return myBase();                 // the tiles are the board root
+      if (v === 'dash') return myBase() + '/queue';      // …so the queue needs its own segment
       const seg = VIEW_SEGMENTS[v];
       return seg ? myBase() + '/' + seg : myBase();
     }
@@ -2290,6 +2305,87 @@
     }
 
     // ---- Settings view — admin preferences (per-browser), organised into a sub-nav of cards ----
+    /* ---- 7.4: the Builder home ---------------------------------------------------------------
+     * A tiled index of everything Builder mode can do. It exists because the sidebar had grown to
+     * six items while the capabilities behind it had grown to fifteen — People, Visibility,
+     * Projects and the rest were buried inside Settings with no indication they were there.
+     *
+     * Numbers come from ONE /admin/overview call spanning every project, since Builder is the only
+     * role that reads across the boundary. Tiles paint immediately with skeleton counts and fill in
+     * when it lands, so the page is never blank while waiting.
+     */
+    let overviewCache = null;
+    function renderHome() {
+      const host = $('#rvd-view-home');
+      if (!host) return;
+
+      const go = (v) => `data-home-view="${v}"`;
+      const goSet = (sec) => `data-home-settings="${sec}"`;
+      const tile = (o) => {
+        const badge = o.badge ? `<span class="pk-tile-badge">${esc(String(o.badge))}</span>` : '';
+        const stat = o.stat != null ? `<div class="pk-tile-stat">${esc(String(o.stat))}</div>` : '';
+        const sub = o.sub ? `<div class="pk-tile-sub">${esc(o.sub)}</div>` : '';
+        return `<button class="pk-tile${o.wide ? ' is-wide' : ''}${o.accent ? ' is-accent' : ''}" type="button" ${o.attr}>` +
+          `<div class="pk-tile-head"><span class="pk-tile-title">${esc(o.title)}</span>${badge}</div>` +
+          stat + sub + `<div class="pk-tile-desc">${esc(o.desc)}</div></button>`;
+      };
+
+      const d = overviewCache;
+      const n = (v) => (d ? String(v) : '—');
+      const t = d ? d.totals : null;
+
+      // Queue first: it is the only tile that represents work waiting on you.
+      const queueSub = t ? `${t.tbi} to start · ${t.inProgress} in progress · ${t.reopened} reopened` : 'Loading…';
+
+      host.innerHTML =
+        `<div class="rvd-notifhead"><div><h2>Builder</h2>` +
+          `<p class="rvd-deploy-explain">Everything Builder mode can do. Numbers span <b>every project</b> — the one view that crosses the boundary.</p></div></div>` +
+        `<div class="pk-tiles">` +
+          tile({ title: 'Queue', attr: go('dash'), accent: true, wide: true,
+                 stat: t ? (t.tbi + t.inProgress + t.reopened) : '—',
+                 badge: d && d.unreadNotifications ? d.unreadNotifications + ' unread' : '',
+                 sub: queueSub, desc: 'Tickets, notifications, comments and patterns.' }) +
+          tile({ title: 'Insights', attr: go('insights'),
+                 stat: t ? t.deployed : '—', sub: t ? `${t.total} tickets all-time` : '',
+                 desc: 'Totals and a per-project breakdown.' }) +
+          tile({ title: 'People', attr: goSet('people'),
+                 stat: n(d && d.people), badge: d && d.pendingResets ? d.pendingResets + ' reset' + (d.pendingResets === 1 ? '' : 's') : '',
+                 sub: d && d.lockedAccounts ? `${d.lockedAccounts} locked out` : '',
+                 desc: 'Accounts, PIN resets and lockouts.' }) +
+          tile({ title: 'Teams', attr: goSet('teams'), stat: n(d && d.teams),
+                 desc: 'Create teams, set passwords, move them between projects.' }) +
+          tile({ title: 'Visibility', attr: goSet('visibility'),
+                 sub: d && d.projects && d.projects[0] ? `Mode: ${d.projects[0].visibilityMode}` : '',
+                 desc: 'Who sees whose work, and grants across projects.' }) +
+          tile({ title: 'Projects', attr: goSet('projects'), stat: n(d && d.projects && d.projects.length),
+                 desc: 'The tenancy boundary every ticket lives inside.' }) +
+          tile({ title: 'Notifications', attr: go('notifs'),
+                 badge: d && d.unreadNotifications ? String(d.unreadNotifications) : '',
+                 desc: 'Status pushes, arrivals and replies.' }) +
+          tile({ title: 'Comments', attr: go('threads'), desc: 'Every thread, including replies.' }) +
+          tile({ title: 'Patterns', attr: go('patterns'), desc: 'Repeat findings and fragile elements.' }) +
+          tile({ title: 'Concerns from teams', attr: go('dash'),
+                 stat: t ? (t.reopened + t.clarify) : '—',
+                 desc: 'Reopened tickets and requests for clarification.' }) +
+          tile({ title: 'Data & maintenance', attr: goSet('data'), desc: 'Backups, migration and consistency.' }) +
+          tile({ title: 'Settings', attr: goSet('appearance'), desc: 'Appearance, behaviour and notifications.' }) +
+        `</div>` +
+        (d && d.projects && d.projects.length > 1
+          ? `<section class="pk-set-card"><div class="pk-set-card-h"><h3>By project</h3>` +
+            `<p>Each project is isolated unless you have granted access in Visibility.</p></div><div class="pk-set-card-b">` +
+            d.projects.map((p) => `<div class="pk-set-row"><div class="pk-set-row-main">` +
+              `<div class="pk-set-row-label">${esc(p.name)}</div>` +
+              `<div class="pk-set-row-desc">${p.tbi} to start · ${p.inProgress} in progress · ${p.reopened} reopened · ${p.deployed} deployed</div>` +
+            `</div><div class="pk-set-ctl"><span class="pk-set-pill">${p.total} total</span></div></div>`).join('') +
+            `</div></section>`
+          : '');
+
+      if (!overviewCache) {
+        store.overview().then((o) => { overviewCache = o; if (view === 'home') renderHome(); })
+          .catch(() => { /* tiles stay usable with em-dashes rather than erroring the whole page */ });
+      }
+    }
+
     function renderSettings() {
       $('#rvd-empty').hidden = true;
       const host = $('#rvd-view-settings');
@@ -2299,6 +2395,7 @@
         { k: 'notifications', label: 'Notifications' },
         { k: 'data', label: 'Data & maintenance' },
         { k: 'people', label: 'People' },
+        { k: 'visibility', label: 'Visibility' },
         { k: 'teams', label: 'Teams' },
         { k: 'projects', label: 'Projects' },
         { k: 'about', label: 'About' },
@@ -2406,6 +2503,13 @@
           `<div id="pk-people-resets"></div>` +
           `<div id="pk-people-list"><section class="pk-set-card"><div class="pk-set-card-b">Loading…</div></section></div>` +
           `<div style="margin-top:12px"><button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button></div>`;
+      } else if (settingsSection === 'visibility') {
+        // Who sees whose work. The project boundary is NOT here: it is absolute unless explicitly
+        // linked below, which is a separate, deliberately harder action.
+        html =
+          `<div id="pk-vis-mode"><section class="pk-set-card"><div class="pk-set-card-b">Loading…</div></section></div>` +
+          `<div id="pk-vis-matrix"></div>` +
+          `<div id="pk-vis-links"></div>`;
       } else if (settingsSection === 'teams') {
         // Phase A — team management. Keys are hashed server-side and never returned, so this screen
         // can SET a password but never show an existing one. Rows are filled async (see below).
@@ -2452,6 +2556,93 @@
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
 
       // Phase A: async-fill the Teams list + wire every action.
+      // ---- Visibility (7.x) -----------------------------------------------------------------
+      if (settingsSection === 'visibility') {
+        const PROJECT = 'default';   // single-project deployments; the links card handles the rest
+
+        const fillVisibility = async () => {
+          const modeHost = $('#pk-vis-mode'), gridHost = $('#pk-vis-matrix'), linkHost = $('#pk-vis-links');
+          if (!modeHost) return;
+          let data;
+          try { data = await store.visibilityGet(PROJECT); }
+          catch (e) { modeHost.innerHTML = card('Visibility', '', `<p class="pk-empty--inline">Could not load — ${esc(e.message)}</p>`); return; }
+
+          const mode = (data.project && data.project.visibility_mode) || 'project';
+          const teams = (data.teams || []).map((t) => t.name);
+          // Sparse: a pair with no row follows the mode. Held as a map for O(1) lookup per cell.
+          const ov = new Map((data.overrides || []).map((o) => [o.viewer_team + ' ' + o.subject_team, !!o.can_see]));
+
+          modeHost.innerHTML = card('Visibility mode',
+            'How much of a project each team sees by default. Individual pairs can be overridden below.',
+            row('Everyone in the project',
+              'Every team sees every other team\'s tickets, comments, statuses and resolutions.',
+              `<button class="pk-a${mode === 'project' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="project">${mode === 'project' ? 'Selected' : 'Select'}</button>`) +
+            row('Own threads only',
+              'A team sees only what it raised and what is directed to it — the pre-7.0 behaviour.',
+              `<button class="pk-a${mode === 'team' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="team">${mode === 'team' ? 'Selected' : 'Select'}</button>`));
+
+          // The matrix. Rows = who is looking, columns = whose tickets. A team always sees its own,
+          // so the diagonal is fixed rather than a toggle that cannot be switched off.
+          if (!teams.length) {
+            gridHost.innerHTML = card('Team overrides', '', `<p class="pk-empty--inline">No teams in this project yet.</p>`);
+          } else {
+            const cell = (viewer, subject) => {
+              if (viewer === subject) return `<td class="pk-vis-self" title="A team always sees its own work">—</td>`;
+              const key = viewer + ' ' + subject;
+              const explicit = ov.has(key);
+              const on = explicit ? ov.get(key) : (mode === 'project');
+              return `<td><button class="pk-vis-cell${on ? ' is-on' : ''}${explicit ? ' is-set' : ''}" type="button" ` +
+                `data-vis-viewer="${esc(viewer)}" data-vis-subject="${esc(subject)}" data-vis-state="${explicit ? (on ? 'on' : 'off') : 'default'}" ` +
+                `title="${esc(viewer)} → ${esc(subject)}: ${explicit ? (on ? 'allowed (explicit)' : 'blocked (explicit)') : 'following the mode'}">` +
+                `${on ? '✓' : '✕'}</button></td>`;
+            };
+            gridHost.innerHTML = card('Team overrides',
+              'Click a cell to cycle: follow the mode → always allow → always block. Rows see columns.',
+              `<div class="pk-vis-wrap"><table class="pk-vis-table"><thead><tr><th></th>` +
+                teams.map((t) => `<th>${esc(t)}</th>`).join('') + `</tr></thead><tbody>` +
+                teams.map((v) => `<tr><th>${esc(v)}</th>` + teams.map((sj) => cell(v, sj)).join('') + `</tr>`).join('') +
+              `</tbody></table></div>`);
+          }
+
+          // Cross-project grants. Directional on purpose, and shown that way.
+          try {
+            const pl = await store.projectLinks();
+            const projects = pl.projects || [];
+            const links = pl.links || [];
+            const pairs = [];
+            for (const a of projects) for (const b of projects) if (a.id !== b.id) pairs.push([a, b]);
+            linkHost.innerHTML = card('Across projects',
+              'Projects are isolated unless you grant access here. Each grant is one-way — allowing A to see B does not allow B to see A.',
+              pairs.length
+                ? pairs.map(([a, b]) => {
+                    const on = links.some((l) => l.viewer_project === a.id && l.subject_project === b.id && l.can_see);
+                    return row(`${esc(a.name || a.id)} → ${esc(b.name || b.id)}`,
+                      `${esc(a.name || a.id)} can see ${esc(b.name || b.id)}'s tickets.`,
+                      `<button class="pk-a${on ? ' pk-a--primary' : ''}" type="button" data-link-viewer="${esc(a.id)}" data-link-subject="${esc(b.id)}" data-link-on="${on}">${on ? 'Granted' : 'Grant'}</button>`);
+                  }).join('')
+                : `<p class="pk-empty--inline">Only one project exists, so there is nothing to link.</p>`);
+          } catch (e) { linkHost.innerHTML = ''; }
+        };
+        fillVisibility();
+
+        panel.addEventListener('click', async (e) => {
+          const t = e.target.closest('[data-vis-mode],[data-vis-viewer],[data-link-viewer]');
+          if (!t) return;
+          try {
+            if (t.dataset.visMode) {
+              await store.visibilityMode(PROJECT, t.dataset.visMode);
+            } else if (t.dataset.visViewer) {
+              // Three states, so a Builder can pin a pair open or shut regardless of the mode.
+              const next = { default: true, on: false, off: null }[t.dataset.visState];
+              await store.visibilityPair(PROJECT, t.dataset.visViewer, t.dataset.visSubject, next);
+            } else if (t.dataset.linkViewer) {
+              await store.projectLinkSet(t.dataset.linkViewer, t.dataset.linkSubject, t.dataset.linkOn !== 'true');
+            }
+            fillVisibility();
+          } catch (err) { pkAlert('That did not work — ' + err.message); }
+        });
+      }
+
       // ---- People (6.0 accounts) ------------------------------------------------------------
       if (settingsSection === 'people') {
         // A PIN the Builder assigns is shown ONCE here and never retrievable afterwards — the
@@ -2567,6 +2758,18 @@
           `New password for ${name}:\n\n${key}\n\nCopy it now — it is stored hashed and cannot be shown again. ` +
           `The previous password stopped working immediately.`);
 
+        // Moving a team moves everyone on it, which is what keeps the hierarchy from drifting.
+        panel.addEventListener('click', async (e) => {
+          const t = e.target.closest('[data-team-project]');
+          if (!t) return;
+          const next = prompt(`Move team "${t.dataset.teamProject}" to which project?\n\n` +
+            `Everyone on this team moves with it, and their tickets become visible only inside the new project.`,
+            t.dataset.teamCurrent || 'default');
+          if (next === null) return;
+          try { await store.teamProject(t.dataset.teamProject, next.trim() || 'default'); fillTeams(); }
+          catch (err) { pkAlert('Could not move that team — ' + err.message); }
+        });
+
         const fillTeams = async () => {
           const host = $('#pk-team-groups'); if (!host) return;
           const asCard = (title, sub, body) => card(title, sub, body);
@@ -2589,7 +2792,9 @@
             `</div><div class="pk-set-ctl" style="display:flex;gap:8px;align-items:center">` +
               (t.enabled
                 ? `<button class="pk-a" type="button" data-team-view="${n}">View team</button>` +
-                  `<button class="pk-a" type="button" data-team-rotate="${n}">Change password</button>`
+                  `<button class="pk-a" type="button" data-team-rotate="${n}">Change password</button>` +
+                  // 7.x — a team belongs to exactly one project, and its people follow it.
+                  `<button class="pk-a" type="button" data-team-project="${n}" data-team-current="${esc(t.projectId || 'default')}">Project: ${esc(t.projectId || 'default')}</button>`
                 : `<button class="pk-a" type="button" data-team-enable="${n}">Enable</button>`) +
               `<button class="pkc-more" type="button" data-team-more="${n}" aria-label="More actions for ${n}" aria-haspopup="menu">` +
                 `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
@@ -2671,7 +2876,7 @@
                   `<button type="button" class="pk-a pk-nt-gen">Generate</button>` +
                 `</div></div>` +
               `<div class="pk-reopen-field"><span class="pk-reopen-label">Chip colour <span style="color:var(--pk-muted);font-weight:400">· optional</span></span>` +
-                `<input class="pk-login-input pk-nt-color" placeholder="#c9a24b — leave blank to assign one" autocomplete="off"></div>` +
+                `<input class="pk-login-input pk-nt-color" placeholder="#da291c — leave blank to assign one" autocomplete="off"></div>` +
               `<div class="pk-reopen-err" hidden></div>` +
               `<div class="pk-reopen-actions">` +
                 `<button type="button" class="pk-a pk-nt-cancel">Cancel</button>` +
@@ -2802,6 +3007,15 @@
       // Back button clears entryDetail and re-renders the ORIGINAL view (view is untouched).
       const detail = !!entryDetail;
       const isQueue = view === 'dash'; // the single Queue view; Inbound/Outbound is a direction control
+      const homeEl = $('#rvd-view-home'); if (homeEl) homeEl.hidden = detail || view !== 'home';
+      // The TBI / Need clarity / Deployed / Pending-signoff strip belongs to the Queue: it counts
+      // what is IN the queue. Showing it above the home tiles duplicated numbers the Queue tile
+      // already carries, and read as global chrome rather than as part of a view.
+      // Keep the rail highlight on whatever is actually rendered. It was set once at load from the
+      // remembered view and never re-synced, so landing on Home showed Queue as active.
+      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
+      const countsBox = $('#rvd-counts');   // .pk-counts is the strip itself; there is no wrapper
+      if (countsBox) countsBox.hidden = detail || view !== 'dash';
       $('#rvd-view-dash').hidden = detail || !isQueue;
       $('#rvd-view-entries').hidden = !detail && view !== 'entries';
       $('#rvd-view-notifs').hidden = detail || view !== 'notifs';
@@ -2814,6 +3028,7 @@
       // The stat tiles + bulk bar belong to the ticket views; the Settings screen hides them.
       const barEl = $('.pk-bar'); if (barEl) barEl.hidden = !detail && view === 'settings';
       if (detail) { renderEntryDetail(); return; }
+      if (view === 'home') { renderHome(); return; }
       if (view === 'settings') { renderSettings(); return; }
       if (view === 'entries') { renderEntries(); return; }
       if (view === 'notifs') { renderNotifs(); return; }
@@ -3276,12 +3491,18 @@
     // (scrollend, timeout fallback), THEN swap + play the slide-in. Leaving Settings just renders
     // (the page grows back, no clamp) and nudges to top if needed. Honours reduced-motion.
     function pkNavSwitch(prev, next, renderFn, settingsViewId) {
-      const enterSettings = next === 'settings' && prev !== 'settings';
+      // Every view switch animates the same way. This used to fire only when entering or leaving
+      // Settings, so Settings visibly slid while every other tab swapped instantly — the switch
+      // felt broken on five tabs and deliberate on one.
+      const enterSettings = next !== prev;
       const leaveSettings = prev === 'settings' && next !== 'settings';
       const rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const VIEW_EL = { settings: 'rvd-view-settings', home: 'rvd-view-home', dash: 'rvd-view-dash',
+                        notifs: 'rvd-view-notifs', threads: 'rvd-view-threads',
+                        patterns: 'rvd-view-patterns', insights: 'rvd-view-insights' };
       const slideIn = () => {
         if (!enterSettings) return;
-        const sv = document.getElementById(settingsViewId);
+        const sv = document.getElementById(VIEW_EL[next] || settingsViewId);
         if (sv) { sv.classList.remove('pk-view-enter'); void sv.offsetWidth; sv.classList.add('pk-view-enter'); }
       };
       const swap = () => { renderFn(); slideIn(); };
@@ -3309,6 +3530,20 @@
       if (leaveSettings && (window.scrollY || 0) > 4) { try { window.scrollTo({ top: 0, behavior: rm ? 'auto' : 'smooth' }); } catch (e) {} }
     }
     document.querySelector('.pk-side').addEventListener('click', (e) => {
+      // A tile is a navigation, exactly like a sidebar click — same bookkeeping, so Back works and
+      // the sidebar highlight follows. Settings tiles additionally pick the section to land on.
+      const tileEl = e.target.closest('[data-home-view],[data-home-settings]');
+      if (tileEl) {
+        const prevT = view;
+        if (tileEl.dataset.homeSettings) { settingsSection = tileEl.dataset.homeSettings; view = 'settings'; }
+        else view = tileEl.dataset.homeView;
+        entryDetail = null;
+        syncUrl();
+        if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
+        document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
+        pkNavSwitch(prevT, view, () => render(), 'rvd-view-settings');
+        return;
+      }
       const b = e.target.closest('.pk-nav'); if (!b) return;
       const prev = view;
       view = b.dataset.view; entryDetail = null;
@@ -3317,6 +3552,29 @@
       document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n === b));
       pkNavSwitch(prev, view, () => render(), 'rvd-view-settings');
     });
+
+    /* Sidebar collapse — labels out, icons only. Persisted per browser because it is a working
+     * preference, not a session state: someone who wants the room wants it every time. */
+    (function wireCollapse() {
+      const KEY = 'pkSideCollapsed';
+      const apply = (on) => {
+        document.documentElement.classList.toggle('pk-side-collapsed', !!on);
+        const b = document.querySelector('[data-pk-collapse]');
+        if (b) {
+          b.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar');
+          b.setAttribute('title', on ? 'Expand sidebar' : 'Collapse sidebar');
+        }
+      };
+      let on = false;
+      try { on = localStorage.getItem(KEY) === '1'; } catch (e) {}
+      apply(on);
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-pk-collapse]')) return;
+        on = !on;
+        try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+        apply(on);
+      });
+    })();
 
     // Direction toggle (Inbound │ Outbound) — a control ON the single Queue, not a nav change.
     // Flips the counterparty meaning (From⇄To), resets the team filter, and re-renders in place;
@@ -3582,8 +3840,33 @@
     // Colour mode in the rail, right under the team picker — the same personal light/dark
     // switch Settings mounts (one control, two entry points), in its labelled row form.
     try {
+      // 7.9: the rail's theme control is a plain button, not a switch. A switch needs a track, a
+      // knob and a sense of "on", none of which survive the collapsed rail — and it read as a
+      // different component from Log out sitting right beneath it. A button says what pressing it
+      // does, which is also what the collapsed icon has to convey on its own.
       const sideTheme = document.querySelector('[data-pk-sidetheme]');
-      if (sideTheme && !sideTheme.firstChild) sideTheme.appendChild(buildThemeToggle({ row: true }));
+      if (sideTheme && !sideTheme.firstChild) {
+        const ICONS = {
+          // Shown when you are in DARK mode — pressing it takes you to light, so it shows a sun.
+          sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+          moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+        };
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pk-side-theme-btn';
+        const paint = () => {
+          const dark = getTheme() !== LIGHT_THEME;
+          btn.innerHTML = (dark ? ICONS.sun : ICONS.moon) +
+            '<span class="pk-nav-txt">Switch to ' + (dark ? 'Light' : 'Dark') + ' Mode</span>';
+          btn.setAttribute('aria-label', btn.textContent.trim());
+          btn.title = btn.textContent.trim();
+        };
+        paint();
+        btn.addEventListener('click', () => { toggleTheme(); paint(); });
+        // Another tab flipping the shared theme must update this label too.
+        window.addEventListener('storage', paint);
+        sideTheme.appendChild(btn);
+      }
     } catch (e) {}
 
     // Side-rail logout mirrors the header control — same confirm + teardown, one implementation.

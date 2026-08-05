@@ -6,7 +6,7 @@
    Rosso Corsa voltage — is the default dark skin; "Dark Cream" is the warm dark alt.
    A third "light" skin completes the light/dark system.
 
-   Three skins, keyed by [data-pk-theme]; :root defaults to Red Moon so the very
+   Two skins, keyed by [data-pk-theme]; :root defaults to Red Moon so the very
    first paint is already themed (before JS sets the attribute).
 
    CONSUMERS
@@ -76,18 +76,7 @@
   --pk-team-none-bg:#2a2a2a;      --pk-team-none-ink:#a7a7a7;
 }
 
-/* ---- SKIN 2 · Dark Cream (warm dark alt) ---- */
-:root[data-pk-theme="dark-cream"] {
-  color-scheme: dark;
-  --pk-canvas:#1a1712; --pk-card:#221d16; --pk-elev:#2a241c; --pk-input:#15120d;
-  --pk-red:#c9a24b; --pk-red-2:#a8843a; --pk-ink:#f5efe2; --pk-body:#b8ad97;
-  --pk-red-ink:#c9a24b;   /* this skin's accent already clears 6.4–7.8:1 as text — same value */
-  /* --pk-muted was #8a8069: 3.9:1 at worst across this skin's surfaces. */
-  --pk-muted:#958b74; --pk-hair:#3a3226; --pk-amber:#e0b45a; --pk-green:#7fb58a; --pk-softred:#d98a6a; --pk-clarify:#b9a3d9;
-  --pk-hover:#1c1811; --pk-hover-line:#4e4433;
-}
-
-/* ---- SKIN 3 · Light (warm off-white; brand red kept; status colours darkened) ---- */
+/* ---- SKIN 2 · Light (warm off-white; brand red kept; status colours darkened) ---- */
 :root[data-pk-theme="light"] {
   color-scheme: light;
   --pk-canvas:#f2f1ec; --pk-card:#ffffff; --pk-elev:#f8f7f3; --pk-input:#ffffff;

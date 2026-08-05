@@ -774,7 +774,11 @@
           const pending = drafts.slice();
           for (const d of pending) {
             if (d.imageDataUrl && !d.imageId) {
-              try { const res = await store.uploadImage(d.imageDataUrl); d.imageId = (res && res.imageId) || ''; }
+              try {
+                const res = await store.uploadImage(d.imageDataUrl); d.imageId = (res && res.imageId) || '';
+                // The full-screen shot is what gives a builder the context the crop loses.
+                d.viewportImageId = await uploadContextShot(d.viewportDataUrl);
+              }
               catch (e) { d.imageId = ''; }
             }
           }
@@ -817,6 +821,19 @@
         toast('Could not open the review overlay — ' + (e && e.message ? e.message : 'unknown error'), 6000);
         armShortcuts();   // leave a way back in: `r` retries, `d` goes to the dashboard
       }
+    }
+
+    /** Upload the full-screen context shot, but never let it hold up a ticket. Bounded and
+     *  failure-tolerant: a missing context image is a cosmetic loss, a stuck Save is not. */
+    async function uploadContextShot(dataUrl) {
+      if (!dataUrl) return '';
+      try {
+        const res = await Promise.race([
+          store.uploadImage(dataUrl),
+          new Promise((r) => setTimeout(() => r(null), 8000)),
+        ]);
+        return (res && res.imageId) || '';
+      } catch (e) { return ''; }
     }
 
     async function enter() {
@@ -1161,6 +1178,9 @@
         '<div class="rv-typesel-wrap"><span class="rv-directlabel">Change type</span><div class="pk-typesel"></div></div>' +
         '<div class="rv-directto"><span class="rv-directlabel">Direct to</span>' +
           '<div class="rv-dd-slot"></div></div>' +
+        // 7.x — who inside the project may read this pin. The raiser can narrow it, never widen it.
+        '<div class="rv-directto"><span class="rv-directlabel">Visible to</span>' +
+          '<div class="rv-priv-slot"></div></div>' +
         '<div class="rv-fields"></div>' +
         '<div class="rv-attach"></div>' +
         '<div class="rv-err rv-reopen-err" hidden></div>' +
@@ -1193,6 +1213,21 @@
       const dValue = seed ? seed.toTeam : defaultTeamFor(state.commentType);
       const toDD = buildDropdown({ items: dItems, value: dValue, block: true, onSelect: () => { toTouched = true; } });
       pop.querySelector('.rv-dd-slot').appendChild(toDD.el);
+      // Two choices only: follow the project, or keep it to my team + whoever it is directed to.
+      // The API also accepts a named-teams list; the composer stays a single glance and the
+      // Builder does finer-grained work from Settings → Visibility.
+      // 'project' is a SENTINEL, not the stored value. buildDropdown treats an empty value as
+      // "nothing selected" and shows its placeholder, so an option whose value is '' can never
+      // display as chosen — which is why this read "Select" even after picking. Mapped back to ''
+      // when the payload is built, since '' is what "follow the project's mode" means server-side.
+      const privDD = buildDropdown({
+        items: [
+          { value: 'project', label: 'Everyone on the project' },
+          { value: 'private', label: 'Only my team & who it’s for' },
+        ],
+        value: (seed && seed.visibility) || 'project', block: true,
+      });
+      pop.querySelector('.rv-priv-slot').appendChild(privDD.el);
 
       // F1 type chips — swap the field set on select (general = the v2 freeform textarea).
       const chipWrap = pop.querySelector('.pk-typesel');
@@ -1306,8 +1341,14 @@
           try {
             const shot = await window.ProofkitCapture(targetEl);
             capturing = false;
-            if (shot && !state.pastedDataUrl && !state.pastedCleared && !previewUrl) {
-              state.pastedDataUrl = shot; previewUrl = shot;
+            // The extension returns { element, viewport } — the element crop for the attachment and
+            // the whole screen for context. A plain string is still accepted so an older bridge, or
+            // any other provider, keeps working.
+            const elementShot = shot && typeof shot === 'object' ? shot.element : shot;
+            const viewportShot = shot && typeof shot === 'object' ? shot.viewport : '';
+            if (elementShot && !state.pastedDataUrl && !state.pastedCleared && !previewUrl) {
+              state.pastedDataUrl = elementShot; previewUrl = elementShot;
+              state.viewportDataUrl = viewportShot || '';
             }
             renderAttach();     // either shows the shot, or settles back to the plain paste hint
           } catch (e) { capturing = false; renderAttach(); }
@@ -1521,10 +1562,12 @@
         expectedOutcome: v.expectedOutcome,
         comment: v.comment,
         toTeam: (toDD && toDD.getValue()) || ADMIN_TEAM,
+        visibility: privDD && privDD.getValue() === 'private' ? 'private' : '',   // '' = follow the project
         imageDataUrl,
         imageId,                          // uploaded on submit only when imageDataUrl is fresh
         viewportImageDataUrl: '',         // full-viewport auto-capture retired
         viewportImageId: '',
+        viewportDataUrl: state.viewportDataUrl || '',   // full-screen context shot, uploaded on submit
         display,
         error: '',
         page: { path: pagePath(), url: location.href, title: pageName(pagePath()), docTitle: document.title, slug: slugFromPath() },
@@ -1586,7 +1629,11 @@
       let imageId = editRec.imageId || '', viewportImageId = editRec.viewportImageId || '';
       const display = editRec.display || null;
       if (state.pastedDataUrl) {
-        try { const res = await store.uploadImage(state.pastedDataUrl); imageId = (res && res.imageId) || ''; viewportImageId = ''; }
+        try {
+          const res = await store.uploadImage(state.pastedDataUrl); imageId = (res && res.imageId) || '';
+          // A fresh capture brings a fresh full-screen shot; only clear it when there is none.
+          viewportImageId = await uploadContextShot(state.viewportDataUrl);
+        }
         catch (e) { /* keep prior on upload failure */ }
       } else if (state.pastedCleared) { imageId = ''; viewportImageId = ''; }
       const payload = {
@@ -1598,6 +1645,7 @@
         templateFields: v.templateFields,
         expectedOutcome: v.expectedOutcome,
         toTeam: (toDD && toDD.getValue()) || ADMIN_TEAM,
+        visibility: privDD && privDD.getValue() === 'private' ? 'private' : '',   // '' = follow the project
         anchor,
         imageId, viewportImageId, display,
         summary: renderSummary(state.commentType, v.templateFields, v.comment),

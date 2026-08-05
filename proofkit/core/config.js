@@ -70,6 +70,9 @@ export const TEAM_BASE = BASE + '/team';
  * dashboards, the redirects and the docs cannot drift from each other. */
 export const VIEW_SEGMENTS = {
   dash: '',
+  // 7.4 — the Builder board's ROOT is the tiled Home, so its queue needs a segment of its own.
+  // Team boards never render 'queue' and keep their queue at the root, so this is Builder-only.
+  queue: 'queue',
   notifs: 'notifications',
   threads: 'threads',
   patterns: 'patterns',
@@ -99,7 +102,7 @@ export const WORKER_URL =
  * "no gate at all", so replace rather than empty it if you rely on this path.
  * ------------------------------------------------------------------------ */
 export const REVIEW_PASSWORD_SHA256 =
-  '747a8f398395dde8e524d9f983784bd8441c5cfe4307b5a079be5412ee65c314';   // = SHA-256("website")
+  'b8dab8a0987fac0dbf072491bef9bbf13d09c12f0bc1db0b39d601f15e69e13d';   // = SHA-256("5315")
 
 /** SHA-256 hex digest (Web Crypto — browsers + Workers). */
 export async function sha256Hex(s) {
