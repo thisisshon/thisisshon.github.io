@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- Proofkit login — STANDALONE entry for non-Astro hosts. Framework-neutral:
+     just open this file (or serve it). It loads ./login.css + ./login.js from core/.
+     The Astro build uses ../Login.astro instead; both share this core. -->
+<html lang="en" data-pk-theme="red-moon">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTMiIGZpbGw9IiNEQTI5MUMiIG9wYWNpdHk9Ii4yIi8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iNy41IiBmaWxsPSIjREEyOTFDIi8+PC9zdmc+">
+<title>Proofkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
+<!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
+<style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
+<link rel="stylesheet" href="./design/tokens.css">
+<link rel="stylesheet" href="./login.css">
+</head>
+<body>
+<!-- Non-Astro host: the Worker base URL. Precedence:
+       1. ?worker=<url>   connect to that Worker and REMEMBER it (survives navigation)
+       2. ?worker=        (empty) forget it and go back to demo mode
+       3. localStorage    whatever a previous ?worker= stored
+       4. ''              demo/LOCAL mode — self-contained, no Worker required
+     Opening this file in a fresh browser still lands on (4), so the "works fully with no
+     Worker" property holds; connecting is an explicit, reversible act by the operator. -->
+<script>
+(function () {
+  var q = null;
+  try { q = new URLSearchParams(location.search).get('worker'); } catch (e) {}
+  if (q !== null) {
+    try { q ? localStorage.setItem('pkWorkerUrl', q) : localStorage.removeItem('pkWorkerUrl'); } catch (e) {}
+  }
+  var u = q;
+  if (!u) { try { u = localStorage.getItem('pkWorkerUrl') || ''; } catch (e) { u = ''; } }
+  window.PROOFKIT_WORKER_URL = u || '';
+})();
+</script>
+<section class="section rvd-gate"><p class="rvd-gate-note">Content review is restricted. Sign in to continue.</p></section>
+<script type="module" src="./login.js"></script>
+</body>
+</html>

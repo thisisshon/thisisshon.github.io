@@ -1,0 +1,158 @@
+/* ===========================================================================
+   PROOFKIT SHARED CARD — the one queue-card design, used by BOTH the admin
+   dashboard (dashboard.css/js) and the team dashboard (teamdash.css/js).
+
+   Neutral `.pkc-*` prefix, scope-free, every colour a --pk-* token so it themes
+   light + dark. The rendering logic lives in ./card.js (createCardRenderer).
+   Role-specific bits (lifecycle buttons / ⋮ menu / select on admin; reopen band
+   / view-details on team) are passed in as slots — this file only styles the
+   shared skeleton. An exact rebuild of the Figma mock (node 2044:10460).
+   =========================================================================== */
+
+/* card shell */
+/* Surface is --pk-input — the DARKEST token on the ramp (input/canvas/card/elev), and the only
+   one below --pk-canvas. The card therefore sits BELOW the page rather than on it: a recessed
+   well defined by its hairline, not a raised tile. (It is named for the input field because that
+   is the other recessed surface in the system; the role — "the sunken one" — is the same, and
+   binding to it keeps the ramp as the single source of truth instead of a new hex here.)
+   The hairline runs at one weight on all four sides — the 3px red left stroke marked every card
+   as urgent, which is no marking at all (status already reads from the chips and the pill).
+   Red is still the SELECTED border (.is-selected), so it now means one thing on this card.
+   Padding is symmetric again now that there is no 3px stroke for the extra 2px to balance. */
+.pkc-card{display:flex;flex-direction:column;gap:16px;padding:17px 21px;
+  background:var(--pk-input);border:1px solid var(--pk-hair);
+  border-radius:0;max-width:100%;cursor:pointer;transition:background .15s,border-color .15s}
+/* Keyboard focus is the pointer hover's twin: same surface lift, plus the tool's standard red
+   focus ring (matching .pk-count-btn et al) so it stays LOUDER than hover, as focus must be. */
+.pkc-card:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:-2px;
+  background:var(--pk-hover)}
+.pkc-card.is-selected{background:var(--pk-new-bg);border-color:var(--pk-red)}
+.pkc-card > .pkc-sel{align-self:flex-start;flex:none;width:18px;height:18px;margin:0 0 -8px;cursor:pointer;accent-color:var(--pk-red)}
+
+/* header */
+.pkc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  padding-bottom:17px;border-bottom:1px solid var(--pk-hair)}
+.pkc-head-l{display:flex;flex-direction:column;align-items:stretch;min-width:0}
+/* type block — chunky blue tag over the white route row */
+.pkc-type{display:flex;align-items:center;justify-content:center;padding:16px 24px;
+  background:var(--pk-blue-bg);color:var(--pk-blue-ink);
+  font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.pkc-route{display:flex;align-items:center;background:var(--pk-card)}
+.pkc-route-team{display:inline-flex;align-items:center;justify-content:center;min-width:92px;box-sizing:border-box;
+  padding:8px 24px;font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.pkc-route-arrow{color:var(--pk-muted);font:700 12px/1 var(--pk-font);padding:0 1px}
+
+.pkc-head-r{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.pkc-status{display:inline-flex;align-items:center;justify-content:center;height:24px;min-width:92px;box-sizing:border-box;
+  padding:4px 12px;border-radius:4px;background:var(--pk-card);border:1px solid var(--pk-hair);color:var(--pk-open-ink);
+  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.pkc-status.is-inprog{color:var(--pk-blue-ink)}
+.pkc-status.is-deployed{color:var(--pk-done-ink)}
+.pkc-status.is-reopened{color:var(--pk-new-ink)}
+.pkc-status.is-disregarded{color:var(--pk-closed-ink)}
+.pkc-status.is-clarify{color:var(--pk-clarify-ink)}
+.pkc-status.is-verified{color:var(--pk-done-ink)}
+.pkc-status.is-verified::before{content:"✓ "}
+/* Interactive status tag (Needs Clarification bucket): a caret + pointer signal it opens a menu. */
+.pkc-status.pkc-status--menu{cursor:pointer;gap:6px}
+.pkc-status.pkc-status--menu::after{content:"▾";font-size:var(--pk-text-3xs);line-height:1;opacity:.8}
+.pkc-status.pkc-status--menu:hover{border-color:var(--pk-clarify-ink)}
+.pkc-acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pkc-btn{display:inline-flex;align-items:center;justify-content:center;height:32px;min-width:116px;box-sizing:border-box;
+  padding:1px 17px;border:1px solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;
+  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;text-align:center;white-space:nowrap;
+  text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+/* Split button (Start + caret): the two buttons sit flush; the main's right border is the seam. */
+.pk-split{display:inline-flex;align-items:stretch}
+.pk-split .pk-split-main{border-right-width:0}
+.pk-split .pk-split-caret{min-width:0;width:34px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.pk-split .pk-split-caret svg{display:block;flex:none;width:12px;height:12px}
+/* Confirm Bug Fix — the raiser's primary verify action (green), replaces "View details" until confirmed. */
+.pkc-btn.pkc-btn-confirm{border-color:var(--pk-green);color:var(--pk-on-accent);background:var(--pk-green)}
+.pkc-btn.pkc-btn-confirm:disabled{opacity:.6;cursor:default}
+/* Reopen — the raiser's reject action (soft-red outline), sits third beside Confirm Bug Fix. */
+.pkc-btn.pkc-btn-reopen{border-color:var(--pk-softred);color:var(--pk-softred)}
+.pkc-more{flex:none;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  border:1px solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;transition:border-color .15s,color .15s}
+.pkc-more svg{display:block}
+
+/* body */
+.pkc-body{display:flex;align-items:center;gap:24px;min-width:0}
+.pkc-body-main{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px}
+.pkc-slug{align-self:flex-start;font:600 14px/1.2 var(--pk-font);color:var(--pk-body);text-decoration:none;
+  border-bottom:1px solid var(--pk-hair);padding-bottom:1px;transition:color .15s,border-color .15s}
+.pkc-title{font:500 15px/1.5 var(--pk-font);color:var(--pk-ink);overflow-wrap:anywhere}
+.pkc-snip{font:400 12px/1.4 var(--pk-font);color:var(--pk-muted);overflow-wrap:anywhere}
+.pkc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font:400 12px/1.4 var(--pk-font);color:var(--pk-muted)}
+.pkc-meta-sep{color:var(--pk-hair)}
+.pkc-meta-tk{color:var(--pk-red-ink);font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.pkc-meta-pin{color:var(--pk-body);font-weight:700;font-variant-numeric:tabular-nums}
+.pkc-meta-iter{color:var(--pk-muted);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.pkc-thumb-box{flex:none;width:120px;height:80px}
+.pkc-thumb-box .pk-thumb{width:120px;height:80px}
+.pkc-thumb-empty{display:inline-flex;align-items:center;justify-content:center;width:120px;height:80px;
+  background:var(--pk-input);border:1px dashed var(--pk-hair)}
+.pkc-thumb-ph{font:600 10px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted);text-align:center;padding:0 8px}
+
+/* change-to box */
+.pkc-change{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
+  padding:13px 17px 13px 18px}
+.pkc-change-k{display:block;font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-red-ink)}
+.pkc-change-v{margin-top:4px;font:400 14px/21px var(--pk-font);color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere;
+  max-height:140px;overflow-y:auto}
+
+/* footer — inline "header stroke" rule filling up to the comments toggle at the far right */
+.pkc-foot{display:flex;align-items:center;gap:32px}
+.pkc-foot-rule{flex:1 1 0;height:1px;background:var(--pk-hair)}
+.pkc-commentstoggle{flex:none;align-self:center;display:inline-flex;align-items:center;gap:8px;background:none;border:none;padding:0;cursor:pointer;
+  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+.pkc-commentstoggle .pkc-caret{transition:transform .15s}
+.pkc-commentstoggle.is-open .pkc-caret{transform:rotate(90deg)}
+
+/* comments thread — animates open/closed via the grid-rows 0fr→1fr technique */
+.pkc-comments{display:grid;grid-template-rows:0fr;margin-top:0;padding-left:18px;opacity:0;
+  border-left:2px solid var(--pk-hair);
+  transition:grid-template-rows .3s var(--pk-ease),opacity .22s var(--pk-ease)}
+.pkc-comments.is-open{grid-template-rows:1fr;opacity:1;margin-top:4px}
+.pkc-comments-inner{overflow:hidden;min-height:0;display:flex;flex-direction:column;gap:12px}
+.pkc-comment{display:flex;gap:48px;align-items:flex-start}
+.pkc-comment-meta{flex:none;width:132px;display:flex;flex-direction:column;gap:4px}
+.pkc-comment-team{font:700 10px/1.3 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
+.pkc-comment-time{font:400 10px/1.3 var(--pk-font);color:var(--pk-muted)}
+.pkc-comment-body{flex:1 1 0;min-width:0;font:400 14px/21px var(--pk-font);color:var(--pk-ink);overflow-wrap:anywhere}
+.pkc-comment-change{display:block;margin-top:4px;font-size:var(--pk-text-sm);color:var(--pk-body)}
+.pkc-comment-change span{font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-red-ink);margin-right:6px}
+
+/* reopen band slot (team) — a red-accented callout after the change-to box */
+.pkc-extra{display:flex;flex-direction:column;gap:8px}
+
+@media (min-width:1024px) and (hover:hover){
+  /* CARD HOVER — the whole card is a button (cursor:pointer, role="button"), so the row it sits
+     in has to answer the pointer. Two moves, the same pair the rest of the tool uses: the surface
+     rises off the well (--pk-hover) and the hairline firms up (--pk-hover-line). Deliberately NO
+     red: on this card red means SELECTED (.is-selected) and nothing else, and a red hover edge
+     would have every card flash the selected state under the cursor. The tokens carry the skin,
+     so light gets the same gesture inverted (a warm tint + a darker hairline) with no fork here.
+     Selected cards keep their red border + fill — hover has nothing to add to them. */
+  .pkc-card:not(.is-selected):hover{background:var(--pk-hover);border-color:var(--pk-hover-line)}
+  .pkc-btn:hover,.pkc-more:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  /* Start is the primary action — its hover is a solid red fill with white ink. */
+  .pkc-btn[data-action="start"]:hover{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
+  /* Confirm Bug Fix is green — keep it green on hover (darken the fill), never the generic red-on-green. */
+  .pkc-btn.pkc-btn-confirm:hover{background:var(--pk-green);border-color:var(--pk-green);color:var(--pk-on-accent);filter:brightness(.94)}
+  /* Reopen (reject) fills soft-red with white ink on hover. */
+  .pkc-btn.pkc-btn-reopen:hover{background:var(--pk-softred);border-color:var(--pk-softred);color:var(--pk-on-accent)}
+  .pkc-slug:hover{color:var(--pk-red-ink);border-bottom-color:var(--pk-red)}
+  .pkc-commentstoggle:hover{color:var(--pk-red-ink)}
+}
+@media (max-width:640px){
+  .pkc-head{flex-direction:column;align-items:stretch}
+  .pkc-head-r{align-items:flex-start}
+  .pkc-acts{flex-wrap:wrap}
+  .pkc-body{flex-direction:column-reverse;align-items:stretch}
+  .pkc-comment{flex-direction:column;gap:4px}
+  .pkc-comment-meta{width:auto;flex-direction:row;gap:8px;align-items:baseline}
+}
+@media (prefers-reduced-motion:reduce){
+  .pkc-comments{transition:none !important}
+}

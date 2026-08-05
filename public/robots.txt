@@ -1,7 +1,0 @@
-# UAT / staging — not for public indexing.
-# This mirrors the site-wide `<meta name="robots" content="noindex, nofollow">`
-# in src/layouts/BaseLayout.astro. BEFORE PRODUCTION LAUNCH: relax both together
-# — replace the block below with `Allow: /` (and keep the sitemap line), and
-# remove the BaseLayout noindex meta.
-User-agent: *
-Disallow: /

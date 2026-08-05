@@ -1,0 +1,522 @@
+  /* Colour + font tokens are the single source of truth in design/tokens.css: Outfit as
+     --pk-font, the ship-ready blue (--pk-blue*), and the deploy green (--pk-deploy*). */
+  /* page floor goes dark on the dashboard route only (this component ships only here).
+     Self-sufficient reset so the route needs no host layout / global.css. */
+  :root{color-scheme:dark}
+  html,body{margin:0}
+  body:has(.rvd){background:var(--pk-floor)}
+
+  .rvd{background:var(--pk-canvas);color:var(--pk-ink);font-family:var(--pk-font);
+    min-height:100vh;padding:40px clamp(20px,5vw,48px) 96px}
+  .rvd *{box-sizing:border-box}
+  /* Gated-off "no access" stub. Layout lives here (NOT inline) so the `hidden`
+     attribute — which the JS toggles — actually wins; an inline `display` would
+     out-rank the UA `[hidden]{display:none}` rule and pin it permanently open. */
+  .rvd-blocked{min-height:70vh;align-items:center;justify-content:center;padding:24px}
+  .rvd-blocked:not([hidden]){display:flex}
+  @keyframes pk-spin{to{transform:rotate(360deg)}}
+  @keyframes pk-pop-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+  @keyframes pk-ring{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(1.22)}}
+
+  /* --- page entry: staggered cascade of the structural bands. `data-enter` also
+     opts .pk-app out of the host's scroll-reveal (matches the site's entry idiom);
+     we neutralise the app-level anim and stagger its children instead. --- */
+  .rvd .pk-app[data-enter]{animation:none}
+  .rvd .pk-app > *{animation:pk-rise .55s var(--pk-ease-rise) both}
+  .rvd .pk-app > *:nth-child(1){animation-delay:.04s}
+  .rvd .pk-app > *:nth-child(2){animation-delay:.12s}
+  .rvd .pk-app > *:nth-child(3){animation-delay:.20s}
+  .rvd .pk-app > *:nth-child(4){animation-delay:.28s}
+
+  /* --- content entry: injected tiles / cards / tables ease in whenever rendered
+     (initial load, filter switch, and every Refresh) --- */
+  .rvd #rvd-counts .pk-count{animation:pk-rise .5s var(--pk-ease-rise) both}
+  .rvd #rvd-counts .pk-count:nth-child(2){animation-delay:.07s}
+  .rvd #rvd-counts .pk-count:nth-child(3){animation-delay:.14s}
+  /* entry cascade now global (.pk-grid > .pkc-card) */
+  .rvd .rvd-logwrap{animation:pk-rise .45s var(--pk-ease-rise) both}
+  .rvd .rvd-entrieshead{animation:pk-rise .45s var(--pk-ease-rise) both}
+
+  /* ---- top header: title + lead on the left, brand + actions on the right ---- */
+  .rvd .rvd-h1{margin:0;font-size:clamp(30px,4.4vw,44px);line-height:1.04;font-weight:500;
+    letter-spacing:-.02em;color:var(--pk-ink)}
+  /* "Admin" in the console title is highlighted in brand red (both themes) */
+  .rvd .rvd-h1-hi{color:var(--pk-red-ink)}
+  .rvd .rvd-lead{margin:12px 0 0;font-size:14px;line-height:1.6;color:var(--pk-muted)}
+  .rvd .rvd-lead-brand{font-weight:700;color:var(--pk-body)}
+  .rvd .rvd-lead-sep{color:var(--pk-hair);margin:0 8px}
+  /* vertical divider between "Shriram FS" and the theme toggle in the brand row */
+  .rvd .pk-brand-div{flex:none;width:1px;height:16px;background:var(--pk-hair)}
+  /* Brand mark — the Proofkit dot: a brand-red disc with a soft red glow ring
+     (mirrors the verdict-page logo). Tracks the theme via --pk-red. */
+  .rvd .rvd-tag{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--pk-muted);padding-left:12px;border-left:1px solid var(--pk-hair)}
+  /* "Shriram FS" in the Shriram brand gold (dark mode); neutral in light mode. */
+  .rvd .rvd-tag-brand{color:var(--pk-brand-gold)}
+  :root[data-pk-theme="light"] .rvd .rvd-tag-brand{color:var(--pk-muted)}
+  /* The theme toggle's tap target is 48×48 with a -12px margin that collapses its layout
+     footprint to 24px — so in the actions row we give it a 46×40 slot (the visible pill's
+     width, the buttons' height) so the pill sits flush and vertically aligned with the
+     40px buttons instead of overflowing into the refresh button. */
+  /* the theme toggle now lives in the brand row; a 46px slot holds the pill flush without
+     the 48px tap target overflowing into the divider (see the 3.9.15 note). */
+  .rvd .rvd-headtoggle{flex:none;display:inline-flex;align-items:center;justify-content:center;
+    width:46px;overflow:visible}
+  /* icon-only refresh in the compact header actions row — drop the label's right margin
+     so the 16px glyph centres in the 40px square. */
+  .rvd .pk-btn--icon .rvd-refresh-ico{margin-right:0}
+
+  /* ---- stat tiles (spec-cell) ---- */
+  .rvd #rvd-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
+    background:var(--pk-hair);border:1px solid var(--pk-hair)}
+  .rvd #rvd-counts .pk-count{background:var(--pk-canvas);padding:24px 24px;border-radius:0;
+    display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+    font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd #rvd-counts .pk-count b{font-size:clamp(30px,4vw,42px);font-weight:700;line-height:.95;
+    letter-spacing:-.02em;color:var(--pk-ink);font-variant-numeric:tabular-nums}
+  /* Need Clarity tile is a click-through into the Queue's Need Clarity filter — clickable, but
+     visually unchanged from the sibling tiles (pointer cursor is the only affordance). */
+  .rvd #rvd-counts .pk-count-clarify{cursor:pointer}
+  /* dot + label on ONE horizontal line, dot vertically centred to the label text */
+  .rvd #rvd-counts .pk-count-lbl{display:flex;align-items:center;gap:6px}
+  .rvd #rvd-counts .pk-count-lbl .pk-count-dot{margin:0;flex:none}
+  /* number coloured to match its status dot (parity with the team dashboard) */
+  .rvd #rvd-counts .pk-count-tbi b{color:var(--pk-amber)}
+  .rvd #rvd-counts .pk-count-inprog b{color:var(--pk-blue)}
+  .rvd #rvd-counts .pk-count-clarify b{color:var(--pk-clarify)}
+  .rvd #rvd-counts .pk-count-done b{color:var(--pk-green)}
+  /* Pending Signoff is the one tile that reads as "still owed", not "done" — number and dot
+     both take the brand red, so the pair never splits (a green dot under a red number read
+     as shipped-and-fine, which is the opposite of what the tile counts). */
+  .rvd #rvd-counts .pk-count-reopened b{color:var(--pk-red-ink)}
+  .rvd #rvd-counts .pk-count-reopened .pk-count-dot{background:var(--pk-red)}
+
+  /* ---- top-bar buttons: sharp corners, uppercase ---- */
+  .rvd .rvd-actions{display:flex;align-items:center;gap:8px}
+  /* secondary (default): ghost outline */
+  /* top-bar button now uses global .pk-btn --md --ghost/--primary/--icon */
+  /* Refresh micro-interaction: the two glyphs are stacked in the same 16px box and
+     cross-morph (opacity + spin-scale) so tick⇄refresh reads as one icon transforming. */
+  .rvd .rvd-refresh-ico{position:relative;display:inline-block;width:16px;height:16px;margin-right:8px}
+  .rvd .rvd-refresh-ico svg{position:absolute;inset:0;width:16px;height:16px;display:block;
+    transition:opacity .22s ease, transform .4s cubic-bezier(.4,.2,.2,1.35)}
+  .rvd .rvd-refresh-ico .ico-sync{opacity:1;transform:none}
+  .rvd .rvd-refresh-ico .ico-check{opacity:0;transform:scale(.3) rotate(-140deg)}
+  .rvd .pk-btn.is-refreshing{color:var(--pk-body);border-color:var(--pk-hair)}
+  .rvd .pk-btn.is-refreshing .ico-sync{animation:pk-spin .7s cubic-bezier(.5,.15,.3,1) infinite;transform-origin:50% 50%}
+  /* done: tick morphs in, sync spins out */
+  .rvd .pk-btn.is-done{border-color:var(--pk-green);color:var(--pk-green)}
+  .rvd .pk-btn.is-done .ico-sync{opacity:0;transform:scale(.3) rotate(140deg)}
+  .rvd .pk-btn.is-done .ico-check{opacity:1;transform:none;color:var(--pk-green)}
+  /* reset: as is-done is removed the tick morphs back into the refresh icon (the
+     transitions above reverse), and a green ring pulses out around the button. */
+  .rvd .pk-btn::after{content:"";position:absolute;inset:-1px;border:1px solid var(--pk-green);
+    border-radius:inherit;opacity:0;pointer-events:none}
+  .rvd .pk-btn.is-resetting::after{animation:pk-ring .5s cubic-bezier(.3,.7,.3,1) both}
+
+  /* ---- left-sidebar shell ---- */
+  /* nav count badge now uses global .pk-navbadge / .pk-navbadge--alert */
+  /* The admin's per-team board picker, under the nav. The old "TEAM DASHBOARDS" eyebrow is gone —
+     the trigger's own "Jump To Team" already says what it does, so the label was a second voice. */
+  .rvd .rvd-teamview{margin-top:16px;padding-top:16px;border-top:1px solid var(--pk-hair);
+    display:flex;flex-direction:column;gap:8px}
+  /* Disabled teams in the Jump-To-Team picker are greyed + inert via the shared
+     .pk-dropdown-item[aria-disabled] styling in design/components.css. */
+  /* Rail actions under the picker — colour mode, then Log out. Both wear the picker's box
+     (.pk-tt--row / .pk-side-logout--row), so the three read as one column. The whole foot
+     group (rule + label + picker + these two) is pinned to the rail's bottom by the
+     .pk-side-spacer that now sits ABOVE .rvd-teamview — see design/components.css. */
+  .rvd .rvd-sideactions{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+  .rvd .rvd-sidetheme{display:block}
+  /* ---- Builder is an APP SHELL on desktop ----
+     The board fills the viewport and the PAGE never scrolls; the ticket column scrolls inside
+     .pk-content instead. That is what actually pins the rail's foot group (rule + label + team
+     picker + colour mode + Log Out) to the bottom of the VIEWPORT: with a page-scrolling layout
+     the rail's 100vh box started below the header, so its foot only came into view after ~280px
+     of scrolling. Bottom inset matches .rvd's 40px top padding, so the group sits as far off the
+     viewport's bottom edge as the header sits off its top. Mobile (≤768px) keeps normal document
+     flow — the rail is a wrapping row there and has no foot to pin. */
+  @media (min-width:769px){
+    /* box-sizing here is deliberate: the reset above is `.rvd *`, which excludes .rvd itself,
+       so a content-box 100vh would add its own 80px of padding back and re-introduce a scrollbar. */
+    .rvd{box-sizing:border-box;height:100vh;min-height:0;padding-bottom:40px;overflow:hidden}
+    .rvd .pk-app{display:flex;flex-direction:column;height:100%;min-height:0}
+    .rvd .pk-shell{flex:1 1 auto;min-height:0;align-items:stretch}
+    .rvd .pk-side{position:static;height:100%}
+    .rvd .pk-content{height:100%;overflow-y:auto;overscroll-behavior:contain}
+  }
+
+  /* ---- toolbar: search + sort + export/copy actions ---- */
+  .rvd .rvd-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:20px}
+  .rvd .rvd-toolbar-sp{flex:1 1 24px}
+  /* Direction toggle (Inbound │ Outbound) — segmented control; active side is a solid red fill */
+  /* segmented toggle now uses global .pk-seg/.pk-segbtn */
+  /* Status filter chips — the Queue's status slicer (Needs you · Open · lifecycle · overflow) */
+  .rvd .rvd-statuschips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:16px}
+  /* status-filter chips now use global .pk-schip */
+  /* Table density = the full ledger; the card-only filters don't apply, so hide them (search stays). */
+  .rvd #rvd-view-dash[data-density="table"] #rvd-dirtoggle,
+  .rvd #rvd-view-dash[data-density="table"] #rvd-statuschips,
+  .rvd #rvd-view-dash[data-density="table"] .rvd-tabsrow,
+  .rvd #rvd-view-dash[data-density="table"] #rvd-selectall,
+  .rvd #rvd-view-dash[data-density="table"] #rvd-copy-mount{display:none}
+  /* select all / none toggle (mirrors the small dropdown triggers) */
+  .rvd .rvd-selectall{height:42px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;cursor:pointer;
+    background:var(--pk-input);color:var(--pk-body);font:600 12px/1 var(--pk-font);letter-spacing:.04em;
+    white-space:nowrap;transition:border-color .15s,color .15s}
+  .rvd .rvd-selectall.is-active{background:var(--pk-red);color:var(--pk-on-accent);border-color:var(--pk-red)}
+  .rvd .rvd-selectall:disabled{opacity:.5;cursor:default}
+  /* search now uses global .pk-search */
+  .rvd .rvd-sort{height:42px;padding:0 40px 0 16px;border:1px solid var(--pk-hair);border-radius:0;cursor:pointer;
+    background:var(--pk-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;
+    color:var(--pk-ink);font:600 12px/1 var(--pk-font);letter-spacing:.04em;appearance:none;-webkit-appearance:none}
+  .rvd .rvd-sort:focus{outline:none;border-color:var(--pk-red)}
+  .rvd .rvd-sort option{background:var(--pk-input);color:var(--pk-on-accent)}
+  .rvd .rvd-tbtn{height:42px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+    display:inline-flex;align-items:center;transition:border-color .15s,color .15s}
+  @media (max-width:640px){ .rvd .rvd-toolbar-sp{flex-basis:100%;height:0} }
+  /* per-page rollup + copy-prompts on By Page group headers */
+  .rvd .rvd-gh-rollup{font-size:12px;font-weight:500;color:var(--pk-muted);letter-spacing:0;text-transform:none}
+  .rvd .rvd-gh-actions{margin-left:auto;display:flex;gap:8px}
+  .rvd .rvd-gh-copy{height:28px;padding:0 8px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+    color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;transition:border-color .15s,color .15s}
+  /* "new since last visit" badge */
+  /* .rvd-new folded into global .pk-status-chip.rvd-new */
+  /* bulk multi-select */
+  .rvd .rvd-sel{flex:none;width:18px;height:18px;margin-top:2px;cursor:pointer;accent-color:var(--pk-red)}
+  .rvd .rvd-bulk{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;
+    display:flex;align-items:center;gap:8px;padding:8px 8px 8px 8px;background:var(--pk-card);
+    border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-lg)}
+  .rvd .rvd-bulk[hidden]{display:none}
+  .rvd .rvd-bulk-n{font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-body);padding:0 8px}
+  .rvd .rvd-bulk-a{height:34px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
+  .rvd .rvd-bulk-a.danger{color:var(--pk-softred)}
+  .rvd .rvd-bulk-a:disabled{opacity:.5;cursor:default}
+  .rvd .rvd-bulk-x{width:34px;height:34px;border:none;background:transparent;color:var(--pk-muted);font-size:20px;line-height:1;cursor:pointer}
+  /* ---- tabs ---- */
+  /* Tabs + team-filter share one row: tabs left, "From …" filter right, both sitting on the
+     same bottom hairline (Figma node 2053:11876). */
+  .rvd .rvd-tabsrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;
+    border-bottom:1px solid var(--pk-hair);margin-bottom:20px}
+  .rvd .rvd-tabs{display:flex;gap:2px;flex-wrap:wrap}
+  .rvd .rvd-tab{height:46px;padding:0 16px;border:none;background:none;cursor:pointer;margin-bottom:-1px;
+    font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
+    border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+  .rvd .rvd-tab.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
+  .rvd .rvd-tab-n{color:var(--pk-muted);font-weight:700}
+  .rvd .rvd-tab.is-active .rvd-tab-n{color:var(--pk-red-ink)}
+
+  /* ---- team filter chips (colours set inline by JS) ---- */
+  /* "From" label on the left of the team filter chips (they filter by raising team) */
+  /* Underline-tab style (Figma 2053:11691): active = solid fill + white ink; inactive =
+     team-colour text over a 1.5px team-colour bottom rule (no side/top borders). All the
+     colours are set inline by buildTeamChips so the base stays neutral. */
+  /* collapsed control: the ▸ arrow that opens the full team picker */
+
+  /* team picker — a horizontal reveal, not a pop-over.
+     The backdrop darkens/blurs the page, but its transition is DELAYED so it only kicks in once
+     the chips are almost fully slid out. */
+  /* --pk-scrim-veil already flips to a white veil in the light skin */
+  /* The rail sits exactly over the collapsed control, right-anchored so growing the reveal strip
+     between the selected chip and the arrow slides "From" + selected leftward. */
+  /* the clipped strip that unveils on open — width animates 0 → natural */
+  @media (min-width:1024px) and (hover:hover){
+  }
+
+  /* ---- list ---- */
+  /* card list now uses global .pk-grid */
+  /* By-Page group now uses global .pk-group / .pk-gh (collapse-hides .pk-grid) */
+  /* (collapse toggle + hide now global .pk-group / .pk-gh-toggle) */
+
+  /* ---- comment card — geometric bands: META / COMMENT / ROUTE / CALLOUT / FOOTER ---- */
+  .rvd .rvd-item{display:flex;flex-direction:column;gap:16px;padding:16px 20px;border-radius:0;max-width:100%;
+    background:var(--pk-card);border:1px solid var(--pk-hair);border-left:3px solid var(--pk-hair);
+    transition:border-color .15s,background .15s;overflow-wrap:anywhere;cursor:pointer}
+  .rvd .rvd-item:focus-visible{outline:none;border-left-color:var(--pk-red);background:var(--pk-elev)}
+  /* left edge colour-keyed to lifecycle state (fast visual scan; hover still wins → red) */
+  .rvd .rvd-item[data-state="tbi"]{border-left-color:var(--pk-amber)}       /* To Be Initiated */
+  .rvd .rvd-item[data-state="inprog"]{border-left-color:var(--pk-blue-ink)} /* In Progress */
+  .rvd .rvd-item[data-state="deployed"]{border-left-color:var(--pk-green)}  /* Deployed live */
+  .rvd .rvd-item[data-state="reopened"]{border-left-color:var(--pk-red)}    /* Reopened */
+  .rvd .rvd-item[data-state="disregarded"]{border-left-color:var(--pk-muted)} /* Disregarded & closed */
+  /* SELECTED (multi-select) — a vibrant red-filled state that stands right out */
+  .rvd .rvd-item.is-selected{background:var(--pk-new-bg);border-color:var(--pk-red);border-left-color:var(--pk-red)}
+  /* META band: select · status · New · (pushed right) page · time */
+  .rvd .rvd-card-top{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  .rvd .rvd-card-top .rvd-sel{margin-top:0}
+  .rvd .rvd-loc{margin-left:auto;display:inline-flex;align-items:center;gap:8px;min-width:0}
+  /* ROUTE band: <chip> → <chip> (raising team → directed team) */
+  .rvd .rvd-route{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  /* ACTION FOOTER: replies toggle (left) · actions (right), fenced by a hairline */
+  .rvd .rvd-card-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    padding-top:16px;border-top:1px solid var(--pk-hair)}
+  .rvd .rvd-foot-left{display:flex;align-items:center;min-height:32px}
+  .rvd .rvd-acts{flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-left:auto}
+  /* BODY: the comment, clamped to ~4 lines until expanded */
+  .rvd .rvd-card-body{display:flex;flex-direction:column;gap:8px;min-width:0}
+  .rvd .rvd-comment-text{font-size:15px;font-weight:500;line-height:1.5;color:var(--pk-ink);
+    white-space:pre-wrap;overflow-wrap:anywhere}
+  .rvd .rvd-comment-text.rvd-clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
+    overflow:hidden;white-space:normal}
+  .rvd .rvd-morebtn{align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;
+    font:700 10px/1.4 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+  .rvd .rvd-morebtn[hidden]{display:none}
+  .rvd .rvd-snip{font-size:12px;color:var(--pk-muted);overflow-wrap:anywhere}
+  /* FOOTER: replies collapsed behind an "N replies" toggle */
+  .rvd .rvd-repliestoggle{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:none;border:none;padding:0;cursor:pointer;
+    font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+  .rvd .rvd-repliestoggle .rvd-caret{transition:transform .15s}
+  .rvd .rvd-repliestoggle.is-open .rvd-caret{transform:rotate(90deg)}
+
+  /* row action buttons */
+  .rvd .rvd-openpin{height:32px;padding:0 16px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;
+    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+    display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap;transition:border-color .15s,color .15s}
+  .rvd .rvd-a{height:32px;padding:0 16px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
+    white-space:nowrap;color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+    display:inline-flex;align-items:center;transition:border-color .15s,color .15s}
+  /* Quiet variant — a closing/withdrawing action (Disregard & close), muted vs the primary lifecycle buttons. */
+  .rvd .rvd-a.rvd-a-quiet{color:var(--pk-muted)}
+  .rvd .rvd-a.rvd-a-quiet:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
+  .rvd .rvd-del{height:32px;background:none;border:none;padding:0 8px;cursor:pointer;white-space:nowrap;
+    font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);transition:color .15s}
+
+  /* status + team chips (badge pills) — uniform width for parity (see --pk-chip-w) */
+  /* status chips now use global .pk-status-chip (+ states / --revoked) */
+  /* iteration marker on a card (timeline iter now global .pk-tl-iter) */
+  .rvd .rvd-iter{font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
+
+  /* content-copy-match validation flag on a card (only when method=content-copy-match) */
+  .rvd .rvd-valid{display:inline-flex;align-items:center;gap:8px;font:600 12px/1.4 var(--pk-font);cursor:help}
+  .rvd .rvd-valid.ok{color:var(--pk-green)}
+  .rvd .rvd-valid.warn{color:var(--pk-amber)}
+  /* team chip now uses global .pk-team-chip + per-team modifier */
+  /* From → To route: an arrow between the raising team and the directed team */
+  .rvd .rvd-route-arrow{color:var(--pk-muted);font-weight:700;font-size:12px;margin:0 1px}
+  .rvd .rvd-team-none{background:var(--pk-elev);color:var(--pk-muted);border:1px solid var(--pk-hair)}
+
+  /* "change to" callout now uses global .pk-callout (+ --scroll for long text) */
+
+  /* The queue card itself now lives in the SHARED ./card.css (`.pkc-*`), used by both the
+     admin and team dashboards — see core/card.js. Only the admin-specific list chrome
+     (grid, toolbar, tabs, master log, detail view) remains below. */
+
+  /* meta + replies */
+  .rvd .rvd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .rvd .rvd-by{font-size:12px;font-weight:600;color:var(--pk-ink)}
+  .rvd .rvd-time{font-size:12px;color:var(--pk-muted)}
+  .rvd .rvd-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
+  .rvd .rvd-ticket{font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;
+    letter-spacing:.02em;color:var(--pk-red-ink);white-space:nowrap}
+  /* Per-page pin number — now the global .pk-pinno (detail header). */
+  /* reply rows now use global .pk-reply / .pk-reply-x (container = .pk-qq-thread) */
+
+  /* empty states now use global .pk-empty / .pk-empty--inline */
+
+  /* ---- Deploy Bucket view ---- */
+  .rvd #rvd-view-deploy .rvd-deployhead,.rvd #rvd-view-notifs .rvd-notifhead{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .rvd .rvd-deployhead h2,.rvd .rvd-notifhead h2{margin:0 0 8px;font-size:14px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+  .rvd .rvd-deploy-explain{margin:0;font-size:13px;line-height:1.5;color:var(--pk-body)}
+  /* the prominent Deploy CTA: strong dark green (ship it) */
+  .rvd .rvd-deploy-btn{flex:none;height:44px;padding:0 24px;border:1px solid var(--pk-deploy);border-radius:0;background:var(--pk-deploy);
+    color:var(--pk-on-accent);font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+    display:inline-flex;align-items:center;transition:background .15s,border-color .15s,opacity .15s}
+  .rvd .rvd-deploy-btn:disabled{opacity:.45;cursor:default}
+  .rvd .rvd-deploy-banner{margin-bottom:20px;padding:16px 16px;border:1px solid var(--pk-green);border-left:2px solid var(--pk-green);
+    background:var(--pk-done-bg);color:var(--pk-done-ink);font:600 13px/1.4 var(--pk-font)}
+
+  /* ---- Notifications view ---- */
+  /* notif list + card now use global .pk-notes / .pk-notif; the Mark-read toggle below stays an admin fork */
+  .rvd .rvd-notif-toggle{flex:none;margin-top:2px}
+
+  /* ---- Comments view: per-thread read/unread bar (mirrors the Notifications toggle) ---- */
+  .rvd #rvd-view-threads .rvd-notifhead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  /* thread read/unread bar now uses global .pk-thread-* */
+
+  /* All Entries head + prompt trigger */
+  .rvd .rvd-entrieshead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+  .rvd .rvd-entrieshead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+
+  /* Master Log table — compact so all nine columns fit the content width across
+     laptop breakpoints; overflow-x:auto stays as the fallback on very narrow screens. */
+  .rvd .rvd-logwrap{overflow-x:auto;border:1px solid var(--pk-hair);border-radius:0}
+  .rvd .rvd-log{width:100%;border-collapse:collapse;font-size:12px;background:var(--pk-card);table-layout:auto}
+  .rvd .rvd-log th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--pk-muted);padding:12px 10px;white-space:nowrap;border-bottom:1px solid var(--pk-hair);background:var(--pk-thead-bg)}
+  .rvd .rvd-log td{padding:12px 10px;border-bottom:1px solid var(--pk-hair);vertical-align:middle;color:var(--pk-body)}
+  .rvd .rvd-log tbody tr:last-child td{border-bottom:none}
+  .rvd .rvd-logrow{cursor:pointer;transition:background .12s}
+  .rvd .rvd-log td.num{font-weight:700;text-align:center;color:var(--pk-ink);font-variant-numeric:tabular-nums}
+  /* Chips run compact inside the table so From / Directed to / Status stay narrow. */
+  .rvd .rvd-log .pk-team-chip{margin:0;min-width:0;padding:4px 10px}
+  /* log-table compaction now global (.rvd-log .pk-status-chip) */
+  /* "More options" trigger — icon-only ⋮ square (kebab), toggles the row menu. */
+  .rvd .rvd-log-morecell{width:44px;text-align:center}
+  .rvd .rvd-moreopts{width:32px;height:32px;padding:0;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
+    color:var(--pk-body);display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s}
+  .rvd .rvd-moreopts svg{display:block}
+  /* fixed-position row action menu now uses global .pk-rowmenu (+ --rise animation) */
+
+  /* ---- Edit-teams modal (re-route From/To) ---- */
+  .rvd-editmodal{position:fixed;inset:0;z-index:2147483300;display:flex;align-items:center;justify-content:center;padding:16px;
+    background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .rvd-editcard{width:420px;max-width:100%;background:var(--pk-card);border:1px solid var(--pk-hair);
+    box-shadow:var(--pk-shadow-md);padding:24px;box-sizing:border-box;font-family:var(--pk-font)}
+  .rvd-edithead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .rvd-edittitle{font:700 16px/1.2 var(--pk-font);color:var(--pk-ink)}
+  .rvd-editx{background:none;border:none;cursor:pointer;font-size:20px;line-height:1;color:var(--pk-muted)}
+  .rvd-editsub{margin:8px 0 24px;font-size:13px;line-height:1.5;color:var(--pk-muted)}
+  .rvd-editfield{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+  .rvd-editlbl{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd-editactions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+  .rvd-editbtn{height:40px;padding:0 20px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
+    color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+    display:inline-flex;align-items:center;transition:border-color .15s,color .15s,background .15s}
+  .rvd-editsave{border-color:var(--pk-red);color:var(--pk-on-accent);background:var(--pk-red)}
+  .rvd-editsave:disabled{opacity:.6;cursor:default}
+  @media (min-width:1024px) and (hover:hover){
+    .rvd-editcancel:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+    .rvd-editsave:hover{background:var(--pk-red-2);border-color:var(--pk-red-2)}}
+  /* "← Back" now uses global .pk-backlink */
+  /* Master Log entry detail (drill-in) — the old single-column .rvd-detail / .rvd-fields /
+     .rvd-field* / .rvd-timeline / .rvd-tl* forks are retired; the drill-in now renders through
+     the global revamped .pk-detail* / .pk-fields / .pk-timeline family in design/components.css. */
+
+  /* Old AI change-prompt modal (.rvd-prompt*) removed — the prompt now renders inline in the
+     detail's "AI prompt"/"Optional prompt" card; the shared modal chrome is .pk-login etc. */
+
+  /* ===== responsive ===== */
+  @media (max-width:768px){
+    .rvd .rvd-teamview{margin-top:0;padding-top:0;border-top:none;flex-direction:row;align-items:center;gap:8px}
+    /* The rail is a wrapping row here — the actions sit beside the picker, sized to content. */
+    .rvd .rvd-sideactions{margin-top:0;flex-direction:row;align-items:center}
+    .rvd .rvd-sideactions .pk-tt--row,
+    .rvd .rvd-sideactions .pk-side-logout--row{width:auto}
+  }
+  @media (max-width:560px){
+    .rvd #rvd-counts{grid-template-columns:1fr}
+    .rvd .rvd-loc{margin-left:0;width:100%}
+    .rvd .rvd-card-foot .rvd-acts{margin-left:0}
+  }
+
+  /* ===== hover (desktop only, gated) ===== */
+  @media (min-width:1024px) and (hover:hover){
+    .rvd .rvd-tab:hover{color:var(--pk-ink)}
+    .rvd .rvd-item:hover{border-left-color:var(--pk-red);background:var(--pk-elev)}
+    .rvd .rvd-gh-copy:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+    .rvd .rvd-selectall:not(.is-active):hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+      .rvd .rvd-moreopts:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+    .rvd .rvd-deploy-btn:not(:disabled):hover{background:var(--pk-deploy-hover);border-color:var(--pk-deploy-hover)}
+    .rvd .rvd-bulk-a.danger:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
+    .rvd .rvd-bulk-x:hover{color:var(--pk-ink)}
+    .rvd .rvd-a:hover{border-color:var(--pk-ink);color:var(--pk-ink)}
+    .rvd .rvd-del:hover{color:var(--pk-softred)}
+    .rvd .rvd-slug:hover{color:var(--pk-red-ink);border-color:var(--pk-red)}
+    .rvd .rvd-logrow:hover{background:var(--pk-elev)}
+    .rvd .rvd-morebtn:hover,.rvd .rvd-repliestoggle:hover{color:var(--pk-red-ink)}
+    .rvd-login-btn:hover{background:var(--pk-red-2)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .rvd .pk-app > *,.rvd #rvd-counts .pk-count,.rvd .pk-grid > .pkc-card,.rvd .rvd-logwrap,
+    .rvd .rvd-entrieshead,.rvd .pk-btn.is-refreshing .ico-sync,.rvd .pk-btn.is-resetting::after,
+    .rvd-login-card{animation:none !important}
+    .rvd .rvd-refresh-ico svg{transition:none !important}
+  }
+
+  /* ============================================================
+     LIGHT THEME overrides — most surfaces now theme automatically via tokens; only
+     a few remaining spots (native controls, prompt text contrast, selection tint)
+     need a light nudge. Scoped to [data-pk-theme="light"]; dark is untouched.
+     ============================================================ */
+  :root[data-pk-theme="light"]{color-scheme:light}
+  /* status chips, "change to" callout, deploy banner, active nav + table header now
+     theme automatically via the tint / --pk-active-bg / --pk-thead-bg tokens. */
+  /* native <option> menus */
+  :root[data-pk-theme="light"] .rvd .rvd-sort option,
+  :root[data-pk-theme="light"] .rvd-login-select option{background:var(--pk-card);color:var(--pk-ink)}
+
+  /* ============================================================
+     V3 FEATURES (F1/F3/F4/F6/F8/F10/F11/F12) — admin-dashboard-specific styles. Every
+     colour is a --pk-* token (the reopen modal + insights bars/tiles reuse the shared
+     .pk-* classes in design/components.css; these are the rvd-scoped extras).
+     ============================================================ */
+  /* F1 — the one-line summary preview above the freeform comment */
+  .rvd .rvd-summary{font:600 13px/1.45 var(--pk-font);color:var(--pk-body);overflow-wrap:anywhere}
+  .rvd .rvd-reopen-note{margin-top:6px;font:500 13px/1.5 var(--pk-font);color:var(--pk-body);font-style:italic}
+  /* F4 — screenshot thumbnails now use global .pk-media/.pk-thumb/.pk-detail-media/.pk-shot */
+  /* F8 — "Success criteria" callout now the global .pk-criteria (shared with the team board). */
+  /* F10 — location hint: clamped selector + copy button */
+  .rvd .rvd-lochint{display:flex;align-items:center;gap:8px;min-width:0}
+  .rvd .rvd-selector{flex:1;min-width:0;max-width:100%;padding:6px 10px;background:var(--pk-input);border:1px solid var(--pk-hair);
+    font:500 12px/1.4 var(--pk-font);color:var(--pk-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rvd .rvd-loc-copy{flex:none}
+  .rvd .rvd-lochint-cap{margin-top:6px;font:400 11px/1.4 var(--pk-font);color:var(--pk-muted)}
+  /* F6 — Quick questions now use global .pk-qq family */
+  /* F6 — reply notification chip (icon + "Reply") */
+  /* reply chip now global .pk-status-chip--reply */
+  /* F11 — saved "Team views" quick-select chips now use global .pk-views/.pk-viewchip */
+  /* F12 — Insights: header + date-range picker (the tiles/bars are shared .pk-* classes) */
+  .rvd .rvd-ins-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+  .rvd .rvd-ins-head h2{margin:0 0 8px;font:700 14px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+  .rvd .rvd-ins-range{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+  .rvd .rvd-ins-lbl{display:flex;flex-direction:column;gap:4px;font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd .rvd-ins-date{height:42px;padding:0 12px;border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);
+    color:var(--pk-ink);font:500 13px/1 var(--pk-font);color-scheme:dark}
+  :root[data-pk-theme="light"] .rvd .rvd-ins-date{color-scheme:light}
+  .rvd .rvd-ins-date:focus{outline:none;border-color:var(--pk-red)}
+  .rvd .rvd-ins-h{font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);margin-bottom:4px}
+  /* .pk-empty--inline */
+  @media (min-width:1024px) and (hover:hover){
+    .rvd .rvd-loc-copy:hover,.rvd .pk-qq-send:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+  }
+
+  /* ============================================================
+     V3.25 — Comment detail REDESIGN (full-width, action bar, 2-column body),
+     the Settings view, and the per-browser preference tokens (density / accent /
+     reduce-motion). Everything keys off the --pk-* tokens; nothing hardcoded.
+     ============================================================ */
+
+  /* Detail screen — bar · grid · dcards · dmeta side rail are now the GLOBAL .pk-detail* /
+     .pk-dcard* / .pk-dmeta* families in design/components.css (shared by both dashboards).
+     Only admin-specific bits below (the ⋮ more-menu content, reopen note) remain scoped. */
+
+  /* ---- quick-question canned presets now use global .pk-qq-canned/.pk-qq-preset ---- */
+
+  /* ---- screenshot lightbox ---- */
+  /* .pk-thumb-zoom (global) */
+  .rvd-lightbox{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
+  .rvd-lightbox-fig{margin:0;max-width:96vw;max-height:92vh;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .rvd-lightbox-fig img{max-width:96vw;max-height:86vh;object-fit:contain;border:1px solid var(--pk-hair);background:var(--pk-card)}
+  .rvd-lightbox-fig figcaption{font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:#ddd}
+  .rvd-lightbox-x{position:fixed;top:18px;right:22px;width:40px;height:40px;border:1px solid var(--pk-on-media-line);
+    background:transparent;color:#fff;font-size:26px;line-height:1;cursor:pointer;border-radius:9999px}
+
+  /* Settings view — .pk-set / .pk-set-* now GLOBAL in design/components.css (shared with team).
+     Admin-only preference refinements (density/reduce-motion) stay below. */
+
+  /* ============================================================
+     Preference tokens — density + reduce-motion (scoped to .rvd)
+     ============================================================ */
+  .rvd[data-pk-density="compact"] .pk-detail-grid{gap:12px}
+  .rvd[data-pk-density="compact"] .pk-detail-main,
+  .rvd[data-pk-density="compact"] .pk-detail-side{gap:12px}
+  .rvd[data-pk-density="compact"] .pk-dcard-b{padding:0 12px 12px}
+  .rvd[data-pk-density="compact"] .pk-dcard-h{padding:9px 12px}
+  .rvd[data-pk-density="compact"] .pk-dmeta{gap:9px}
+  .rvd[data-pk-density="compact"] .pk-set-card-b{padding:4px 14px}
+  .rvd[data-pk-density="compact"] .pk-set-row{padding:9px 0}
+  .rvd[data-pk-density="compact"] .pk-grid{gap:10px}
+  .rvd[data-pk-reduce] *,.rvd[data-pk-reduce] *::before,.rvd[data-pk-reduce] *::after{animation:none !important;transition:none !important}
+
+  /* ---- hover (desktop only) ---- */
+  @media (min-width:1024px) and (hover:hover){
+    .rvd-lightbox-x:hover{border-color:#fff}
+  }
+  /* detail responsive (grid→1col, sticky-bar→static on mobile) lives with the global
+     .pk-detail* rules in design/components.css — shared by both dashboards. */

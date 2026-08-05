@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls -la \"/Users/shonjohn/Desktop/Screen Recording 2026-07-06 at 9.49.54 PM.mov\" 2>/dev/null; echo \"---\"; ls \"/Users/shonjohn/Documents/Claude/shriram-site/src/components/site/\")",
-      "Bash(git fetch *)",
-      "Bash(grep -rlnE \"^\\\\s*\\\\.\\(btn-outline|sr-only|cat-grid\\)[ .,{:]\" src/pages)"
-    ]
-  }
-}

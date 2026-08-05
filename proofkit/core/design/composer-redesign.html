@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" data-pk-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proofkit · Comment Composer — Full-viewport Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================================================
+   STANDALONE MOCKUP — the on-page review COMPOSER as a full-viewport overlay.
+   ONE shared field engine (mirrors vocab.js TYPE_FIELDS) drives every team; the
+   only team-specific control is "Direct to". Sticky header + scrollable body +
+   sticky footer make it resolution-proof (footer/Save always reachable).
+   Tokens copied verbatim from core/design/tokens.css; every value binds to --pk-*.
+   =========================================================================== */
+:root,:root[data-pk-theme="red-moon"]{
+  color-scheme:dark;
+  --pk-canvas:#181818;--pk-card:#1e1e1e;--pk-elev:#242424;--pk-input:#141414;
+  --pk-red:#da291c;--pk-red-2:#b01e0a;--pk-ink:#ffffff;--pk-body:#a7a7a7;
+  --pk-muted:#919191;--pk-hair:#333333;--pk-amber:#f5a623;--pk-green:#3ddc84;--pk-softred:#ef5b50;
+  --pk-blue-bg:#15243d;--pk-blue-ink:#8fbaf8;--pk-callout-bg:#241a10;--pk-callout-line:#4a3417;
+  --pk-scrim:rgba(6,6,6,.8);--pk-ring-red:#431c19;
+}
+:root[data-pk-theme="light"]{
+  color-scheme:light;
+  --pk-canvas:#f2f1ec;--pk-card:#ffffff;--pk-elev:#f8f7f3;--pk-input:#ffffff;
+  --pk-red:#c81e12;--pk-red-2:#a5170c;--pk-ink:#1c1c1a;--pk-body:#565650;
+  --pk-muted:#696961;--pk-hair:#e4e1d9;--pk-amber:#9d5f07;--pk-green:#1d7a46;--pk-softred:#c0392b;
+  --pk-blue-bg:#e2ecfb;--pk-blue-ink:#1c5fc4;--pk-callout-bg:#fbf3e2;--pk-callout-line:#ecdcb6;
+  --pk-scrim:rgba(20,20,20,.55);--pk-ring-red:#f6d7d3;
+}
+:root{
+  --pk-on-accent:#ffffff;
+  --pk-font:'Outfit',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --pk-text-3xs:10px;--pk-text-2xs:11px;--pk-text-xs:12px;--pk-text-sm:13px;--pk-text-md:14px;--pk-text-lg:18px;--pk-text-xl:28px;
+  --pk-w-regular:400;--pk-w-medium:500;--pk-w-semibold:600;--pk-w-bold:700;
+  --pk-space-2:4px;--pk-space-3:8px;--pk-space-3h:12px;--pk-space-4:16px;--pk-space-4h:20px;--pk-space-5:24px;--pk-space-6:32px;
+  --pk-radius-sm:4px;--pk-radius-md:8px;--pk-radius-full:9999px;--pk-border-hair:1px;--pk-border-strong:2px;
+  --pk-shadow-lg:0 24px 64px rgba(0,0,0,.5);--pk-ease:cubic-bezier(.4,0,.2,1);--pk-ease-rise:cubic-bezier(.2,.7,.2,1);
+}
+:root[data-pk-theme="light"]{--pk-shadow-lg:0 24px 64px rgba(40,38,32,.16)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--pk-canvas);color:var(--pk-ink);font-family:var(--pk-font);font-size:var(--pk-text-md);line-height:1.5;-webkit-font-smoothing:antialiased}
+@keyframes pk-sheet-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pk-scrim-in{from{opacity:0}to{opacity:1}}
+
+/* ---- faux page behind (context: the live site + a pin) ---- */
+.page{padding:var(--pk-space-6);min-height:100vh}
+.page-eyebrow{font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
+.page h1{font-size:var(--pk-text-xl);font-weight:var(--pk-w-semibold);margin:var(--pk-space-3) 0 var(--pk-space-5)}
+.page-block{max-width:640px;height:120px;border:var(--pk-border-hair) dashed var(--pk-hair);border-radius:var(--pk-radius-md);
+  display:flex;align-items:center;justify-content:center;color:var(--pk-muted);font-size:var(--pk-text-sm);margin-bottom:var(--pk-space-4);position:relative}
+.page-pin{position:absolute;top:-10px;left:180px;width:26px;height:26px;border-radius:var(--pk-radius-full);background:var(--pk-red);color:var(--pk-on-accent);
+  display:flex;align-items:center;justify-content:center;font:var(--pk-w-bold) var(--pk-text-xs)/1 var(--pk-font);box-shadow:0 0 0 4px var(--pk-ring-red)}
+.reopen{margin-top:var(--pk-space-5);height:44px;padding:0 var(--pk-space-5);border:var(--pk-border-hair) solid var(--pk-hair);background:var(--pk-card);
+  color:var(--pk-ink);cursor:pointer;font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase}
+.reopen:hover{border-color:var(--pk-red);color:var(--pk-red)}
+
+/* ---- full-viewport overlay ---- */
+.scrim{position:fixed;inset:0;z-index:100;background:var(--pk-scrim);display:flex;align-items:center;justify-content:center;
+  padding:var(--pk-space-5);animation:pk-scrim-in .18s var(--pk-ease) both}
+.scrim[hidden]{display:none}
+/* desktop: a centered sheet capped to the viewport; body scrolls, header/footer stick */
+.sheet{display:flex;flex-direction:column;width:100%;max-width:520px;max-height:calc(100dvh - 48px);
+  background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);box-shadow:var(--pk-shadow-lg);
+  animation:pk-sheet-in .22s var(--pk-ease-rise) both}
+
+/* sticky header */
+.sh-head{flex:none;position:sticky;top:0;display:flex;align-items:flex-start;gap:var(--pk-space-4);padding:var(--pk-space-4h) var(--pk-space-5);
+  background:var(--pk-elev);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.sh-head-l{min-width:0;flex:1;display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.sh-eyebrow{display:inline-flex;align-items:center;gap:var(--pk-space-3);font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-red)}
+.sh-ticket{color:var(--pk-muted)}
+.sh-target{display:inline-flex;align-items:center;gap:var(--pk-space-3);min-width:0}
+.sh-target svg{width:15px;height:15px;flex:none;color:var(--pk-muted)}
+.sh-target code{font:var(--pk-w-semibold) var(--pk-text-sm)/1.3 var(--pk-font);color:var(--pk-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sh-sub{font-size:var(--pk-text-xs);color:var(--pk-muted)}
+.sh-x{flex:none;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:var(--pk-border-hair) solid var(--pk-hair);
+  background:var(--pk-card);color:var(--pk-muted);cursor:pointer;transition:border-color .15s,color .15s}
+.sh-x:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
+.sh-x svg{width:16px;height:16px}
+
+/* scrollable body */
+.sh-body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:var(--pk-space-5);display:flex;flex-direction:column;gap:var(--pk-space-5)}
+.field-group{display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.flabel{display:flex;align-items:center;gap:6px;font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
+.flabel .req{color:var(--pk-red)}
+.flabel .auto{margin-left:auto;font-weight:var(--pk-w-medium);letter-spacing:.04em;text-transform:none;color:var(--pk-muted)}
+
+/* comment-type selector — the shared field engine switch (same for every team) */
+.types{display:flex;flex-wrap:wrap;gap:var(--pk-space-3)}
+.type{height:36px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);background:var(--pk-card);cursor:pointer;
+  font:var(--pk-w-semibold) var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.03em;color:var(--pk-body);transition:border-color .15s,color .15s,background .15s}
+.type:hover{border-color:var(--pk-red);color:var(--pk-red)}
+.type.is-active{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
+
+/* inputs */
+.inp,.ta{width:100%;padding:12px var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm);
+  background:var(--pk-input);color:var(--pk-ink);font:var(--pk-w-medium) var(--pk-text-md)/1.5 var(--pk-font);font-family:var(--pk-font)}
+.inp::placeholder,.ta::placeholder{color:var(--pk-muted)}
+.inp:focus,.ta:focus{outline:2px solid var(--pk-red);outline-offset:-1px;border-color:var(--pk-red)}
+.ta{min-height:96px;resize:vertical}
+.inp[readonly]{color:var(--pk-muted);background:var(--pk-elev);cursor:default}
+#dynFields{display:flex;flex-direction:column;gap:var(--pk-space-4)}
+#dynFields:empty{display:none}
+
+/* direct-to (the one team-specific control) — faux dropdown */
+.selbtn{width:100%;height:44px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm);
+  background:var(--pk-input);color:var(--pk-ink);cursor:pointer;display:flex;align-items:center;gap:var(--pk-space-3);font:var(--pk-w-medium) var(--pk-text-md)/1 var(--pk-font)}
+.selbtn svg{margin-left:auto;width:16px;height:16px;color:var(--pk-muted)}
+.team-chip{display:inline-flex;align-items:center;height:24px;padding:0 var(--pk-space-3);border-radius:var(--pk-radius-full);
+  font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;background:var(--pk-callout-bg);color:var(--pk-amber)}
+
+/* attach */
+.attach{border:var(--pk-border-hair) dashed var(--pk-hair);border-radius:var(--pk-radius-md);padding:var(--pk-space-4);
+  display:flex;align-items:center;gap:var(--pk-space-3);color:var(--pk-muted);font-size:var(--pk-text-xs)}
+.attach svg{width:18px;height:18px;flex:none}
+.attach kbd{font-family:var(--pk-font);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm);padding:2px 6px;color:var(--pk-body);font-size:var(--pk-text-3xs)}
+
+/* sticky footer */
+.sh-foot{flex:none;position:sticky;bottom:0;display:flex;align-items:center;gap:var(--pk-space-3);padding:var(--pk-space-4) var(--pk-space-5);
+  background:var(--pk-card);border-top:var(--pk-border-hair) solid var(--pk-hair)}
+.sh-foot-note{font-size:var(--pk-text-xs);color:var(--pk-muted)}
+.sh-foot-sp{flex:1}
+.btn{height:44px;padding:0 var(--pk-space-5);border:var(--pk-border-hair) solid transparent;cursor:pointer;
+  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:background .15s,border-color .15s,color .15s}
+.btn--primary{background:var(--pk-red);color:var(--pk-on-accent)}
+.btn--primary:hover{background:var(--pk-red-2)}
+.btn--ghost{background:transparent;border-color:var(--pk-hair);color:var(--pk-ink)}
+.btn--ghost:hover{border-color:var(--pk-red);color:var(--pk-red)}
+
+/* low-res / mobile: the sheet goes truly full-screen (edge to edge, 100dvh) */
+@media (max-width:640px), (max-height:620px){
+  .scrim{padding:0;align-items:stretch;justify-content:stretch}
+  .sheet{max-width:none;max-height:none;height:100dvh;border:none}
+}
+
+/* demo toggles */
+.demobar{position:fixed;right:16px;top:16px;z-index:200;display:flex;gap:var(--pk-space-3)}
+.demobar button{height:34px;padding:0 14px;border:var(--pk-border-hair) solid var(--pk-hair);background:var(--pk-card);color:var(--pk-body);cursor:pointer;
+  font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;box-shadow:var(--pk-shadow-lg)}
+.demobar button:hover{border-color:var(--pk-red);color:var(--pk-red)}
+</style>
+</head>
+<body>
+
+<!-- faux page behind, to show the on-page context -->
+<div class="page">
+  <span class="page-eyebrow">Review mode · Product</span>
+  <h1>Open a Demat Account</h1>
+  <div class="page-block">Upload your bank proof section<div class="page-pin">3</div></div>
+  <div class="page-block">Page content…</div>
+  <button class="reopen" onclick="document.getElementById('scrim').hidden=false">⌘-click an element to comment ›</button>
+</div>
+
+<!-- FULL-VIEWPORT COMPOSER OVERLAY -->
+<div class="scrim" id="scrim">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="New comment">
+
+    <!-- sticky header: element context -->
+    <div class="sh-head">
+      <div class="sh-head-l">
+        <span class="sh-eyebrow">New comment <span class="sh-ticket">· Pin 3 · #2607240016</span></span>
+        <span class="sh-target">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M8 20h8"/></svg>
+          <code>section.bank-proof › p.helptext</code>
+        </span>
+        <span class="sh-sub">Open a Demat Account · /open-demat-account</span>
+      </div>
+      <button class="sh-x" onclick="document.getElementById('scrim').hidden=true" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <!-- scrollable body: shared field engine -->
+    <div class="sh-body">
+
+      <!-- comment type = the switch that drives which template fields render -->
+      <div class="field-group">
+        <span class="flabel">Comment type</span>
+        <div class="types" id="types">
+          <button class="type is-active" data-type="copy-fix">Copy fix</button>
+          <button class="type" data-type="link-fix">Link fix</button>
+          <button class="type" data-type="layout-tweak">Layout tweak</button>
+          <button class="type" data-type="general">General</button>
+        </div>
+      </div>
+
+      <!-- dynamic template fields (rendered from the shared TYPE_FIELDS schema) -->
+      <div id="dynFields"></div>
+
+      <!-- freeform comment (always present) -->
+      <div class="field-group">
+        <span class="flabel">Comment</span>
+        <textarea class="ta" placeholder="Describe the change…"></textarea>
+      </div>
+
+      <!-- the ONE team-specific control -->
+      <div class="field-group">
+        <span class="flabel">Direct to</span>
+        <button class="selbtn"><span class="team-chip">Builder</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+      </div>
+
+      <!-- attach -->
+      <div class="field-group">
+        <span class="flabel">Screenshot</span>
+        <div class="attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Paste (<kbd>⌘V</kbd>) a screenshot to attach, or capture the viewport on submit.</div>
+      </div>
+
+    </div>
+
+    <!-- sticky footer: always reachable -->
+    <div class="sh-foot">
+      <span class="sh-foot-note">2 drafts pending</span>
+      <span class="sh-foot-sp"></span>
+      <button class="btn btn--ghost">Save to batch</button>
+      <button class="btn btn--primary">Submit</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="demobar">
+  <button onclick="document.getElementById('scrim').hidden=false">Open composer</button>
+  <button onclick="var r=document.documentElement;r.setAttribute('data-pk-theme',r.getAttribute('data-pk-theme')==='light'?'red-moon':'light')">Toggle skin</button>
+</div>
+
+<script>
+  // ONE shared field engine — mirrors core/vocab.js TYPE_FIELDS (no per-team forks).
+  var TYPE_FIELDS = {
+    'copy-fix':[
+      {key:'currentText',label:'Current text',ph:'The text as it reads now'},
+      {key:'newText',label:'Change to',ph:'The corrected text',req:true}],
+    'link-fix':[
+      {key:'currentUrl',label:'Current URL',ph:'Auto-filled from the clicked link',auto:true},
+      {key:'newUrl',label:'New URL',ph:'Where it should point',req:true}],
+    'layout-tweak':[
+      {key:'whatToChange',label:'What to change',ph:'Describe the layout / spacing change',req:true}],
+    'general':[]
+  };
+  var dyn = document.getElementById('dynFields');
+  function renderFields(type){
+    var fields = TYPE_FIELDS[type] || [];
+    dyn.innerHTML = fields.map(function(f){
+      var lab = '<span class="flabel">'+f.label+(f.req?' <span class="req">*</span>':'')+(f.auto?'<span class="auto">auto-filled</span>':'')+'</span>';
+      var val = f.auto ? 'value="/open-demat-account" readonly' : '';
+      return '<div class="field-group">'+lab+'<input class="inp" placeholder="'+f.ph+'" '+val+'></div>';
+    }).join('');
+  }
+  document.getElementById('types').addEventListener('click',function(e){
+    var b = e.target.closest('.type'); if(!b) return;
+    this.querySelectorAll('.type').forEach(function(t){t.classList.remove('is-active')});
+    b.classList.add('is-active');
+    renderFields(b.dataset.type);
+  });
+  renderFields('copy-fix');
+</script>
+</body>
+</html>

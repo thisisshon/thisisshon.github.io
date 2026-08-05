@@ -1,7 +1,0 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 59 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="globe">
-<path id="Vector" d="M26.4994 53.1668C40.0764 53.1668 51.0827 42.347 51.0827 29.0002C51.0827 15.6533 40.0764 4.8335 26.4994 4.8335C12.9223 4.8335 1.91602 15.6533 1.91602 29.0002C1.91602 42.347 12.9223 53.1668 26.4994 53.1668Z" stroke="var(--stroke-0, white)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M1.91602 29H51.0827" stroke="var(--stroke-0, white)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_3" d="M26.4993 4.8335C32.6483 11.4512 36.1428 20.0392 36.3327 29.0002C36.1428 37.9611 32.6483 46.5491 26.4993 53.1668C20.3504 46.5491 16.8559 37.9611 16.666 29.0002C16.8559 20.0392 20.3504 11.4512 26.4993 4.8335Z" stroke="var(--stroke-0, white)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-</svg>
