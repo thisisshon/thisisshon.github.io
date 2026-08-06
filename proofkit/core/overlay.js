@@ -994,8 +994,37 @@
       logoutBtn.style.display = 'none';
       dockShown = false;
       document.documentElement.classList.remove('rv-armed');
+
+      /* Log out means log out — of EVERYTHING this tab can reach. Previously it dropped only the
+       * team key, which left three things alive that each put the user straight back into review:
+       *   1. the account session (token + identity), which is a credential in its own right;
+       *   2. this tab's arm flag;
+       *   3. the extension's stored session and its record that this tab is armed — so the next
+       *      navigation re-injected and re-armed the page.
+       * Clearing one of three read as "log out did nothing". */
+      try { await fetch(WORKER_URL.replace(/\/$/, '') + '/auth/logout', { method: 'POST', headers: authHeaders() }); }
+      catch (e) { /* the local session goes regardless — never leave someone signed in because a
+                     network call failed on the way out */ }
       clearSession();
-      showLogin();
+      clearAccount();
+      try { sessionStorage.removeItem(KEY); localStorage.removeItem('reviewMode'); } catch (e) {}
+      extSignOut();
+
+      /* Where to leave them. On a page we own, the sign-in panel IS the resting state — they are
+       * on Proofkit, and the way back in belongs on screen. On someone else's site it does not:
+       * they asked to leave, so the page returns to exactly how they found it and the extension
+       * is the way back in. */
+      if (externalMode()) toast('Signed out of Proofkit.', 3000);
+      else showLogin();
+    }
+
+    /** Tell the extension to forget the session and stop treating this tab as armed. Silent no-op
+     *  outside the extension — the dashboards have no extension to sign out of. */
+    function extSignOut() {
+      try {
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return;
+        chrome.runtime.sendMessage({ type: 'signout' }, () => void chrome.runtime.lastError);
+      } catch (e) { /* not running under the extension */ }
     }
 
     // ---- pins ------------------------------------------------------------
