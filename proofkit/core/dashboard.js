@@ -611,10 +611,14 @@
     }
 
     async function tryLogin() {
-      const team = login.getTeam();
       const key = login.keyInput.value.trim();
-      if (!team) { login.focusTeam(); login.setError('Please choose your team.'); return; }
       if (!key) { login.keyInput.focus(); return; }
+      /* No team chosen + a key ⇒ try it as the BUILDER key. The Builder does not belong to a team,
+       * so making them pick one from a list of teams they are not on was asking for an answer that
+       * does not exist. The key still decides: a team member who skips the picker and enters their
+       * own key is refused here and told to pick their team. */
+      const picked = login.getTeam();
+      const team = picked || ADMIN_TEAM;
       setSession(team, key);
       login.setBusy(true, 'Authenticating'); login.setError('');
       if (team !== ADMIN_TEAM) { location.replace(boardBase(team)); return; }
@@ -622,7 +626,11 @@
       catch (e) {
         clearSession();
         login.setBusy(false, 'Authenticate');
-        login.setError(e.message === 'unauthorized' ? 'Incorrect key. Please try again.' : ('Could not connect — ' + e.message));
+        const wrong = e.message === 'unauthorized';
+        login.setError(!wrong ? ('Could not connect — ' + e.message)
+          : picked ? 'Incorrect key. Please try again.'
+                   // They left the picker empty, so name the likelier of the two mistakes.
+                   : 'That is not the Builder key. Choose your team if you are signing in as a team.');
         login.keyInput.focus(); login.keyInput.select();
       }
     }
@@ -1104,7 +1112,7 @@
 
     /* Which views live under which group in the sidebar. Patterns and Insights are ways of LOOKING
      * at the queue, not separate destinations, so they sit under it rather than beside it. */
-    const NAV_GROUPS = { queue: ['dash', 'patterns', 'insights'] };
+    const NAV_GROUPS = { queue: ['dash', 'threads', 'patterns', 'insights'] };
 
     function syncNav() {
       document.querySelectorAll('.pk-nav').forEach((n) => {
@@ -2652,7 +2660,7 @@
 
       host.innerHTML = orgOnly
         // No tab rail: Organisation IS the screen, so a sub-nav with one entry would be furniture.
-        ? `<div class="rvd-notifhead"><div><h2>Organisation</h2></div></div>` +
+        ? `<div class="rvd-notifhead"><div><h2>Projects</h2></div></div>` +
           `<div class="pk-set pk-set--solo"><div class="pk-set-panel" id="pk-set-panel"></div></div>`
         : `<div class="rvd-notifhead"><div><h2>Settings</h2></div></div>` +
           `<div class="pk-set">` +
@@ -2701,7 +2709,7 @@
             stats.map((st) => `<span class="pk-card-tile-stat"><b>${st[0]}</b><i>${st[1]}</i></span>`).join('') +
           `</span>` +
         `</button>`;
-      const tileGrid = (inner) => `<div class="pk-card-grid">${inner}</div>`;
+      const tileGrid = (inner, rows) => `<div class="pk-card-grid${rows ? ' pk-card-grid--rows' : ''}">${inner}</div>`;
       // Empty states carry the action rather than explaining the concept.
       const emptyRow = (text, btnHtml) =>
         `<div class="pk-set-empty">${text}${btnHtml ? ` <span class="pk-set-empty-act">${btnHtml}</span>` : ''}</div>`;
@@ -3172,18 +3180,17 @@
           return roots().filter((c) => names.has(c.team || '') || names.has(c.toTeam || '')).length;
         };
         outer.innerHTML =
-          card('Projects', '',
-            (shown.length
-              ? tileGrid(shown.map((p) => drillCard(`data-project-open="${esc(p.id)}"`,
-                  esc(p.name || p.id), esc(p.kind || 'owned'), [
-                    [teamsIn(p.id).length, 'teams'],
-                    [peopleInProject(p.id).length, 'people'],
-                    [ticketsInProject(p.id), 'tickets'],
-                  ])).join(''))
-              : emptyRow(q ? 'No matches.' : 'No projects yet.')) +
-            row('', '', `<span class="pk-u-inlinerow">` +
-              `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>` +
-              `<button class="pk-a" type="button" id="pk-proj-import">Import a project</button></span>`));
+          (shown.length
+            ? tileGrid(shown.map((p) => drillCard(`data-project-open="${esc(p.id)}"`,
+                esc(p.name || p.id), esc(p.kind || 'owned'), [
+                  [teamsIn(p.id).length, 'teams'],
+                  [peopleInProject(p.id).length, 'people'],
+                  [ticketsInProject(p.id), 'tickets'],
+                ])).join(''), true)
+            : `<div class="pk-set-card"><div class="pk-set-card-b">${emptyRow(q ? 'No matches.' : 'No projects yet.')}</div></div>`) +
+          `<div class="pk-org-actions"><span class="pk-u-inlinerow">` +
+            `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>` +
+            `<button class="pk-a" type="button" id="pk-proj-import">Import a project</button></span></div>`;
       }
 
       /* Who sees whose comments. It lives INSIDE a project because that is what it is a property

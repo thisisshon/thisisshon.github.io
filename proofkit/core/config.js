@@ -77,10 +77,11 @@ export const VIEW_SEGMENTS = {
   threads: 'threads',
   patterns: 'patterns',
   insights: 'insights',
-  // 12.0 — Organisation is its own module, not a Settings section. Projects, teams and people are
-  // the thing the Builder manages daily; a settings tab is where you put something you configure
-  // once.
-  org: 'organisation',
+  /* 12.0 — its own module rather than a Settings section: projects, teams and people are what a
+   * Builder manages daily, and a settings tab is for what you configure once. The view key stays
+   * `org` (it owns the whole hierarchy, not just the top level) while the URL says `projects`,
+   * which is what the screen actually shows you. */
+  org: 'projects',
   settings: 'settings',
 };
 /** segment → view (the inverse of VIEW_SEGMENTS, built once). */
@@ -880,6 +881,33 @@ export function buildDropdown(opts) {
 
   let isOpen = false;
   const onDoc = (e) => { if (!wrap.contains(e.target)) close(); };
+
+  /* TYPE-AHEAD, as every native select has. Two behaviours in one, which is the convention people
+   * already have in their fingers:
+   *   - the SAME letter repeatedly cycles through the entries starting with it (b, b, b …)
+   *   - DIFFERENT letters typed quickly build a prefix, so "ma" jumps straight to Marketing
+   * A short idle gap resets the buffer, which is what separates "typing a word" from "pressing the
+   * same key again". Without this a list long enough to need a scrollbar could only be searched by
+   * eye, one arrow-press at a time. */
+  let typeBuf = '';
+  let typeAt = 0;
+  const TYPE_RESET_MS = 900;
+  function typeAhead(ch, list) {
+    if (!list.length) return;
+    const now = Date.now();
+    const repeated = typeBuf.length === 1 && typeBuf === ch;
+    typeBuf = (now - typeAt > TYPE_RESET_MS) ? ch : (repeated ? ch : typeBuf + ch);
+    typeAt = now;
+    const textOf = (el) => (el.textContent || '').trim().toLowerCase();
+    const matches = list.filter((el) => textOf(el).startsWith(typeBuf));
+    if (!matches.length) return;
+    // Start from the item after the current one, so a repeated letter advances instead of
+    // re-selecting whatever is already focused.
+    const from = list.indexOf(document.activeElement);
+    const next = matches.find((el) => list.indexOf(el) > from) || matches[0];
+    next.focus();
+  }
+
   const onKey = (e) => {
     if (e.key === 'Escape') { close(); trigger.focus(); return; }
     // Disabled items are inert — never a keyboard-focus stop.
@@ -887,9 +915,17 @@ export function buildDropdown(opts) {
     const i = list.indexOf(document.activeElement);
     if (e.key === 'ArrowDown') { e.preventDefault(); (list[i + 1] || list[0]).focus(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); (list[i - 1] || list[list.length - 1]).focus(); }
+    else if (e.key === 'Home') { e.preventDefault(); list[0] && list[0].focus(); }
+    else if (e.key === 'End') { e.preventDefault(); list[list.length - 1] && list[list.length - 1].focus(); }
+    // A single printable character, with no modifier — anything else belongs to the browser.
+    else if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey && /\S/.test(e.key)) {
+      e.preventDefault();
+      typeAhead(e.key.toLowerCase(), list);
+    }
   };
   function open() {
-    isOpen = true; wrap.classList.add('is-open'); trigger.setAttribute('aria-expanded', 'true'); // CSS animates the menu in
+    isOpen = true; typeBuf = ''; typeAt = 0;   // a stale prefix must not swallow the first keystroke
+    wrap.classList.add('is-open'); trigger.setAttribute('aria-expanded', 'true'); // CSS animates the menu in
     document.addEventListener('click', onDoc, true); document.addEventListener('keydown', onKey, true);
     const sel = menu.querySelector('[aria-selected="true"]') || menu.querySelector('.pk-dropdown-item:not([aria-disabled="true"])');
     if (sel) sel.focus();

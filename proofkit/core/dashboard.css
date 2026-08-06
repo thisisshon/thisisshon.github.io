@@ -745,6 +745,9 @@
      "belongs to the thing above" rather than "another top-level item, slightly moved". */
   padding-left:calc(var(--pk-rail-gutter) + 18px + 12px) !important;
   font:500 12.5px/1 var(--pk-font);color:var(--pk-muted);background:transparent;border:none}
+/* Comments carries an unread badge; push it to the row's end rather than letting it sit against
+   the label. */
+.pk-side .pk-subnav .pk-nav--sub .pk-navbadge{margin-left:auto}
 .pk-side .pk-subnav .pk-nav--sub.is-active{color:var(--pk-ink)}
 /* Sub-items get the SLIDING marker and nothing else. .pk-nav::before draws a bar at the rail's
    left edge for any active nav item, so an active sub-item was showing two indicators at once —

@@ -319,10 +319,13 @@
     }
     function hideLogin() { login && login.el.remove(); }
     async function tryLogin() {
-      const team = login.getTeam();
       const id = login.keyInput.value.trim();
-      if (!team) { login.focusTeam(); login.setError('Please choose your team.'); return; }
       if (!id) { login.keyInput.focus(); return; }
+      /* No team chosen ⇒ treat the key as the BUILDER key. The Builder is not on a team, so
+       * requiring a pick from a list of teams they do not belong to had no correct answer. The key
+       * is what actually authorises; the picker only says which board a team member lands on. */
+      const picked = login.getTeam();
+      const team = picked || ADMIN_TEAM;
       setSession(team, id); // shared session (validated below)
       login.setBusy(true, 'Authenticating'); login.setError('');
       try {
@@ -332,7 +335,10 @@
       } catch (e) {
         clearSession();
         login.setBusy(false, 'Authenticate');
-        login.setError(e.message === 'unauthorized' ? 'Incorrect key. Please try again.' : ('Could not connect — ' + e.message));
+        const wrong = e.message === 'unauthorized';
+        login.setError(!wrong ? ('Could not connect — ' + e.message)
+          : picked ? 'Incorrect key. Please try again.'
+                   : 'That is not the Builder key. Choose your team if you are signing in as a team.');
         login.keyInput.focus(); login.keyInput.select();
       }
     }

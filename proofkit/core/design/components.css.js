@@ -547,7 +547,8 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- row action menu — fixed, body-mounted (admin + team). --rise = admin-only entrance anim. ---- */
 .pk-rowmenu{position:fixed;z-index:2147483400;min-width:200px;display:flex;flex-direction:column;gap:2px;padding:var(--pk-space-3);
-  background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);box-shadow:var(--pk-shadow-md)}
+  background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);box-shadow:var(--pk-shadow-md);
+  max-height:min(320px,60vh);overflow-y:auto;overscroll-behavior:none}
 .pk-rowmenu--rise{animation:pk-dd-panel .16s var(--pk-ease) both}
 .pk-rowmenu-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;white-space:nowrap;border:0;border-radius:0;
   cursor:pointer;padding:11px 14px;background:transparent;color:var(--pk-body);
@@ -754,7 +755,15 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-dropdown.is-open .pk-dropdown-chev{transform:rotate(180deg)}
 .pk-dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:100%;z-index:210;display:none;
   flex-direction:column;gap:2px;padding:8px;box-sizing:border-box;
-  background:var(--pk-card);border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-md)}
+  background:var(--pk-card);border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-md);
+  /* Cap the height and scroll. The list had no ceiling, so a deployment with a dozen-odd teams
+     produced a menu taller than the viewport with its last entries simply unreachable —
+     off-screen with nothing to scroll, because the menu is absolutely positioned and the page
+     behind it does not grow to fit it. \`overscroll-behavior\` keeps that scroll from chaining
+     into the page once it bottoms out. */
+  /* \`none\`, not \`contain\`: contain stops the scroll chaining to the page but still lets the menu
+     rubber-band against its own ends, which on a short list reads as the menu wobbling. */
+  max-height:min(320px,60vh);overflow-y:auto;overscroll-behavior:none}
 .pk-dropdown-menu--right{left:auto;right:0}
 /* OPEN — the panel appears and its options STACK into place one after another. Timings are
    half what they were: a 6-item menu used to take ~565ms to settle, which read as sluggish
@@ -866,7 +875,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tray-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
   border-radius:var(--pk-radius-full);background:var(--pk-red);color:var(--pk-on-accent);
   font:700 11px/1 var(--pk-font)}
-.pk-tray-list{display:flex;flex-direction:column;gap:1px;max-height:300px;overflow:auto;background:var(--pk-hair)}
+.pk-tray-list{display:flex;flex-direction:column;gap:1px;max-height:300px;overflow:auto;overscroll-behavior:none;background:var(--pk-hair)}
 .pk-tray-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--pk-card)}
 .pk-tray-item-body{flex:1;min-width:0}
 .pk-tray-item-summary{font:600 13px/1.4 var(--pk-font);color:var(--pk-ink);
@@ -946,6 +955,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-head .pk-h2{margin:0;font:800 20px/1.2 var(--pk-font);color:var(--pk-ink)}
 .pk-set-sub{margin:6px 0 0;font:400 13px/1.5 var(--pk-font);color:var(--pk-muted);max-width:60ch}
 .pk-set{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;align-items:start;margin-top:8px}
+/* Organisation has no tab rail, so its panel is the ONLY child — and in a two-column grid a lone
+   child lands in the FIRST column and renders 190px wide. That squeezed every level of the module,
+   not just the projects list, because they all render into this same panel. One column, full width. */
+.pk-set--solo{grid-template-columns:minmax(0,1fr)}
 .pk-set-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:16px}
 .pk-set-tab{padding:10px 14px;border:none;border-left:2px solid transparent;background:transparent;cursor:pointer;
   text-align:left;color:var(--pk-body);font:600 13px/1.2 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
@@ -1040,7 +1053,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* ---- Project and team CARDS ---------------------------------------------------------------
    Projects and teams are BROWSED — you pick one of them — so they are tiles, not rows. The stat
    strip is the point: it answers "which one do I need" without opening any of them. */
-.pk-card-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));padding:8px 0 14px}
+.pk-card-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));padding:8px 0 14px}
 /* Hover changes the STROKE and nothing else. No lift: a card that moves under the cursor makes
    the pointer chase it, and with a grid of them the whole page appears to twitch as you cross it. */
 .pk-card-tile{display:flex;flex-direction:column;gap:14px;padding:16px;text-align:left;cursor:pointer;
@@ -1054,13 +1067,40 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-card-tile-stat{display:flex;flex-direction:column;gap:2px}
 .pk-card-tile-stat b{font:700 18px/1 var(--pk-font);color:var(--pk-ink)}
 .pk-card-tile-stat i{font:500 11px/1 var(--pk-font);font-style:normal;color:var(--pk-muted)}
+/* The projects list has no card around it, so its actions need their own spacing — a card used to
+   supply that as its final row. */
+.pk-org-actions{display:flex;justify-content:flex-end;margin-top:16px}
+
+/* ROW layout. Projects are few, their names are long, and the useful comparison is between them —
+   so one per line, with the stat columns aligned down the page. Side-by-side cards forced the
+   names to wrap and put each project's numbers at a different x, which is the one arrangement that
+   makes four projects hard to compare. */
+.pk-card-grid--rows{grid-template-columns:1fr;gap:8px;padding:0}
+.pk-card-grid--rows .pk-card-tile{flex-direction:row;align-items:center;gap:24px;padding:14px 18px}
+/* The base card pushes the tag to the far right (space-between). In a row that flings it across
+   the whole width to sit against the numbers; beside the name is where it belongs. */
+.pk-card-grid--rows .pk-card-tile-h{flex:1 1 auto;min-width:0;align-items:center;gap:10px;
+  justify-content:flex-start}
+.pk-card-grid--rows .pk-card-tile-name{font-size:15px}
+/* Fixed-width stat columns so the numbers line up row to row rather than drifting with the name. */
+.pk-card-grid--rows .pk-card-tile-stats{flex:none;gap:0}
+.pk-card-grid--rows .pk-card-tile-stat{width:88px;align-items:flex-start}
+.pk-card-grid--rows .pk-card-tile-stat b{font-size:20px}
+
+@media (max-width:640px){
+  .pk-card-grid--rows .pk-card-tile{flex-direction:column;align-items:flex-start;gap:12px}
+  .pk-card-grid--rows .pk-card-tile-stat{width:auto;min-width:64px}
+}
+
 @media (min-width:1024px) and (hover:hover){
   .pk-card-tile:hover{border-color:var(--pk-red);background:var(--pk-hover)}
 }
 .pk-card-tile:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
 
-/* Search across the hierarchy. Fine at six teams; the point is thirty. */
-.pk-set-search{margin-bottom:4px}
+/* Search across the hierarchy. Fine at six teams; the point is thirty.
+   The top margin separates it from the page heading — at the inherited 8px the two read as one
+   block, which made the title look like a label for the field rather than for the screen. */
+.pk-set-search{margin-top:20px;margin-bottom:0}
 .pk-set-search input{width:100%;height:42px}
 
 /* The recycle bin's waiting state is a fact, not a button — a control that refuses half the time
@@ -1332,6 +1372,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   max-width: 280px;
   max-height: 60vh;
   overflow-y: auto;
+  overscroll-behavior: none;   /* same rule as .pk-dropdown-menu — a menu never scrolls the page */
   z-index: 200;
   transform-origin: left bottom;
 }
