@@ -197,6 +197,117 @@ export async function accountLogin(workerUrl, email, pin) {
   return body;
 }
 
+/* --------------------------------------------------------------------------
+ * 8.0 — passkeys (Touch ID on a Mac, Windows Hello, Android biometrics).
+ *
+ * A passkey replaces the PIN PROMPT, never the account: every one of these helpers degrades to
+ * "no passkey here, use the PIN" rather than throwing, because a fingerprint reader that is
+ * missing, busy, or refused must never be the reason someone cannot get into their own work.
+ *
+ * PLATFORM NOTE: WebAuthn is unavailable from `chrome-extension://` origins, so the extension
+ * popup cannot prompt for Touch ID directly. It opens the hosted auth page instead, which runs on
+ * a normal https origin where the platform authenticator is allowed.
+ * ------------------------------------------------------------------------ */
+
+const b64uToBuf = (s) => {
+  const p = String(s || '').replace(/-/g, '+').replace(/_/g, '/');
+  const bin = atob(p + '='.repeat((4 - (p.length % 4)) % 4));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+};
+const bufToB64u = (buf) => {
+  const b = new Uint8Array(buf); let str = '';
+  for (let i = 0; i < b.length; i++) str += String.fromCharCode(b[i]);
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+/** Does this browser have a built-in biometric authenticator we can actually use? */
+export async function hasPlatformAuthenticator() {
+  try {
+    if (!window.PublicKeyCredential || !window.isSecureContext) return false;
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  } catch (e) { return false; }
+}
+
+const authApi = async (workerUrl, path, body, token) => {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = 'Bearer ' + token;
+  const res = await fetch((workerUrl || WORKER_URL).replace(/\/$/, '') + path, {
+    method: body === undefined ? 'GET' : 'POST', headers,
+    body: body === undefined ? undefined : JSON.stringify(body || {}),
+  });
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(out.error || 'Request failed.');
+  return out;
+};
+
+/** Enrol THIS device for the signed-in account. Requires a live session — a passkey is added to a
+ *  proven account, it can never be used to claim one. */
+export async function passkeyEnrol(workerUrl, label) {
+  const token = getAuthToken();
+  if (!token) throw new Error('Sign in first.');
+  const o = await authApi(workerUrl, '/auth/webauthn/register/options', {}, token);
+  const cred = await navigator.credentials.create({
+    publicKey: {
+      challenge: b64uToBuf(o.challenge),
+      rp: o.rp,
+      user: { id: b64uToBuf(o.user.id), name: o.user.name, displayName: o.user.displayName },
+      pubKeyCredParams: o.pubKeyCredParams,
+      authenticatorSelection: o.authenticatorSelection,
+      excludeCredentials: (o.excludeCredentials || []).map((c) => ({ type: 'public-key', id: b64uToBuf(c.id) })),
+      timeout: o.timeout, attestation: o.attestation,
+    },
+  });
+  if (!cred) throw new Error('No passkey was created.');
+  return authApi(workerUrl, '/auth/webauthn/register/verify', {
+    challenge: o.challenge,
+    clientDataJSON: bufToB64u(cred.response.clientDataJSON),
+    attestationObject: bufToB64u(cred.response.attestationObject),
+    label: label || 'This device',
+  }, token);
+}
+
+/**
+ * Sign in with a passkey. Returns the session on success, or `null` when this account simply has
+ * no passkey — a plain "fall back to the PIN", not an error worth showing anyone.
+ * A user who dismisses the biometric sheet also lands on null: cancelling is a choice, not a fault.
+ */
+export async function passkeyLogin(workerUrl, email) {
+  if (!(await hasPlatformAuthenticator())) return null;
+  let o;
+  try { o = await authApi(workerUrl, '/auth/webauthn/login/options', { email }); }
+  // Asking whether an account HAS a passkey is a probe, and a failed probe is not a failed login.
+  // An older Worker without these routes, or a flaky network, must land the user on the PIN field
+  // rather than on a red error about a credential they were never asked for.
+  catch (e) { return null; }
+  if (!o || !o.hasPasskey) return null;
+  let assertion;
+  try {
+    assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: b64uToBuf(o.challenge), rpId: o.rpId,
+        allowCredentials: (o.allowCredentials || []).map((c) => ({ type: 'public-key', id: b64uToBuf(c.id) })),
+        userVerification: o.userVerification, timeout: o.timeout,
+      },
+    });
+  } catch (e) { return null; }          // cancelled / timed out → the PIN field is still right there
+  if (!assertion) return null;
+  const body = await authApi(workerUrl, '/auth/webauthn/login/verify', {
+    challenge: o.challenge,
+    credentialId: bufToB64u(assertion.rawId),
+    clientDataJSON: bufToB64u(assertion.response.clientDataJSON),
+    authenticatorData: bufToB64u(assertion.response.authenticatorData),
+    signature: bufToB64u(assertion.response.signature),
+  });
+  setAccountSession(body.user, body.token);
+  return body;
+}
+
+/** Passkeys enrolled on the signed-in account. */
+export const passkeyList = (workerUrl) => authApi(workerUrl, '/auth/webauthn/list', undefined, getAuthToken());
+export const passkeyRemove = (workerUrl, id) => authApi(workerUrl, '/auth/webauthn/remove', { id }, getAuthToken());
+
 /** Headers for an authenticated call: bearer token when signed in, else the legacy team key. */
 export function authHeaders() {
   const t = getAuthToken();
@@ -798,7 +909,7 @@ export function buildDropdown(opts) {
  * its own submit (admin vs team routing). ADMIN_TEAM ('Builder') is offered as a
  * login-only identity — picking it + the admin key grants ADMIN access.
  * ------------------------------------------------------------------------ */
-const PK_MARK =
+export const PK_MARK =
   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
   '<path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-4 4V5Z" fill="var(--pk-red)"/>' +
   '<circle cx="12" cy="9.5" r="1.6" fill="#fff"/></svg>';

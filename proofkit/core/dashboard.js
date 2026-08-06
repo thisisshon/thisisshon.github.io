@@ -5,6 +5,7 @@
     initTheme, buildThemeToggle, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled,
+    hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
     reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
 
@@ -2386,6 +2387,90 @@
       }
     }
 
+    /* ---- 8.0 passkeys ---------------------------------------------------------------------
+     * Three honest states, because "Enrol" on a machine that cannot enrol is the failure this
+     * screen exists to avoid:
+     *   no sensor      — say so plainly, offer nothing
+     *   not signed in  — a passkey attaches to an account, and a team key is not one
+     *   ready          — one button
+     */
+    async function wirePasskeys() {
+      const stateEl = $('#pk-pk-state');
+      const listEl = $('#pk-pk-list');
+      if (!stateEl) return;
+      const rowMain = (label, desc, ctl) =>
+        `<div class="pk-set-row-main"><div class="pk-set-row-label">${label}</div>` +
+        (desc ? `<div class="pk-set-row-desc">${desc}</div>` : '') + `</div>` +
+        (ctl ? `<div class="pk-set-ctl">${ctl}</div>` : '');
+
+      const supported = await hasPlatformAuthenticator();
+      if (!supported) {
+        stateEl.innerHTML = rowMain('No biometric sensor here',
+          'This browser or machine has no Touch ID / Windows Hello. Sign in with your PIN, and enrol on a device that does.');
+        listEl.innerHTML = '';
+        return;
+      }
+      if (!getAuthToken()) {
+        stateEl.innerHTML = rowMain('Sign in with your account first',
+          'Passkeys attach to a person, not to a team key. Sign in with your email and PIN, then enrol.');
+        listEl.innerHTML = '';
+        return;
+      }
+
+      stateEl.innerHTML = rowMain('Touch ID is available',
+        'Enrolling stores a public key for this device. The private half never leaves the machine.',
+        `<button class="pk-a pk-a--primary" type="button" id="pk-pk-add">Enrol this device</button>`);
+      $('#pk-pk-add').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        btn.disabled = true; btn.textContent = 'Waiting for Touch ID…';
+        try {
+          await passkeyEnrol(WORKER_URL, deviceLabel());
+          pkAlert({ title: 'Enrolled', message: 'Touch ID will sign you in on this device from now on. Your PIN still works.' });
+          refreshList();
+        } catch (err) {
+          // A cancelled sheet is a decision, not a fault, and must not be dressed up as an error.
+          const cancelled = /NotAllowed|abort/i.test(String(err && err.name) + String(err && err.message));
+          if (!cancelled) pkAlert({ title: 'Could not enrol', message: err.message || 'Something went wrong.' });
+        } finally { btn.disabled = false; btn.textContent = 'Enrol this device'; }
+      });
+
+      async function refreshList() {
+        try {
+          const rows = await passkeyList(WORKER_URL);
+          listEl.innerHTML = rows.length
+            ? rows.map((r) =>
+                `<div class="pk-set-row">` +
+                  rowMain(esc(r.label || 'Device'),
+                    'Added ' + fmtWhen(r.created_at) + (r.last_used_at ? ' · last used ' + fmtWhen(r.last_used_at) : ' · never used'),
+                    `<button class="pk-a danger" type="button" data-pk-rm="${esc(r.id)}">Remove</button>`) +
+                `</div>`).join('')
+            : `<div class="pk-set-row"><div class="pk-set-row-main"><div class="pk-set-row-desc">No devices enrolled yet.</div></div></div>`;
+          listEl.querySelectorAll('[data-pk-rm]').forEach((b) => b.addEventListener('click', async () => {
+            b.disabled = true;
+            try { await passkeyRemove(WORKER_URL, b.dataset.pkRm); refreshList(); }
+            catch (err) { b.disabled = false; pkAlert({ title: 'Could not remove', message: err.message }); }
+          }));
+        } catch (err) {
+          listEl.innerHTML = `<div class="pk-set-row"><div class="pk-set-row-main"><div class="pk-set-row-desc">Could not load: ${esc(err.message)}</div></div></div>`;
+        }
+      }
+      refreshList();
+    }
+
+    /** A name the owner will recognise in a list six months from now. */
+    function deviceLabel() {
+      const ua = navigator.userAgent || '';
+      const os = /Mac/i.test(ua) ? 'Mac' : /Windows/i.test(ua) ? 'Windows' : /iPhone|iPad/i.test(ua) ? 'iOS' : /Android/i.test(ua) ? 'Android' : 'This device';
+      const br = /Edg\//i.test(ua) ? 'Edge' : /Chrome\//i.test(ua) ? 'Chrome' : /Safari\//i.test(ua) ? 'Safari' : /Firefox\//i.test(ua) ? 'Firefox' : '';
+      return br ? os + ' · ' + br : os;
+    }
+
+    function fmtWhen(iso) {
+      const t = Date.parse(iso || '');
+      if (!t) return 'recently';
+      return new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
     function renderSettings() {
       $('#rvd-empty').hidden = true;
       const host = $('#rvd-view-settings');
@@ -2395,6 +2480,7 @@
         { k: 'notifications', label: 'Notifications' },
         { k: 'data', label: 'Data & maintenance' },
         { k: 'people', label: 'People' },
+        { k: 'passkeys', label: 'Passkeys' },
         { k: 'visibility', label: 'Visibility' },
         { k: 'teams', label: 'Teams' },
         { k: 'projects', label: 'Projects' },
@@ -2532,6 +2618,18 @@
               `<select id="pk-proj-kind" class="pk-set-kbd"><option value="owned">owned</option><option value="external">external</option></select>` +
               `<button class="pk-a" type="button" id="pk-proj-create">Create</button>` +
             `</span>`));
+      } else if (settingsSection === 'passkeys') {
+        // Enrolment has to live behind a signed-in session, which is exactly where this is. A
+        // passkey is added to a PROVEN account; it can never be the thing that claims one.
+        html =
+          card('Touch ID on this device',
+            'Enrol this Mac and signing in becomes: type your email, touch the sensor. Your PIN keeps working — '
+            + 'it is the fallback for devices without a sensor, and the way back in if this one is lost.',
+            `<div id="pk-pk-state" class="pk-set-row"><div class="pk-set-row-main">` +
+              `<div class="pk-set-row-label">Checking this device…</div></div></div>`) +
+          card('Enrolled devices', 'Remove any you no longer use.',
+            `<div id="pk-pk-list"><div class="pk-set-row"><div class="pk-set-row-main">` +
+              `<div class="pk-set-row-desc">Loading…</div></div></div></div>`);
       } else if (settingsSection === 'about') {
         const teamRows = TEAMS.map((t) => `<span class="pk-set-teamtag${teamEnabled(t) ? '' : ' is-off'}">${esc(t)}${teamEnabled(t) ? '' : ' · off'}</span>`).join('');
         const kbd = (k) => `<kbd class="pk-set-kbd">${k}</kbd>`;
@@ -2554,6 +2652,9 @@
       if (themeSlot) themeSlot.appendChild(buildThemeToggle());
       // Mount any dropdowns for this section.
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
+
+      // ---- Passkeys (8.0) -------------------------------------------------------------------
+      if (settingsSection === 'passkeys') wirePasskeys();
 
       // Phase A: async-fill the Teams list + wire every action.
       // ---- Visibility (7.x) -----------------------------------------------------------------

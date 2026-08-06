@@ -639,6 +639,15 @@
 .pk-side .pk-side-logout--row {
   display: flex !important; align-items: center; gap: 12px;
   width: 100% !important; box-sizing: border-box;
+  /* `min-width: 0` on ALL FOUR, in BOTH states. Three of them are plain rows and never needed it;
+     the team trigger is a flex container carrying a component `min-width: 170px` and the flex
+     default `min-width: auto`, either of which refuses to shrink below "Jump To Team" at nowrap.
+     Neutralising it here is what lets the trigger be a plain `width: 100%` like its neighbours —
+     which is the whole point: a percentage of an animating parent animates for free, so the rail's
+     own width transition carries all four rows at exactly one speed. Pinning the trigger to a px
+     width in the collapsed state instead (as this used to) gave it a width the rail transition
+     could not interpolate, so it snapped to 64px in a single frame while the rest slid. */
+  min-width: 0 !important;
   padding-left: var(--pk-rail-gutter) !important; padding-right: 12px !important;
   justify-content: flex-start !important;
   white-space: nowrap; overflow: hidden; text-align: left;
@@ -708,16 +717,10 @@
 :root.pk-side-collapsed .pk-side .pk-dropdown-label,
 :root.pk-side-collapsed .pk-side .pk-side-logout--row > span { opacity: 0 !important; }
 
-/* The picker's trigger takes its width from the label's intrinsic size, so collapsed it stayed
-   170px and its rounded right edge was clipped by the rail. Pin it to the rail width. */
-:root.pk-side-collapsed .pk-side .rvd-teamview .pk-dropdown,
-:root.pk-side-collapsed .pk-side .rvd-teamview .pk-dropdown-trigger {
-  width: var(--pk-rail-w-min) !important;
-  max-width: var(--pk-rail-w-min) !important;
-  /* `min-width: 0` is the load-bearing part. The trigger is a flex container whose default
-     `min-width: auto` refuses to shrink below its content, and "Jump To Team" is `nowrap` — so it
-     stayed 170px and merely got CLIPPED by the rail, looking masked rather than collapsed.
-     max-width alone cannot beat an auto min-width. */
+/* The dropdown WRAPPER around the trigger. It too must be a plain full-width block with no floor
+   of its own, or it re-imposes the intrinsic width on the trigger inside it. No px pinning and no
+   collapsed-only override: one rule, both states, so there is nothing to snap between. */
+.pk-side .rvd-teamview .pk-dropdown {
   min-width: 0 !important;
   flex: none !important;
 }
