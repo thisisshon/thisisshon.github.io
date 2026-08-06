@@ -1031,6 +1031,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    reads as the same component in a different register rather than a foreign element. */
 .pk-set-card--danger{border-left-color:var(--pk-softred)}
 .pk-set-card--danger .pk-set-card-h h3{color:var(--pk-softred)}
+
+/* Search across the hierarchy. Fine at six teams; the point is thirty. */
+.pk-set-search{margin-bottom:4px}
+.pk-set-search input{width:100%;height:42px}
+
+/* The recycle bin's waiting state is a fact, not a button — a control that refuses half the time
+   teaches people to click it twice, which is the opposite of what a two-day delete is for. */
+.pk-set-card--danger .pk-set-pill{border-color:var(--pk-softred);color:var(--pk-softred)}
 @media (min-width:1024px) and (hover:hover){
   .pk-set-tab:not(.is-active):hover{color:var(--pk-ink)}
   .pk-set-swatch:hover{border-color:var(--pk-red)}

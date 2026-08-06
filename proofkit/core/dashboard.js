@@ -338,6 +338,19 @@
           umbrella: async () => { throw new Error('Patterns need the worker backend'); },
           projects: async () => [{ id: 'default', name: 'Default', kind: 'owned', originAllowlist: [] }],
           createProject: async () => { throw new Error('Projects need the worker backend'); },
+          trashList: async () => ({ items: [], waitMs: 86400000 }),
+          trashRestore: async () => { throw new Error('Needs the worker backend'); },
+          trashArm: async () => { throw new Error('Needs the worker backend'); },
+          trashPurge: async () => { throw new Error('Needs the worker backend'); },
+          auditLog: async () => [],
+          policyGet: async () => ({ sessionHours: 12, lockAfter: 5, hardLockAfter: 15, requirePasskeyForBuilder: false, allowTeamKeys: true }),
+          policySet: async () => { throw new Error('Needs the worker backend'); },
+          teamRename: async () => { throw new Error('Needs the worker backend'); },
+          teamPermissions: async () => { throw new Error('Needs the worker backend'); },
+          projectUpdate: async () => { throw new Error('Needs the worker backend'); },
+          projectDelete: async () => { throw new Error('Needs the worker backend'); },
+          userDelete: async () => { throw new Error('Needs the worker backend'); },
+          usersBulk: async () => { throw new Error('Needs the worker backend'); },
           // Team management is worker-only: local-demo has no key store to manage.
           teamsList: async () => [],
           teamCreate: async () => { throw new Error('Team management needs the worker backend'); },
@@ -386,6 +399,20 @@
           teamProject: (team, project) => apiFetch('/admin/teams/project', { method: 'POST', body: JSON.stringify({ team, project }) }),
           projectLinks: () => apiFetch('/admin/project-links'),
           projectLinkSet: (viewerProject, subjectProject, canSee) => apiFetch('/admin/project-links', { method: 'POST', body: JSON.stringify({ viewerProject, subjectProject, canSee }) }),
+          // ---- 10.0 ----
+          trashList: () => apiFetch('/admin/trash'),
+          trashRestore: (kind, ref) => apiFetch('/admin/trash/restore', { method: 'POST', body: JSON.stringify({ kind, ref }) }),
+          trashArm: (kind, ref, password) => apiFetch('/admin/trash/arm', { method: 'POST', body: JSON.stringify({ kind, ref, password }) }),
+          trashPurge: (kind, ref, password) => apiFetch('/admin/trash/purge', { method: 'POST', body: JSON.stringify({ kind, ref, password }) }),
+          auditLog: (kind, ref) => apiFetch('/admin/audit-log' + (kind && ref ? '?kind=' + encodeURIComponent(kind) + '&ref=' + encodeURIComponent(ref) : '')),
+          policyGet: () => apiFetch('/admin/settings'),
+          policySet: (patch) => apiFetch('/admin/settings', { method: 'POST', body: JSON.stringify(patch) }),
+          teamRename: (from, to) => apiFetch('/teams/rename', { method: 'POST', body: JSON.stringify({ from, to }) }),
+          teamPermissions: (name, perms) => apiFetch('/teams/permissions', { method: 'POST', body: JSON.stringify({ name, ...perms }) }),
+          projectUpdate: (id, name) => apiFetch('/projects/update', { method: 'POST', body: JSON.stringify({ id, name }) }),
+          projectDelete: (id) => apiFetch('/projects/delete', { method: 'POST', body: JSON.stringify({ id }) }),
+          userDelete: (email) => apiFetch('/admin/users/delete', { method: 'POST', body: JSON.stringify({ email }) }),
+          usersBulk: (team, people) => apiFetch('/admin/users/bulk', { method: 'POST', body: JSON.stringify({ team, people }) }),
           usersList: () => apiFetch('/admin/users'),
           userCreate: (u) => apiFetch('/admin/users', { method: 'POST', body: JSON.stringify(u) }),
           userUpdate: (u) => apiFetch('/admin/users/update', { method: 'POST', body: JSON.stringify(u) }),
@@ -946,6 +973,17 @@
      * contain people — so one path replaces what used to be four sibling screens each re-stating
      * the same structure. Null means "the level above this one". */
     let orgPath = { project: null, team: null, person: null };
+    let orgQuery = '';   // Organisation search. Fine at six teams; the point is thirty.
+    let orgData = { projects: [], teams: [], users: [] };   // last load, for the delegated handlers
+    /* What a team may do. Everyone used to have identical powers: anyone who could see a ticket
+     * could resolve or reopen it. Order is least-to-most consequential. */
+    const PERM_LABELS = [
+      ['comment', 'Comment'],
+      ['resolve', 'Mark resolved'],
+      ['reopen', 'Reopen'],
+      ['close', 'Close'],
+      ['invite', 'Add people'],
+    ];
     const sel = new Set();
     let selectMode = false;
     let lastSig = '';   // signature of the last-rendered data — lets polling skip no-op re-renders
@@ -2532,6 +2570,7 @@
         { k: 'org', label: 'Organisation' },
         { k: 'prefs', label: 'Preferences' },
         { k: 'account', label: 'Account' },
+        { k: 'trash', label: 'Recycle bin' },
         { k: 'system', label: 'System' },
       ];
       // Old section keys still arrive from deep links and the auth-page handoff. Map rather than
@@ -2604,8 +2643,17 @@
       // ORGANISATION
       // =========================================================================================
       if (settingsSection === 'org') {
-        html = `<div id="pk-org-resets"></div><div id="pk-org">` +
-          card('Loading…', '', '') + `</div>`;
+        html =
+          `<div class="pk-set-search"><input id="pk-org-q" class="pk-login-input" type="search" ` +
+            `placeholder="Search projects, teams and people" autocomplete="off" value="${esc(orgQuery)}"></div>` +
+          `<div id="pk-org-resets"></div><div id="pk-org">` + card('Loading…', '', '') + `</div>`;
+      }
+
+      // =========================================================================================
+      // RECYCLE BIN — nothing here has been destroyed, and nothing here can be destroyed quickly.
+      // =========================================================================================
+      else if (settingsSection === 'trash') {
+        html = `<div id="pk-trash">` + card('Loading…', '', '') + `</div>`;
       }
 
       // =========================================================================================
@@ -2693,6 +2741,8 @@
             (LOCAL ? '' : row('Health check', '', `<span class="pk-set-ping" id="pk-set-ping">—</span> ${actBtn('ping', 'Ping', 'pk-a--quiet')}`))) +
           card('Export', '',
             row(`${n(all.length, 'record')}`, '', actBtn('export-json', 'JSON', 'pk-a--quiet') + ' ' + actBtn('export-csv', 'CSV', 'pk-a--quiet') + ' ' + actBtn('export-md', 'Markdown', 'pk-a--quiet'))) +
+          card('Policy', '', `<div id="pk-policy">${emptyRow('Loading…')}</div>`) +
+          card('Recent changes', '', `<div id="pk-auditlog">${emptyRow('Loading…')}</div>`) +
           card('About', '',
             row('Version', '', pill('v' + PK_VERSION)) +
             row('Navigate tickets', '', `${kbd('J')} ${kbd('K')}`) +
@@ -2707,7 +2757,16 @@
       if (themeSlot) themeSlot.appendChild(buildThemeToggle());
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
       if (settingsSection === 'account') wirePasskeys();
-      if (settingsSection === 'org') fillOrg();
+      if (settingsSection === 'org') {
+        fillOrg();
+        const q = $('#pk-org-q');
+        if (q) {
+          // Re-filter in place rather than re-rendering the section, so the caret never moves.
+          q.addEventListener('input', () => { orgQuery = q.value; fillOrg(); });
+        }
+      }
+      if (settingsSection === 'trash') fillTrash();
+      if (settingsSection === 'system') { fillPolicy(); fillAuditLog(); }
 
       // Pending PIN resets mean somebody is locked out RIGHT NOW. That is a queue, not a setting,
       // so it is badged on the tab and surfaced above everything else until it is cleared.
@@ -2731,6 +2790,107 @@
         const v = await pkPrompt({ title, message: '6–12 digits. Not a repeated digit or a run (e.g. 123456).', value: '', confirmLabel: 'Set PIN' });
         return v === null ? null : String(v).trim();
       };
+
+      /* Deployment policy. Each of these was a constant in the worker — a decision wearing a
+       * constant's clothing. Changing one here changes behaviour, not just this screen. */
+      async function fillPolicy() {
+        const holder = $('#pk-policy'); if (!holder) return;
+        let pol;
+        try { pol = await store.policyGet(); }
+        catch (e) { holder.innerHTML = emptyRow('Could not load — ' + esc(e.message)); return; }
+        const num = (k, label, desc, opts) =>
+          row(label, desc, `<div class="pk-set-seg" role="group">` +
+            opts.map((o) => `<button class="pk-set-segbtn${pol[k] === o ? ' is-active' : ''}" type="button" data-policy="${k}" data-pval="${o}">${o}</button>`).join('') + `</div>`);
+        const sw = (k, label, desc) =>
+          row(label, desc, `<button class="pk-set-switch" type="button" role="switch" aria-checked="${!!pol[k]}" data-policy="${k}" data-pval="${!pol[k]}"><span class="pk-set-switch-thumb"></span></button>`);
+        holder.innerHTML =
+          num('sessionHours', 'Session length', 'Hours before a tab asks for the PIN again.', [4, 8, 12, 24]) +
+          num('lockAfter', 'Lock after', 'Failed attempts before a cool-off.', [3, 5, 10]) +
+          num('hardLockAfter', 'Hard lock after', 'Failed attempts before only you can clear it.', [10, 15, 25]) +
+          sw('requirePasskeyForBuilder', 'Builders must use a passkey', 'PIN sign-in is refused for Builder accounts.') +
+          sw('allowTeamKeys', 'Allow shared team keys', 'The legacy login. Off means accounts only.');
+        holder.querySelectorAll('[data-policy]').forEach((b) => b.addEventListener('click', async () => {
+          const raw = b.dataset.pval;
+          const v = raw === 'true' ? true : raw === 'false' ? false : Number(raw);
+          try { await store.policySet({ [b.dataset.policy]: v }); fillPolicy(); }
+          catch (e) { pkAlert('Could not save — ' + e.message); }
+        }));
+      }
+
+      /* Who changed what. account_audit only ever covered accounts, so "who deleted this team"
+       * and "who changed visibility" had no answer at all. */
+      async function fillAuditLog() {
+        const holder = $('#pk-auditlog'); if (!holder) return;
+        try {
+          const rows = await store.auditLog();
+          holder.innerHTML = rows.length
+            ? rows.slice(0, 25).map((r) => row(esc(r.action),
+                `${esc(r.target_ref)} · ${esc(r.actor)} · ${esc((r.at || '').slice(0, 16).replace('T', ' '))}${r.detail ? ' · ' + esc(r.detail) : ''}`, '')).join('')
+            : emptyRow('Nothing yet.');
+        } catch (e) { holder.innerHTML = emptyRow('Could not load — ' + esc(e.message)); }
+      }
+
+      /* The recycle bin. Restoring is one click; destroying takes the Builder password twice, a
+       * day apart. The screen states where each item is in that sequence rather than presenting a
+       * Delete button that sometimes works — a control that refuses half the time teaches people
+       * to click it twice, which is the opposite of the point. */
+      async function fillTrash() {
+        const holder = $('#pk-trash'); if (!holder) return;
+        let data;
+        try { data = await store.trashList(); }
+        catch (e) { holder.innerHTML = card('Recycle bin', '', emptyRow('Could not load — ' + esc(e.message))); return; }
+        const items = data.items || [];
+        if (!items.length) {
+          holder.innerHTML = card('Recycle bin', '', emptyRow('Nothing deleted.'));
+          return;
+        }
+        const when = (iso) => !iso ? '' : new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+        const waitLabel = (iso) => {
+          const left = Date.parse(iso) - Date.now();
+          if (left <= 0) return 'ready now';
+          const hrs = Math.ceil(left / 3600000);
+          return hrs > 24 ? 'in ' + Math.ceil(hrs / 24) + ' day(s)' : 'in ' + hrs + 'h';
+        };
+        holder.innerHTML =
+          card('Recycle bin', 'Deleted items keep their history. Access already ended.',
+            items.map((it) => {
+              const stage = !it.purgeArmedAt
+                ? `<button class="pk-a danger" type="button" data-trash-arm="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Delete permanently</button>`
+                : it.canPurgeNow
+                  ? `<button class="pk-a danger" type="button" data-trash-purge="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Confirm deletion</button>`
+                  : `<span class="pk-set-pill">deletable ${esc(waitLabel(it.purgeReadyAt))}</span>`;
+              return row(esc(it.name || it.ref),
+                `${esc(it.kind)} · deleted ${esc(when(it.deletedAt))}${it.deletedBy ? ' by ' + esc(it.deletedBy) : ''}`,
+                `<span class="pk-u-inlinerow">` +
+                  `<button class="pk-a pk-a--primary" type="button" data-trash-restore="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Restore</button>` +
+                  stage +
+                `</span>`);
+            }).join('')) +
+          card('How permanent deletion works', '',
+            emptyRow('It takes the Builder password twice, at least a day apart. Nothing here can be destroyed in one sitting.'));
+
+        holder.querySelectorAll('[data-trash-restore],[data-trash-arm],[data-trash-purge]').forEach((b) => {
+          b.addEventListener('click', async () => {
+            const d = b.dataset;
+            try {
+              if (d.trashRestore) { await store.trashRestore(d.trashRestore, d.trashRef); return fillTrash(); }
+              const kind = d.trashArm || d.trashPurge;
+              const first = !!d.trashArm;
+              const pw = await pkPrompt({
+                title: first ? 'Start permanent deletion' : 'Confirm permanent deletion',
+                message: first
+                  ? `Enter the Builder password to begin deleting “${d.trashRef}”. It can be confirmed after a day — until then it stays here and can still be restored.`
+                  : `Enter the Builder password to destroy “${d.trashRef}”. This cannot be undone.`,
+                value: '', confirmLabel: first ? 'Start' : 'Delete for good',
+              });
+              if (pw === null || !pw) return;
+              if (first) await store.trashArm(kind, d.trashRef, pw);
+              else await store.trashPurge(kind, d.trashRef, pw);
+              fillTrash();
+            } catch (err) { pkAlert(err.message); }
+          });
+        });
+      }
 
       async function fillOrg() {
         const outer = $('#pk-org'); if (!outer) return;
@@ -2756,7 +2916,12 @@
             store.usersList().catch(() => []),
           ]);
         } catch (e) { outer.innerHTML = card('Organisation', '', emptyRow('Could not load — ' + esc(e.message))); return; }
+        // Handlers live outside fillOrg (one delegated listener), so what fillOrg loaded has to be
+        // reachable from there. Without this the "additional teams" editor threw on `users`.
+        orgData = { projects, teams, users };
 
+        const q = orgQuery.trim().toLowerCase();
+        const hit = (x) => !q || String(x || '').toLowerCase().includes(q);
         const projOf = (t) => (t && t.projectId) || 'default';
         const teamsIn = (pid) => teams.filter((t) => projOf(t) === pid);
         const peopleIn = (teamName) => users.filter((u) => (u.team || '') === teamName);
@@ -2790,11 +2955,20 @@
               (flags.length ? row('Flags', '', flags.map((f) => pill(f)).join(' ')) : '') +
               (u.lastLoginAt ? row('Last signed in', '', pill(u.lastLoginAt.slice(0, 10))) : '') +
               row('PIN', '', `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>`) +
-              (locked ? row('Locked', 'Too many failed attempts.', `<button class="pk-a pk-a--primary" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>`) : '')) +
+              (locked ? row('Locked', 'Too many failed attempts.', `<button class="pk-a pk-a--primary" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>`) : '') +
+              // Moving someone was only possible by deleting and recreating them, which lost their
+              // history. It belongs on the person, next to the team they are in.
+              row('Move to another team', '', `<button class="pk-a" type="button" data-person-move="${esc(u.email)}" data-person-team="${esc(u.team || '')}">Move</button>`) +
+              // A person spanning two teams was unrepresentable. The primary team still decides
+              // which board they land on; this is extra reach on top of it.
+              row('Also in', (u.extraTeams || []).join(', ') || 'No other teams',
+                `<button class="pk-a" type="button" data-person-extra="${esc(u.email)}">Edit</button>`)) +
             `<div id="pk-person-audit"></div>` +
             dangerCard(row(u.status === 'active' ? 'Disable account' : 'Enable account',
               u.status === 'active' ? 'Signs them out immediately and blocks sign-in. Their history is kept.' : 'Restores sign-in.',
-              `<button class="pk-a danger" type="button" data-person-toggle="${esc(u.email)}" data-person-status="${esc(u.status)}">${u.status === 'active' ? 'Disable' : 'Enable'}</button>`));
+              `<button class="pk-a danger" type="button" data-person-toggle="${esc(u.email)}" data-person-status="${esc(u.status)}">${u.status === 'active' ? 'Disable' : 'Enable'}</button>`) +
+              row('Delete account', 'Moves it to the recycle bin. Access ends now; the record can be restored.',
+                `<button class="pk-a danger" type="button" data-person-delete="${esc(u.email)}">Delete</button>`));
           // The audit trail belongs beside the person it describes, not on a screen of its own.
           (async () => {
             const ah = $('#pk-person-audit'); if (!ah) return;
@@ -2815,6 +2989,17 @@
           if (!t) { orgPath.team = null; return fillOrg(); }
           const members = peopleIn(t.name);
           const used = ticketsFor(t.name);
+          // A missing key means allowed, so a team that predates permissions keeps its powers.
+          let perms = {}; try { perms = JSON.parse(t.permissions || '{}'); } catch (e) {}
+          const mine = roots().filter((c) => (c.team || '') === t.name || (c.toTeam || '') === t.name);
+          const openOnes = mine.filter((c) => c.status !== 'deployed_live' && c.status !== 'closed');
+          const incoming = openOnes.filter((c) => (c.toTeam || '') === t.name);
+          const oldest = incoming.slice().sort((a, b) => String(a.at || '').localeCompare(String(b.at || '')))[0];
+          const health = {
+            open: openOnes.length,
+            incoming: incoming.length,
+            oldest: oldest && oldest.at ? String(oldest.at).slice(0, 10) : '',
+          };
           outer.innerHTML =
             crumbs([
               { label: 'Projects', go: 'projects' },
@@ -2822,14 +3007,27 @@
               { label: t.name },
             ]) +
             card('People', '',
-              (members.length
-                ? members.map((u) => {
+              (members.filter((u) => hit(u.email) || hit(u.name)).length
+                ? members.filter((u) => hit(u.email) || hit(u.name)).map((u) => {
                     const bits = [u.status === 'active' ? '' : 'disabled', u.role === 'builder' ? 'Builder' : '', !u.hasPin ? 'no PIN' : ''].filter(Boolean);
                     return drillRow(`data-person-open="${esc(u.email)}"`, esc(u.email), bits.join(' · '));
                   }).join('')
-                : emptyRow('No people yet.')) +
-              row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button>`)) +
+                : emptyRow(q ? 'No matches.' : 'No people yet.')) +
+              row('', '', `<span class="pk-u-inlinerow">` +
+                `<button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button>` +
+                `<button class="pk-a" type="button" id="pk-person-bulk">Add many</button></span>`)) +
+            // The board's health, here, so you do not have to leave settings to find out a team is
+            // drowning — which is exactly when you would be on this screen.
+            card('Workload', '',
+              row('Open', '', pill(String(health.open))) +
+              row('Awaiting this team', '', pill(String(health.incoming))) +
+              row('Oldest unanswered', '', pill(health.oldest || 'none'))) +
+            card('Permissions', '',
+              PERM_LABELS.map(([k, label]) =>
+                row(label, '', `<button class="pk-set-switch" type="button" role="switch" aria-checked="${perms[k] !== false}" ` +
+                  `data-perm-team="${esc(t.name)}" data-perm-key="${esc(k)}" data-perm-on="${perms[k] !== false}"><span class="pk-set-switch-thumb"></span></button>`)).join('')) +
             card('Team', '',
+              row('Name', '', `<button class="pk-a" type="button" data-team-rename="${esc(t.name)}">Rename</button>`) +
               row('Status', '', pill(t.enabled ? 'Active' : 'Inactive')) +
               row('Tickets', '', pill(String(used))) +
               row('Project', '', `<button class="pk-a" type="button" data-team-project="${esc(t.name)}" data-team-current="${esc(projOf(t))}">${esc(projOf(t))}</button>`) +
@@ -2839,8 +3037,10 @@
               row(t.enabled ? 'Disable team' : 'Enable team',
                 t.enabled ? 'Blocks sign-in. Tickets and history are kept.' : 'Restores sign-in.',
                 `<button class="pk-a danger" type="button" data-team-toggle="${esc(t.name)}" data-team-enabled="${t.enabled ? '1' : '0'}">${t.enabled ? 'Disable' : 'Enable'}</button>`) +
-              row('Delete team', used ? `Not possible — ${n(used, 'ticket')} still reference this team.` : 'Permanent. Its password stops working immediately.',
-                `<button class="pk-a danger" type="button" data-team-delete="${esc(t.name)}" data-team-used="${used}"${used ? ' disabled' : ''}>Delete</button>`));
+              // No longer blocked by ticket count: deletion is recoverable now, so the reason for
+              // that block (orphaning history forever) no longer applies.
+              row('Delete team', 'Moves it to the recycle bin. Its password stops working immediately; the record can be restored.',
+                `<button class="pk-a danger" type="button" data-team-delete="${esc(t.name)}" data-team-used="${used}">Delete</button>`));
           return;
         }
 
@@ -2851,14 +3051,20 @@
           const ts = teamsIn(p.id);
           outer.innerHTML =
             crumbs([{ label: 'Projects', go: 'projects' }, { label: p.name || p.id }]) +
+            card('Project', '',
+              row('Name', '', `<button class="pk-a" type="button" data-project-rename="${esc(p.id)}" data-project-name="${esc(p.name || p.id)}">Rename</button>`) +
+              row('Kind', '', pill(p.kind || 'owned'))) +
             card('Teams', '',
-              (ts.length
-                ? ts.map((t) => drillRow(`data-team-open="${esc(t.name)}"`, esc(t.name),
+              (ts.filter((t) => hit(t.name)).length
+                ? ts.filter((t) => hit(t.name)).map((t) => drillRow(`data-team-open="${esc(t.name)}"`, esc(t.name),
                     `${n(peopleIn(t.name).length, 'person', 'people')} · ${n(ticketsFor(t.name), 'ticket')}`,
                     t.enabled ? '' : pill('inactive'))).join('')
-                : emptyRow('No teams yet.')) +
+                : emptyRow(q ? 'No matches.' : 'No teams yet.')) +
               row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-team-add">Add a team</button>`)) +
-            `<div id="pk-vis-mode"></div><div id="pk-vis-matrix"></div><div id="pk-vis-links"></div>`;
+            `<div id="pk-vis-mode"></div><div id="pk-vis-matrix"></div><div id="pk-vis-links"></div>` +
+            (p.id === 'default' ? '' : dangerCard(
+              row('Delete project', 'Moves it to the recycle bin. Move or delete its teams first.',
+                `<button class="pk-a danger" type="button" data-project-delete="${esc(p.id)}">Delete</button>`)));
           fillVisibility(p.id);
           return;
         }
@@ -2866,11 +3072,11 @@
         // ---- level: all projects --------------------------------------------------------------
         outer.innerHTML =
           card('Projects', '',
-            (projects.length
-              ? projects.map((p) => drillRow(`data-project-open="${esc(p.id)}"`, esc(p.name || p.id),
+            (projects.filter((p) => hit(p.name) || hit(p.id) || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email))).length
+              ? projects.filter((p) => hit(p.name) || hit(p.id) || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email))).map((p) => drillRow(`data-project-open="${esc(p.id)}"`, esc(p.name || p.id),
                   `${n(teamsIn(p.id).length, 'team')} · ${n(peopleInProject(p.id).length, 'person', 'people')}`,
                   pill(p.kind || 'owned'))).join('')
-              : emptyRow('No projects yet.')) +
+              : emptyRow(q ? 'No matches.' : 'No projects yet.')) +
             row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>`));
       }
 
@@ -2934,7 +3140,9 @@
           const t = e.target.closest('[data-crumb],[data-project-open],[data-team-open],[data-person-open],' +
             '[data-vis-mode],[data-vis-viewer],[data-link-viewer],[data-team-project],[data-team-view],' +
             '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],' +
-            '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],#pk-proj-add,#pk-team-add,#pk-person-add');
+            '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
+            '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],' +
+            '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk');
           if (!t) return;
           const d = t.dataset;
           try {
@@ -2956,6 +3164,48 @@
             }
             if (t.id === 'pk-team-add') return openAddTeam();
             if (t.id === 'pk-person-add') return openAddPerson();
+            if (t.id === 'pk-person-bulk') return openBulkAdd();
+
+            // rename
+            if (d.teamRename) {
+              const to = await pkPrompt({ title: 'Rename team', message: 'The new name is carried through tickets, accounts and visibility rules.', value: d.teamRename, confirmLabel: 'Rename' });
+              if (to === null || !to.trim() || to.trim() === d.teamRename) return;
+              await store.teamRename(d.teamRename, to.trim());
+              return go({ team: to.trim() });
+            }
+            if (d.projectRename) {
+              const to = await pkPrompt({ title: 'Rename project', message: '', value: d.projectName || '', confirmLabel: 'Rename' });
+              if (to === null || !to.trim()) return;
+              await store.projectUpdate(d.projectRename, to.trim());
+              return fillOrg();
+            }
+            if (d.projectDelete) {
+              if (!(await pkConfirm({ title: 'Delete project', message: 'Move this project to the recycle bin? It can be restored, and nothing is destroyed until a two-day confirmation.', confirmLabel: 'Delete', danger: true }))) return;
+              await store.projectDelete(d.projectDelete);
+              return go({ project: null, team: null, person: null });
+            }
+            if (d.personDelete) {
+              if (!(await pkConfirm({ title: 'Delete account', message: 'Move this account to the recycle bin? They are signed out immediately, and the record can be restored.', confirmLabel: 'Delete', danger: true }))) return;
+              await store.userDelete(d.personDelete);
+              return go({ person: null });
+            }
+            if (d.personMove) {
+              const to = await pkPrompt({ title: 'Move to another team', message: 'Their history stays with them.', value: d.personTeam || '', confirmLabel: 'Move' });
+              if (to === null) return;
+              await store.userUpdate({ email: d.personMove, team: to.trim() });
+              return go({ person: null, team: null });
+            }
+            if (d.personExtra) {
+              const cur = (orgData.users.find((x) => x.email === d.personExtra) || {}).extraTeams || [];
+              const to = await pkPrompt({ title: 'Additional teams', message: 'Comma-separated. Their primary team still decides which board they land on.', value: cur.join(', '), confirmLabel: 'Save' });
+              if (to === null) return;
+              await store.userUpdate({ email: d.personExtra, extraTeams: to.split(',').map((x) => x.trim()).filter(Boolean) });
+              return fillOrg();
+            }
+            if (d.permTeam) {
+              await store.teamPermissions(d.permTeam, { [d.permKey]: d.permOn !== 'true' });
+              return fillOrg();
+            }
 
             // team actions
             if (d.teamView) { window.open(boardBase(d.teamView), '_blank', 'noopener'); return; }
@@ -2975,8 +3225,13 @@
             }
             if (d.teamToggle) { await store.teamUpdate(d.teamToggle, { enabled: d.teamEnabled !== '1' }); return fillOrg(); }
             if (d.teamDelete) {
-              if (+d.teamUsed) return;
-              if (!(await pkConfirm({ title: 'Delete team', message: `Delete “${d.teamDelete}”? Its password stops working immediately.`, confirmLabel: 'Delete', danger: true }))) return;
+              const held = +d.teamUsed;
+              if (!(await pkConfirm({
+                title: 'Delete team',
+                message: `Move “${d.teamDelete}” to the recycle bin? Its password stops working immediately`
+                  + (held ? `, and its ${held} ticket(s) go with it` : '')
+                  + '. Nothing is destroyed — you can restore it.',
+                confirmLabel: 'Delete', danger: true }))) return;
               await store.teamDelete(d.teamDelete);
               return go({ team: null, person: null });
             }
@@ -3041,6 +3296,57 @@
             fillOrg();
           },
         });
+      }
+
+      /* Adding eight people used to be eight dialogs. Paste a list, get PINs, hand them out once.
+       * Reports per-address outcomes rather than failing the whole batch on one bad entry — a
+       * typo in row six must not discard rows one to five. */
+      function openBulkAdd() {
+        const el = document.createElement('div'); el.className = 'pk-reopen';
+        el.innerHTML =
+          `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Add many people">` +
+            `<h2 class="pk-reopen-title">Add many people</h2>` +
+            `<p class="pk-reopen-sub">One email per line. A PIN is generated for each; you will see them once, here.</p>` +
+            `<div class="pk-reopen-field"><span class="pk-reopen-label">Emails</span>` +
+              `<textarea class="pk-login-input pk-bulk-in" rows="7" placeholder="ana@company.com&#10;bo@company.com"></textarea></div>` +
+            `<div class="pk-reopen-err" hidden></div>` +
+            `<div class="pk-reopen-actions">` +
+              `<button type="button" class="pk-a pk-bulk-cancel">Cancel</button>` +
+              `<button type="button" class="pk-a pk-a--primary pk-bulk-go">Add</button>` +
+            `</div></div>`;
+        document.body.appendChild(el);
+        const ta = el.querySelector('.pk-bulk-in'), err = el.querySelector('.pk-reopen-err'), goB = el.querySelector('.pk-bulk-go');
+        const close = () => { el.remove(); document.removeEventListener('keydown', onEsc); };
+        function onEsc(e2) { if (e2.key === 'Escape') close(); }
+        document.addEventListener('keydown', onEsc);
+        el.addEventListener('click', (e2) => { if (e2.target === el) close(); });
+        el.querySelector('.pk-bulk-cancel').addEventListener('click', close);
+        // A PIN that is a run or a repeat is rejected server-side, so generate one that is neither.
+        const genPin = () => {
+          for (;;) {
+            const v = String(Math.floor(100000 + Math.random() * 900000));
+            if (!/^(\d)\1+$/.test(v) && !/012345|123456|234567|345678|456789|987654|876543|765432|654321/.test(v)) return v;
+          }
+        };
+        goB.addEventListener('click', async () => {
+          const emails = ta.value.split(/[\n,;]+/).map((x) => x.trim()).filter(Boolean);
+          if (!emails.length) { err.textContent = 'Add at least one address.'; err.hidden = false; return; }
+          goB.disabled = true; goB.textContent = 'Adding…';
+          try {
+            const res = await store.usersBulk(orgPath.team || '', emails.map((email) => ({ email, pin: genPin() })));
+            const ok = res.results.filter((r) => r.ok), bad = res.results.filter((r) => !r.ok);
+            close();
+            await pkAlert(
+              (ok.length ? `Added ${ok.length}:\n\n` + ok.map((r) => `${r.email}  ${r.pin}`).join('\n') +
+                `\n\nHand these over now — they are stored hashed and cannot be shown again.\n` : 'Nobody was added.\n') +
+              (bad.length ? `\nSkipped ${bad.length}:\n` + bad.map((r) => `${r.email || '(blank)'} — ${r.error}`).join('\n') : ''));
+            fillOrg();
+          } catch (e2) {
+            goB.disabled = false; goB.textContent = 'Add';
+            err.textContent = e2.message; err.hidden = false;
+          }
+        });
+        ta.focus();
       }
 
       /** Add a person, into the team currently open. */
