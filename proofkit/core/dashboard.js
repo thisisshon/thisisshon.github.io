@@ -1093,7 +1093,10 @@
         // are even when the group is collapsed.
         const g = n.dataset.group;
         const inGroup = g && (NAV_GROUPS[g] || []).includes(view);
-        n.classList.toggle('is-active', n.dataset.view === view || !!inGroup);
+        // Inbound and Outbound share data-view="dash" and differ only by direction, so matching
+        // on the view alone would light both at once.
+        const onView = n.dataset.view === view && (!n.dataset.dir || n.dataset.dir === dir);
+        n.classList.toggle('is-active', onView || !!inGroup);
       });
       // Organisation is Settings with a section pre-chosen, so it highlights on that pairing only.
       const orgBtn = document.querySelector('.pk-nav[data-view="org"]');
@@ -4183,6 +4186,10 @@
         if (alreadyHere && view === b.dataset.view) return;   // pure expand/collapse, no navigation
       }
 
+      /* Inbound and Outbound are the Queue in two directions, not two views. They set the same
+       * `dir` the in-page segmented control sets, so the rail and that control can never disagree. */
+      if (b.dataset.dir && b.dataset.dir !== dir) { dir = b.dataset.dir; teamFilter = ''; }
+
       /* 'org' is not a view of its own — it is Settings opened on the Organisation section. The two
        * rail items therefore have to push each other apart: Organisation always opens that section,
        * and Settings never does, or clicking Settings from Organisation would land you exactly
@@ -4194,6 +4201,7 @@
       syncUrl();   // a nav click IS a navigation — this is what Back walks back through
       if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
       syncNav();
+      if (b.dataset.dir) { syncDirToggle(); buildTeamChips(); }
       pkNavSwitch(prev, view, () => render(), 'rvd-view-settings');
     });
 
@@ -4234,7 +4242,7 @@
     if (dirToggleEl) dirToggleEl.addEventListener('click', (e) => {
       const b = e.target.closest('.pk-segbtn'); if (!b || b.dataset.dir === dir) return;
       dir = b.dataset.dir; teamFilter = '';
-      syncDirToggle(); buildTeamChips(); render();
+      syncDirToggle(); buildTeamChips(); syncNav(); render();   // syncNav: the rail shows direction now
     });
 
     // Density toggle (Cards │ Table) — Cards is the filtered working list; Table is the full ledger.
