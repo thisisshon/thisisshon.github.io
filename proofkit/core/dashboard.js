@@ -952,7 +952,7 @@
     let density = 'cards';
     // Primary chips render inline; non-primary sit behind a "More" disclosure.
     const STATUS_CHIPS = [
-      { f: 'needsyou', label: 'Needs you', primary: true, smart: true },
+      { f: 'needsyou', label: 'Needs You', primary: true, smart: true },
       { f: 'open', label: 'Open', primary: true },
       { f: 'deployed_live', label: 'Deployed', primary: true },
       { f: 'to_be_initiated', label: 'TBI', primary: false },
@@ -1415,7 +1415,7 @@
       if (e === 'team-start' || e === 'start' || st === 'in_progress') return 'Started — in progress';
       if (e === 'confirmed') return 'Bug Closed — raiser confirmed the fix';
       if (h.redirectTo) return 'Completed' + (h.by ? ' by ' + h.by : '') + ' — redirected to ' + h.redirectTo + ' (TBI)';
-      if (e === 'team-complete' || e === 'complete' || st === 'deployed_live') return 'Deployed live';
+      if (e === 'team-complete' || e === 'complete' || st === 'deployed_live') return 'Deployed Live';
       if (e === 'team-reopen' || e === 'reopen' || st === 'reopened') {
         const label = reopenReasonLabel(h.reason) || h.reason || '';
         return 'Reopened' + (label ? ' — ' + label : '') + (h.note ? ' (' + h.note + ')' : '');
@@ -1576,12 +1576,12 @@
       if (s === 'to_be_initiated') return [
         { action: 'start', label: 'Start', icon: 'start' },
         { action: 'complete', label: 'Mark deployed live', icon: 'completeDirect' },
-        { action: 'clarify', label: 'Need clarity', icon: 'clarify' }];
+        { action: 'clarify', label: 'Need Clarity', icon: 'clarify' }];
       if (s === 'in_progress') return [
         { action: 'complete', label: 'Mark Complete', icon: 'complete' },
         { action: 'reset', label: 'Move to TBI', icon: 'reset' },
         { action: 'reopen', label: 'Reopen ticket', icon: 'reopen' },
-        { action: 'clarify', label: 'Need clarity', icon: 'clarify' }];
+        { action: 'clarify', label: 'Need Clarity', icon: 'clarify' }];
       if (s === 'deployed_live') return [{ action: 'reopen', label: 'Reopen ticket', icon: 'reopen' }];
       if (s === 'needs_clarification') return [
         { action: 'start', label: 'Resume', icon: 'start' },
@@ -1972,8 +1972,8 @@
     // states (disregarded) collapse to "closed" so the stepper never implies pending work.
     const DETAIL_STAGES = [
       { key: 'raised', label: 'Raised' },
-      { key: 'in_progress', label: 'In progress' },
-      { key: 'deployed_live', label: 'Deployed live' },
+      { key: 'in_progress', label: 'In Progress' },
+      { key: 'deployed_live', label: 'Deployed Live' },
       { key: 'signed', label: 'Signed off' },
     ];
     function stageIndexOf(c) {
@@ -2760,7 +2760,7 @@
           card('Queue', '',
             row('Default sort', '', mkDropdown('pk-set-sort', {
               value: prefs.defaultSort, items: [
-                { value: 'new', label: 'Newest first' }, { value: 'old', label: 'Oldest first' }, { value: 'page', label: 'Page A–Z' },
+                { value: 'new', label: 'Newest First' }, { value: 'old', label: 'Oldest First' }, { value: 'page', label: 'Page A–Z' },
               ].map((o) => ({ ...o, onSelect: () => { prefs.defaultSort = o.value; sort = o.value; savePrefs(); } })),
             })) +
             row('Auto-refresh', '', mkDropdown('pk-set-refresh', {
@@ -4421,8 +4421,8 @@
     const sortDD = buildDropdown({
       small: true, value: sort,
       items: [
-        { value: 'new', label: 'Newest first', icon: IC.newest },
-        { value: 'old', label: 'Oldest first', icon: IC.oldest },
+        { value: 'new', label: 'Newest First', icon: IC.newest },
+        { value: 'old', label: 'Oldest First', icon: IC.oldest },
         { value: 'page', label: 'Page A–Z', icon: IC.page },
       ],
       onSelect: (v) => { sort = v; render(); },

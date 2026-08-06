@@ -675,7 +675,7 @@
       if (e === 'team-start' || e === 'start' || st === 'in_progress') return 'Builder started — in progress';
       if (e === 'confirmed') return 'Bug Closed — fix confirmed';
       if (h.redirectTo) return 'Completed' + (h.by ? ' by ' + h.by : '') + ' — redirected to ' + h.redirectTo + ' (TBI)';
-      if (e === 'team-complete' || e === 'complete' || st === 'deployed_live') return 'Deployed live';
+      if (e === 'team-complete' || e === 'complete' || st === 'deployed_live') return 'Deployed Live';
       if (e === 'team-reopen' || e === 'reopen' || st === 'reopened') {
         const label = reopenReasonLabel(h.reason) || h.reason || '';
         return 'Reopened by Builder' + (label ? ' — ' + label : '') + (h.note ? ' (' + h.note + ')' : '');
@@ -701,11 +701,11 @@
     let settingsSection = 'appearance'; // active tab in the Settings view (appearance | about)
     const PK_VERSION = '3.104.0';  // keep in step with VERSION / package.json / CHANGELOG
     const STATUS_CHIPS = [
-      { f: 'needsyou', label: 'Needs you', primary: true, smart: true },
+      { f: 'needsyou', label: 'Needs You', primary: true, smart: true },
       { f: 'open', label: 'Open', primary: true },
       { f: 'deployed_live', label: 'Deployed', primary: true },
-      { f: 'to_be_initiated', label: 'With builder', primary: false },
-      { f: 'in_progress', label: 'In progress', primary: false },
+      { f: 'to_be_initiated', label: 'With Builder', primary: false },
+      { f: 'in_progress', label: 'In Progress', primary: false },
       { f: 'reopened', label: 'Reopened', primary: false },
       { f: 'needs_clarification', label: 'Need Clarity', primary: true },
       { f: 'all', label: 'All', primary: false },
@@ -2119,7 +2119,7 @@
     // Completed: "Pending Confirmation" leads (default landing) — deployed fixes awaiting the raiser's
     // confirm; "Bug Closed" trails after Deployed live — the raiser confirmed them.
     const FILTER_SETS = {
-      comments: [['pending_confirmation', 'Pending Confirmation'], ['all', 'All'], ['to_be_initiated', 'TBI'], ['in_progress', 'In Progress'], ['deployed_live', 'Deployed live'], ['verified', 'Bug Closed']],
+      comments: [['pending_confirmation', 'Pending Confirmation'], ['all', 'All'], ['to_be_initiated', 'TBI'], ['in_progress', 'In Progress'], ['deployed_live', 'Deployed Live'], ['verified', 'Bug Closed']],
       queue:    [['all', 'All'], ['to_be_initiated', 'TBI'], ['in_progress', 'In Progress'], ['reopened', 'Reopened']],
     };
     function buildFilterBar() {
@@ -2513,8 +2513,8 @@
     const sortDD = buildDropdown({
       small: true, value: sort,
       items: [
-        { value: 'new', label: 'Newest first' },
-        { value: 'old', label: 'Oldest first' },
+        { value: 'new', label: 'Newest First' },
+        { value: 'old', label: 'Oldest First' },
         { value: 'page', label: 'Page A–Z' },
       ],
       onSelect: (v) => { sort = v; entryDetail = null; syncUrl(true); render(); },
