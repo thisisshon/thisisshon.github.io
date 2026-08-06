@@ -3996,7 +3996,7 @@
         const paint = () => {
           const dark = getTheme() !== LIGHT_THEME;
           btn.innerHTML = (dark ? ICONS.sun : ICONS.moon) +
-            '<span class="pk-nav-txt">Switch to ' + (dark ? 'Light' : 'Dark') + ' Mode</span>';
+            '<span class="pk-nav-txt">' + (dark ? 'Light' : 'Dark') + ' Mode</span>';
           btn.setAttribute('aria-label', btn.textContent.trim());
           btn.title = btn.textContent.trim();
         };

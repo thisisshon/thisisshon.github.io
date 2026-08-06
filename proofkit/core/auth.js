@@ -113,20 +113,35 @@ function scanning() {
 /** Hand the session to the extension, if we were opened by one. Best-effort by design: a failure
  *  here means the tab is not auto-armed, not that the sign-in did not happen. */
 async function handOff(body) {
-  if (!extId || !chrome?.runtime?.sendMessage) return;
-  await new Promise((res) => {
+  if (!extId || typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) return null;
+  return new Promise((res) => {
+    let done = false;
+    const settle = (v) => { if (!done) { done = true; res(v); } };
     try {
       chrome.runtime.sendMessage(extId,
         { type: 'proofkit-session', user: body.user, token: body.token, arm: returnTo },
-        () => res());
-      setTimeout(res, 1500);          // no reply from a missing/updated extension: do not hang
-    } catch (e) { res(); }
+        (reply) => settle(chrome.runtime.lastError ? null : (reply || null)));
+      setTimeout(() => settle(null), 2500);   // missing or stale extension: do not hang forever
+    } catch (e) { settle(null); }
   });
 }
 
 async function finish(body) {
-  await handOff(body);
+  const reply = await handOff(body);
   sub.textContent = 'Signed in as ' + (body.user.name || body.user.email) + '.';
+
+  /* When the extension owns this tab it does the whole return trip itself: it arms the tab the
+   * user came from, focuses it, and closes THIS one. Navigating here as well would leave them
+   * with two tabs on the same page — the duplicate this flow exists to avoid. So we simply wait
+   * to be closed, and only take over if that does not happen. */
+  if (reply && reply.closing) {
+    form.hidden = true;
+    note.textContent = 'Taking you back…';
+    // Fallback: if the tab is somehow still here, finish the journey the ordinary way rather than
+    // stranding the user on a page that says it is about to do something.
+    setTimeout(() => { if (returnTo) location.replace(returnTo); }, 3000);
+    return;
+  }
   if (returnTo) location.replace(returnTo);
   else { form.hidden = true; note.textContent = 'You can close this tab and go back to your page.'; }
 }

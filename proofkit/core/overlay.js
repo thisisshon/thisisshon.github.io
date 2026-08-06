@@ -283,7 +283,31 @@
         // Close (✕ top-right) and backdrop-click both back FULLY out of review —
         // disarm the tab too, else (with the login shown while armed) it reappears.
         const backOut = () => { sessionStorage.removeItem(KEY); hideLogin(); };
-        login = buildPanelLogin({ title: 'Let’s Review.', sub: 'Select your team and enter your key to start marking comments.', onClose: backOut });
+        /* On a page we do not own, WebAuthn is unusable: a credential is bound to the origin that
+         * created it, so a Proofkit passkey can never be presented on a third-party domain. The
+         * way through is to step out to our own origin and come back — the extension opens the
+         * auth page, authenticates there, then closes that tab and returns the user to this one
+         * with the page armed. Offered only when the extension is actually driving this page;
+         * without it there is nothing to open the tab or bring the session back. */
+        const remote = externalMode() && typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage
+          ? () => new Promise((res, rej) => {
+              try {
+                chrome.runtime.sendMessage({ type: 'open-auth' }, (r) => {
+                  if (chrome.runtime.lastError) return rej(new Error('Reload the Proofkit extension and try again.'));
+                  if (!r || !r.ok) return rej(new Error((r && r.reason) || 'Could not open the sign-in page.'));
+                  res();   // the tab is open; the extension takes it from here
+                });
+              } catch (e) { rej(e); }
+            })
+          : null;
+        login = buildPanelLogin({
+          title: 'Let’s Review.',
+          sub: remote
+            ? 'Sign in to start marking comments. Touch ID opens a Proofkit tab, then brings you straight back here.'
+            : 'Select your team and enter your key to start marking comments.',
+          onClose: backOut,
+          onRemoteAuth: remote,
+        });
         const go = () => tryLogin();
         login.button.addEventListener('click', go);
         login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
@@ -321,10 +345,20 @@
          even when a comment popover would otherwise overlap the bottom-right. */
       .rv-dock{position:fixed;right:24px;bottom:24px;z-index:2147483040;
         display:flex;align-items:center;gap:20px}
-      .rv-fab{display:flex;align-items:center;gap:8px;height:48px;padding:0 16px;border:none;
+      /* The dock changes SHAPE between its two states — a dark "Comment" pill becomes a wider red
+         "Exit Review Mode" one, and the prev/next pill appears beside it. Swapping that instantly
+         reads as two different UIs flickering past each other, so each part is transitioned:
+         the colour crossfades, the label fades out and back, and the pill's width is animated
+         between its measured before/after sizes (auto width cannot be transitioned on its own). */
+      .rv-fab{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 16px;border:none;
         border-radius:24px;background:var(--pk-card);color:var(--pk-ink);cursor:pointer;
-        font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
-      .rv-fab[data-on="1"]{background:var(--pk-red)}
+        font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md);
+        white-space:nowrap;overflow:hidden;
+        transition:background-color .3s cubic-bezier(.4,0,.2,1),color .3s cubic-bezier(.4,0,.2,1),
+                   width .3s cubic-bezier(.4,0,.2,1),box-shadow .3s}
+      .rv-fab[data-on="1"]{background:var(--pk-red);color:var(--pk-on-accent)}
+      .rv-fab > *{transition:opacity .14s ease}
+      .rv-fab.is-swapping > *{opacity:0}
       .rv-fab svg{width:20px;height:20px;flex:none}
       /* "Go To Dashboard" — pinned to the bottom-LEFT, clear of the right-hand dock */
       .rv-dash{position:fixed;left:24px;bottom:24px;z-index:2147483040;
@@ -339,11 +373,20 @@
         font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       .rv-logout svg{width:20px;height:20px;flex:none}
       @media (min-width:1024px) and (hover:hover){.rv-dash:hover,.rv-logout:hover{background:var(--pk-elev)}}
+      @media (prefers-reduced-motion:reduce){
+        .rv-fab,.rv-fab > *,.rv-nav{transition:none !important}
+      }
       .rv-backdrop{position:fixed;inset:0;z-index:2147480000;pointer-events:none;
         backdrop-filter:grayscale(1);-webkit-backdrop-filter:grayscale(1);
         box-shadow:inset 0 0 0 3px var(--pk-red)}
+      /* Always laid out; shown by class. A display toggle cannot be transitioned, which is why
+         this used to pop in and out. It slides in from the right, as if out of the FAB. */
       .rv-nav{display:flex;align-items:center;gap:16px;height:48px;padding:0 2px;border-radius:24px;
-        background:var(--pk-card);color:var(--pk-ink);box-shadow:var(--pk-shadow-md)}
+        background:var(--pk-card);color:var(--pk-ink);box-shadow:var(--pk-shadow-md);
+        opacity:0;transform:translateX(16px) scale(.94);transform-origin:right center;
+        pointer-events:none;visibility:hidden;
+        transition:opacity .26s ease,transform .3s cubic-bezier(.34,1.3,.5,1),visibility 0s linear .3s}
+      .rv-nav.is-in{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition-delay:0s,0s,0s}
       .rv-nav button{width:44px;height:44px;padding:0;border:none;border-radius:22px;
         background:var(--pk-hair);color:var(--pk-ink);cursor:pointer;display:flex;align-items:center;justify-content:center}
       .rv-nav button svg{width:22px;height:22px;display:block}
@@ -564,7 +607,7 @@
       logoutBtn.style.display = 'inline-flex'; // …and "Log out"
     }
 
-    const nav = document.createElement('div'); nav.className = 'rv-nav'; nav.style.display = 'none';
+    const nav = document.createElement('div'); nav.className = 'rv-nav';
     const CHEV_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
       'stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
     const CHEV_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
@@ -581,16 +624,42 @@
     const ICON_CHAT =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
       'stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-    const ICON_CHECK =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
     // Comment (dark) when idle -> Exit Review Mode (accent) once greyscale/review is on.
     // It is NOT a save button and never was: every comment is already saved on submit, so this
     // only leaves review state. Labelling it "Save" implied unsaved work was riding on the click —
     // which invites the opposite mistake, leaving without pressing it and assuming things were lost.
-    function setFab(on) {
-      fab.dataset.on = on ? '1' : '0';
-      fab.innerHTML = (on ? ICON_CHECK : ICON_CHAT) + '<span>' + (on ? 'Exit Review Mode' : 'Comment') + '</span>';
+    // No glyph on the exit state: a tick means "done/saved", which is the exact thing this button
+    // does NOT do. The words carry it.
+    const fabHtml = (on) => (on ? '' : ICON_CHAT) + '<span>' + (on ? 'Exit Review' : 'Comment') + '</span>';
+
+    /**
+     * Move the FAB between its two states without the UI appearing to blink from one layout to
+     * another. Three things change at once and each is given its own timing:
+     *   colour  transitions immediately, so the change is felt before it is read
+     *   label   fades out, is replaced while invisible, fades back in
+     *   width   is animated between the measured old and new sizes — an auto-width pill cannot
+     *           transition on its own, so the two widths are taken and interpolated explicitly
+     */
+    let fabSwap = null;
+    function setFab(on, animate) {
+      fab.dataset.on = on ? '1' : '0';          // set first: the colour starts moving right away
+      if (!animate) { fab.innerHTML = fabHtml(on); return; }
+      clearTimeout(fabSwap);
+      const from = fab.getBoundingClientRect().width;
+      fab.classList.add('is-swapping');
+      fabSwap = setTimeout(() => {
+        fab.innerHTML = fabHtml(on);
+        fab.style.width = 'auto';
+        const to = fab.getBoundingClientRect().width;
+        fab.style.width = from + 'px';
+        requestAnimationFrame(() => {
+          fab.style.width = to + 'px';
+          fab.classList.remove('is-swapping');
+        });
+        // Hand the width back to the content once the animation has landed, so later label
+        // changes are not pinned to a stale pixel value.
+        fabSwap = setTimeout(() => { fab.style.width = ''; }, 340);
+      }, 140);
     }
     setFab(false);
     fab.addEventListener('click', () => (reviewOn ? exit() : startReview()));
@@ -855,8 +924,8 @@
       }
       revealDock();       // authenticated -> the Comment/Save dock is now visible
       reviewOn = true;
-      setFab(true);
-      nav.style.display = 'flex';
+      setFab(true, true);
+      nav.classList.add('is-in');
       // Only the host site gets the /<page>/review address. Rewriting a foreign site's URL is
       // visible to the reviewer and can trip that site's own router on an SPA.
       if (!externalMode()) { try { history.replaceState(null, '', reviewUrl()); } catch (e) {} }
@@ -889,8 +958,8 @@
     // Tear the active review down — state + on-page chrome. Shared by exit() and logout().
     function teardownReview() {
       reviewOn = false;
-      setFab(false);
-      nav.style.display = 'none';
+      setFab(false, true);
+      nav.classList.remove('is-in');
       pinObserver.disconnect();
       // address bar → back to the page. Skipped on a foreign origin: we never rewrote it on entry,
       // and pagePath() drops the query string — exiting review would silently mutate a URL like

@@ -993,6 +993,19 @@ export function buildPanelLogin(opts) {
       // the in-page overlay on third-party sites: WebAuthn binds a credential to the origin that
       // created it, so a passkey for the dashboards simply cannot be used on someone else's
       // domain, and offering it there would be a button that can only ever fail.
+      // REMOTE auth: used where WebAuthn cannot run at all — the in-page overlay on a third-party
+      // site. It does not authenticate here; it hands off to the extension, which opens the auth
+      // page on our own origin (the only place the passkey is valid), then closes that tab and
+      // returns the user to this one. Shown unconditionally: the capability belongs to the
+      // extension, not to this page, so there is nothing local to feature-detect.
+      (opts.onRemoteAuth
+        ? '<button type="button" class="pk-login-touch">' +
+            '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<path d="M12 10v4a8 8 0 0 1-.4 2.5"/><path d="M8.5 8.5a5 5 0 0 1 7 3.5v2"/>' +
+              '<path d="M5.5 6.5a9 9 0 0 1 13 5.5v2.5"/><path d="M8 20a12 12 0 0 0 1.2-3"/>' +
+              '<path d="M15.5 19.5A16 16 0 0 0 16 15"/></svg>' +
+            '<span>Sign in with Touch ID</span></button>'
+        : '') +
       (opts.onPasskey
         ? '<button type="button" class="pk-login-touch" hidden>' +
             '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
@@ -1017,7 +1030,22 @@ export function buildPanelLogin(opts) {
   /* Touch ID: show the button only after confirming this machine really has a sensor. Asking
    * first and revealing second means the panel never advertises a route it cannot deliver — a
    * dead biometric button on a desktop without a reader is worse than no button at all. */
-  const touchBtn = q('.pk-login-touch');
+  if (opts.onRemoteAuth) {
+    const remoteBtn = q('.pk-login-touch');
+    remoteBtn.addEventListener('click', () => {
+      remoteBtn.disabled = true;
+      remoteBtn.querySelector('span').textContent = 'Opening sign-in…';
+      Promise.resolve(opts.onRemoteAuth()).catch((err) => {
+        remoteBtn.disabled = false;
+        remoteBtn.querySelector('span').textContent = 'Sign in with Touch ID';
+        const e = q('.pk-login-err');
+        e.textContent = (err && err.message) || 'Could not open the sign-in page.';
+        e.hidden = false;
+      });
+    });
+  }
+
+  const touchBtn = opts.onPasskey ? q('.pk-login-touch[hidden]') : null;
   if (touchBtn) {
     const setBusy = (busy) => {
       touchBtn.disabled = busy;
