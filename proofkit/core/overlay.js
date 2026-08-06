@@ -275,7 +275,7 @@
     // (config's getSession/setSession), so the dashboards recognise it too.
     let login = null;
     function startReview() {
-      if (getSession().key) return enter(); // already logged in this tab
+      if (isAuthed()) return enter(); // already logged in this tab, by key or by account
       showLogin();
     }
     function showLogin() {
@@ -545,7 +545,12 @@
     mountOverlayCss();
     // The Comment dock (and the host .to-top hide) appear ONLY once the review session
     // is authenticated - i.e. a validated Key is stored in PASS_KEY (`reviewPass`).
-    const isAuthed = () => !!getSession().key;
+    /* Signed in EITHER way. A team key and an account session are both valid credentials here, and
+     * this used to test only the key — so anyone the extension signed in with an account (PIN or
+     * passkey) had no `pkKey`, read as signed out, and was shown a login panel they had already
+     * satisfied. authHeaders() has always preferred the bearer token, so the requests would have
+     * worked; only the gate disagreed. */
+    const isAuthed = () => !!getSession().key || !!getAuthToken();
     const dock = document.createElement('div'); dock.className = 'rv-dock';
     let dockShown = false;
     function revealDock() {
@@ -579,11 +584,13 @@
     const ICON_CHECK =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
       'stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-    // Comment (dark) when idle -> Save (gold, check) once greyscale/review is on.
-    // Comments already save per-item on submit; Save just leaves review state.
+    // Comment (dark) when idle -> Exit Review Mode (accent) once greyscale/review is on.
+    // It is NOT a save button and never was: every comment is already saved on submit, so this
+    // only leaves review state. Labelling it "Save" implied unsaved work was riding on the click —
+    // which invites the opposite mistake, leaving without pressing it and assuming things were lost.
     function setFab(on) {
       fab.dataset.on = on ? '1' : '0';
-      fab.innerHTML = (on ? ICON_CHECK : ICON_CHAT) + '<span>' + (on ? 'Save' : 'Comment') + '</span>';
+      fab.innerHTML = (on ? ICON_CHECK : ICON_CHAT) + '<span>' + (on ? 'Exit Review Mode' : 'Comment') + '</span>';
     }
     setFab(false);
     fab.addEventListener('click', () => (reviewOn ? exit() : startReview()));
@@ -1915,7 +1922,15 @@
 
     if (isAuthed()) {
       revealDock();
-      if (AUTO || /[#&]c=/.test(location.hash)) startReview();
+      /* Armed AND signed in means the answer to "does this person want to review right now" is
+       * already yes — arming the tab IS the request. Waiting for a further click on Comment made
+       * the user state their intent twice and left the page looking untouched in between, which
+       * reads as "it didn't work". So review mode (and the greyscale) starts immediately.
+       *
+       * This used to be conditional on AUTO or an Open-Pin hash; every other way of arriving here
+       * — the extension's Start Proofing, a reload of an armed tab, signing in on this page —
+       * dropped the user on an ordinary-looking page with a button to press. */
+      startReview();
     } else {
       showLogin();
     }
