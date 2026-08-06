@@ -1083,6 +1083,25 @@
     applyPrefs();
     // Keep the sidebar's active state in step with `view` when it changes programmatically
     // (landing pref, deep-links) — the click handler already does this for user clicks.
+    /* Slide the submenu's active marker to whichever sub-item is lit. Driven from JS because the
+     * distance is a layout fact — it depends on how many items the group has and how tall each row
+     * is — and a CSS-only version would have to hard-code offsets that break the moment an item is
+     * added. Uses transform so the movement is composited rather than laying out every frame. */
+    function positionSubnavMarker() {
+      document.querySelectorAll('.pk-subnav').forEach((panel) => {
+        const marker = panel.querySelector('.pk-subnav-marker');
+        if (!marker) return;
+        const active = panel.querySelector('.pk-nav--sub.is-active');
+        if (!active) { marker.classList.remove('is-on'); return; }
+        // Centre the 14px bar against the row, whatever the row height is.
+        const y = active.offsetTop + (active.offsetHeight - marker.offsetHeight) / 2;
+        marker.style.setProperty('--pk-marker-y', y + 'px');
+        // Reveal only AFTER it has a position, so the first appearance is a fade rather than a
+        // slide down from the top of the list.
+        if (!marker.classList.contains('is-on')) requestAnimationFrame(() => marker.classList.add('is-on'));
+      });
+    }
+
     /* Which views live under which group in the sidebar. Patterns and Insights are ways of LOOKING
      * at the queue, not separate destinations, so they sit under it rather than beside it. */
     const NAV_GROUPS = { queue: ['dash', 'patterns', 'insights'] };
@@ -1106,6 +1125,8 @@
         orgBtn.classList.toggle('is-active', onOrg);
         setBtn.classList.toggle('is-active', view === 'settings' && !onOrg);
       }
+      positionSubnavMarker();
+
       /* Follow the view: open the group you are inside, close the ones you are not. Only opening
        * left the submenu hanging open on Home, which reads as four top-level items again. */
       Object.keys(NAV_GROUPS).forEach((key) => {
@@ -4232,18 +4253,12 @@
     // Flips the counterparty meaning (From⇄To), resets the team filter, and re-renders in place;
     // search, sort and scroll are untouched. Lives in the toolbar so it only shows on the Queue.
     function syncDirToggle() {
-      document.querySelectorAll('#rvd-dirtoggle .pk-segbtn').forEach((b) => {
-        const on = b.dataset.dir === dir;
-        b.classList.toggle('is-active', on);
-        b.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
+      /* The in-page Inbound/Outbound control is gone — direction is chosen in the rail, where the
+       * two are pages rather than a filter, so showing the same switch twice invited them to
+       * disagree. Kept as a named no-op because several call sites pair it with buildTeamChips(),
+       * and syncNav() is what lights the rail now. */
     }
-    const dirToggleEl = $('#rvd-dirtoggle');
-    if (dirToggleEl) dirToggleEl.addEventListener('click', (e) => {
-      const b = e.target.closest('.pk-segbtn'); if (!b || b.dataset.dir === dir) return;
-      dir = b.dataset.dir; teamFilter = '';
-      syncDirToggle(); buildTeamChips(); syncNav(); render();   // syncNav: the rail shows direction now
-    });
+
 
     // Density toggle (Cards │ Table) — Cards is the filtered working list; Table is the full ledger.
     // The choice persists per browser (prefs.queueDensity) so the dashboard reopens how you left it.
