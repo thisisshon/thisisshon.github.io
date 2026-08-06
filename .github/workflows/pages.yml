@@ -41,3 +41,10 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # deploy-pages polls for 10 minutes by default and then ABORTS, cancelling a deployment
+          # that was only queued rather than broken. GitHub's deployment queue has repeatedly sat
+          # past that, so three consecutive deploys "failed" while the bundle itself was fine —
+          # and one of those aborts left a deployment stuck in-progress, which then blocked every
+          # later attempt with a 400. Wait half an hour before giving up.
+          timeout: 1800000
