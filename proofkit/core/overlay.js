@@ -1410,6 +1410,9 @@
 
       const submit = () => {
         captureFields();
+        // privDD is scoped to openComposer; saveDraft/saveEdit are top-level and cannot see it.
+        // `state` is the object that crosses that boundary, so the choice rides along on it.
+        state.visibility = privDD && privDD.getValue() === 'private' ? 'private' : '';
         if (editRec) saveEdit(state, anchor, toDD, targetEl, editRec, setError);
         else saveDraft(state, anchor, toDD, targetEl, editing, setError);
       };
@@ -1562,7 +1565,7 @@
         expectedOutcome: v.expectedOutcome,
         comment: v.comment,
         toTeam: (toDD && toDD.getValue()) || ADMIN_TEAM,
-        visibility: privDD && privDD.getValue() === 'private' ? 'private' : '',   // '' = follow the project
+        visibility: state.visibility || '',   // '' = follow the project's mode
         imageDataUrl,
         imageId,                          // uploaded on submit only when imageDataUrl is fresh
         viewportImageDataUrl: '',         // full-viewport auto-capture retired
@@ -1645,7 +1648,7 @@
         templateFields: v.templateFields,
         expectedOutcome: v.expectedOutcome,
         toTeam: (toDD && toDD.getValue()) || ADMIN_TEAM,
-        visibility: privDD && privDD.getValue() === 'private' ? 'private' : '',   // '' = follow the project
+        visibility: state.visibility || '',   // '' = follow the project's mode
         anchor,
         imageId, viewportImageId, display,
         summary: renderSummary(state.commentType, v.templateFields, v.comment),

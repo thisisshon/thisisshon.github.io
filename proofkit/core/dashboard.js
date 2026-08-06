@@ -3827,6 +3827,9 @@
     if (teamViewMount) {
       const teamViewDD = buildDropdown({
         block: true, fixedLabel: 'Jump To Team',
+        // Opens to the right, bottom-aligned: this sits at the foot of the rail, so a menu
+        // dropping down would run off-screen and one opening upward would cover the nav.
+        placement: 'right-end',
         // Teams gated off via config.js (isTeamEnabled) render greyed + inert (buildDropdown
         // honours `disabled`: aria-disabled, out of the focus order, click is a no-op).
         items: TEAMS.map((t) => ({

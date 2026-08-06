@@ -1220,3 +1220,43 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   .pk-dcard > .pk-dcard-b,.pkd-acc > .pkd-acc-b,.pk-rowmenu-item,.pk-rowmenu-h,
   .pk-statuschips .pk-schip,.pk-detailwrap{animation:none}
 }
+
+
+/* ---- dropdown placement: right-end ----------------------------------------------------------
+   Opens to the RIGHT of the trigger with its bottom edge level with the trigger's. Intended for a
+   picker pinned to the foot of a narrow rail, where a menu opening downward would fall off-screen
+   and one opening upward would cover the navigation.
+   Lives with the component so a host never has to reach inside it to reposition the menu — doing
+   that from outside inevitably catches the trigger too. */
+.pk-dropdown--right-end { position: relative; }
+.pk-dropdown--right-end > .pk-dropdown-menu {
+  position: absolute;
+  left: calc(100% + 8px);
+  right: auto;
+  bottom: 0;
+  top: auto;
+  width: max-content;
+  min-width: 200px;
+  max-width: 280px;
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 200;
+  transform-origin: left bottom;
+}
+
+/* right-end placement: the chevron points at where the menu will appear, and rotates back when it
+   is open — the same affordance a downward menu gets, turned through 90 degrees. */
+.pk-dropdown--right-end > .pk-dropdown-trigger .pk-chev,
+.pk-dropdown--right-end > .pk-dropdown-trigger > svg {
+  transform: rotate(-90deg);
+  transition: transform .18s cubic-bezier(.4, 0, .2, 1);
+}
+.pk-dropdown--right-end.is-open > .pk-dropdown-trigger .pk-chev,
+.pk-dropdown--right-end.is-open > .pk-dropdown-trigger > svg { transform: rotate(90deg) !important; }
+
+/* The menu keeps the component's own item metrics; placement only moves the box. */
+.pk-dropdown--right-end > .pk-dropdown-menu { padding: 6px; }
+.pk-dropdown--right-end > .pk-dropdown-menu .pk-dropdown-item {
+  padding: 9px 12px; font: 500 13px/1.2 var(--pk-font); border-radius: var(--pk-radius-sm);
+  white-space: nowrap; width: 100%; text-align: left;
+}

@@ -712,19 +712,26 @@
    170px and its rounded right edge was clipped by the rail. Pin it to the rail width. */
 :root.pk-side-collapsed .pk-side .rvd-teamview .pk-dropdown,
 :root.pk-side-collapsed .pk-side .rvd-teamview .pk-dropdown-trigger {
-  width: var(--pk-rail-w-min) !important; max-width: var(--pk-rail-w-min) !important;
+  width: var(--pk-rail-w-min) !important;
+  max-width: var(--pk-rail-w-min) !important;
+  /* `min-width: 0` is the load-bearing part. The trigger is a flex container whose default
+     `min-width: auto` refuses to shrink below its content, and "Jump To Team" is `nowrap` — so it
+     stayed 170px and merely got CLIPPED by the rail, looking masked rather than collapsed.
+     max-width alone cannot beat an auto min-width. */
+  min-width: 0 !important;
+  flex: none !important;
 }
 
 /* The collapse chevron points the way it will move the rail. */
 .pk-side .pk-side-collapse > svg { transition: transform .26s cubic-bezier(.4, 0, .2, 1); }
 :root.pk-side-collapsed .pk-side .pk-side-collapse > svg { transform: rotate(180deg); }
 
-/* ---- the team popup is NOT a rail row -------------------------------------------------------- */
-.pk-side .rvd-teamview .pk-dropdown-menu,
-.pk-side .rvd-teamview .pk-dropdown-menu * {
-  width: auto !important; max-width: none !important;
-  padding: revert !important; margin: revert !important; opacity: revert;
-}
+/* ---- the team popup is NOT a rail row --------------------------------------------------------
+   Do NOT try to undo the rail's rules here. `padding: revert` resolves to the UA value — zero for a
+   div — which stripped the component's own padding and left the items cramped and unstyled. The
+   rail's rules simply must not select inside the menu in the first place; the only thing needed
+   here is to make sure nothing inherited leaks in. */
+.pk-side .rvd-teamview .pk-dropdown-menu { opacity: 1 !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .pk-side, .pk-side *, .pk-side-collapse > svg { transition: none !important; }

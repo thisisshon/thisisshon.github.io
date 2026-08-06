@@ -699,7 +699,13 @@ export function buildDropdown(opts) {
   const fixed = opts.fixedLabel || null;
   let value = opts.value != null ? opts.value : '';
   const wrap = document.createElement('div');
-  wrap.className = 'pk-dropdown' + (opts.block ? ' pk-dropdown--block' : '') + (opts.small ? ' pk-dropdown--sm' : '');
+  // `placement` moves the whole menu relative to the trigger. 'right-end' opens it to the RIGHT,
+  // its bottom edge level with the trigger's — for a dropdown pinned to the foot of a narrow rail,
+  // where a menu opening below would fall off-screen and one opening above would cover the nav.
+  // Positioning belongs here rather than in the host's stylesheet: the host cannot reach inside the
+  // component without also catching the trigger, which is what an earlier CSS-only attempt did.
+  const placement = opts.placement === 'right-end' ? ' pk-dropdown--right-end' : '';
+  wrap.className = 'pk-dropdown' + (opts.block ? ' pk-dropdown--block' : '') + (opts.small ? ' pk-dropdown--sm' : '') + placement;
   wrap.innerHTML =
     '<button type="button" class="pk-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">' +
       '<span class="pk-dropdown-label"></span>' + PK_CHEV +
