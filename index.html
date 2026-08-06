@@ -20,8 +20,8 @@
   .pk-grid{display:grid;gap:1.15rem;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr))}
   .pk-card{display:flex;flex-direction:column;gap:.7rem;padding:1.4rem;border-radius:14px;
     border:1px solid var(--pk-line,#2a2a2a);background:var(--pk-panel,#1b1b1b);
-    text-decoration:none;color:inherit;transition:border-color .16s,transform .16s}
-  a.pk-card:hover{border-color:var(--pk-accent,#da291c);transform:translateY(-2px)}
+    text-decoration:none;color:inherit;transition:border-color .16s}
+  a.pk-card:hover{border-color:var(--pk-accent,#da291c)}
   .pk-card--off{opacity:.55}
   .pk-card-top{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
   .pk-card h2{margin:0;font-size:1.2rem;font-weight:650}
@@ -35,7 +35,7 @@
   .pk-go{margin-top:auto;padding-top:.5rem;font-size:.85rem;font-weight:600;color:var(--pk-accent,#da291c)}
   .pk-go--off{color:inherit;opacity:.5;font-weight:500}
   .pk-foot{margin-top:3rem;font-size:.78rem;opacity:.45}
-  @media (prefers-reduced-motion:reduce){.pk-card{transition:none}a.pk-card:hover{transform:none}}
+  @media (prefers-reduced-motion:reduce){.pk-card{transition:none}}
 </style>
 </head>
 <body>

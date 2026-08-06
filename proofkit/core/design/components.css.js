@@ -1041,9 +1041,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    Projects and teams are BROWSED — you pick one of them — so they are tiles, not rows. The stat
    strip is the point: it answers "which one do I need" without opening any of them. */
 .pk-card-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));padding:8px 0 14px}
+/* Hover changes the STROKE and nothing else. No lift: a card that moves under the cursor makes
+   the pointer chase it, and with a grid of them the whole page appears to twitch as you cross it. */
 .pk-card-tile{display:flex;flex-direction:column;gap:14px;padding:16px;text-align:left;cursor:pointer;
   background:var(--pk-elev);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
-  color:inherit;font:inherit;transition:border-color .16s,transform .16s,background .16s}
+  color:inherit;font:inherit;transition:border-color .16s,background .16s}
 .pk-card-tile-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .pk-card-tile-name{font:700 14px/1.3 var(--pk-font);color:var(--pk-ink)}
 .pk-card-tile-tag{flex:none;padding:2px 8px;background:var(--pk-card);border:1px solid var(--pk-hair);
@@ -1053,7 +1055,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-card-tile-stat b{font:700 18px/1 var(--pk-font);color:var(--pk-ink)}
 .pk-card-tile-stat i{font:500 11px/1 var(--pk-font);font-style:normal;color:var(--pk-muted)}
 @media (min-width:1024px) and (hover:hover){
-  .pk-card-tile:hover{border-color:var(--pk-red);transform:translateY(-2px);background:var(--pk-hover)}
+  .pk-card-tile:hover{border-color:var(--pk-red);background:var(--pk-hover)}
 }
 .pk-card-tile:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
 
