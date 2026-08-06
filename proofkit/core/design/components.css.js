@@ -910,6 +910,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* ---- INSIGHTS BARS (Feature 12) — the CSS bar charts + stat tiles ---- */
 .pk-insights{display:flex;flex-direction:column;gap:24px}
 .pk-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+/* The per-project breakdown is a different KIND of thing from the tiles above it — those are
+   places to go, this is a report. The gap says so; at 16px it read as a thirteenth tile. */
+.pk-home-byproject{margin-top:64px}
 .pk-tile{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:20px}
 .pk-tile-val{font:600 28px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums}
 .pk-tile-label{margin-top:8px;font:700 10px/1.3 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
@@ -1033,6 +1036,26 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    reads as the same component in a different register rather than a foreign element. */
 .pk-set-card--danger{border-left-color:var(--pk-softred)}
 .pk-set-card--danger .pk-set-card-h h3{color:var(--pk-softred)}
+
+/* ---- Project and team CARDS ---------------------------------------------------------------
+   Projects and teams are BROWSED — you pick one of them — so they are tiles, not rows. The stat
+   strip is the point: it answers "which one do I need" without opening any of them. */
+.pk-card-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));padding:8px 0 14px}
+.pk-card-tile{display:flex;flex-direction:column;gap:14px;padding:16px;text-align:left;cursor:pointer;
+  background:var(--pk-elev);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
+  color:inherit;font:inherit;transition:border-color .16s,transform .16s,background .16s}
+.pk-card-tile-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.pk-card-tile-name{font:700 14px/1.3 var(--pk-font);color:var(--pk-ink)}
+.pk-card-tile-tag{flex:none;padding:2px 8px;background:var(--pk-card);border:1px solid var(--pk-hair);
+  font:600 10px/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-card-tile-stats{display:flex;gap:16px}
+.pk-card-tile-stat{display:flex;flex-direction:column;gap:2px}
+.pk-card-tile-stat b{font:700 18px/1 var(--pk-font);color:var(--pk-ink)}
+.pk-card-tile-stat i{font:500 11px/1 var(--pk-font);font-style:normal;color:var(--pk-muted)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-card-tile:hover{border-color:var(--pk-red);transform:translateY(-2px);background:var(--pk-hover)}
+}
+.pk-card-tile:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
 
 /* Search across the hierarchy. Fine at six teams; the point is thirty. */
 .pk-set-search{margin-bottom:4px}

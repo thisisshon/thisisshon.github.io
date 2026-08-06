@@ -351,6 +351,9 @@
           projectDelete: async () => { throw new Error('Needs the worker backend'); },
           userDelete: async () => { throw new Error('Needs the worker backend'); },
           usersBulk: async () => { throw new Error('Needs the worker backend'); },
+          exportProject: async () => { throw new Error('Needs the worker backend'); },
+          exportTeam: async () => { throw new Error('Needs the worker backend'); },
+          importData: async () => { throw new Error('Needs the worker backend'); },
           // Team management is worker-only: local-demo has no key store to manage.
           teamsList: async () => [],
           teamCreate: async () => { throw new Error('Team management needs the worker backend'); },
@@ -413,6 +416,9 @@
           projectDelete: (id) => apiFetch('/projects/delete', { method: 'POST', body: JSON.stringify({ id }) }),
           userDelete: (email) => apiFetch('/admin/users/delete', { method: 'POST', body: JSON.stringify({ email }) }),
           usersBulk: (team, people) => apiFetch('/admin/users/bulk', { method: 'POST', body: JSON.stringify({ team, people }) }),
+          exportProject: (id) => apiFetch('/admin/export?project=' + encodeURIComponent(id)),
+          exportTeam: (name) => apiFetch('/admin/export?team=' + encodeURIComponent(name)),
+          importData: (payload) => apiFetch('/admin/import', { method: 'POST', body: JSON.stringify(payload) }),
           usersList: () => apiFetch('/admin/users'),
           userCreate: (u) => apiFetch('/admin/users', { method: 'POST', body: JSON.stringify(u) }),
           userUpdate: (u) => apiFetch('/admin/users/update', { method: 'POST', body: JSON.stringify(u) }),
@@ -2439,7 +2445,7 @@
           tile({ title: 'Settings', attr: goSet('appearance'), desc: 'Appearance, behaviour and notifications.' }) +
         `</div>` +
         (d && d.projects && d.projects.length > 1
-          ? `<section class="pk-set-card"><div class="pk-set-card-h"><h3>By project</h3>` +
+          ? `<section class="pk-set-card pk-home-byproject"><div class="pk-set-card-h"><h3>By project</h3>` +
             `<p>Each project is isolated unless you have granted access in Visibility.</p></div><div class="pk-set-card-b">` +
             d.projects.map((p) => `<div class="pk-set-row"><div class="pk-set-row-main">` +
               `<div class="pk-set-row-label">${esc(p.name)}</div>` +
@@ -2617,6 +2623,18 @@
           (counts ? `<span class="pk-set-row-desc">${counts}</span>` : '') + `</span>` +
           `<span class="pk-set-ctl">${trailing || ''}${CHEV}</span>` +
         `</button>`;
+      /* A card, for the two levels that are BROWSED rather than scanned. Projects and teams are
+       * things you pick one of; a row list is for things you read down. The stat strip is the
+       * point of the card — it answers "which one do I need" without opening any of them. */
+      const drillCard = (attrs, label, tag, stats) =>
+        `<button class="pk-card-tile" type="button" ${attrs}>` +
+          `<span class="pk-card-tile-h"><span class="pk-card-tile-name">${label}</span>` +
+            (tag ? `<span class="pk-card-tile-tag">${tag}</span>` : '') + `</span>` +
+          `<span class="pk-card-tile-stats">` +
+            stats.map((st) => `<span class="pk-card-tile-stat"><b>${st[0]}</b><i>${st[1]}</i></span>`).join('') +
+          `</span>` +
+        `</button>`;
+      const tileGrid = (inner) => `<div class="pk-card-grid">${inner}</div>`;
       // Empty states carry the action rather than explaining the concept.
       const emptyRow = (text, btnHtml) =>
         `<div class="pk-set-empty">${text}${btnHtml ? ` <span class="pk-set-empty-act">${btnHtml}</span>` : ''}</div>`;
@@ -2672,7 +2690,13 @@
         ];
         html =
           card('Appearance', '',
-            row('Colour mode', '', `<span id="pk-set-theme-slot"></span>`) +
+            /* The same switch as every other toggle on this screen, reading the way a switch is
+             * expected to: ON means the thing named in the label is on. The bespoke sun/moon pill
+             * it replaces was the only control here with its own shape AND its own semantics —
+             * it showed the mode you would GET rather than the mode you were IN, so half the time
+             * it looked like it was reporting the opposite of the truth. */
+            row('Dark mode', '',
+              `<button class="pk-set-switch" type="button" role="switch" aria-checked="${!light}" data-theme-toggle><span class="pk-set-switch-thumb"></span></button>`) +
             row('Accent', '', `<div class="pk-set-swatches">${swatches}</div>`) +
             row('Density', '', segCtl('density', [{ v: 'comfortable', l: 'Comfortable' }, { v: 'compact', l: 'Compact' }])) +
             row('Reduce motion', '', swCtl('reduceMotion'))) +
@@ -2753,8 +2777,6 @@
 
       panel.innerHTML = html;
 
-      const themeSlot = $('#pk-set-theme-slot');
-      if (themeSlot) themeSlot.appendChild(buildThemeToggle());
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
       if (settingsSection === 'account') wirePasskeys();
       if (settingsSection === 'org') {
@@ -3032,6 +3054,7 @@
               row('Tickets', '', pill(String(used))) +
               row('Project', '', `<button class="pk-a" type="button" data-team-project="${esc(t.name)}" data-team-current="${esc(projOf(t))}">${esc(projOf(t))}</button>`) +
               row('Board', '', `<button class="pk-a" type="button" data-team-view="${esc(t.name)}">Open board</button>`) +
+              row('Export', 'Structure, people and work. No passwords or PINs travel.', `<button class="pk-a" type="button" data-export-team="${esc(t.name)}">Export team</button>`) +
               row('Password', 'Replacing it signs the team out immediately.', `<button class="pk-a" type="button" data-team-rotate="${esc(t.name)}">Change password</button>`)) +
             dangerCard(
               row(t.enabled ? 'Disable team' : 'Enable team',
@@ -3056,11 +3079,16 @@
               row('Kind', '', pill(p.kind || 'owned'))) +
             card('Teams', '',
               (ts.filter((t) => hit(t.name)).length
-                ? ts.filter((t) => hit(t.name)).map((t) => drillRow(`data-team-open="${esc(t.name)}"`, esc(t.name),
-                    `${n(peopleIn(t.name).length, 'person', 'people')} · ${n(ticketsFor(t.name), 'ticket')}`,
-                    t.enabled ? '' : pill('inactive'))).join('')
+                ? tileGrid(ts.filter((t) => hit(t.name)).map((t) => drillCard(`data-team-open="${esc(t.name)}"`,
+                    esc(t.name), t.enabled ? '' : 'inactive', [
+                      [peopleIn(t.name).length, 'people'],
+                      [ticketsFor(t.name), 'tickets'],
+                    ])).join(''))
                 : emptyRow(q ? 'No matches.' : 'No teams yet.')) +
-              row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-team-add">Add a team</button>`)) +
+              row('', '', `<span class="pk-u-inlinerow">` +
+                `<button class="pk-a pk-a--primary" type="button" id="pk-team-add">Add a team</button>` +
+                `<button class="pk-a" type="button" id="pk-team-import">Import a team</button>` +
+                `<button class="pk-a" type="button" data-export-project="${esc(p.id)}">Export project</button></span>`)) +
             `<div id="pk-vis-mode"></div><div id="pk-vis-matrix"></div><div id="pk-vis-links"></div>` +
             (p.id === 'default' ? '' : dangerCard(
               row('Delete project', 'Moves it to the recycle bin. Move or delete its teams first.',
@@ -3070,14 +3098,25 @@
         }
 
         // ---- level: all projects --------------------------------------------------------------
+        const shown = projects.filter((p) => hit(p.name) || hit(p.id)
+          || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email)));
+        const ticketsInProject = (pid) => {
+          const names = new Set(teamsIn(pid).map((t) => t.name));
+          return roots().filter((c) => names.has(c.team || '') || names.has(c.toTeam || '')).length;
+        };
         outer.innerHTML =
           card('Projects', '',
-            (projects.filter((p) => hit(p.name) || hit(p.id) || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email))).length
-              ? projects.filter((p) => hit(p.name) || hit(p.id) || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email))).map((p) => drillRow(`data-project-open="${esc(p.id)}"`, esc(p.name || p.id),
-                  `${n(teamsIn(p.id).length, 'team')} · ${n(peopleInProject(p.id).length, 'person', 'people')}`,
-                  pill(p.kind || 'owned'))).join('')
+            (shown.length
+              ? tileGrid(shown.map((p) => drillCard(`data-project-open="${esc(p.id)}"`,
+                  esc(p.name || p.id), esc(p.kind || 'owned'), [
+                    [teamsIn(p.id).length, 'teams'],
+                    [peopleInProject(p.id).length, 'people'],
+                    [ticketsInProject(p.id), 'tickets'],
+                  ])).join(''))
               : emptyRow(q ? 'No matches.' : 'No projects yet.')) +
-            row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>`));
+            row('', '', `<span class="pk-u-inlinerow">` +
+              `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>` +
+              `<button class="pk-a" type="button" id="pk-proj-import">Import a project</button></span>`));
       }
 
       /* Who sees whose comments. It lives INSIDE a project because that is what it is a property
@@ -3142,7 +3181,8 @@
             '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],' +
             '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
             '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],' +
-            '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk');
+            '[data-export-project],[data-export-team],' +
+            '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk,#pk-proj-import,#pk-team-import');
           if (!t) return;
           const d = t.dataset;
           try {
@@ -3165,6 +3205,9 @@
             if (t.id === 'pk-team-add') return openAddTeam();
             if (t.id === 'pk-person-add') return openAddPerson();
             if (t.id === 'pk-person-bulk') return openBulkAdd();
+            if (t.id === 'pk-proj-import' || t.id === 'pk-team-import') return openImport();
+            if (d.exportProject) return doExport('project', d.exportProject);
+            if (d.exportTeam) return doExport('team', d.exportTeam);
 
             // rename
             if (d.teamRename) {
@@ -3298,6 +3341,69 @@
         });
       }
 
+      /* Export downloads a file; import reads one. Deliberately a FILE rather than a
+       * copy-project button, because the useful case is moving a shape between deployments —
+       * staging to production, one client's setup as the template for the next.
+       *
+       * Nothing secret travels: PIN hashes, team keys and sessions all stay behind, so an
+       * imported team arrives disabled and imported people arrive unable to sign in until the
+       * Builder gives them credentials. That is the correct default for a file that will end up
+       * in an inbox. */
+      async function doExport(kind, ref) {
+        try {
+          const data = kind === 'project' ? await store.exportProject(ref) : await store.exportTeam(ref);
+          const name = `proofkit-${kind}-${String(ref).toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`;
+          downloadBlob(JSON.stringify(data, null, 2), 'application/json', name);
+          pkAlert({ title: 'Exported', message:
+            `${name}\n\n${data.counts ? `${data.counts.teams} team(s), ${data.counts.people} people, ${data.counts.tickets} tickets.` : ''}` +
+            `\n\nNo passwords or PINs are in this file — people and teams arrive without a way to sign in, and you assign credentials after importing.` });
+        } catch (e) { pkAlert('Could not export — ' + e.message); }
+      }
+
+      function openImport() {
+        const el = document.createElement('div'); el.className = 'pk-reopen';
+        el.innerHTML =
+          `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Import">` +
+            `<h2 class="pk-reopen-title">Import</h2>` +
+            `<p class="pk-reopen-sub">Choose a Proofkit export file. Importing only ADDS — anything that already exists is skipped, never overwritten.</p>` +
+            `<div class="pk-reopen-field"><span class="pk-reopen-label">File</span>` +
+              `<input type="file" accept="application/json,.json" class="pk-login-input pk-imp-file"></div>` +
+            `<div class="pk-reopen-field"><span class="pk-reopen-label">Import as project id <span style="color:var(--pk-muted);font-weight:400">· optional</span></span>` +
+              `<input class="pk-login-input pk-imp-as" placeholder="Leave blank to keep the id in the file" autocomplete="off"></div>` +
+            `<div class="pk-reopen-err" hidden></div>` +
+            `<div class="pk-reopen-actions">` +
+              `<button type="button" class="pk-a pk-imp-cancel">Cancel</button>` +
+              `<button type="button" class="pk-a pk-a--primary pk-imp-go">Import</button>` +
+            `</div></div>`;
+        document.body.appendChild(el);
+        const file = el.querySelector('.pk-imp-file'), asId = el.querySelector('.pk-imp-as');
+        const err = el.querySelector('.pk-reopen-err'), goB = el.querySelector('.pk-imp-go');
+        const close = () => { el.remove(); document.removeEventListener('keydown', onEsc); };
+        function onEsc(e2) { if (e2.key === 'Escape') close(); }
+        document.addEventListener('keydown', onEsc);
+        el.addEventListener('click', (e2) => { if (e2.target === el) close(); });
+        el.querySelector('.pk-imp-cancel').addEventListener('click', close);
+        goB.addEventListener('click', async () => {
+          const f = file.files && file.files[0];
+          if (!f) { err.textContent = 'Choose a file first.'; err.hidden = false; return; }
+          goB.disabled = true; goB.textContent = 'Importing…';
+          try {
+            const payload = JSON.parse(await f.text());
+            if (asId.value.trim()) payload.asProject = asId.value.trim();
+            const rep = await store.importData(payload);
+            close();
+            await pkAlert({ title: 'Imported', message:
+              `Projects: ${rep.projects.length}\nTeams: ${rep.teams.length}\nPeople: ${rep.people.length}\nTickets: ${rep.tickets}` +
+              (rep.skipped.length ? `\n\nSkipped (already existed):\n` + rep.skipped.slice(0, 12).join('\n') : '') +
+              `\n\nImported teams arrive disabled and imported people cannot sign in until you assign passwords and PINs.` });
+            fillOrg();
+          } catch (e2) {
+            goB.disabled = false; goB.textContent = 'Import';
+            err.textContent = e2.message; err.hidden = false;
+          }
+        });
+      }
+
       /* Adding eight people used to be eight dialogs. Paste a list, get PINs, hand them out once.
        * Reports per-address outcomes rather than failing the whole batch on one bad entry — a
        * typo in row six must not discard rows one to five. */
@@ -3401,6 +3507,8 @@
         }
       };
       panel.addEventListener('click', (e) => {
+        const theme = e.target.closest('[data-theme-toggle]');
+        if (theme) { toggleTheme(); renderSettings(); return; }
         const tog = e.target.closest('[data-pref-toggle]');
         if (tog) { const k = tog.dataset.prefToggle; setPref(k, !getPref(k)); afterChange(k); return; }
         const ch = e.target.closest('[data-pref-choice]');
@@ -4012,21 +4120,26 @@
       // Leaving Settings: page grows back (no clamp); if Settings was scrolled, glide to the top.
       if (leaveSettings && (window.scrollY || 0) > 4) { try { window.scrollTo({ top: 0, behavior: rm ? 'auto' : 'smooth' }); } catch (e) {} }
     }
-    document.querySelector('.pk-side').addEventListener('click', (e) => {
-      // A tile is a navigation, exactly like a sidebar click — same bookkeeping, so Back works and
-      // the sidebar highlight follows. Settings tiles additionally pick the section to land on.
+    /* A tile is a navigation, exactly like a sidebar click — same bookkeeping, so Back works and
+     * the sidebar highlight follows. Settings tiles additionally pick the section to land on.
+     *
+     * Bound to the DOCUMENT, not to `.pk-side`. It used to live on the sidebar listener, but the
+     * tiles render into #rvd-view-home in the main column — nowhere near the rail — so the handler
+     * could never fire and not one tile on the Builder home was clickable. */
+    document.addEventListener('click', (e) => {
       const tileEl = e.target.closest('[data-home-view],[data-home-settings]');
-      if (tileEl) {
-        const prevT = view;
-        if (tileEl.dataset.homeSettings) { settingsSection = tileEl.dataset.homeSettings; view = 'settings'; }
-        else view = tileEl.dataset.homeView;
-        entryDetail = null;
-        syncUrl();
-        if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
-        document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
-        pkNavSwitch(prevT, view, () => render(), 'rvd-view-settings');
-        return;
-      }
+      if (!tileEl) return;
+      const prevT = view;
+      if (tileEl.dataset.homeSettings) { settingsSection = tileEl.dataset.homeSettings; view = 'settings'; }
+      else view = tileEl.dataset.homeView;
+      entryDetail = null;
+      syncUrl();
+      if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
+      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
+      pkNavSwitch(prevT, view, () => render(), 'rvd-view-settings');
+    });
+
+    document.querySelector('.pk-side').addEventListener('click', (e) => {
       const b = e.target.closest('.pk-nav'); if (!b) return;
       const prev = view;
       view = b.dataset.view; entryDetail = null;
