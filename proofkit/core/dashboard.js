@@ -2411,8 +2411,17 @@
         return;
       }
       if (!getAuthToken()) {
+        // This board's own login panel takes a TEAM KEY, which is not a person — so telling someone
+        // to "sign in with your email and PIN" here pointed at a field that does not exist on this
+        // screen. The account session can only be created on the auth page, so send them there and
+        // bring them straight back to this tab, where the token will be waiting.
         stateEl.innerHTML = rowMain('Sign in with your account first',
-          'Passkeys attach to a person, not to a team key. Sign in with your email and PIN, then enrol.');
+          'A passkey attaches to a person, and this board is currently open on a team key. '
+          + 'Signing in takes one step and returns you here.',
+          `<button class="pk-a pk-a--primary" type="button" id="pk-pk-signin">Sign in to enrol</button>`);
+        $('#pk-pk-signin').addEventListener('click', () => {
+          location.href = BASE + '/auth/?return=' + encodeURIComponent(location.href);
+        });
         listEl.innerHTML = '';
         return;
       }
