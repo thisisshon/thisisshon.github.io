@@ -304,16 +304,57 @@ export async function passkeyLogin(workerUrl, email) {
   return body;
 }
 
+/**
+ * Sign in with NO identity typed at all. The credential is resident on the authenticator, so the
+ * browser offers the account itself — click, touch, in. This is the panel-login path.
+ *
+ * Returns the session, or null when there is nothing to sign in with (no reader, no resident
+ * credential, or the sheet was dismissed). Same contract as passkeyLogin: null means "use the
+ * key field", never an error to show.
+ */
+export async function passkeyLoginDiscoverable(workerUrl) {
+  if (!(await hasPlatformAuthenticator())) return null;
+  let o;
+  try { o = await authApi(workerUrl, '/auth/webauthn/login/options', { discoverable: true }); }
+  catch (e) { return null; }
+  let assertion;
+  try {
+    assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: b64uToBuf(o.challenge), rpId: o.rpId,
+        allowCredentials: [],                       // empty ⇒ "offer whatever this device holds"
+        userVerification: o.userVerification, timeout: o.timeout,
+      },
+    });
+  } catch (e) { return null; }
+  if (!assertion) return null;
+  const body = await authApi(workerUrl, '/auth/webauthn/login/verify', {
+    challenge: o.challenge,
+    credentialId: bufToB64u(assertion.rawId),
+    clientDataJSON: bufToB64u(assertion.response.clientDataJSON),
+    authenticatorData: bufToB64u(assertion.response.authenticatorData),
+    signature: bufToB64u(assertion.response.signature),
+  });
+  setAccountSession(body.user, body.token);
+  return body;
+}
+
 /** Passkeys enrolled on the signed-in account. */
 export const passkeyList = (workerUrl) => authApi(workerUrl, '/auth/webauthn/list', undefined, getAuthToken());
 export const passkeyRemove = (workerUrl, id) => authApi(workerUrl, '/auth/webauthn/remove', { id }, getAuthToken());
+
+/* A board opened by PASSKEY has no team key — there is no key to have. The boards gate on
+ * `getSession().key` being truthy, so the session carries this sentinel instead: it satisfies
+ * "someone is signed in" locally while never being mistaken for a credential. authHeaders()
+ * refuses to transmit it, so it can never reach the Worker as a bogus X-Review-Pass. */
+export const ACCOUNT_KEY_SENTINEL = 'pk-account-session';
 
 /** Headers for an authenticated call: bearer token when signed in, else the legacy team key. */
 export function authHeaders() {
   const t = getAuthToken();
   if (t) return { Authorization: 'Bearer ' + t };
   const k = getSession().key;
-  return k ? { 'X-Review-Pass': k } : {};
+  return (k && k !== ACCOUNT_KEY_SENTINEL) ? { 'X-Review-Pass': k } : {};
 }
 
 export function setSession(team, key) {
@@ -947,6 +988,19 @@ export function buildPanelLogin(opts) {
       '</div>' +
       '<div class="pk-login-err" hidden></div>' +
       '<button type="button" class="pk-login-btn">Authenticate</button>' +
+      // Touch ID. Rendered only when the host opts in (opts.onPasskey) AND revealed only once a
+      // platform authenticator is confirmed present — see below. It is deliberately absent from
+      // the in-page overlay on third-party sites: WebAuthn binds a credential to the origin that
+      // created it, so a passkey for the dashboards simply cannot be used on someone else's
+      // domain, and offering it there would be a button that can only ever fail.
+      (opts.onPasskey
+        ? '<button type="button" class="pk-login-touch" hidden>' +
+            '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+              '<path d="M12 10v4a8 8 0 0 1-.4 2.5"/><path d="M8.5 8.5a5 5 0 0 1 7 3.5v2"/>' +
+              '<path d="M5.5 6.5a9 9 0 0 1 13 5.5v2.5"/><path d="M8 20a12 12 0 0 0 1.2-3"/>' +
+              '<path d="M15.5 19.5A16 16 0 0 0 16 15"/></svg>' +
+            '<span>Sign in with Touch ID</span></button>'
+        : '') +
       '<div class="pk-login-brand">' + PK_MARK + '<span>Proofkit</span></div>' +
     '</div>';
   const q = (s) => el.querySelector(s);
@@ -959,6 +1013,36 @@ export function buildPanelLogin(opts) {
   const teamDD = buildDropdown({ items: teamItems, placeholder: 'Select Team', block: true });
   q('.pk-login-team').appendChild(teamDD.el);
   if (opts.onClose) q('.pk-login-close').addEventListener('click', () => opts.onClose());
+
+  /* Touch ID: show the button only after confirming this machine really has a sensor. Asking
+   * first and revealing second means the panel never advertises a route it cannot deliver — a
+   * dead biometric button on a desktop without a reader is worse than no button at all. */
+  const touchBtn = q('.pk-login-touch');
+  if (touchBtn) {
+    const setBusy = (busy) => {
+      touchBtn.disabled = busy;
+      touchBtn.querySelector('span').textContent = busy ? 'Waiting for Touch ID…' : 'Sign in with Touch ID';
+    };
+    hasPlatformAuthenticator().then((ok) => { if (ok) touchBtn.hidden = false; });
+    touchBtn.addEventListener('click', async () => {
+      setBusy(true);
+      const e = q('.pk-login-err'); e.textContent = ''; e.hidden = true;
+      try {
+        // Usernameless: the credential is resident, so the browser offers the account and the
+        // user types nothing at all.
+        const body = await passkeyLoginDiscoverable(opts.workerUrl || WORKER_URL);
+        if (body) { opts.onPasskey(body); return; }
+        // null = no resident credential, or the sheet was dismissed. Neither is an error; the
+        // key field is right there. Only say something for the case worth explaining.
+        e.textContent = 'No passkey on this device yet — sign in with your key, then enrol under Settings → Passkeys.';
+        e.hidden = false;
+      } catch (err) {
+        e.textContent = err.message || 'Could not sign in with Touch ID.';
+        e.hidden = false;
+      } finally { setBusy(false); }
+    });
+  }
+
   return {
     el,
     getTeam: () => teamDD.getValue(),

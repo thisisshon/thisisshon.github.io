@@ -23,7 +23,7 @@
  *   ?email=<addr>   pre-fill, e.g. when the popup already knows who is signed in
  */
 import {
-  WORKER_URL, accountLogin, passkeyLogin, hasPlatformAuthenticator, getAccount, PK_MARK,
+  WORKER_URL, accountLogin, passkeyLogin, hasPlatformAuthenticator, getAccount, getAuthToken, PK_MARK,
 } from './config.js';
 
 const $ = (s) => document.querySelector(s);
@@ -37,6 +37,10 @@ function safeReturn(raw) {
   try {
     const u = new URL(String(raw || ''), location.href);
     if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+    // A return URL pointing back at THIS page is an infinite loop: sign in, come back here, get
+    // prompted again, forever — and because the biometric state hides the form there is no way
+    // out of it by hand. Refuse it outright rather than trusting the caller to get it right.
+    if (u.origin === location.origin && u.pathname.replace(/\/+$/, '') === location.pathname.replace(/\/+$/, '')) return '';
     return u.href;
   } catch (e) { return ''; }
 }
@@ -96,9 +100,14 @@ function scanning() {
   form.hidden = true;
   const s = document.createElement('div');
   s.className = 'pka-scan';
-  s.innerHTML = ICON_TOUCH + '<p>Waiting for Touch ID…</p>';
+  // An escape hatch is mandatory here, not a nicety: this state hides the whole form, so without
+  // it a biometric that never resolves leaves the user with no way back to the PIN at all.
+  s.innerHTML = ICON_TOUCH + '<p>Waiting for Touch ID…</p>'
+    + '<button type="button" class="pka-alt" id="scan-esc">Use my PIN instead</button>';
   form.parentNode.insertBefore(s, form);
-  return () => { s.remove(); form.hidden = false; };
+  const restore = () => { s.remove(); form.hidden = false; };
+  s.querySelector('#scan-esc').addEventListener('click', () => { restore(); showPin('Enter your PIN to continue.'); });
+  return restore;
 }
 
 /** Hand the session to the extension, if we were opened by one. Best-effort by design: a failure
@@ -185,6 +194,28 @@ go.addEventListener('click', submit);
 alt.addEventListener('click', () => tryPasskey(email.value.trim(), true));
 
 (async function init() {
+  /* ALREADY SIGNED IN? Then this page has nothing to ask. Without this check the page prompts on
+   * every load whenever an email is remembered, so anything that lands back here after a
+   * successful sign-in prompts again — and again. That is the loop: authenticate, return, get
+   * asked to authenticate. A door you have already walked through should just be open.
+   *
+   * The token is verified against the Worker rather than trusted, so an expired or revoked one
+   * falls through to a normal sign-in instead of bouncing the user somewhere they cannot load. */
+  const existing = getAuthToken();
+  if (existing) {
+    try {
+      const r = await fetch(workerUrl.replace(/\/$/, '') + '/auth/me', { headers: { Authorization: 'Bearer ' + existing } });
+      if (r.ok) {
+        const me = await r.json();
+        sub.textContent = 'Already signed in as ' + (me.user.name || me.user.email) + '.';
+        form.hidden = true;
+        if (returnTo) { location.replace(returnTo); return; }
+        note.textContent = 'You can close this tab and go back to your page.';
+        return;
+      }
+    } catch (e) { /* unreachable Worker — fall through and let them sign in normally */ }
+  }
+
   hasBiometric = await hasPlatformAuthenticator();
   if (hasBiometric) {
     sub.textContent = 'Enter your email — Touch ID will do the rest.';

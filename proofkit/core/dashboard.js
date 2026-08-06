@@ -4,7 +4,7 @@
     ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
     initTheme, buildThemeToggle, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
-    ensureDemoReset, isTeamEnabled,
+    ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
     reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
@@ -361,8 +361,11 @@
           // Phase 3.1: conditional GET — send If-None-Match, get 304 (near-free) when the admin scope
           // is unchanged since the last poll. Returns {notModified} or {data, etag}.
           allEtag: async (etag) => {
-            const pass = getSession().key; const headers = {};
-            if (pass) headers['X-Review-Pass'] = pass;
+            // This was the ONE call that built its own headers from the team key, so a session
+            // authenticated by account (PIN or passkey) polled with no credential at all and got
+            // 401s that logged it straight back out. authHeaders() picks the bearer token when
+            // there is one and the team key otherwise, which is what every other call already did.
+            const headers = { ...authHeaders() };
             if (etag) headers['If-None-Match'] = etag;
             const res = await fetch(WORKER_URL + '/comments', { headers });
             if (res.status === 304) return { notModified: true };
@@ -536,7 +539,22 @@
 
     function showLogin() {
       if (!login) {
-        login = buildPanelLogin({ title: 'Panel Login', sub: 'Enter your key to continue.' });
+        login = buildPanelLogin({
+          title: 'Panel Login', sub: 'Enter your key to continue.',
+          // Touch ID is offered here because this board runs on the SAME origin the passkey was
+          // enrolled against. The in-page overlay deliberately does not pass this: a credential is
+          // bound to its origin, so a dashboard passkey cannot be used on a third-party site.
+          onPasskey: (body) => {
+            // A passkey session has no team key — the sentinel opens the board locally while
+            // authHeaders() authenticates every call with the bearer token.
+            const team = body.user.role === 'builder' ? ADMIN_TEAM : (body.user.team || ADMIN_TEAM);
+            setSession(team, ACCOUNT_KEY_SENTINEL);
+            if (team !== ADMIN_TEAM) { location.replace(boardBase(team)); return; }
+            loadData()
+              .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
+              .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });
+          },
+        });
         const go = () => tryLogin();
         login.button.addEventListener('click', go);
         login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
@@ -916,7 +934,14 @@
     // Feature 11 (Team views) + Feature 12 (Insights) state.
     let savedViews = [], activeViewName = '';
     let metricsData = null, metricsFrom = '', metricsTo = '';
-    let settingsSection = 'appearance';   // active Settings sub-nav section
+    /* Active Settings sub-nav section. Seeded from a one-shot handoff so a round trip through the
+     * auth page returns to the tab the user actually left — landing them back on Appearance after
+     * signing in specifically to enrol a passkey would make them find their place again. */
+    let settingsSection = 'appearance';
+    try {
+      const want = sessionStorage.getItem('pkSettingsSection');
+      if (want) { settingsSection = want; sessionStorage.removeItem('pkSettingsSection'); }
+    } catch (e) {}
     const sel = new Set();
     let selectMode = false;
     let lastSig = '';   // signature of the last-rendered data — lets polling skip no-op re-renders
@@ -2420,6 +2445,7 @@
           + 'Signing in takes one step and returns you here.',
           `<button class="pk-a pk-a--primary" type="button" id="pk-pk-signin">Sign in to enrol</button>`);
         $('#pk-pk-signin').addEventListener('click', () => {
+          try { sessionStorage.setItem('pkSettingsSection', 'passkeys'); } catch (e) {}
           location.href = BASE + '/auth/?return=' + encodeURIComponent(location.href);
         });
         listEl.innerHTML = '';

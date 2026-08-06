@@ -710,6 +710,21 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   background:linear-gradient(90deg,transparent,var(--pk-on-accent),transparent);
   transform:translateX(-100%);animation:pk-login-shimmer 1.5s ease-in-out infinite}
 @keyframes pk-login-shimmer{100%{transform:translateX(100%)}}
+/* Touch ID — the SECONDARY route, styled as an outline of the primary button rather than a link.
+   Same width, same height, same type: it is a real way in, not a footnote. Subordinate to
+   Authenticate only by fill, so neither reads as the wrong default.
+   [hidden] must win over the flex display, hence the explicit rule — it stays hidden until a
+   platform authenticator is confirmed present. */
+.pk-login-touch{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:50px;
+  margin-top:10px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;color:var(--pk-body);
+  font:700 13px/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;
+  cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.pk-login-touch[hidden]{display:none}
+.pk-login-touch:disabled{opacity:.6;cursor:default}
+.pk-login-touch svg{flex:none}
+@media (min-width:1024px) and (hover:hover){
+  .pk-login-touch:hover:not(:disabled){color:var(--pk-ink);border-color:var(--pk-muted);background:var(--pk-elev)}}
+
 .pk-login-brand{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
   margin-top:40px;padding-top:24px;border-top:1px solid var(--pk-hair);
   font:700 11px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
