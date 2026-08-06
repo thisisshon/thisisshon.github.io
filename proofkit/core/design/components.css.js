@@ -991,6 +991,48 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-teamtag-meta{color:var(--pk-muted)}
 .pk-set-kbd{display:inline-flex;align-items:center;height:22px;padding:0 8px;background:var(--pk-input);
   border:1px solid var(--pk-hair);border-bottom-width:2px;border-radius:4px;font:700 11px/1 var(--pk-font);color:var(--pk-ink)}
+
+/* ---- Settings 9.0: the Organisation drill-down -------------------------------------------
+   Projects contain teams contain people, so the settings screen navigates rather than lists.
+   These are the four pieces that navigation needs: a tab badge for work that is waiting, a row
+   that goes somewhere, a breadcrumb back up, and an empty state that carries its own action. */
+
+/* Something is waiting — today, a person locked out of their account. */
+.pk-set-tab{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.pk-set-tab-badge{flex:none;min-width:18px;height:18px;padding:0 5px;border-radius:9999px;
+  background:var(--pk-red);color:var(--pk-on-accent);font:700 11px/18px var(--pk-font);text-align:center}
+.pk-set-tab-badge[hidden]{display:none}
+
+/* A row you can open. Same metrics as .pk-set-row so a list of them lines up with the static
+   rows above and below — it is a button only because it does something. */
+.pk-set-row--go{width:100%;border-left:none;border-right:none;border-top:none;background:transparent;
+  cursor:pointer;text-align:left;font:inherit;color:inherit}
+.pk-set-row--go .pk-set-row-main{display:block;flex:1 1 auto;min-width:0}
+.pk-set-row--go .pk-set-row-label,.pk-set-row--go .pk-set-row-desc{display:block}
+.pk-set-go{flex:none;color:var(--pk-muted);transition:transform .16s ease,color .16s ease}
+@media (min-width:1024px) and (hover:hover){
+  .pk-set-row--go:hover{background:var(--pk-hover)}
+  .pk-set-row--go:hover .pk-set-go{color:var(--pk-ink);transform:translateX(2px)}
+}
+.pk-set-row--go:focus-visible{outline:2px solid var(--pk-red);outline-offset:-2px}
+
+/* Breadcrumb — the way back up, and the only place the hierarchy is spelled out in words. */
+.pk-set-crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.pk-set-crumb{padding:0;border:none;background:none;cursor:pointer;
+  font:600 12px/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
+.pk-set-crumb.is-here{cursor:default;color:var(--pk-ink)}
+.pk-set-crumb-sep{color:var(--pk-hair);font:600 12px/1 var(--pk-font)}
+@media (min-width:1024px) and (hover:hover){.pk-set-crumb:not(.is-here):hover{color:var(--pk-ink)}}
+
+/* Empty states say what is missing and offer the fix, rather than explaining the concept. */
+.pk-set-empty{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;
+  font:400 13px/1.4 var(--pk-font);color:var(--pk-muted);border-bottom:1px solid var(--pk-hair)}
+.pk-set-empty:last-child{border-bottom:none}
+
+/* Irreversible actions, grouped and marked. The left rule is the tool's card accent, so this
+   reads as the same component in a different register rather than a foreign element. */
+.pk-set-card--danger{border-left-color:var(--pk-softred)}
+.pk-set-card--danger .pk-set-card-h h3{color:var(--pk-softred)}
 @media (min-width:1024px) and (hover:hover){
   .pk-set-tab:not(.is-active):hover{color:var(--pk-ink)}
   .pk-set-swatch:hover{border-color:var(--pk-red)}

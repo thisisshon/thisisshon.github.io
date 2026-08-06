@@ -937,11 +937,15 @@
     /* Active Settings sub-nav section. Seeded from a one-shot handoff so a round trip through the
      * auth page returns to the tab the user actually left — landing them back on Appearance after
      * signing in specifically to enrol a passkey would make them find their place again. */
-    let settingsSection = 'appearance';
+    let settingsSection = 'org';
     try {
       const want = sessionStorage.getItem('pkSettingsSection');
       if (want) { settingsSection = want; sessionStorage.removeItem('pkSettingsSection'); }
     } catch (e) {}
+    /* Where we are inside Organisation. The hierarchy IS the navigation — projects contain teams
+     * contain people — so one path replaces what used to be four sibling screens each re-stating
+     * the same structure. Null means "the level above this one". */
+    let orgPath = { project: null, team: null, person: null };
     const sel = new Set();
     let selectMode = false;
     let lastSig = '';   // signature of the last-rendered data — lets polling skip no-op re-renders
@@ -2506,567 +2510,555 @@
       return new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
+    /* ---- Settings 9.0 ---------------------------------------------------------------------
+     * Four sections instead of ten. Eight of the ten were describing ONE structure from
+     * different angles: a person sits in a team, a team sits in a project, and visibility is a
+     * property of a project rather than a thing in its own right. Those are now a single
+     * drill-down instead of sibling screens that each had to re-explain the hierarchy.
+     *
+     * The split is "whose setting is this?":
+     *   Organisation  shared, server-side  — projects → teams → people, and who sees whom
+     *   Preferences   yours, this browser  — appearance + behaviour + notifications
+     *   Account       yours, everywhere    — passkeys, session
+     *   System        the deployment       — storage, export, maintenance, about
+     *
+     * Screens are action-first: a labelled control, not a paragraph. Explanatory copy survives
+     * ONLY where an action cannot be undone — rotating a key, deleting, disabling someone.
+     */
     function renderSettings() {
       $('#rvd-empty').hidden = true;
       const host = $('#rvd-view-settings');
       const SECTIONS = [
-        { k: 'appearance', label: 'Appearance' },
-        { k: 'behavior', label: 'Behavior' },
-        { k: 'notifications', label: 'Notifications' },
-        { k: 'data', label: 'Data & maintenance' },
-        { k: 'people', label: 'People' },
-        { k: 'passkeys', label: 'Passkeys' },
-        { k: 'visibility', label: 'Visibility' },
-        { k: 'teams', label: 'Teams' },
-        { k: 'projects', label: 'Projects' },
-        { k: 'about', label: 'About' },
+        { k: 'org', label: 'Organisation' },
+        { k: 'prefs', label: 'Preferences' },
+        { k: 'account', label: 'Account' },
+        { k: 'system', label: 'System' },
       ];
-      if (!SECTIONS.some((s) => s.k === settingsSection)) settingsSection = 'appearance';
+      // Old section keys still arrive from deep links and the auth-page handoff. Map rather than
+      // drop, so an existing link lands somewhere sensible instead of on a default screen.
+      const LEGACY = {
+        appearance: 'prefs', behavior: 'prefs', notifications: 'prefs',
+        data: 'system', about: 'system',
+        people: 'org', visibility: 'org', teams: 'org', projects: 'org',
+        passkeys: 'account',
+      };
+      if (LEGACY[settingsSection]) settingsSection = LEGACY[settingsSection];
+      if (!SECTIONS.some((s) => s.k === settingsSection)) settingsSection = 'org';
+
       host.innerHTML =
-        `<div class="rvd-notifhead"><div><h2>Settings</h2>` +
-          `<p class="rvd-deploy-explain">Your Builder preferences, saved to <b>this browser</b> only. The <b>overlay style</b> is the one shared setting — it applies to everyone.</p></div></div>` +
+        `<div class="rvd-notifhead"><div><h2>Settings</h2></div></div>` +
         `<div class="pk-set">` +
           `<nav class="pk-set-nav" role="tablist">` +
-            SECTIONS.map((s) => `<button class="pk-set-tab${s.k === settingsSection ? ' is-active' : ''}" role="tab" aria-selected="${s.k === settingsSection}" data-sec="${s.k}">${s.label}</button>`).join('') +
+            SECTIONS.map((s) => `<button class="pk-set-tab${s.k === settingsSection ? ' is-active' : ''}" role="tab" aria-selected="${s.k === settingsSection}" data-sec="${s.k}">` +
+              `<span>${s.label}</span><span class="pk-set-tab-badge" data-badge="${s.k}" hidden></span></button>`).join('') +
           `</nav>` +
           `<div class="pk-set-panel" id="pk-set-panel"></div>` +
         `</div>`;
-      host.querySelectorAll('.pk-set-tab').forEach((b) => b.addEventListener('click', () => { settingsSection = b.dataset.sec; renderSettings(); }));
-      setTimeout(paintDynamic, 0);   // CSP: accent swatches get their --sw via CSSOM once the panel lands
+      host.querySelectorAll('.pk-set-tab').forEach((b) => b.addEventListener('click', () => {
+        if (settingsSection !== b.dataset.sec) { settingsSection = b.dataset.sec; renderSettings(); }
+      }));
+      setTimeout(paintDynamic, 0);   // CSP: swatches take their --sw via CSSOM once the panel lands
 
       const panel = $('#pk-set-panel');
       const getPref = (k) => k.includes('.') ? ((prefs[k.split('.')[0]] || {})[k.split('.')[1]]) : prefs[k];
       const setPref = (k, v) => { if (k.includes('.')) { const [a, b] = k.split('.'); prefs[a] = prefs[a] || {}; prefs[a][b] = v; } else prefs[k] = v; };
-      // control builders (return HTML)
       const swCtl = (key) => `<button class="pk-set-switch" type="button" role="switch" aria-checked="${!!getPref(key)}" data-pref-toggle="${key}"><span class="pk-set-switch-thumb"></span></button>`;
       const segCtl = (key, opts) => `<div class="pk-set-seg" role="group">` + opts.map((o) => `<button class="pk-set-segbtn${getPref(key) === o.v ? ' is-active' : ''}" type="button" data-pref-choice="${key}" data-val="${esc(o.v)}">${esc(o.l)}</button>`).join('') + `</div>`;
       const row = (label, desc, ctl) => `<div class="pk-set-row"><div class="pk-set-row-main"><div class="pk-set-row-label">${label}</div>${desc ? `<div class="pk-set-row-desc">${desc}</div>` : ''}</div><div class="pk-set-ctl">${ctl}</div></div>`;
       const card = (title, sub, rowsHTML) => `<section class="pk-set-card"><header class="pk-set-card-h"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</header><div class="pk-set-card-b">${rowsHTML}</div></section>`;
       const actBtn = (act, label, cls) => `<button class="pk-a${cls ? ' ' + cls : ''}" type="button" data-act="${act}">${esc(label)}</button>`;
 
-      // The dropdowns we mount after innerHTML is set: { slot, dd }.
+      /* A row that goes somewhere. The count IS the description — "3 teams · 11 people" tells you
+       * more about a project than a sentence explaining what a project is, and it makes the whole
+       * hierarchy legible without opening anything. */
+      const CHEV = `<svg class="pk-set-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>`;
+      const drillRow = (attrs, label, counts, trailing) =>
+        `<button class="pk-set-row pk-set-row--go" type="button" ${attrs}>` +
+          `<span class="pk-set-row-main"><span class="pk-set-row-label">${label}</span>` +
+          (counts ? `<span class="pk-set-row-desc">${counts}</span>` : '') + `</span>` +
+          `<span class="pk-set-ctl">${trailing || ''}${CHEV}</span>` +
+        `</button>`;
+      // Empty states carry the action rather than explaining the concept.
+      const emptyRow = (text, btnHtml) =>
+        `<div class="pk-set-empty">${text}${btnHtml ? ` <span class="pk-set-empty-act">${btnHtml}</span>` : ''}</div>`;
+      // Anything irreversible lives here, at the bottom, away from the routine controls.
+      const dangerCard = (rowsHTML) => rowsHTML
+        ? `<section class="pk-set-card pk-set-card--danger"><header class="pk-set-card-h"><h3>Danger zone</h3></header><div class="pk-set-card-b">${rowsHTML}</div></section>`
+        : '';
+      const crumbs = (parts) =>
+        `<nav class="pk-set-crumbs">` + parts.map((p, i) => (p.go
+          ? `<button type="button" class="pk-set-crumb" data-crumb="${p.go}">${esc(p.label)}</button>`
+          : `<span class="pk-set-crumb is-here">${esc(p.label)}</span>`)
+          + (i < parts.length - 1 ? `<span class="pk-set-crumb-sep">/</span>` : '')).join('') + `</nav>`;
+      const pill = (t) => `<span class="pk-set-pill">${esc(t)}</span>`;
+      const n = (c, one, many) => `${c} ${c === 1 ? one : (many || one + 's')}`;
+
       const mounts = [];
       const mkDropdown = (slotId, opts) => { const dd = buildDropdown({ small: true, menuAlign: 'right', ...opts }); mounts.push({ slotId, dd }); return `<span id="${slotId}"></span>`; };
 
+      const go = (patch) => { Object.assign(orgPath, patch); renderSettings(); };
+
       let html = '';
-      if (settingsSection === 'appearance') {
+
+      // =========================================================================================
+      // ORGANISATION
+      // =========================================================================================
+      if (settingsSection === 'org') {
+        html = `<div id="pk-org-resets"></div><div id="pk-org">` +
+          card('Loading…', '', '') + `</div>`;
+      }
+
+      // =========================================================================================
+      // PREFERENCES — appearance + behaviour + notifications, merged. All three were "this
+      // browser only"; three tabs for a dozen toggles was a split that earned nothing.
+      // =========================================================================================
+      else if (settingsSection === 'prefs') {
         const light = getTheme() === LIGHT_THEME;
         const swatches = Object.keys(ACCENTS).map((k) =>
           `<button class="pk-set-swatch${prefs.accent === k ? ' is-active' : ''}${k ? '' : ' pk-set-swatch-def'}" type="button" data-pref-choice="accent" data-val="${k}" title="${esc(k ? ACCENTS[k].name : 'Theme default')}"${k ? ` data-pk-sw="${esc(ACCENTS[k].red)}"` : ''}><span></span></button>`).join('');
-        const ovNew = getGlobalOverlayUi() === 'new'; // the SHARED default — this card is the global control
-        html =
-          card('Theme', 'Light or dark — your own preference, saved to this browser.',
-            row('Color mode', `Currently <b>${light ? 'Light' : 'Dark'}</b>. Switches your skin only — every team sets its own.`, `<span id="pk-set-theme-slot"></span>`)) +
-          card('Overlay UI', 'The on-page review overlay ONLY — the dashboards are unaffected. Applied for everyone, in real time; changing it refreshes every open page.',
-            row('Overlay style', `Currently <b>${ovNew ? 'New (HUD)' : 'Old (box)'}</b>. New is the full-screen review HUD; Old is the classic pop-up box on the live page.`,
-              `<div class="pk-set-seg" role="group" id="pk-set-overlayui">` +
-                `<button class="pk-set-segbtn${ovNew ? '' : ' is-active'}" type="button" data-overlayui="old">Old</button>` +
-                `<button class="pk-set-segbtn${ovNew ? ' is-active' : ''}" type="button" data-overlayui="new">New</button>` +
-              `</div>`)) +
-          card('Accent', 'Recolors primary buttons and highlights on this browser.',
-            row('Accent color', 'Overrides the theme accent (this browser only).', `<div class="pk-set-swatches">${swatches}</div>`)) +
-          card('Display', 'Layout density and motion.',
-            row('Density', 'Compact tightens padding across cards and the detail view.', segCtl('density', [{ v: 'comfortable', l: 'Comfortable' }, { v: 'compact', l: 'Compact' }])) +
-            row('Reduce motion', 'Turn off animations and transitions.', swCtl('reduceMotion')));
-      } else if (settingsSection === 'behavior') {
+        const ovNew = getGlobalOverlayUi() === 'new';
         const viewOpts = [
           { value: 'dash', label: 'Queue' }, { value: 'notifs', label: 'Notifications' },
-          { value: 'threads', label: 'Comments' },
-          { value: 'patterns', label: 'Patterns' }, { value: 'insights', label: 'Insights' }, { value: 'settings', label: 'Settings' },
+          { value: 'threads', label: 'Comments' }, { value: 'patterns', label: 'Patterns' },
+          { value: 'insights', label: 'Insights' }, { value: 'settings', label: 'Settings' },
         ];
         html =
-          card('Startup', 'What loads when you open the dashboard.',
-            row('Remember last view', 'Reopen whichever view you used last.', swCtl('rememberView')) +
-            row('Landing view', 'Used when “remember last view” is off.', mkDropdown('pk-set-landing', {
+          card('Appearance', '',
+            row('Colour mode', '', `<span id="pk-set-theme-slot"></span>`) +
+            row('Accent', '', `<div class="pk-set-swatches">${swatches}</div>`) +
+            row('Density', '', segCtl('density', [{ v: 'comfortable', l: 'Comfortable' }, { v: 'compact', l: 'Compact' }])) +
+            row('Reduce motion', '', swCtl('reduceMotion'))) +
+          card('Startup', '',
+            row('Remember last view', '', swCtl('rememberView')) +
+            row('Landing view', '', mkDropdown('pk-set-landing', {
               value: prefs.landingView, items: viewOpts.map((o) => ({ ...o, onSelect: () => { prefs.landingView = o.value; savePrefs(); } })),
             }))) +
-          card('Queue', 'Defaults for the ticket lists.',
-            row('Default sort', 'Applied when the dashboard loads.', mkDropdown('pk-set-sort', {
+          card('Queue', '',
+            row('Default sort', '', mkDropdown('pk-set-sort', {
               value: prefs.defaultSort, items: [
                 { value: 'new', label: 'Newest first' }, { value: 'old', label: 'Oldest first' }, { value: 'page', label: 'Page A–Z' },
               ].map((o) => ({ ...o, onSelect: () => { prefs.defaultSort = o.value; sort = o.value; savePrefs(); } })),
             })) +
-            row('Auto-refresh', 'How often to poll for new activity.', mkDropdown('pk-set-refresh', {
+            row('Auto-refresh', '', mkDropdown('pk-set-refresh', {
               value: String(prefs.refreshSecs), items: [
                 { value: '0', label: 'Off' }, { value: '5', label: 'Every 5s' }, { value: '15', label: 'Every 15s' },
                 { value: '30', label: 'Every 30s' }, { value: '60', label: 'Every 60s' },
               ].map((o) => ({ ...o, onSelect: () => { prefs.refreshSecs = +o.value; savePrefs(); restartAutoRefresh(); } })),
-            }))) +
-          card('Safety', 'Guards on destructive actions.',
-            row('Confirm before delete', 'Ask before deleting a ticket chain.', swCtl('confirmDelete')));
-      } else if (settingsSection === 'notifications') {
+            })) +
+            row('Confirm before delete', '', swCtl('confirmDelete'))) +
+          card('Notifications', '',
+            row('Status changes', '', swCtl('notifEvents.status')) +
+            row('Replies', '', swCtl('notifEvents.reply')) +
+            row('Directed to you', '', swCtl('notifEvents.directed')) +
+            row('Revoked', '', swCtl('notifEvents.revoked')) +
+            row('Nav badge counts', '', swCtl('notifBadges')) +
+            row('Desktop notifications', '', swCtl('desktopNotif')) +
+            row('Sound', '', swCtl('sound'))) +
+          // Shared, not personal — so it says so. This is the one setting on this screen that
+          // changes what other people see.
+          card('Overlay style', 'Applies to everyone, in real time.',
+            row('Style', `Currently ${ovNew ? 'New (HUD)' : 'Old (box)'}.`,
+              `<div class="pk-set-seg" role="group" id="pk-set-overlayui">` +
+                `<button class="pk-set-segbtn${ovNew ? '' : ' is-active'}" type="button" data-overlayui="old">Old</button>` +
+                `<button class="pk-set-segbtn${ovNew ? ' is-active' : ''}" type="button" data-overlayui="new">New</button>` +
+              `</div>`)) +
+          dangerCard(row('Reset preferences', 'Restores every setting on this screen to its default.', actBtn('reset-prefs', 'Reset', 'danger')));
+      }
+
+      // =========================================================================================
+      // ACCOUNT
+      // =========================================================================================
+      else if (settingsSection === 'account') {
+        const acct = getAccount();
         html =
-          card('Event types', 'Which events show in the Notifications view.',
-            row('Status changes', 'Started, deployed live, reopened, resubmitted.', swCtl('notifEvents.status')) +
-            row('Replies', 'Quick-question replies from teams.', swCtl('notifEvents.reply')) +
-            row('Directed to you', 'A ticket newly directed to Builder.', swCtl('notifEvents.directed')) +
-            row('Revoked', 'A raiser pulled a comment back.', swCtl('notifEvents.revoked'))) +
-          card('Delivery', 'How new activity reaches you.',
-            row('Nav badge counts', 'Show unread counts on the sidebar.', swCtl('notifBadges')) +
-            row('Desktop notifications', 'OS notification on new activity (asks permission).', swCtl('desktopNotif')) +
-            row('Sound', 'Soft chime on new activity.', swCtl('sound')));
-      } else if (settingsSection === 'data') {
+          card('Signed in', '',
+            row('Identity', '', pill(acct ? (acct.email || '') : (getSession().team || ADMIN_TEAM))) +
+            (acct && acct.role ? row('Role', '', pill(acct.role)) : '')) +
+          card('Touch ID', '',
+            `<div id="pk-pk-state" class="pk-set-row"><div class="pk-set-row-main"><div class="pk-set-row-label">Checking this device…</div></div></div>` +
+            `<div id="pk-pk-list"></div>`) +
+          dangerCard(row('Log out', 'Ends this session on this browser.', actBtn('logout', 'Log out', 'danger')));
+      }
+
+      // =========================================================================================
+      // SYSTEM
+      // =========================================================================================
+      else {
         const mode = LOCAL ? 'Demo (localStorage)' : 'Cloudflare Worker';
-        html =
-          card('Storage', 'Where this dashboard reads and writes.',
-            row('Mode', LOCAL ? 'No worker configured — data lives in this browser.' : 'Live shared store.', `<span class="pk-set-pill">${mode}</span>`) +
-            (LOCAL ? '' : row('Worker URL', esc(WORKER_URL), actBtn('copy-worker', 'Copy', 'pk-a--quiet'))) +
-            (LOCAL ? '' : row('Health check', 'Round-trip latency to the worker.', `<span class="pk-set-ping" id="pk-set-ping">—</span> ${actBtn('ping', 'Ping', 'pk-a--quiet')}`))) +
-          card('Export', `Download all ${all.length} record${all.length === 1 ? '' : 's'}.`,
-            row('Formats', 'JSON keeps everything; CSV/Markdown are summaries.', actBtn('export-json', 'JSON', 'pk-a--quiet') + ' ' + actBtn('export-csv', 'CSV', 'pk-a--quiet') + ' ' + actBtn('export-md', 'Markdown', 'pk-a--quiet'))) +
-          card('Maintenance', 'Reset preferences or local data.',
-            row('Reset preferences', 'Restore Settings to defaults (theme unaffected).', actBtn('reset-prefs', 'Reset', 'pk-a--quiet')) +
-            (LOCAL ? row('Clear demo data', 'Delete all locally-stored demo tickets.', actBtn('clear-demo', 'Clear', 'danger')) : ''));
-      } else if (settingsSection === 'people') {
-        // 6.0 — per-person accounts. Same rule as Teams: PINs are hashed server-side and never
-        // returned, so this screen can ASSIGN one but can never show an existing one. Filled async.
-        html =
-          `<div id="pk-people-resets"></div>` +
-          `<div id="pk-people-list"><section class="pk-set-card"><div class="pk-set-card-b">Loading…</div></section></div>` +
-          `<div style="margin-top:12px"><button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button></div>`;
-      } else if (settingsSection === 'visibility') {
-        // Who sees whose work. The project boundary is NOT here: it is absolute unless explicitly
-        // linked below, which is a separate, deliberately harder action.
-        html =
-          `<div id="pk-vis-mode"><section class="pk-set-card"><div class="pk-set-card-b">Loading…</div></section></div>` +
-          `<div id="pk-vis-matrix"></div>` +
-          `<div id="pk-vis-links"></div>`;
-      } else if (settingsSection === 'teams') {
-        // Phase A — team management. Keys are hashed server-side and never returned, so this screen
-        // can SET a password but never show an existing one. Rows are filled async (see below).
-        // Active and Inactive are two SEPARATE cards, built by fillTeams() with the same card()
-        // helper every other Settings section uses — so the headings, padding and row rules match
-        // the rest of the screen instead of being hand-styled.
-        html =
-          `<div id="pk-team-groups"><section class="pk-set-card"><div class="pk-set-card-b">Loading…</div></section></div>` +
-          `<div style="margin-top:12px"><button class="pk-a pk-a--primary" type="button" id="pk-team-add">Add a team</button></div>`;
-      } else if (settingsSection === 'projects') {
-        // Phase 11 tenancy management. Owned projects resolve by origin server-side; external ones
-        // scope extension reviews. Re-scoping the queue by project needs a worker param (project_id
-        // is server-resolved today) — this manages the list.
-        html = card('Projects', 'Tenancy units. This lists + creates projects; queue scoping by project is a later worker param.',
-          `<div id="pk-proj-list" class="pk-set-teamtags">Loading…</div>` +
-          row('New project', 'id · name · kind',
-            `<span class="pk-u-inlinerow">` +
-              `<input id="pk-proj-id" class="pk-set-kbd pk-u-projid" placeholder="id">` +
-              `<input id="pk-proj-name" class="pk-set-kbd pk-u-projname" placeholder="name">` +
-              `<select id="pk-proj-kind" class="pk-set-kbd"><option value="owned">owned</option><option value="external">external</option></select>` +
-              `<button class="pk-a" type="button" id="pk-proj-create">Create</button>` +
-            `</span>`));
-      } else if (settingsSection === 'passkeys') {
-        // Enrolment has to live behind a signed-in session, which is exactly where this is. A
-        // passkey is added to a PROVEN account; it can never be the thing that claims one.
-        html =
-          card('Touch ID on this device',
-            'Enrol this Mac and signing in becomes: type your email, touch the sensor. Your PIN keeps working — '
-            + 'it is the fallback for devices without a sensor, and the way back in if this one is lost.',
-            `<div id="pk-pk-state" class="pk-set-row"><div class="pk-set-row-main">` +
-              `<div class="pk-set-row-label">Checking this device…</div></div></div>`) +
-          card('Enrolled devices', 'Remove any you no longer use.',
-            `<div id="pk-pk-list"><div class="pk-set-row"><div class="pk-set-row-main">` +
-              `<div class="pk-set-row-desc">Loading…</div></div></div></div>`);
-      } else if (settingsSection === 'about') {
-        const teamRows = TEAMS.map((t) => `<span class="pk-set-teamtag${teamEnabled(t) ? '' : ' is-off'}">${esc(t)}${teamEnabled(t) ? '' : ' · off'}</span>`).join('');
         const kbd = (k) => `<kbd class="pk-set-kbd">${k}</kbd>`;
         html =
-          card('Proofkit', 'Portable content-review tooling.',
-            row('Version', 'This dashboard build.', `<span class="pk-set-pill">v${PK_VERSION}</span>`) +
-            row('Signed in as', 'Current session identity.', `<span class="pk-set-pill">${esc(getSession().team || ADMIN_TEAM)}</span>`)) +
-          card('Teams', 'Teams configured for this project.',
-            row('Enabled', 'Greyed teams are off this phase.', `<div class="pk-set-teamtags">${teamRows}</div>`)) +
-          card('Keyboard shortcuts', 'On the ticket detail view.',
-            row('Navigate tickets', 'Previous / next in the current list.', `${kbd('J')} ${kbd('K')}`) +
-            row('Close detail', 'Back to the list.', kbd('Esc')) +
-            row('Post reply', 'Send a quick question.', `${kbd('⌘/Ctrl')} ${kbd('Enter')}`)) +
-          card('Session', '', row('Log out', 'End this session on this browser.', actBtn('logout', 'Log out', 'danger')));
+          card('Storage', '',
+            row('Mode', '', pill(mode)) +
+            (LOCAL ? '' : row('Worker URL', esc(WORKER_URL), actBtn('copy-worker', 'Copy', 'pk-a--quiet'))) +
+            (LOCAL ? '' : row('Health check', '', `<span class="pk-set-ping" id="pk-set-ping">—</span> ${actBtn('ping', 'Ping', 'pk-a--quiet')}`))) +
+          card('Export', '',
+            row(`${n(all.length, 'record')}`, '', actBtn('export-json', 'JSON', 'pk-a--quiet') + ' ' + actBtn('export-csv', 'CSV', 'pk-a--quiet') + ' ' + actBtn('export-md', 'Markdown', 'pk-a--quiet'))) +
+          card('About', '',
+            row('Version', '', pill('v' + PK_VERSION)) +
+            row('Navigate tickets', '', `${kbd('J')} ${kbd('K')}`) +
+            row('Close detail', '', kbd('Esc')) +
+            row('Post reply', '', `${kbd('⌘/Ctrl')} ${kbd('Enter')}`)) +
+          (LOCAL ? dangerCard(row('Clear demo data', 'Deletes every locally-stored demo ticket. Cannot be undone.', actBtn('clear-demo', 'Clear', 'danger'))) : '');
       }
+
       panel.innerHTML = html;
 
-      // Mount the theme toggle (Appearance) — a real wired control that flips THIS user's mode.
       const themeSlot = $('#pk-set-theme-slot');
       if (themeSlot) themeSlot.appendChild(buildThemeToggle());
-      // Mount any dropdowns for this section.
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
+      if (settingsSection === 'account') wirePasskeys();
+      if (settingsSection === 'org') fillOrg();
 
-      // ---- Passkeys (8.0) -------------------------------------------------------------------
-      if (settingsSection === 'passkeys') wirePasskeys();
+      // Pending PIN resets mean somebody is locked out RIGHT NOW. That is a queue, not a setting,
+      // so it is badged on the tab and surfaced above everything else until it is cleared.
+      (async () => {
+        if (LOCAL) return;
+        try {
+          const pending = await store.resetsList();
+          const b = host.querySelector('[data-badge="org"]');
+          if (b && pending.length) { b.textContent = String(pending.length); b.hidden = false; }
+        } catch (e) { /* a badge is never worth an error */ }
+      })();
 
-      // Phase A: async-fill the Teams list + wire every action.
-      // ---- Visibility (7.x) -----------------------------------------------------------------
-      if (settingsSection === 'visibility') {
-        const PROJECT = 'default';   // single-project deployments; the links card handles the rest
+      // ---- shared helpers for the Organisation screens ---------------------------------------
+      const genKey = () => {
+        const a = 'abcdefghijkmnopqrstuvwxyz23456789';   // no l/1/0/o — these get read aloud
+        return Array.from(crypto.getRandomValues(new Uint8Array(14)), (b) => a[b % a.length]).join('');
+      };
+      const showOnce = (who, secret, what) => pkAlert(
+        `${what} for ${who}:\n\n${secret}\n\nCopy it now — it is stored hashed and cannot be shown again.`);
+      const askPin = async (title) => {
+        const v = await pkPrompt({ title, message: '6–12 digits. Not a repeated digit or a run (e.g. 123456).', value: '', confirmLabel: 'Set PIN' });
+        return v === null ? null : String(v).trim();
+      };
 
-        const fillVisibility = async () => {
-          const modeHost = $('#pk-vis-mode'), gridHost = $('#pk-vis-matrix'), linkHost = $('#pk-vis-links');
-          if (!modeHost) return;
-          let data;
-          try { data = await store.visibilityGet(PROJECT); }
-          catch (e) { modeHost.innerHTML = card('Visibility', '', `<p class="pk-empty--inline">Could not load — ${esc(e.message)}</p>`); return; }
-
-          const mode = (data.project && data.project.visibility_mode) || 'project';
-          const teams = (data.teams || []).map((t) => t.name);
-          // Sparse: a pair with no row follows the mode. Held as a map for O(1) lookup per cell.
-          const ov = new Map((data.overrides || []).map((o) => [o.viewer_team + ' ' + o.subject_team, !!o.can_see]));
-
-          modeHost.innerHTML = card('Visibility mode',
-            'How much of a project each team sees by default. Individual pairs can be overridden below.',
-            row('Everyone in the project',
-              'Every team sees every other team\'s tickets, comments, statuses and resolutions.',
-              `<button class="pk-a${mode === 'project' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="project">${mode === 'project' ? 'Selected' : 'Select'}</button>`) +
-            row('Own threads only',
-              'A team sees only what it raised and what is directed to it — the pre-7.0 behaviour.',
-              `<button class="pk-a${mode === 'team' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="team">${mode === 'team' ? 'Selected' : 'Select'}</button>`));
-
-          // The matrix. Rows = who is looking, columns = whose tickets. A team always sees its own,
-          // so the diagonal is fixed rather than a toggle that cannot be switched off.
-          if (!teams.length) {
-            gridHost.innerHTML = card('Team overrides', '', `<p class="pk-empty--inline">No teams in this project yet.</p>`);
-          } else {
-            const cell = (viewer, subject) => {
-              if (viewer === subject) return `<td class="pk-vis-self" title="A team always sees its own work">—</td>`;
-              const key = viewer + ' ' + subject;
-              const explicit = ov.has(key);
-              const on = explicit ? ov.get(key) : (mode === 'project');
-              return `<td><button class="pk-vis-cell${on ? ' is-on' : ''}${explicit ? ' is-set' : ''}" type="button" ` +
-                `data-vis-viewer="${esc(viewer)}" data-vis-subject="${esc(subject)}" data-vis-state="${explicit ? (on ? 'on' : 'off') : 'default'}" ` +
-                `title="${esc(viewer)} → ${esc(subject)}: ${explicit ? (on ? 'allowed (explicit)' : 'blocked (explicit)') : 'following the mode'}">` +
-                `${on ? '✓' : '✕'}</button></td>`;
-            };
-            gridHost.innerHTML = card('Team overrides',
-              'Click a cell to cycle: follow the mode → always allow → always block. Rows see columns.',
-              `<div class="pk-vis-wrap"><table class="pk-vis-table"><thead><tr><th></th>` +
-                teams.map((t) => `<th>${esc(t)}</th>`).join('') + `</tr></thead><tbody>` +
-                teams.map((v) => `<tr><th>${esc(v)}</th>` + teams.map((sj) => cell(v, sj)).join('') + `</tr>`).join('') +
-              `</tbody></table></div>`);
-          }
-
-          // Cross-project grants. Directional on purpose, and shown that way.
-          try {
-            const pl = await store.projectLinks();
-            const projects = pl.projects || [];
-            const links = pl.links || [];
-            const pairs = [];
-            for (const a of projects) for (const b of projects) if (a.id !== b.id) pairs.push([a, b]);
-            linkHost.innerHTML = card('Across projects',
-              'Projects are isolated unless you grant access here. Each grant is one-way — allowing A to see B does not allow B to see A.',
-              pairs.length
-                ? pairs.map(([a, b]) => {
-                    const on = links.some((l) => l.viewer_project === a.id && l.subject_project === b.id && l.can_see);
-                    return row(`${esc(a.name || a.id)} → ${esc(b.name || b.id)}`,
-                      `${esc(a.name || a.id)} can see ${esc(b.name || b.id)}'s tickets.`,
-                      `<button class="pk-a${on ? ' pk-a--primary' : ''}" type="button" data-link-viewer="${esc(a.id)}" data-link-subject="${esc(b.id)}" data-link-on="${on}">${on ? 'Granted' : 'Grant'}</button>`);
-                  }).join('')
-                : `<p class="pk-empty--inline">Only one project exists, so there is nothing to link.</p>`);
-          } catch (e) { linkHost.innerHTML = ''; }
-        };
-        fillVisibility();
-
-        panel.addEventListener('click', async (e) => {
-          const t = e.target.closest('[data-vis-mode],[data-vis-viewer],[data-link-viewer]');
-          if (!t) return;
-          try {
-            if (t.dataset.visMode) {
-              await store.visibilityMode(PROJECT, t.dataset.visMode);
-            } else if (t.dataset.visViewer) {
-              // Three states, so a Builder can pin a pair open or shut regardless of the mode.
-              const next = { default: true, on: false, off: null }[t.dataset.visState];
-              await store.visibilityPair(PROJECT, t.dataset.visViewer, t.dataset.visSubject, next);
-            } else if (t.dataset.linkViewer) {
-              await store.projectLinkSet(t.dataset.linkViewer, t.dataset.linkSubject, t.dataset.linkOn !== 'true');
-            }
-            fillVisibility();
-          } catch (err) { pkAlert('That did not work — ' + err.message); }
-        });
-      }
-
-      // ---- People (6.0 accounts) ------------------------------------------------------------
-      if (settingsSection === 'people') {
-        // A PIN the Builder assigns is shown ONCE here and never retrievable afterwards — the
-        // server stores only a PBKDF2 hash. Same posture as team passwords.
-        const showPinOnce = (email, pin, what) => pkAlert(
-          `${what} for ${email}:\n\n${pin}\n\nHand this over now — it is stored hashed and cannot be shown again. ` +
-          `They must replace it the first time they sign in.`);
-        const askPin = async (title) => {
-          const v = prompt(title + '\n\n6–12 digits. Not a repeated digit or a run (e.g. 123456).');
-          return v === null ? null : String(v).trim();
-        };
-
-        const fillPeople = async () => {
-          const listHost = $('#pk-people-list');
-          const resetHost = $('#pk-people-resets');
-          if (!listHost) return;
-
-          // Pending forgot-PIN requests come first — this is the Builder's action queue.
+      async function fillOrg() {
+        const outer = $('#pk-org'); if (!outer) return;
+        // The reset queue rides above every Organisation screen, not just the people list.
+        (async () => {
+          const rh = $('#pk-org-resets'); if (!rh || LOCAL) return;
           try {
             const pending = await store.resetsList();
-            resetHost.innerHTML = !pending.length ? '' : card(
-              'PIN reset requests', `${pending.length} waiting for you.`,
-              pending.map((r) => row(esc(r.email), `${esc(r.name || '')}${r.team ? ' · ' + esc(r.team) : ''} · requested ${esc((r.requested_at || '').slice(0, 16).replace('T', ' '))}`,
+            rh.innerHTML = !pending.length ? '' : card('Locked out', `${n(pending.length, 'person', 'people')} waiting on you.`,
+              pending.map((r) => row(esc(r.email), esc(r.team || '') + (r.requested_at ? ' · ' + esc(r.requested_at.slice(0, 10)) : ''),
                 `<span class="pk-u-inlinerow">` +
-                  `<button class="pk-a pk-a--primary" type="button" data-reset-approve="${esc(r.id)}" data-reset-email="${esc(r.email)}">Approve &amp; assign PIN</button>` +
+                  `<button class="pk-a pk-a--primary" type="button" data-reset-approve="${esc(r.id)}" data-reset-email="${esc(r.email)}">Assign new PIN</button>` +
                   `<button class="pk-a" type="button" data-reset-dismiss="${esc(r.id)}">Dismiss</button>` +
                 `</span>`)).join(''));
-          } catch (e) { resetHost.innerHTML = ''; }
+          } catch (e) { rh.innerHTML = ''; }
+        })();
 
-          let list;
-          try { list = await store.usersList(); }
-          catch (e) { listHost.innerHTML = card('People', '', `<p class="pk-empty--inline">Could not load accounts — ${esc(e.message)}</p>`); return; }
-          if (!list.length) {
-            listHost.innerHTML = card('People', 'Nobody has an account yet.',
-              `<p class="pk-empty--inline">Add a person to give them an email + PIN login. Until then, team keys still work.</p>`);
-            return;
-          }
+        let projects = [], teams = [], users = [];
+        try {
+          [projects, teams, users] = await Promise.all([
+            store.projects().catch(() => []),
+            store.teamsList().catch(() => []),
+            store.usersList().catch(() => []),
+          ]);
+        } catch (e) { outer.innerHTML = card('Organisation', '', emptyRow('Could not load — ' + esc(e.message))); return; }
 
-          const personRow = (u) => {
-            const locked = u.hardLocked || (u.lockedUntil && Date.parse(u.lockedUntil) > Date.now());
-            const bits = [];
-            if (u.role === 'builder') bits.push('Builder');
-            if (u.team) bits.push(esc(u.team));
-            if (u.status !== 'active') bits.push('disabled');
-            if (!u.hasPin) bits.push('no PIN set');
-            if (u.mustChangePin) bits.push('must change PIN');
-            if (locked) bits.push(u.hardLocked ? 'LOCKED' : 'temporarily locked');
-            if (u.lastLoginAt) bits.push('last in ' + esc(u.lastLoginAt.slice(0, 10)));
-            return row(esc(u.email), bits.join(' · ') || 'active',
-              `<span class="pk-u-inlinerow">` +
-                `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>` +
-                (locked ? `<button class="pk-a" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>` : '') +
-                `<button class="pk-a" type="button" data-person-toggle="${esc(u.email)}" data-person-status="${esc(u.status)}">${u.status === 'active' ? 'Disable' : 'Enable'}</button>` +
-              `</span>`);
-          };
-          const active = list.filter((u) => u.status === 'active');
-          const off = list.filter((u) => u.status !== 'active');
-          listHost.innerHTML =
-            card('People', `${active.length} active account${active.length === 1 ? '' : 's'}. PINs are stored hashed — they can be replaced, never read back.`,
-              active.map(personRow).join('') || `<p class="pk-empty--inline">No active accounts.</p>`) +
-            (off.length ? card('Disabled', 'Signed out immediately and cannot sign back in.', off.map(personRow).join('')) : '');
+        const projOf = (t) => (t && t.projectId) || 'default';
+        const teamsIn = (pid) => teams.filter((t) => projOf(t) === pid);
+        const peopleIn = (teamName) => users.filter((u) => (u.team || '') === teamName);
+        const peopleInProject = (pid) => {
+          const names = new Set(teamsIn(pid).map((t) => t.name));
+          return users.filter((u) => names.has(u.team || ''));
         };
-        fillPeople();
+        const ticketsFor = (name) => roots().filter((c) => (c.team || '') === name || (c.toTeam || '') === name).length;
 
+        // ---- level: a person ------------------------------------------------------------------
+        if (orgPath.person) {
+          const u = users.find((x) => x.email === orgPath.person);
+          if (!u) { orgPath.person = null; return fillOrg(); }
+          const locked = u.hardLocked || (u.lockedUntil && Date.parse(u.lockedUntil) > Date.now());
+          const flags = [];
+          if (u.role === 'builder') flags.push('Builder');
+          if (!u.hasPin) flags.push('no PIN set');
+          if (u.mustChangePin) flags.push('must change PIN');
+          if (locked) flags.push(u.hardLocked ? 'locked out' : 'temporarily locked');
+          outer.innerHTML =
+            crumbs([
+              { label: 'Projects', go: 'projects' },
+              { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' },
+              { label: orgPath.team, go: 'team' },
+              { label: u.email },
+            ]) +
+            card(esc(u.email), '',
+              row('Status', '', pill(u.status === 'active' ? 'Active' : 'Disabled')) +
+              row('Team', '', pill(u.team || 'None')) +
+              row('Role', '', pill(u.role || 'member')) +
+              (flags.length ? row('Flags', '', flags.map((f) => pill(f)).join(' ')) : '') +
+              (u.lastLoginAt ? row('Last signed in', '', pill(u.lastLoginAt.slice(0, 10))) : '') +
+              row('PIN', '', `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>`) +
+              (locked ? row('Locked', 'Too many failed attempts.', `<button class="pk-a pk-a--primary" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>`) : '')) +
+            `<div id="pk-person-audit"></div>` +
+            dangerCard(row(u.status === 'active' ? 'Disable account' : 'Enable account',
+              u.status === 'active' ? 'Signs them out immediately and blocks sign-in. Their history is kept.' : 'Restores sign-in.',
+              `<button class="pk-a danger" type="button" data-person-toggle="${esc(u.email)}" data-person-status="${esc(u.status)}">${u.status === 'active' ? 'Disable' : 'Enable'}</button>`));
+          // The audit trail belongs beside the person it describes, not on a screen of its own.
+          (async () => {
+            const ah = $('#pk-person-audit'); if (!ah) return;
+            try {
+              const rows = await store.accountAudit(u.email);
+              ah.innerHTML = rows.length
+                ? card('History', '', rows.slice(0, 12).map((r) =>
+                    row(esc(r.action), esc((r.at || '').slice(0, 16).replace('T', ' ')) + (r.note ? ' · ' + esc(r.note) : ''), '')).join(''))
+                : '';
+            } catch (e) { ah.innerHTML = ''; }
+          })();
+          return;
+        }
+
+        // ---- level: a team --------------------------------------------------------------------
+        if (orgPath.team) {
+          const t = teams.find((x) => x.name === orgPath.team);
+          if (!t) { orgPath.team = null; return fillOrg(); }
+          const members = peopleIn(t.name);
+          const used = ticketsFor(t.name);
+          outer.innerHTML =
+            crumbs([
+              { label: 'Projects', go: 'projects' },
+              { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' },
+              { label: t.name },
+            ]) +
+            card('People', '',
+              (members.length
+                ? members.map((u) => {
+                    const bits = [u.status === 'active' ? '' : 'disabled', u.role === 'builder' ? 'Builder' : '', !u.hasPin ? 'no PIN' : ''].filter(Boolean);
+                    return drillRow(`data-person-open="${esc(u.email)}"`, esc(u.email), bits.join(' · '));
+                  }).join('')
+                : emptyRow('No people yet.')) +
+              row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button>`)) +
+            card('Team', '',
+              row('Status', '', pill(t.enabled ? 'Active' : 'Inactive')) +
+              row('Tickets', '', pill(String(used))) +
+              row('Project', '', `<button class="pk-a" type="button" data-team-project="${esc(t.name)}" data-team-current="${esc(projOf(t))}">${esc(projOf(t))}</button>`) +
+              row('Board', '', `<button class="pk-a" type="button" data-team-view="${esc(t.name)}">Open board</button>`) +
+              row('Password', 'Replacing it signs the team out immediately.', `<button class="pk-a" type="button" data-team-rotate="${esc(t.name)}">Change password</button>`)) +
+            dangerCard(
+              row(t.enabled ? 'Disable team' : 'Enable team',
+                t.enabled ? 'Blocks sign-in. Tickets and history are kept.' : 'Restores sign-in.',
+                `<button class="pk-a danger" type="button" data-team-toggle="${esc(t.name)}" data-team-enabled="${t.enabled ? '1' : '0'}">${t.enabled ? 'Disable' : 'Enable'}</button>`) +
+              row('Delete team', used ? `Not possible — ${n(used, 'ticket')} still reference this team.` : 'Permanent. Its password stops working immediately.',
+                `<button class="pk-a danger" type="button" data-team-delete="${esc(t.name)}" data-team-used="${used}"${used ? ' disabled' : ''}>Delete</button>`));
+          return;
+        }
+
+        // ---- level: a project -----------------------------------------------------------------
+        if (orgPath.project) {
+          const p = projects.find((x) => x.id === orgPath.project);
+          if (!p) { orgPath.project = null; return fillOrg(); }
+          const ts = teamsIn(p.id);
+          outer.innerHTML =
+            crumbs([{ label: 'Projects', go: 'projects' }, { label: p.name || p.id }]) +
+            card('Teams', '',
+              (ts.length
+                ? ts.map((t) => drillRow(`data-team-open="${esc(t.name)}"`, esc(t.name),
+                    `${n(peopleIn(t.name).length, 'person', 'people')} · ${n(ticketsFor(t.name), 'ticket')}`,
+                    t.enabled ? '' : pill('inactive'))).join('')
+                : emptyRow('No teams yet.')) +
+              row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-team-add">Add a team</button>`)) +
+            `<div id="pk-vis-mode"></div><div id="pk-vis-matrix"></div><div id="pk-vis-links"></div>`;
+          fillVisibility(p.id);
+          return;
+        }
+
+        // ---- level: all projects --------------------------------------------------------------
+        outer.innerHTML =
+          card('Projects', '',
+            (projects.length
+              ? projects.map((p) => drillRow(`data-project-open="${esc(p.id)}"`, esc(p.name || p.id),
+                  `${n(teamsIn(p.id).length, 'team')} · ${n(peopleInProject(p.id).length, 'person', 'people')}`,
+                  pill(p.kind || 'owned'))).join('')
+              : emptyRow('No projects yet.')) +
+            row('', '', `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>`));
+      }
+
+      /* Who sees whose comments. It lives INSIDE a project because that is what it is a property
+       * of — editing it three screens away from the project it governs was most of why it read as
+       * confusing. */
+      async function fillVisibility(PROJECT) {
+        const modeHost = $('#pk-vis-mode'), gridHost = $('#pk-vis-matrix'), linkHost = $('#pk-vis-links');
+        if (!modeHost) return;
+        let data;
+        try { data = await store.visibilityGet(PROJECT); }
+        catch (e) { modeHost.innerHTML = card('Visibility', '', emptyRow('Could not load — ' + esc(e.message))); return; }
+
+        const mode = (data.project && data.project.visibility_mode) || 'project';
+        const tnames = (data.teams || []).map((t) => t.name);
+        const ov = new Map((data.overrides || []).map((o) => [o.viewer_team + ' ' + o.subject_team, !!o.can_see]));
+
+        modeHost.innerHTML = card('Who sees what', '',
+          row('Everyone in this project', '',
+            `<button class="pk-a${mode === 'project' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="project">${mode === 'project' ? 'Selected' : 'Select'}</button>`) +
+          row('Own threads only', '',
+            `<button class="pk-a${mode === 'team' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="team">${mode === 'team' ? 'Selected' : 'Select'}</button>`));
+
+        if (!tnames.length) { gridHost.innerHTML = ''; }
+        else {
+          const cell = (viewer, subject) => {
+            if (viewer === subject) return `<td class="pk-vis-self" title="A team always sees its own work">—</td>`;
+            const key = viewer + ' ' + subject;
+            const explicit = ov.has(key);
+            const on = explicit ? ov.get(key) : (mode === 'project');
+            return `<td><button class="pk-vis-cell${on ? ' is-on' : ''}${explicit ? ' is-set' : ''}" type="button" ` +
+              `data-vis-viewer="${esc(viewer)}" data-vis-subject="${esc(subject)}" data-vis-state="${explicit ? (on ? 'on' : 'off') : 'default'}" ` +
+              `title="${esc(viewer)} → ${esc(subject)}: ${explicit ? (on ? 'allowed' : 'blocked') : 'following the mode'}">${on ? '✓' : '✕'}</button></td>`;
+          };
+          gridHost.innerHTML = card('Overrides', 'Rows see columns. Click to cycle: follow the mode → allow → block.',
+            `<div class="pk-vis-wrap"><table class="pk-vis-table"><thead><tr><th></th>` +
+              tnames.map((t) => `<th>${esc(t)}</th>`).join('') + `</tr></thead><tbody>` +
+              tnames.map((v) => `<tr><th>${esc(v)}</th>` + tnames.map((sj) => cell(v, sj)).join('') + `</tr>`).join('') +
+            `</tbody></table></div>`);
+        }
+
+        try {
+          const pl = await store.projectLinks();
+          const ps = pl.projects || [], links = pl.links || [];
+          const pairs = [];
+          for (const b of ps) if (b.id !== PROJECT) pairs.push(b);
+          linkHost.innerHTML = pairs.length
+            ? card('Access to other projects', 'Each grant is one-way.',
+                pairs.map((b) => {
+                  const on = links.some((l) => l.viewer_project === PROJECT && l.subject_project === b.id && l.can_see);
+                  return row(`Can see ${esc(b.name || b.id)}`, '',
+                    `<button class="pk-a${on ? ' pk-a--primary' : ''}" type="button" data-link-viewer="${esc(PROJECT)}" data-link-subject="${esc(b.id)}" data-link-on="${on}">${on ? 'Granted' : 'Grant'}</button>`);
+                }).join(''))
+            : '';
+        } catch (e) { linkHost.innerHTML = ''; }
+      }
+
+      // ---- one delegated click handler for every Organisation action -------------------------
+      if (settingsSection === 'org') {
         panel.addEventListener('click', async (e) => {
-          const t = e.target.closest('[data-person-reset],[data-person-unlock],[data-person-toggle],[data-reset-approve],[data-reset-dismiss]');
+          const t = e.target.closest('[data-crumb],[data-project-open],[data-team-open],[data-person-open],' +
+            '[data-vis-mode],[data-vis-viewer],[data-link-viewer],[data-team-project],[data-team-view],' +
+            '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],' +
+            '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],#pk-proj-add,#pk-team-add,#pk-person-add');
           if (!t) return;
+          const d = t.dataset;
           try {
-            if (t.dataset.personReset) {
-              const pin = await askPin('New PIN for ' + t.dataset.personReset);
-              if (!pin) return;
-              await store.userResetPin(t.dataset.personReset, pin);
-              await showPinOnce(t.dataset.personReset, pin, 'New PIN');
-            } else if (t.dataset.personUnlock) {
-              await store.userUnlock(t.dataset.personUnlock);
-            } else if (t.dataset.personToggle) {
-              await store.userUpdate({ email: t.dataset.personToggle, status: t.dataset.personStatus === 'active' ? 'disabled' : 'active' });
-            } else if (t.dataset.resetApprove) {
-              const email = t.dataset.resetEmail || '';
-              const pin = await askPin('One-time PIN for ' + email);
-              if (!pin) return;
-              await store.resetApprove(t.dataset.resetApprove, pin);
-              await showPinOnce(email, pin, 'One-time PIN');
-            } else if (t.dataset.resetDismiss) {
-              await store.resetDismiss(t.dataset.resetDismiss);
+            // navigation
+            if (d.crumb === 'projects') return go({ project: null, team: null, person: null });
+            if (d.crumb === 'project') return go({ team: null, person: null });
+            if (d.crumb === 'team') return go({ person: null });
+            if (d.projectOpen) return go({ project: d.projectOpen, team: null, person: null });
+            if (d.teamOpen) return go({ team: d.teamOpen, person: null });
+            if (d.personOpen) return go({ person: d.personOpen });
+
+            // creation
+            if (t.id === 'pk-proj-add') {
+              const name = await pkPrompt({ title: 'Add a project', message: 'Project name:', value: '', confirmLabel: 'Create' });
+              if (name === null || !name.trim()) return;
+              const id = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+              await store.createProject(id, name.trim(), 'owned');
+              return fillOrg();
             }
-            fillPeople();
+            if (t.id === 'pk-team-add') return openAddTeam();
+            if (t.id === 'pk-person-add') return openAddPerson();
+
+            // team actions
+            if (d.teamView) { window.open(boardBase(d.teamView), '_blank', 'noopener'); return; }
+            if (d.teamProject) {
+              const next = await pkPrompt({ title: 'Move team', message: 'Everyone on this team moves with it, and their tickets become visible only inside the new project.', value: d.teamCurrent || 'default', confirmLabel: 'Move' });
+              if (next === null) return;
+              await store.teamProject(d.teamProject, next.trim() || 'default');
+              return go({ team: null, person: null });
+            }
+            if (d.teamRotate) {
+              const key = await pkPrompt({ title: 'Change password — ' + d.teamRotate, message: 'New password (leave blank to generate one):', value: '', confirmLabel: 'Set password' });
+              if (key === null) return;
+              const final = key.trim() || genKey();
+              await store.teamRotate(d.teamRotate, final);
+              showOnce(d.teamRotate, final, 'New password');
+              return fillOrg();
+            }
+            if (d.teamToggle) { await store.teamUpdate(d.teamToggle, { enabled: d.teamEnabled !== '1' }); return fillOrg(); }
+            if (d.teamDelete) {
+              if (+d.teamUsed) return;
+              if (!(await pkConfirm({ title: 'Delete team', message: `Delete “${d.teamDelete}”? Its password stops working immediately.`, confirmLabel: 'Delete', danger: true }))) return;
+              await store.teamDelete(d.teamDelete);
+              return go({ team: null, person: null });
+            }
+
+            // person actions
+            if (d.personReset) {
+              const pin = await askPin('New PIN for ' + d.personReset);
+              if (!pin) return;
+              await store.userResetPin(d.personReset, pin);
+              showOnce(d.personReset, pin, 'New PIN');
+              return fillOrg();
+            }
+            if (d.personUnlock) { await store.userUnlock(d.personUnlock); return fillOrg(); }
+            if (d.personToggle) {
+              await store.userUpdate({ email: d.personToggle, status: d.personStatus === 'active' ? 'disabled' : 'active' });
+              return fillOrg();
+            }
+
+            // the locked-out queue
+            if (d.resetApprove) {
+              const pin = await askPin('One-time PIN for ' + (d.resetEmail || ''));
+              if (!pin) return;
+              await store.resetApprove(d.resetApprove, pin);
+              showOnce(d.resetEmail || '', pin, 'One-time PIN');
+              return renderSettings();
+            }
+            if (d.resetDismiss) { await store.resetDismiss(d.resetDismiss); return renderSettings(); }
+
+            // visibility
+            if (d.visMode) { await store.visibilityMode(orgPath.project, d.visMode); return fillVisibility(orgPath.project); }
+            if (d.visViewer) {
+              const next = { default: true, on: false, off: null }[d.visState];
+              await store.visibilityPair(orgPath.project, d.visViewer, d.visSubject, next);
+              return fillVisibility(orgPath.project);
+            }
+            if (d.linkViewer) {
+              await store.projectLinkSet(d.linkViewer, d.linkSubject, d.linkOn !== 'true');
+              return fillVisibility(orgPath.project);
+            }
           } catch (err) { pkAlert('That did not work — ' + err.message); }
         });
-
-        const addBtn = $('#pk-person-add');
-        if (addBtn) addBtn.addEventListener('click', async () => {
-          const email = (prompt('Email address for the new person:') || '').trim();
-          if (!email) return;
-          const team = (prompt('Which team? (blank = Builder-only access)') || '').trim();
-          const pin = await askPin('Initial PIN for ' + email);
-          if (!pin) return;
-          try {
-            await store.userCreate({ email, team, pin, role: team ? 'member' : 'builder' });
-            await showPinOnce(email, pin, 'Initial PIN');
-            fillPeople();
-          } catch (err) { pkAlert('Could not create that account — ' + err.message); }
-        });
       }
 
-      if (settingsSection === 'teams') {
-        const ticketsFor = (name) => roots().filter((c) => (c.team || '') === name || (c.toTeam || '') === name).length;
-        const genKey = () => {
-          const a = 'abcdefghijkmnopqrstuvwxyz23456789';   // no l/1/0/o — these get read aloud
-          return Array.from(crypto.getRandomValues(new Uint8Array(14)), (b) => a[b % a.length]).join('');
-        };
-        const showOnce = (name, key) => pkAlert(
-          `New password for ${name}:\n\n${key}\n\nCopy it now — it is stored hashed and cannot be shown again. ` +
-          `The previous password stopped working immediately.`);
-
-        // Moving a team moves everyone on it, which is what keeps the hierarchy from drifting.
-        panel.addEventListener('click', async (e) => {
-          const t = e.target.closest('[data-team-project]');
-          if (!t) return;
-          const next = prompt(`Move team "${t.dataset.teamProject}" to which project?\n\n` +
-            `Everyone on this team moves with it, and their tickets become visible only inside the new project.`,
-            t.dataset.teamCurrent || 'default');
-          if (next === null) return;
-          try { await store.teamProject(t.dataset.teamProject, next.trim() || 'default'); fillTeams(); }
-          catch (err) { pkAlert('Could not move that team — ' + err.message); }
-        });
-
-        const fillTeams = async () => {
-          const host = $('#pk-team-groups'); if (!host) return;
-          const asCard = (title, sub, body) => card(title, sub, body);
-          let list;
-          try { list = await store.teamsList(); }
-          catch (e) { host.innerHTML = asCard('Teams', '', `<p class="pk-empty--inline">Could not load teams — ${esc(e.message)}</p>`); return; }
-          if (!list.length) { host.innerHTML = asCard('Teams', '', `<p class="pk-empty--inline">No teams in the database yet. Teams still signing in with an environment key won't appear here until they're migrated.</p>`); return; }
-
-          const teamRow = (t) => {
-            const n = esc(t.name), used = ticketsFor(t.name);
-            const dot = t.color ? `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${esc(t.color)};margin-right:8px;vertical-align:middle"></span>` : '';
-            // The name is plain text and the board opens from a "View team" BUTTON instead of an
-            // anchor. An <a> here could not be coloured reliably — the browser's own link styling
-            // (Chrome auto-dark paints links #9E9EFF) beat every author declaration short of
-            // !important, and a button inherits the row's controls styling for free.
-            // Inactive teams get no View team: their board answers "Review access unavailable".
-            return `<div class="pk-set-row"><div class="pk-set-row-main">` +
-              `<div class="pk-set-row-label">${dot}${n}</div>` +
-              `<div class="pk-set-row-desc">${used} ticket${used === 1 ? '' : 's'} · added ${esc((t.createdAt || '').slice(0, 10))}</div>` +
-            `</div><div class="pk-set-ctl" style="display:flex;gap:8px;align-items:center">` +
-              (t.enabled
-                ? `<button class="pk-a" type="button" data-team-view="${n}">View team</button>` +
-                  `<button class="pk-a" type="button" data-team-rotate="${n}">Change password</button>` +
-                  // 7.x — a team belongs to exactly one project, and its people follow it.
-                  `<button class="pk-a" type="button" data-team-project="${n}" data-team-current="${esc(t.projectId || 'default')}">Project: ${esc(t.projectId || 'default')}</button>`
-                : `<button class="pk-a" type="button" data-team-enable="${n}">Enable</button>`) +
-              `<button class="pkc-more" type="button" data-team-more="${n}" aria-label="More actions for ${n}" aria-haspopup="menu">` +
-                `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
-              `</button>` +
-            `</div></div>`;
-          };
-
-          // Two cards, same component as every other Settings group: the heading carries the state,
-          // so no per-row tag is needed.
-          const active = list.filter((t) => t.enabled);
-          const off = list.filter((t) => !t.enabled);
-          const n = (a) => `${a.length} team${a.length === 1 ? '' : 's'}`;
-          host.innerHTML =
-            asCard('Active teams',
-              `${n(active)} · can sign in and receive tickets. Passwords are stored hashed — they can be replaced, never read back.`,
-              active.length ? active.map(teamRow).join('') : `<p class="pk-empty--inline">No active teams.</p>`) +
-            (off.length
-              ? asCard('Inactive teams',
-                  `${n(off)} · sign-in blocked. Their tickets and history are kept, and re-enabling restores access instantly.`,
-                  off.map(teamRow).join(''))
-              : '');
-
-          // Disable/Enable + Delete live behind the row's ⋮ so the row leads with the one action
-          // that is used routinely (Change password). Same menu component as the ticket rows.
-          const toggleTeam = async (name, enabled) => {
-            try { await store.teamUpdate(name, { enabled: !enabled }); fillTeams(); }
-            catch (e) { pkAlert('Could not update — ' + e.message); }
-          };
-          const removeTeam = async (name, used) => {
-            if (used) { pkAlert(`“${name}” has ${used} ticket${used === 1 ? '' : 's'} and cannot be deleted.\n\nDisable it instead — that blocks sign-in immediately and keeps its history.`); return; }
-            if (!(await pkConfirm({ title: 'Delete team', message: `Delete “${name}”? Only possible because it has no tickets. Its password stops working immediately.`, confirmLabel: 'Delete', danger: true }))) return;
-            try { await store.teamDelete(name); fillTeams(); }
-            catch (e) { pkAlert('Could not delete — ' + e.message); }
-          };
-          const rotateTeam = async (name) => {
-            const key = await pkPrompt({ title: 'Change password — ' + name, message: 'New password (leave blank to generate one):', value: '', confirmLabel: 'Set password' });
-            if (key === null) return;
-            const final = key.trim() || genKey();
-            try { await store.teamRotate(name, final); showOnce(name, final); fillTeams(); }
-            catch (e) { pkAlert('Could not change the password — ' + e.message); }
-          };
-          // The row leads with the action that state actually calls for: an active team is there to
-          // be opened or re-keyed; an inactive one is there to be brought back. Whatever is not the
-          // lead action moves into the ⋮, so neither row grows a third button.
-          host.querySelectorAll('[data-team-more]').forEach((b) => b.addEventListener('click', () => {
-            const name = b.dataset.teamMore;
-            const cur = list.find((x) => x.name === name) || {};
-            const used = ticketsFor(name);
-            openRowMenu(b, null, [
-              cur.enabled
-                ? { label: 'Disable', icon: ICON.disregard, onSelect: () => toggleTeam(name, true) }
-                : { label: 'Change password', icon: ICON.edit, onSelect: () => rotateTeam(name) },
-              { divider: true },
-              { label: 'Delete', icon: ICON.delete, danger: true, onSelect: () => removeTeam(name, used) },
-            ]);
-          }));
-          host.querySelectorAll('[data-team-view]').forEach((b) => b.addEventListener('click', () => {
-            window.open(boardBase(b.dataset.teamView), '_blank', 'noopener');
-          }));
-          host.querySelectorAll('[data-team-enable]').forEach((b) => b.addEventListener('click', () => toggleTeam(b.dataset.teamEnable, false)));
-          host.querySelectorAll('[data-team-rotate]').forEach((b) => b.addEventListener('click', () => rotateTeam(b.dataset.teamRotate)));
-        };
-        fillTeams();
-
-        // Add a team — the same overlay component the reopen/clarify dialogs use (.pk-reopen shell,
-        // .pk-login-input fields, .pk-a buttons), so it inherits the tool's field and button styling
-        // rather than re-stating it inline.
-        function openAddTeamModal() {
-          const el = document.createElement('div'); el.className = 'pk-reopen';
-          el.innerHTML =
-            `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Add a team">` +
-              `<h2 class="pk-reopen-title">Add a team</h2>` +
-              `<p class="pk-reopen-sub">The team can sign in as soon as it is created. Its password is stored hashed — you will see it once, here.</p>` +
-              `<div class="pk-reopen-field"><span class="pk-reopen-label">Team name</span>` +
-                `<input class="pk-login-input pk-nt-name" placeholder="e.g. Compliance" autocomplete="off"></div>` +
-              `<div class="pk-reopen-field"><span class="pk-reopen-label">Password</span>` +
-                `<div style="display:flex;gap:8px;align-items:center">` +
-                  `<input class="pk-login-input pk-nt-key" placeholder="Leave blank to generate one" autocomplete="off" style="flex:1">` +
-                  `<button type="button" class="pk-a pk-nt-gen">Generate</button>` +
-                `</div></div>` +
-              `<div class="pk-reopen-field"><span class="pk-reopen-label">Chip colour <span style="color:var(--pk-muted);font-weight:400">· optional</span></span>` +
-                `<input class="pk-login-input pk-nt-color" placeholder="#da291c — leave blank to assign one" autocomplete="off"></div>` +
-              `<div class="pk-reopen-err" hidden></div>` +
-              `<div class="pk-reopen-actions">` +
-                `<button type="button" class="pk-a pk-nt-cancel">Cancel</button>` +
-                `<button type="button" class="pk-a pk-a--primary pk-nt-go">Add team</button>` +
-              `</div>` +
-            `</div>`;
-          document.body.appendChild(el);
-          const nameEl = el.querySelector('.pk-nt-name'), keyEl = el.querySelector('.pk-nt-key'),
-                colorEl = el.querySelector('.pk-nt-color'), err = el.querySelector('.pk-reopen-err'),
-                go = el.querySelector('.pk-nt-go');
-          const close = () => { el.remove(); document.removeEventListener('keydown', onEsc); };
-          function onEsc(e) { if (e.key === 'Escape') close(); }
-          document.addEventListener('keydown', onEsc);
-          el.addEventListener('click', (e) => { if (e.target === el) close(); });
-          el.querySelector('.pk-nt-cancel').addEventListener('click', close);
-          el.querySelector('.pk-nt-gen').addEventListener('click', () => { keyEl.value = genKey(); keyEl.focus(); });
-          const submit = async () => {
-            const name = nameEl.value.trim();
-            if (!name) { err.textContent = 'A team name is required.'; err.hidden = false; nameEl.focus(); return; }
-            const key = keyEl.value.trim() || genKey();
-            go.disabled = true; go.textContent = 'Adding…';
-            try {
-              await store.teamCreate(name, key, colorEl.value.trim());
-              close();
-              showOnce(name, key);
-              fillTeams();
-            } catch (e) {
-              go.disabled = false; go.textContent = 'Add team';
-              err.textContent = 'Could not add the team — ' + e.message; err.hidden = false;
+      /** Add a team, into the project currently open. */
+      function openAddTeam() {
+        openFormModal({
+          title: 'Add a team',
+          fields: [
+            { key: 'name', label: 'Team name', placeholder: 'e.g. Compliance' },
+            { key: 'key', label: 'Password', placeholder: 'Leave blank to generate one', generate: true },
+            { key: 'color', label: 'Chip colour', placeholder: '#da291c — optional', optional: true },
+          ],
+          confirmLabel: 'Add team',
+          onSubmit: async (v) => {
+            if (!v.name) throw new Error('A team name is required.');
+            const key = v.key || genKey();
+            await store.teamCreate(v.name, key, v.color);
+            if (orgPath.project && orgPath.project !== 'default') {
+              try { await store.teamProject(v.name, orgPath.project); } catch (e) { /* created regardless */ }
             }
-          };
-          go.addEventListener('click', submit);
-          el.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); submit(); } });
-          nameEl.focus();
-        }
-        const add = $('#pk-team-add');
-        if (add) add.addEventListener('click', openAddTeamModal);
+            showOnce(v.name, key, 'Password');
+            fillOrg();
+          },
+        });
       }
 
-      // Phase 11: async-fill the Projects list + wire create.
-      if (settingsSection === 'projects') {
-        (async () => {
-          const listEl = $('#pk-proj-list'); if (!listEl) return;
-          try {
-            const ps = await store.projects();
-            listEl.innerHTML = (ps || []).map((p) => `<span class="pk-set-teamtag">${esc(p.name)} <span class="pk-set-teamtag-meta">· ${esc(p.kind)} · ${esc(p.id)}</span></span>`).join('') || '<span class="pk-set-teamtag">none</span>';
-          } catch (e) { listEl.textContent = 'Could not load — ' + e.message; }
-        })();
-        const cb = $('#pk-proj-create');
-        if (cb) cb.addEventListener('click', async () => {
-          const id = ($('#pk-proj-id').value || '').trim(), name = ($('#pk-proj-name').value || '').trim(), kind = $('#pk-proj-kind').value;
-          if (!id || !name) { pkAlert('id and name are required'); return; }
-          try { await store.createProject(id, name, kind); renderSettings(); }
-          catch (e) { pkAlert('Could not create — ' + e.message); }
+      /** Add a person, into the team currently open. */
+      function openAddPerson() {
+        openFormModal({
+          title: 'Add a person',
+          fields: [
+            { key: 'email', label: 'Email', placeholder: 'them@company.com' },
+            { key: 'pin', label: 'PIN', placeholder: '6–12 digits', generate: true, gen: () => String(Math.floor(100000 + Math.random() * 899999)) },
+          ],
+          confirmLabel: 'Add person',
+          onSubmit: async (v) => {
+            if (!v.email) throw new Error('An email address is required.');
+            if (!v.pin) throw new Error('A PIN is required.');
+            await store.userCreate({ email: v.email, team: orgPath.team || '', pin: v.pin, role: orgPath.team ? 'member' : 'builder' });
+            showOnce(v.email, v.pin, 'Initial PIN');
+            fillOrg();
+          },
         });
       }
 
@@ -3087,7 +3079,7 @@
         if (act === 'copy-worker') return copyToClip(WORKER_URL || '', el, 'Copied ✓');
         if (act === 'ping') return pingWorker($('#pk-set-ping'));
         if (act === 'reset-prefs') {
-          if (!(await pkConfirm({ title: 'Reset preferences', message: 'Reset all Builder preferences on this browser to defaults? The global theme is unaffected.', confirmLabel: 'Reset' }))) return;
+          if (!(await pkConfirm({ title: 'Reset preferences', message: 'Reset every preference on this browser to its default? The global theme is unaffected.', confirmLabel: 'Reset', danger: true }))) return;
           prefs = JSON.parse(JSON.stringify(PREF_DEFAULTS)); savePrefs(); applyPrefs(); restartAutoRefresh(); renderSettings(); return;
         }
         if (act === 'clear-demo') {
@@ -3096,10 +3088,10 @@
           location.reload(); return;
         }
         if (act === 'logout') {
-          if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out' }))) return;
-          stopLiveUpdates();   // the SSE socket is authenticated — it goes with the session
-          if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }  // after: stopLiveUpdates re-arms the poll
-          clearSession(); showLogin(); return;
+          if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out', danger: true }))) return;
+          stopLiveUpdates();
+          if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+          clearSession(); clearAccount(); showLogin(); return;
         }
       };
       panel.addEventListener('click', (e) => {
@@ -3110,7 +3102,7 @@
         const ov = e.target.closest('[data-overlayui]');
         if (ov) {
           const v = ov.dataset.overlayui === 'new' ? 'new' : 'old';
-          if (v !== getGlobalOverlayUi()) { setGlobalOverlayUi(v).then(() => renderSettings()); } // global flip; SSE reloads other clients
+          if (v !== getGlobalOverlayUi()) { setGlobalOverlayUi(v).then(() => renderSettings()); }
           return;
         }
         const act = e.target.closest('[data-act]');
@@ -3118,6 +3110,55 @@
       });
     }
 
+    /* One modal for every "create a thing" on the Organisation screens. The old code hand-built a
+     * bespoke dialog per entity, which is how they drifted apart. Uses the same shell as the
+     * reopen/clarify dialogs, so fields and buttons inherit the tool's styling. */
+    function openFormModal(opts) {
+      const el = document.createElement('div'); el.className = 'pk-reopen';
+      const esc2 = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      el.innerHTML =
+        `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="${esc2(opts.title)}">` +
+          `<h2 class="pk-reopen-title">${esc2(opts.title)}</h2>` +
+          opts.fields.map((f) =>
+            `<div class="pk-reopen-field"><span class="pk-reopen-label">${esc2(f.label)}` +
+              (f.optional ? ` <span style="color:var(--pk-muted);font-weight:400">· optional</span>` : '') + `</span>` +
+              (f.generate
+                ? `<div style="display:flex;gap:8px;align-items:center">` +
+                    `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off" style="flex:1">` +
+                    `<button type="button" class="pk-a" data-gen="${esc2(f.key)}">Generate</button></div>`
+                : `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off">`) +
+            `</div>`).join('') +
+          `<div class="pk-reopen-err" hidden></div>` +
+          `<div class="pk-reopen-actions">` +
+            `<button type="button" class="pk-a pk-fm-cancel">Cancel</button>` +
+            `<button type="button" class="pk-a pk-a--primary pk-fm-go">${esc2(opts.confirmLabel || 'Save')}</button>` +
+          `</div>` +
+        `</div>`;
+      document.body.appendChild(el);
+      const err = el.querySelector('.pk-reopen-err'), goBtn = el.querySelector('.pk-fm-go');
+      const close = () => { el.remove(); document.removeEventListener('keydown', onEsc); };
+      function onEsc(e2) { if (e2.key === 'Escape') close(); }
+      document.addEventListener('keydown', onEsc);
+      el.addEventListener('click', (e2) => { if (e2.target === el) close(); });
+      el.querySelector('.pk-fm-cancel').addEventListener('click', close);
+      el.querySelectorAll('[data-gen]').forEach((b) => b.addEventListener('click', () => {
+        const f = opts.fields.find((x) => x.key === b.dataset.gen);
+        const a = 'abcdefghijkmnopqrstuvwxyz23456789';
+        const v = f && f.gen ? f.gen() : Array.from(crypto.getRandomValues(new Uint8Array(14)), (n2) => a[n2 % a.length]).join('');
+        const input = el.querySelector(`[data-f="${b.dataset.gen}"]`);
+        input.value = v; input.focus();
+      }));
+      const submit = async () => {
+        const v = {};
+        el.querySelectorAll('[data-f]').forEach((i) => { v[i.dataset.f] = i.value.trim(); });
+        goBtn.disabled = true; const label = goBtn.textContent; goBtn.textContent = 'Working…';
+        try { await opts.onSubmit(v); close(); }
+        catch (e2) { goBtn.disabled = false; goBtn.textContent = label; err.textContent = e2.message; err.hidden = false; }
+      };
+      goBtn.addEventListener('click', submit);
+      el.addEventListener('keydown', (e2) => { if (e2.key === 'Enter' && e2.target.tagName === 'INPUT') { e2.preventDefault(); submit(); } });
+      const first = el.querySelector('[data-f]'); if (first) first.focus();
+    }
     // ---- CSP-safe dynamic styling ----
     // The host enforces `style-src 'self'`, which drops `style=` ATTRIBUTES from markup. Values
     // that can't be enumerated as CSS classes (team colours, accent swatches, bar percentages)
@@ -3857,14 +3898,23 @@
         pkAlert('Could not refresh — ' + e.message);
       }
     });
-    // Log out — end the session and return to the sign-in panel.
-    $('#rvd-logout') && $('#rvd-logout').addEventListener('click', async () => {
-      if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out' }))) return;
+    /* Log out — end the session and return to the sign-in panel.
+     *
+     * A real function rather than a handler bolted to one button. The header logout it used to
+     * live on was deleted in the header cleanup, and the rail button "shared" it by forwarding a
+     * click to that element by id — so once the element was gone, the rail button silently did
+     * nothing at all. Every caller now invokes the same function directly. */
+    async function doLogout() {
+      if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out', danger: true }))) return;
       stopLiveUpdates();   // the SSE socket is authenticated — it goes with the session
       if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }  // after: stopLiveUpdates re-arms the poll
+      // Both credentials go. Clearing only the team key left an account session alive, which is
+      // its own way back in — logging out has to mean logged out.
       clearSession();
+      clearAccount();
       showLogin();
-    });
+    }
+    $('#rvd-logout') && $('#rvd-logout').addEventListener('click', doLogout);
     // ---- toolbar: search / sort / export / copy-all-prompts ----
     $('#rvd-search').addEventListener('input', (e) => { search = e.target.value.trim(); render(); });
     $('#pk-selectall').addEventListener('click', () => setSelectMode(!selectMode));
@@ -4008,11 +4058,11 @@
       }
     } catch (e) {}
 
-    // Side-rail logout mirrors the header control — same confirm + teardown, one implementation.
+    // Side-rail logout calls the shared implementation directly. It used to forward a click to
+    // the header button by id; that button no longer exists, so the rail button did nothing.
     try {
       const sideOut = document.querySelector('[data-pk-sidelogout]');
-      const headOut = document.getElementById('rvd-logout');
-      if (sideOut && headOut) sideOut.addEventListener('click', () => headOut.click());
+      if (sideOut) sideOut.addEventListener('click', doLogout);
     } catch (e) {}
 
     init();
