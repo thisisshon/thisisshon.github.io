@@ -77,6 +77,10 @@ export const VIEW_SEGMENTS = {
   threads: 'threads',
   patterns: 'patterns',
   insights: 'insights',
+  // 12.0 — Organisation is its own module, not a Settings section. Projects, teams and people are
+  // the thing the Builder manages daily; a settings tab is where you put something you configure
+  // once.
+  org: 'organisation',
   settings: 'settings',
 };
 /** segment → view (the inverse of VIEW_SEGMENTS, built once). */

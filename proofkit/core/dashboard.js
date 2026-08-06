@@ -1117,14 +1117,6 @@
         const onView = n.dataset.view === view && (!n.dataset.dir || n.dataset.dir === dir);
         n.classList.toggle('is-active', onView || !!inGroup);
       });
-      // Organisation is Settings with a section pre-chosen, so it highlights on that pairing only.
-      const orgBtn = document.querySelector('.pk-nav[data-view="org"]');
-      const setBtn = document.querySelector('.pk-nav[data-view="settings"]');
-      if (orgBtn && setBtn) {
-        const onOrg = view === 'settings' && settingsSection === 'org';
-        orgBtn.classList.toggle('is-active', onOrg);
-        setBtn.classList.toggle('is-active', view === 'settings' && !onOrg);
-      }
       positionSubnavMarker();
 
       /* Follow the view: open the group you are inside, close the ones you are not. Only opening
@@ -2474,16 +2466,16 @@
           tile({ title: 'Insights', attr: go('insights'),
                  stat: t ? t.deployed : '—', sub: t ? `${t.total} tickets all-time` : '',
                  desc: 'Totals and a per-project breakdown.' }) +
-          tile({ title: 'People', attr: goSet('people'),
+          tile({ title: 'People', attr: go('org'),
                  stat: n(d && d.people), badge: d && d.pendingResets ? d.pendingResets + ' reset' + (d.pendingResets === 1 ? '' : 's') : '',
                  sub: d && d.lockedAccounts ? `${d.lockedAccounts} locked out` : '',
                  desc: 'Accounts, PIN resets and lockouts.' }) +
-          tile({ title: 'Teams', attr: goSet('teams'), stat: n(d && d.teams),
+          tile({ title: 'Teams', attr: go('org'), stat: n(d && d.teams),
                  desc: 'Create teams, set passwords, move them between projects.' }) +
-          tile({ title: 'Visibility', attr: goSet('visibility'),
+          tile({ title: 'Visibility', attr: go('org'),
                  sub: d && d.projects && d.projects[0] ? `Mode: ${d.projects[0].visibilityMode}` : '',
                  desc: 'Who sees whose work, and grants across projects.' }) +
-          tile({ title: 'Projects', attr: goSet('projects'), stat: n(d && d.projects && d.projects.length),
+          tile({ title: 'Projects', attr: go('org'), stat: n(d && d.projects && d.projects.length),
                  desc: 'The tenancy boundary every ticket lives inside.' }) +
           tile({ title: 'Notifications', attr: go('notifs'),
                  badge: d && d.unreadNotifications ? String(d.unreadNotifications) : '',
@@ -2621,42 +2613,65 @@
      * Screens are action-first: a labelled control, not a paragraph. Explanatory copy survives
      * ONLY where an action cannot be undone — rotating a key, deleting, disabling someone.
      */
-    function renderSettings() {
+    /** Organisation is its own module now. It reuses this function's machinery rather than forking
+     *  it — the screens, helpers and handlers are identical; only the shell around them differs. */
+    function renderOrg() { renderSettings({ orgOnly: true }); }
+
+    function renderSettings(opts) {
+      const orgOnly = !!(opts && opts.orgOnly);
       $('#rvd-empty').hidden = true;
-      const host = $('#rvd-view-settings');
+      const host = $(orgOnly ? '#rvd-view-org' : '#rvd-view-settings');
+      /* Only ONE of the two hosts may hold content at a time. Both render a #pk-set-panel, and the
+       * screens inside look their elements up by id — with both populated those ids would be
+       * duplicated and every lookup would silently resolve into the hidden view. */
+      const other = $(orgOnly ? '#rvd-view-settings' : '#rvd-view-org');
+      if (other) other.innerHTML = '';
+      if (orgOnly) settingsSection = 'org';
       const SECTIONS = [
-        { k: 'org', label: 'Organisation' },
         { k: 'prefs', label: 'Preferences' },
         { k: 'account', label: 'Account' },
         { k: 'trash', label: 'Recycle bin' },
         { k: 'system', label: 'System' },
       ];
+      // Organisation is no longer one of these — it is a module of its own in the rail.
+      if (!orgOnly && settingsSection === 'org') settingsSection = 'prefs';
       // Old section keys still arrive from deep links and the auth-page handoff. Map rather than
       // drop, so an existing link lands somewhere sensible instead of on a default screen.
       const LEGACY = {
         appearance: 'prefs', behavior: 'prefs', notifications: 'prefs',
         data: 'system', about: 'system',
-        people: 'org', visibility: 'org', teams: 'org', projects: 'org',
         passkeys: 'account',
+        // people/visibility/teams/projects are no longer Settings at all — they moved to the
+        // Organisation module. A deep link using one lands on Preferences rather than a blank tab.
+        people: 'prefs', visibility: 'prefs', teams: 'prefs', projects: 'prefs',
       };
-      if (LEGACY[settingsSection]) settingsSection = LEGACY[settingsSection];
-      if (!SECTIONS.some((s) => s.k === settingsSection)) settingsSection = 'org';
+      if (!orgOnly && LEGACY[settingsSection]) settingsSection = LEGACY[settingsSection];
+      // 'org' is intentionally absent from SECTIONS — it is its own module — so the org-only
+      // render must be exempt from the "unknown section" fallback that would otherwise evict it.
+      if (!orgOnly && !SECTIONS.some((s) => s.k === settingsSection)) settingsSection = 'prefs';
 
-      host.innerHTML =
-        `<div class="rvd-notifhead"><div><h2>Settings</h2></div></div>` +
-        `<div class="pk-set">` +
-          `<nav class="pk-set-nav" role="tablist">` +
-            SECTIONS.map((s) => `<button class="pk-set-tab${s.k === settingsSection ? ' is-active' : ''}" role="tab" aria-selected="${s.k === settingsSection}" data-sec="${s.k}">` +
-              `<span>${s.label}</span><span class="pk-set-tab-badge" data-badge="${s.k}" hidden></span></button>`).join('') +
-          `</nav>` +
-          `<div class="pk-set-panel" id="pk-set-panel"></div>` +
-        `</div>`;
+      host.innerHTML = orgOnly
+        // No tab rail: Organisation IS the screen, so a sub-nav with one entry would be furniture.
+        ? `<div class="rvd-notifhead"><div><h2>Organisation</h2></div></div>` +
+          `<div class="pk-set pk-set--solo"><div class="pk-set-panel" id="pk-set-panel"></div></div>`
+        : `<div class="rvd-notifhead"><div><h2>Settings</h2></div></div>` +
+          `<div class="pk-set">` +
+            `<nav class="pk-set-nav" role="tablist">` +
+              SECTIONS.map((s) => `<button class="pk-set-tab${s.k === settingsSection ? ' is-active' : ''}" role="tab" aria-selected="${s.k === settingsSection}" data-sec="${s.k}">` +
+                `<span>${s.label}</span><span class="pk-set-tab-badge" data-badge="${s.k}" hidden></span></button>`).join('') +
+            `</nav>` +
+            `<div class="pk-set-panel" id="pk-set-panel"></div>` +
+          `</div>`;
       host.querySelectorAll('.pk-set-tab').forEach((b) => b.addEventListener('click', () => {
         if (settingsSection !== b.dataset.sec) { settingsSection = b.dataset.sec; renderSettings(); }
       }));
       setTimeout(paintDynamic, 0);   // CSP: swatches take their --sw via CSSOM once the panel lands
 
-      const panel = $('#pk-set-panel');
+      const panel = host.querySelector('#pk-set-panel');
+      /* Repaint in the SAME shell. `renderSettings()` with no arguments renders the Settings host,
+       * so an org screen calling it would paint itself into the wrong container and clear its own —
+       * which is exactly what made the project drill-down look like it did nothing. */
+      const rerender = () => renderSettings(opts);
       const getPref = (k) => k.includes('.') ? ((prefs[k.split('.')[0]] || {})[k.split('.')[1]]) : prefs[k];
       const setPref = (k, v) => { if (k.includes('.')) { const [a, b] = k.split('.'); prefs[a] = prefs[a] || {}; prefs[a][b] = v; } else prefs[k] = v; };
       const swCtl = (key) => `<button class="pk-set-switch" type="button" role="switch" aria-checked="${!!getPref(key)}" data-pref-toggle="${key}"><span class="pk-set-switch-thumb"></span></button>`;
@@ -2705,7 +2720,7 @@
       const mounts = [];
       const mkDropdown = (slotId, opts) => { const dd = buildDropdown({ small: true, menuAlign: 'right', ...opts }); mounts.push({ slotId, dd }); return `<span id="${slotId}"></span>`; };
 
-      const go = (patch) => { Object.assign(orgPath, patch); renderSettings(); };
+      const go = (patch) => { Object.assign(orgPath, patch); rerender(); };
 
       let html = '';
 
@@ -3351,9 +3366,9 @@
               if (!pin) return;
               await store.resetApprove(d.resetApprove, pin);
               showOnce(d.resetEmail || '', pin, 'One-time PIN');
-              return renderSettings();
+              return rerender();
             }
-            if (d.resetDismiss) { await store.resetDismiss(d.resetDismiss); return renderSettings(); }
+            if (d.resetDismiss) { await store.resetDismiss(d.resetDismiss); return rerender(); }
 
             // visibility
             if (d.visMode) { await store.visibilityMode(orgPath.project, d.visMode); return fillVisibility(orgPath.project); }
@@ -3534,7 +3549,7 @@
           try { if (Notification.permission === 'default') await Notification.requestPermission(); } catch {}
           if (Notification.permission !== 'granted') { prefs.desktopNotif = false; savePrefs(); pkAlert('Desktop notifications are blocked — enable them in your browser settings.'); }
         }
-        renderSettings();
+        rerender();
       };
       const doAction = async (act, el) => {
         if (act === 'export-json') return downloadJSON();
@@ -3544,7 +3559,7 @@
         if (act === 'ping') return pingWorker($('#pk-set-ping'));
         if (act === 'reset-prefs') {
           if (!(await pkConfirm({ title: 'Reset preferences', message: 'Reset every preference on this browser to its default? The global theme is unaffected.', confirmLabel: 'Reset', danger: true }))) return;
-          prefs = JSON.parse(JSON.stringify(PREF_DEFAULTS)); savePrefs(); applyPrefs(); restartAutoRefresh(); renderSettings(); return;
+          prefs = JSON.parse(JSON.stringify(PREF_DEFAULTS)); savePrefs(); applyPrefs(); restartAutoRefresh(); rerender(); return;
         }
         if (act === 'clear-demo') {
           if (!(await pkConfirm({ title: 'Clear demo data', message: 'Delete ALL locally-stored demo tickets and notifications on this browser? This cannot be undone.', confirmLabel: 'Delete', danger: true }))) return;
@@ -3560,7 +3575,7 @@
       };
       panel.addEventListener('click', (e) => {
         const theme = e.target.closest('[data-theme-toggle]');
-        if (theme) { toggleTheme(); renderSettings(); return; }
+        if (theme) { toggleTheme(); rerender(); return; }
         const tog = e.target.closest('[data-pref-toggle]');
         if (tog) { const k = tog.dataset.prefToggle; setPref(k, !getPref(k)); afterChange(k); return; }
         const ch = e.target.closest('[data-pref-choice]');
@@ -3568,7 +3583,7 @@
         const ov = e.target.closest('[data-overlayui]');
         if (ov) {
           const v = ov.dataset.overlayui === 'new' ? 'new' : 'old';
-          if (v !== getGlobalOverlayUi()) { setGlobalOverlayUi(v).then(() => renderSettings()); }
+          if (v !== getGlobalOverlayUi()) { setGlobalOverlayUi(v).then(() => rerender()); }
           return;
         }
         const act = e.target.closest('[data-act]');
@@ -3667,12 +3682,14 @@
       const cv = $('#rvd-view-clarify'); if (cv) cv.hidden = detail || view !== 'clarify';
       const tv = $('#rvd-view-threads'); if (tv) tv.hidden = detail || view !== 'threads';
       const sv = $('#rvd-view-settings'); if (sv) sv.hidden = detail || view !== 'settings';
+      const ov = $('#rvd-view-org'); if (ov) ov.hidden = detail || view !== 'org';
       const dep = $('#rvd-view-deploy'); if (dep) dep.hidden = true;
-      // The stat tiles + bulk bar belong to the ticket views; the Settings screen hides them.
-      const barEl = $('.pk-bar'); if (barEl) barEl.hidden = !detail && view === 'settings';
+      // The stat tiles + bulk bar belong to the ticket views; Settings and Organisation hide them.
+      const barEl = $('.pk-bar'); if (barEl) barEl.hidden = !detail && (view === 'settings' || view === 'org');
       if (detail) { renderEntryDetail(); return; }
       if (view === 'home') { renderHome(); return; }
       if (view === 'settings') { renderSettings(); return; }
+      if (view === 'org') { renderOrg(); return; }
       if (view === 'entries') { renderEntries(); return; }
       if (view === 'notifs') { renderNotifs(); return; }
       if (view === 'insights') { renderInsights(); return; }   // fillInsights() paints once its async data lands
@@ -4211,14 +4228,10 @@
        * `dir` the in-page segmented control sets, so the rail and that control can never disagree. */
       if (b.dataset.dir && b.dataset.dir !== dir) { dir = b.dataset.dir; teamFilter = ''; }
 
-      /* 'org' is not a view of its own — it is Settings opened on the Organisation section. The two
-       * rail items therefore have to push each other apart: Organisation always opens that section,
-       * and Settings never does, or clicking Settings from Organisation would land you exactly
-       * where you already were with the wrong item highlighted. */
-      const target = b.dataset.view === 'org' ? 'settings' : b.dataset.view;
-      if (b.dataset.view === 'org') { settingsSection = 'org'; orgPath = { project: null, team: null, person: null }; }
-      if (b.dataset.view === 'settings' && settingsSection === 'org') settingsSection = 'prefs';
-      view = target; entryDetail = null;
+      // Organisation is a view in its own right, so it needs none of the special-casing that
+      // pairing it with Settings used to require.
+      if (b.dataset.view === 'org') orgPath = { project: null, team: null, person: null };
+      view = b.dataset.view; entryDetail = null;
       syncUrl();   // a nav click IS a navigation — this is what Back walks back through
       if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
       syncNav();
