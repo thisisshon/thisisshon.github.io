@@ -726,6 +726,38 @@
   flex: none !important;
 }
 
+/* ---- grouped nav ---------------------------------------------------------------------------
+   Patterns and Insights are ways of LOOKING at the queue rather than separate destinations, so
+   they live under it. The header both navigates and expands: expand-only would cost a click to
+   reach the view it is named after, navigate-only would leave no way to see what is underneath. */
+.pk-side .pk-nav--group .pk-nav-caret{flex:none;width:15px;height:15px;margin-left:auto;
+  color:var(--pk-muted);transition:transform .22s cubic-bezier(.4,0,.2,1)}
+.pk-side .pk-nav--group[aria-expanded="true"] .pk-nav-caret{transform:rotate(90deg)}
+
+/* Height-animated rather than display-toggled, so it opens and closes instead of appearing. */
+.pk-side .pk-subnav{display:grid;grid-template-rows:0fr;opacity:0;
+  transition:grid-template-rows .24s cubic-bezier(.4,0,.2,1),opacity .18s ease}
+.pk-side .pk-subnav > *{overflow:hidden}
+.pk-side .pk-subnav.is-open{grid-template-rows:1fr;opacity:1}
+/* The grid child needs to BE the scroller, so the buttons are wrapped by the overflow rule
+   above; without a wrapper element the rows collapse but the buttons still paint. */
+.pk-side .pk-subnav .pk-nav--sub{display:flex;align-items:center;height:38px;
+  /* Indented to sit under the parent's LABEL, not its icon — that alignment is what reads as
+     "belongs to the thing above" rather than "another top-level item, slightly moved". */
+  padding-left:calc(var(--pk-rail-gutter) + 18px + 12px) !important;
+  font:500 12.5px/1 var(--pk-font);color:var(--pk-muted);background:transparent;border:none}
+.pk-side .pk-subnav .pk-nav--sub.is-active{color:var(--pk-ink)}
+.pk-side .pk-subnav .pk-nav--sub.is-active::before{content:"";position:absolute;left:var(--pk-rail-gutter);
+  width:3px;height:14px;background:var(--pk-red)}
+.pk-side .pk-subnav .pk-nav--sub{position:relative}
+@media (min-width:1024px) and (hover:hover){
+  .pk-side .pk-subnav .pk-nav--sub:hover{color:var(--pk-ink)}
+}
+/* Collapsed rail: the submenu has no icons, so there is nothing to show — hide it outright
+   rather than leaving a column of invisible 38px gaps. */
+:root.pk-side-collapsed .pk-side .pk-subnav{display:none}
+:root.pk-side-collapsed .pk-side .pk-nav--group .pk-nav-caret{display:none}
+
 /* The collapse chevron points the way it will move the rail. */
 .pk-side .pk-side-collapse > svg { transition: transform .26s cubic-bezier(.4, 0, .2, 1); }
 :root.pk-side-collapsed .pk-side .pk-side-collapse > svg { transform: rotate(180deg); }

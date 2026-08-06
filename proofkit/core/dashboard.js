@@ -1083,8 +1083,36 @@
     applyPrefs();
     // Keep the sidebar's active state in step with `view` when it changes programmatically
     // (landing pref, deep-links) — the click handler already does this for user clicks.
+    /* Which views live under which group in the sidebar. Patterns and Insights are ways of LOOKING
+     * at the queue, not separate destinations, so they sit under it rather than beside it. */
+    const NAV_GROUPS = { queue: ['dash', 'patterns', 'insights'] };
+
     function syncNav() {
-      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
+      document.querySelectorAll('.pk-nav').forEach((n) => {
+        // The group header highlights for any of its children, so the rail always shows where you
+        // are even when the group is collapsed.
+        const g = n.dataset.group;
+        const inGroup = g && (NAV_GROUPS[g] || []).includes(view);
+        n.classList.toggle('is-active', n.dataset.view === view || !!inGroup);
+      });
+      // Organisation is Settings with a section pre-chosen, so it highlights on that pairing only.
+      const orgBtn = document.querySelector('.pk-nav[data-view="org"]');
+      const setBtn = document.querySelector('.pk-nav[data-view="settings"]');
+      if (orgBtn && setBtn) {
+        const onOrg = view === 'settings' && settingsSection === 'org';
+        orgBtn.classList.toggle('is-active', onOrg);
+        setBtn.classList.toggle('is-active', view === 'settings' && !onOrg);
+      }
+      /* Follow the view: open the group you are inside, close the ones you are not. Only opening
+       * left the submenu hanging open on Home, which reads as four top-level items again. */
+      Object.keys(NAV_GROUPS).forEach((key) => {
+        const inside = NAV_GROUPS[key].includes(view);
+        const head = document.querySelector(`.pk-nav--group[data-group="${key}"]`);
+        const panel = document.querySelector(`.pk-subnav[data-subnav="${key}"]`);
+        if (!head || !panel) return;
+        head.setAttribute('aria-expanded', inside ? 'true' : 'false');
+        panel.classList.toggle('is-open', inside);
+      });
     }
 
     // ---- search / sort ----
@@ -3604,7 +3632,7 @@
       // already carries, and read as global chrome rather than as part of a view.
       // Keep the rail highlight on whatever is actually rendered. It was set once at load from the
       // remembered view and never re-synced, so landing on Home showed Queue as active.
-      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
+      syncNav();   // one implementation — it also handles groups and Organisation
       const countsBox = $('#rvd-counts');   // .pk-counts is the strip itself; there is no wrapper
       if (countsBox) countsBox.hidden = detail || view !== 'dash';
       $('#rvd-view-dash').hidden = detail || !isQueue;
@@ -4135,17 +4163,37 @@
       entryDetail = null;
       syncUrl();
       if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
-      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === view));
+      syncNav();   // one implementation — it also handles groups and Organisation
       pkNavSwitch(prevT, view, () => render(), 'rvd-view-settings');
     });
 
     document.querySelector('.pk-side').addEventListener('click', (e) => {
       const b = e.target.closest('.pk-nav'); if (!b) return;
       const prev = view;
-      view = b.dataset.view; entryDetail = null;
+
+      /* A group header both NAVIGATES and EXPANDS. Making it expand-only would cost a second click
+       * to reach the view it is named after; making it navigate-only would leave no way to see
+       * what is underneath. Clicking it again while already there collapses it. */
+      if (b.dataset.group) {
+        const panel = document.querySelector(`.pk-subnav[data-subnav="${b.dataset.group}"]`);
+        const alreadyHere = (NAV_GROUPS[b.dataset.group] || []).includes(view);
+        const open = alreadyHere ? !panel.classList.contains('is-open') : true;
+        panel.classList.toggle('is-open', open);
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (alreadyHere && view === b.dataset.view) return;   // pure expand/collapse, no navigation
+      }
+
+      /* 'org' is not a view of its own — it is Settings opened on the Organisation section. The two
+       * rail items therefore have to push each other apart: Organisation always opens that section,
+       * and Settings never does, or clicking Settings from Organisation would land you exactly
+       * where you already were with the wrong item highlighted. */
+      const target = b.dataset.view === 'org' ? 'settings' : b.dataset.view;
+      if (b.dataset.view === 'org') { settingsSection = 'org'; orgPath = { project: null, team: null, person: null }; }
+      if (b.dataset.view === 'settings' && settingsSection === 'org') settingsSection = 'prefs';
+      view = target; entryDetail = null;
       syncUrl();   // a nav click IS a navigation — this is what Back walks back through
       if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }
-      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n === b));
+      syncNav();
       pkNavSwitch(prev, view, () => render(), 'rvd-view-settings');
     });
 
