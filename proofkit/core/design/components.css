@@ -1095,6 +1095,12 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 .pk-card-tile:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
 
+/* Project scope in the header. Sized to sit level with the buttons beside it rather than being
+   styled as one — it reports what you are looking at, and only incidentally changes it. */
+.pk-projscope{display:flex;align-items:center}
+.pk-projscope .pk-dropdown-trigger{height:40px}
+@media (max-width:900px){.pk-projscope{display:none}}
+
 /* Search across the hierarchy. Fine at six teams; the point is thirty.
    The top margin separates it from the page heading — at the inherited 8px the two read as one
    block, which made the title look like a label for the field rather than for the screen. */

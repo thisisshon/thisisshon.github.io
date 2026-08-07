@@ -53,6 +53,9 @@
           <span class="pk-word">Proofkit</span>
         </div>
         <div class="pk-actions">
+          <!-- Project scope. In the header rather than in a view, because it governs EVERY view:
+               queue, comments, patterns and insights all read the same set. -->
+          <div id="rvd-projscope" class="pk-projscope"></div>
           <a class="pk-btn pk-btn--md pk-btn--primary" href="/">Go to site</a>
           <button id="rvd-refresh" class="pk-btn pk-btn--md pk-btn--ghost pk-btn--icon pk-refresh" type="button" aria-label="Refresh">
             <span class="rvd-refresh-ico">

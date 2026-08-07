@@ -373,7 +373,7 @@
           stats: async () => null,      // Phase 0 usage counters — worker-only
         }
       : {
-          all: () => apiFetch('/comments'),
+          all: () => apiFetch('/comments' + projectQuery()),
           // Phase 3.1: conditional GET — send If-None-Match, get 304 (near-free) when the admin scope
           // is unchanged since the last poll. Returns {notModified} or {data, etag}.
           allEtag: async (etag) => {
@@ -383,7 +383,7 @@
             // there is one and the team key otherwise, which is what every other call already did.
             const headers = { ...authHeaders() };
             if (etag) headers['If-None-Match'] = etag;
-            const res = await fetch(WORKER_URL + '/comments', { headers });
+            const res = await fetch(WORKER_URL + '/comments' + projectQuery(), { headers });
             if (res.status === 304) return { notModified: true };
             if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -987,6 +987,18 @@
      * contain people — so one path replaces what used to be four sibling screens each re-stating
      * the same structure. Null means "the level above this one". */
     let orgPath = { project: null, team: null, person: null };
+    /* Which project the BOARD is looking at. '' means all of them — the Builder's cross-boundary
+     * view, and what this dashboard has always shown, so the default changes nothing.
+     *
+     * It is a lens, not a permission. Every team-scoped read is still governed by canSee(); this
+     * only decides how much of what the Builder may already see is on screen at once.
+     *
+     * Persisted per browser: someone who works inside one project works inside it all week, and
+     * re-choosing on every visit would be the kind of small tax that makes a feature go unused. */
+    let projectScope = '';
+    try { projectScope = localStorage.getItem('pkProjectScope') || ''; } catch (e) {}
+    const projectQuery = () => (projectScope ? '?projectId=' + encodeURIComponent(projectScope) : '');
+
     let orgQuery = '';   // Organisation search. Fine at six teams; the point is thirty.
     let orgData = { projects: [], teams: [], users: [] };   // last load, for the delegated handlers
     /* What a team may do. Everyone used to have identical powers: anyone who could see a ticket
@@ -4452,6 +4464,47 @@
       onSelect: (v) => { sort = v; render(); },
     });
     $('#rvd-sort-mount').appendChild(sortDD.el);
+
+    /* ---- project scope (12.0) --------------------------------------------------------------
+     * The switcher is built from the project list, so it can only ever offer projects that exist.
+     * Changing it re-fetches rather than filtering what is already loaded: the ETag is per-project
+     * now, and filtering client-side would keep every project's tickets in memory and in every
+     * derived view — patterns and insights included — which is the project-blindness this replaces.
+     *
+     * Rendered only when there is more than one project. On a single-project deployment a control
+     * whose every option produces the same screen is furniture. */
+    (async function mountProjectScope() {
+      const mount = $('#rvd-projscope');
+      if (!mount || LOCAL) return;
+      let projects = [];
+      try { projects = await store.projects(); } catch (e) { return; }
+      if (!projects || projects.length < 2) return;
+
+      // A scope pointing at a project that has since been deleted would silently show an empty
+      // board; fall back to all rather than to a lie.
+      if (projectScope && !projects.some((p) => p.id === projectScope)) {
+        projectScope = '';
+        try { localStorage.removeItem('pkProjectScope'); } catch (e) {}
+      }
+
+      const items = [{ value: '', label: 'All projects' }].concat(
+        projects.map((p) => ({ value: p.id, label: p.name || p.id })));
+      const dd = buildDropdown({
+        small: true, menuAlign: 'right', value: projectScope, items,
+        placeholder: 'All projects',
+        onSelect: async (v) => {
+          if (v === projectScope) return;
+          projectScope = v;
+          try { v ? localStorage.setItem('pkProjectScope', v) : localStorage.removeItem('pkProjectScope'); } catch (e) {}
+          // The cached ETag belongs to the previous scope; keeping it would send an
+          // If-None-Match that can never match and, worse, read as "unchanged" if it ever did.
+          lastAllEtag = '';
+          overviewCache = null;
+          try { await loadData(); render(); } catch (e) { pkAlert('Could not load that project — ' + e.message); }
+        },
+      });
+      mount.appendChild(dd.el);
+    })();
 
     // Phase 10: export a Claude Code fix-brief (.md) for the selected tickets — built client-side so
     // it works in demo + worker mode (mirrors the Worker's /fix-brief). Grouped by page, ordered by
