@@ -4257,6 +4257,10 @@
           b.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar');
           b.setAttribute('title', on ? 'Expand sidebar' : 'Collapse sidebar');
         }
+        /* The submenu's rows are a different height when collapsed, so the marker's offset is
+         * measured against a layout that no longer exists. Re-measure after the width transition
+         * has settled — reading mid-animation just banks a second wrong number. */
+        setTimeout(positionSubnavMarker, 300);
       };
       let on = false;
       try { on = localStorage.getItem(KEY) === '1'; } catch (e) {}

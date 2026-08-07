@@ -740,11 +740,19 @@
 .pk-side .pk-subnav.is-open{grid-template-rows:1fr;opacity:1}
 /* The grid child needs to BE the scroller, so the buttons are wrapped by the overflow rule
    above; without a wrapper element the rows collapse but the buttons still paint. */
-.pk-side .pk-subnav .pk-nav--sub{display:flex;align-items:center;height:38px;
-  /* Indented to sit under the parent's LABEL, not its icon — that alignment is what reads as
-     "belongs to the thing above" rather than "another top-level item, slightly moved". */
+/* The indent differs between states (under the parent's label when expanded, tucked in when not),
+   so the icons MOVE — and they were teleporting while the track beside them slid. Transitioning
+   the padding is what animates them; it costs a layout pass on five 38px rows, once per toggle. */
+.pk-side .pk-subnav .pk-nav--sub{display:flex;align-items:center;gap:10px;height:38px;
+  transition:padding-left .26s cubic-bezier(.4,0,.2,1),color .15s;
+  /* Indented so the sub-item's ICON sits under the parent's LABEL. That one alignment is what
+     reads as "belongs to the thing above" rather than "another top-level item, slightly moved". */
   padding-left:calc(var(--pk-rail-gutter) + 18px + 12px) !important;
+  padding-right:12px !important;
   font:500 12.5px/1 var(--pk-font);color:var(--pk-muted);background:transparent;border:none}
+/* Smaller than the parent's 18px. Size is the hierarchy: a sub-item drawn at the same weight as
+   its parent stops looking like a child of it. */
+.pk-side .pk-subnav .pk-nav--sub .pk-nav-ico{flex:none;width:15px;height:15px;stroke-width:1.9}
 /* Comments carries an unread badge; push it to the row's end rather than letting it sit against
    the label. */
 .pk-side .pk-subnav .pk-nav--sub .pk-navbadge{margin-left:auto}
@@ -761,17 +769,56 @@
    rail moves, so the eye follows it from the old row to the new one.
    It fades in on first appearance so it does not slide in from y=0 on load. */
 .pk-side .pk-subnav > div{position:relative}
+/* The TRACK the marker runs along: a hairline the exact width and x of the red bar, spanning the
+   whole sub-module from Inbound to Insights. It gives the indicator somewhere to be — without it
+   the bar floats in space and its travel has no visible extent. Sharing the marker's `left` and
+   `width` means it is centred on the marker by construction rather than by arithmetic that would
+   need redoing every time either value changes. */
+.pk-side .pk-subnav > div::before{
+  content:"";position:absolute;left:var(--pk-rail-gutter);
+  /* Inset to the marker's TRAVEL, not the module's box: (38px row − 14px marker) / 2 = 12px. The
+     track begins where the Inbound marker begins and ends where the Insights marker ends, so it
+     stops short of the rows above and below instead of running into them. */
+  top:12px;bottom:12px;
+  width:3px;background:var(--pk-hair);border-radius:2px;
+  transition:left .26s cubic-bezier(.4,0,.2,1)}
 .pk-side .pk-subnav-marker{position:absolute;left:var(--pk-rail-gutter);top:0;
   width:3px;height:14px;background:var(--pk-red);opacity:0;
   transform:translateY(var(--pk-marker-y,0));
-  transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .18s ease}
+  transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .18s ease,
+             left .26s cubic-bezier(.4,0,.2,1)}
 .pk-side .pk-subnav-marker.is-on{opacity:1}
 @media (min-width:1024px) and (hover:hover){
   .pk-side .pk-subnav .pk-nav--sub:hover{color:var(--pk-ink)}
 }
-/* Collapsed rail: the submenu has no icons, so there is nothing to show — hide it outright
-   rather than leaving a column of invisible 38px gaps. */
-:root.pk-side-collapsed .pk-side .pk-subnav{display:none}
+/* COLLAPSED. The submenu stays put — it used to be hidden outright, which meant Notifications,
+   Projects and Settings sprang up the rail to fill the gap every time you collapsed it. The rail's
+   whole job is that items keep their place; only their labels go.
+
+   Hierarchy without labels comes from the drawing: the icons are smaller than the top-level ones
+   (15px vs 18px) and sit slightly right of the top-level column. The red marker says which one is
+   active — no bracket rule, which only added a second line competing with it. */
+/* Note there is NO forced-open rule here. Whether the sub-items show is the QUEUE GROUP's own
+   state in both rail widths: collapse the group and they go, expand it and they come back as
+   icons. Collapsing the RAIL changes width only — it must never decide what the group contains. */
+:root.pk-side-collapsed .pk-side .pk-subnav > div{position:relative}
+:root.pk-side-collapsed .pk-side .pk-nav--sub{
+  /* Height stays 38px, exactly as expanded. Shrinking the rows saved 20px and moved everything
+     below the group up by that much — a smaller version of the jump this whole change exists to
+     remove. Collapsing the rail changes its WIDTH; nothing may move vertically. */
+  gap:0;justify-content:flex-start;
+  /* 26px: 4px right of the top-level icon column, so the indent survives without labels. */
+  padding-left:26px !important;padding-right:0 !important}
+:root.pk-side-collapsed .pk-side .pk-nav--sub .pk-nav-txt{display:none}
+/* A badge has no room beside a lone icon — it becomes a dot on the icon's shoulder. */
+:root.pk-side-collapsed .pk-side .pk-nav--sub .pk-navbadge{position:absolute;left:34px;top:6px;
+  min-width:7px;width:7px;height:7px;padding:0;border-radius:9999px;font-size:0;overflow:hidden}
+:root.pk-side-collapsed .pk-side .pk-nav--sub{position:relative}
+/* The marker moves to the rail edge; at the expanded gutter it would sit on top of the icon. */
+/* Collapsed: flush to the rail's left edge, in line with the top-level nav's own active bar
+   (.pk-nav::before also sits at left:0). Both the track and the marker slide across together. */
+:root.pk-side-collapsed .pk-side .pk-subnav > div::before,
+:root.pk-side-collapsed .pk-side .pk-subnav-marker{left:0}
 :root.pk-side-collapsed .pk-side .pk-nav--group .pk-nav-caret{display:none}
 
 /* The collapse chevron points the way it will move the rail. */
