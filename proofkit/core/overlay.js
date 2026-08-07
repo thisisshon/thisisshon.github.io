@@ -1,6 +1,6 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, ADMIN_TEAM, isTeamEnabled,
     BASE, TEAM_BASE, boardBase,
-    getSession, setSession, clearSession, buildPanelLogin, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
+    getSession, setSession, clearSession, buildPanelLogin, buildAccessLogin, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
     // v3 shared vocabulary (single source of truth in ./config.js — never re-declared here):
     // comment types + per-type template fields, teamStatus→token colours, the summary renderer,
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
@@ -280,67 +280,89 @@
     }
     function showLogin() {
       if (!login) {
-        // Close (✕ top-right) and backdrop-click both back FULLY out of review —
-        // disarm the tab too, else (with the login shown while armed) it reappears.
-        const backOut = () => { sessionStorage.removeItem(KEY); hideLogin(); };
-        /* On a page we do not own, WebAuthn is unusable: a credential is bound to the origin that
-         * created it, so a Proofkit passkey can never be presented on a third-party domain. The
-         * way through is to step out to our own origin and come back — the extension opens the
-         * auth page, authenticates there, then closes that tab and returns the user to this one
-         * with the page armed. Offered only when the extension is actually driving this page;
-         * without it there is nothing to open the tab or bring the session back. */
-        const remote = externalMode() && typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage
-          ? () => new Promise((res, rej) => {
-              try {
-                chrome.runtime.sendMessage({ type: 'open-auth' }, (r) => {
-                  if (chrome.runtime.lastError) return rej(new Error('Reload the Proofkit extension and try again.'));
-                  if (!r || !r.ok) return rej(new Error((r && r.reason) || 'Could not open the sign-in page.'));
-                  res();   // the tab is open; the extension takes it from here
-                });
-              } catch (e) { rej(e); }
-            })
-          : null;
-        login = buildPanelLogin({
-          title: 'Let’s Review.',
-          sub: remote
-            ? 'Sign in to start marking comments. Touch ID opens a Proofkit tab, then brings you straight back here.'
-            : 'Select your team and enter your key to start marking comments.',
-          onClose: backOut,
-          onRemoteAuth: remote,
+        /* The access key is the sign-in everywhere, including here. On a page we do not own the
+         * biometric route is impossible — a credential is bound to the origin that made it — so
+         * that option is simply not offered; the extension round trip through the hosted page is
+         * what stands in for it, and it is reached from the popup. */
+        const backOut = () => { try { sessionStorage.removeItem(KEY); } catch (e) {} hideLogin(); };
+        login = buildAccessLogin({
+          title: 'Enter access key',
+          sub: 'Two letters, then six digits.',
+          onSubmit: (code) => tryAccess(code),
+          onEmail: () => showTeamKeyFallback(),
         });
-        const go = () => tryLogin();
-        login.button.addEventListener('click', go);
-        login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+        // Clicking the backdrop backs fully out of review, rather than leaving the page greyed
+        // behind a dismissed panel.
         login.el.addEventListener('click', (e) => { if (e.target === login.el) backOut(); });
       }
-      login.setError(''); login.keyInput.value = ''; login.setTeam(getSession().team || '');
+      login.setError('');
       document.body.appendChild(login.el);
-      if (getSession().team) login.keyInput.focus(); else login.focusTeam();
+      login.el.hidden = false;
+      login.focus();
     }
-    function hideLogin() { login && login.el.remove(); }
-    async function tryLogin() {
-      const id = login.keyInput.value.trim();
-      if (!id) { login.keyInput.focus(); return; }
-      /* No team chosen ⇒ treat the key as the BUILDER key. The Builder is not on a team, so
-       * requiring a pick from a list of teams they do not belong to had no correct answer. The key
-       * is what actually authorises; the picker only says which board a team member lands on. */
-      const picked = login.getTeam();
-      const team = picked || ADMIN_TEAM;
-      setSession(team, id); // shared session (validated below)
-      login.setBusy(true, 'Authenticating'); login.setError('');
+
+    async function tryAccess(code) {
+      login.setBusy(true);
       try {
-        if (!LOCAL) await store.list(pagePath()); // validate the key against the Worker
+        const body = await accessLogin(WORKER_URL, code);
+        // The overlay gates on a team session, so give it one: the account's own team, with the
+        // sentinel in place of a key. authHeaders() sends the bearer token and never the sentinel.
+        setSession(body.user.team || ADMIN_TEAM, ACCOUNT_KEY_SENTINEL);
+        login.accept();
+        await new Promise((r) => setTimeout(r, 240));
+        await login.dismiss();
+        hideLogin();
+        enter();
+      } catch (e) {
+        login.setBusy(false);
+        login.reject(e.locked
+          ? 'Too many attempts. Try again in ' + Math.ceil((e.retryAfter || 60000) / 1000) + 's.'
+          : (e.message || 'That access key was not recognised.'));
+      }
+    }
+
+    /* The team-key form, kept as the fallback for a deployment that has not moved to access keys.
+     * Built on demand — it is a fallback, so it should not exist until someone asks. */
+    let teamFallback = null;
+    function showTeamKeyFallback() {
+      if (teamFallback) { teamFallback.el.hidden = false; login.el.hidden = true; return; }
+      teamFallback = buildPanelLogin({
+        title: 'Team sign-in',
+        sub: 'Select your team and enter its key.',
+        onClose: () => { teamFallback.el.hidden = true; login.el.hidden = false; login.focus(); },
+      });
+      const go = () => tryTeamKey();
+      teamFallback.button.addEventListener('click', go);
+      teamFallback.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+      document.body.appendChild(teamFallback.el);
+      login.el.hidden = true;
+    }
+
+    async function tryTeamKey() {
+      const id = teamFallback.keyInput.value.trim();
+      if (!id) { teamFallback.keyInput.focus(); return; }
+      const picked = teamFallback.getTeam();
+      const team = picked || ADMIN_TEAM;
+      setSession(team, id);
+      teamFallback.setBusy(true, 'Authenticating'); teamFallback.setError('');
+      try {
+        if (!LOCAL) await store.list(pagePath());
+        teamFallback.el.remove(); teamFallback = null;
         hideLogin();
         enter();
       } catch (e) {
         clearSession();
-        login.setBusy(false, 'Authenticate');
-        const wrong = e.message === 'unauthorized';
-        login.setError(!wrong ? ('Could not connect — ' + e.message)
-          : picked ? 'Incorrect key. Please try again.'
-                   : 'That is not the Builder key. Choose your team if you are signing in as a team.');
-        login.keyInput.focus(); login.keyInput.select();
+        teamFallback.setBusy(false, 'Authenticate');
+        teamFallback.setError(e.message === 'unauthorized'
+          ? (picked ? 'Incorrect key. Please try again.' : 'That is not the Builder key. Choose your team if you are signing in as a team.')
+          : ('Could not connect — ' + e.message));
+        teamFallback.keyInput.focus(); teamFallback.keyInput.select();
       }
+    }
+
+    function hideLogin() {
+      if (login) login.el.remove();
+      if (teamFallback) { teamFallback.el.remove(); teamFallback = null; }
     }
 
     // ---- styles (injected once, only in review mode) ---------------------

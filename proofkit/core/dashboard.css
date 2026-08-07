@@ -7,12 +7,12 @@
   body:has(.rvd){background:var(--pk-floor)}
 
   .rvd{background:var(--pk-canvas);color:var(--pk-ink);font-family:var(--pk-font);
-    min-height:100vh;padding:40px clamp(20px,5vw,48px) 96px}
+    min-height:100vh;padding:var(--pk-space-6h) clamp(var(--pk-space-4h),5vw,var(--pk-space-7)) var(--pk-space-9)}
   .rvd *{box-sizing:border-box}
   /* Gated-off "no access" stub. Layout lives here (NOT inline) so the `hidden`
      attribute — which the JS toggles — actually wins; an inline `display` would
      out-rank the UA `[hidden]{display:none}` rule and pin it permanently open. */
-  .rvd-blocked{min-height:70vh;align-items:center;justify-content:center;padding:24px}
+  .rvd-blocked{min-height:70vh;align-items:center;justify-content:center;padding:var(--pk-space-5)}
   .rvd-blocked:not([hidden]){display:flex}
   @keyframes pk-spin{to{transform:rotate(360deg)}}
   @keyframes pk-pop-in{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
@@ -33,35 +33,7 @@
   .rvd #rvd-counts .pk-count{animation:pk-rise .5s var(--pk-ease-rise) both}
   .rvd #rvd-counts .pk-count:nth-child(2){animation-delay:.07s}
   .rvd #rvd-counts .pk-count:nth-child(3){animation-delay:.14s}
-  /* entry cascade now global (.pk-grid > .pkc-card) */
-  .rvd .rvd-logwrap{animation:pk-rise .45s var(--pk-ease-rise) both}
-  .rvd .rvd-entrieshead{animation:pk-rise .45s var(--pk-ease-rise) both}
 
-  /* ---- top header: title + lead on the left, brand + actions on the right ---- */
-  .rvd .rvd-h1{margin:0;font-size:clamp(30px,4.4vw,44px);line-height:1.04;font-weight:500;
-    letter-spacing:-.02em;color:var(--pk-ink)}
-  /* "Admin" in the console title is highlighted in brand red (both themes) */
-  .rvd .rvd-h1-hi{color:var(--pk-red-ink)}
-  .rvd .rvd-lead{margin:12px 0 0;font-size:14px;line-height:1.6;color:var(--pk-muted)}
-  .rvd .rvd-lead-brand{font-weight:700;color:var(--pk-body)}
-  .rvd .rvd-lead-sep{color:var(--pk-hair);margin:0 8px}
-  /* vertical divider between the project tag and the theme toggle in the brand row */
-  .rvd .pk-brand-div{flex:none;width:1px;height:16px;background:var(--pk-hair)}
-  /* Brand mark — the Proofkit dot: a brand-red disc with a soft red glow ring
-     (mirrors the verdict-page logo). Tracks the theme via --pk-red. */
-  .rvd .rvd-tag{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--pk-muted);padding-left:12px;border-left:1px solid var(--pk-hair)}
-  /* the project tag, in the accent gold (dark mode); neutral in light mode. */
-  .rvd .rvd-tag-brand{color:var(--pk-brand-gold)}
-  :root[data-pk-theme="light"] .rvd .rvd-tag-brand{color:var(--pk-muted)}
-  /* The theme toggle's tap target is 48×48 with a -12px margin that collapses its layout
-     footprint to 24px — so in the actions row we give it a 46×40 slot (the visible pill's
-     width, the buttons' height) so the pill sits flush and vertically aligned with the
-     40px buttons instead of overflowing into the refresh button. */
-  /* the theme toggle now lives in the brand row; a 46px slot holds the pill flush without
-     the 48px tap target overflowing into the divider (see the 3.9.15 note). */
-  .rvd .rvd-headtoggle{flex:none;display:inline-flex;align-items:center;justify-content:center;
-    width:46px;overflow:visible}
   /* icon-only refresh in the compact header actions row — drop the label's right margin
      so the 16px glyph centres in the 40px square. */
   .rvd .pk-btn--icon .rvd-refresh-ico{margin-right:0}
@@ -69,16 +41,16 @@
   /* ---- stat tiles (spec-cell) ---- */
   .rvd #rvd-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
     background:var(--pk-hair);border:1px solid var(--pk-hair)}
-  .rvd #rvd-counts .pk-count{background:var(--pk-canvas);padding:24px 24px;border-radius:0;
-    display:flex;flex-direction:column;align-items:flex-start;gap:8px;
-    font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted)}
-  .rvd #rvd-counts .pk-count b{font-size:clamp(30px,4vw,42px);font-weight:700;line-height:.95;
+  .rvd #rvd-counts .pk-count{background:var(--pk-canvas);padding:var(--pk-space-5) var(--pk-space-5);border-radius:0;
+    display:flex;flex-direction:column;align-items:flex-start;gap:var(--pk-space-3);
+    font-size:var(--pk-text-xs);font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd #rvd-counts .pk-count b{font-size:var(--pk-text-count);font-weight:700;line-height:.95;
     letter-spacing:-.02em;color:var(--pk-ink);font-variant-numeric:tabular-nums}
   /* Need Clarity tile is a click-through into the Queue's Need Clarity filter — clickable, but
      visually unchanged from the sibling tiles (pointer cursor is the only affordance). */
   .rvd #rvd-counts .pk-count-clarify{cursor:pointer}
   /* dot + label on ONE horizontal line, dot vertically centred to the label text */
-  .rvd #rvd-counts .pk-count-lbl{display:flex;align-items:center;gap:6px}
+  .rvd #rvd-counts .pk-count-lbl{display:flex;align-items:center;gap:var(--pk-space-3)}
   .rvd #rvd-counts .pk-count-lbl .pk-count-dot{margin:0;flex:none}
   /* number coloured to match its status dot (parity with the team dashboard) */
   .rvd #rvd-counts .pk-count-tbi b{color:var(--pk-amber)}
@@ -91,13 +63,11 @@
   .rvd #rvd-counts .pk-count-reopened b{color:var(--pk-red-ink)}
   .rvd #rvd-counts .pk-count-reopened .pk-count-dot{background:var(--pk-red)}
 
-  /* ---- top-bar buttons: sharp corners, uppercase ---- */
-  .rvd .rvd-actions{display:flex;align-items:center;gap:8px}
   /* secondary (default): ghost outline */
   /* top-bar button now uses global .pk-btn --md --ghost/--primary/--icon */
   /* Refresh micro-interaction: the two glyphs are stacked in the same 16px box and
      cross-morph (opacity + spin-scale) so tick⇄refresh reads as one icon transforming. */
-  .rvd .rvd-refresh-ico{position:relative;display:inline-block;width:16px;height:16px;margin-right:8px}
+  .rvd .rvd-refresh-ico{position:relative;display:inline-block;width:16px;height:16px;margin-right:var(--pk-space-3)}
   .rvd .rvd-refresh-ico svg{position:absolute;inset:0;width:16px;height:16px;display:block;
     transition:opacity .22s ease, transform .4s cubic-bezier(.4,.2,.2,1.35)}
   .rvd .rvd-refresh-ico .ico-sync{opacity:1;transform:none}
@@ -118,15 +88,15 @@
   /* nav count badge now uses global .pk-navbadge / .pk-navbadge--alert */
   /* The admin's per-team board picker, under the nav. The old "TEAM DASHBOARDS" eyebrow is gone —
      the trigger's own "Jump To Team" already says what it does, so the label was a second voice. */
-  .rvd .rvd-teamview{margin-top:16px;padding-top:16px;border-top:1px solid var(--pk-hair);
-    display:flex;flex-direction:column;gap:8px}
+  .rvd .rvd-teamview{margin-top:var(--pk-space-4);padding-top:var(--pk-space-4);border-top:1px solid var(--pk-hair);
+    display:flex;flex-direction:column;gap:var(--pk-space-3)}
   /* Disabled teams in the Jump-To-Team picker are greyed + inert via the shared
      .pk-dropdown-item[aria-disabled] styling in design/components.css. */
   /* Rail actions under the picker — colour mode, then Log out. Both wear the picker's box
      (.pk-tt--row / .pk-side-logout--row), so the three read as one column. The whole foot
      group (rule + label + picker + these two) is pinned to the rail's bottom by the
      .pk-side-spacer that now sits ABOVE .rvd-teamview — see design/components.css. */
-  .rvd .rvd-sideactions{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+  .rvd .rvd-sideactions{margin-top:var(--pk-space-3);display:flex;flex-direction:column;gap:var(--pk-space-3)}
   .rvd .rvd-sidetheme{display:block}
   /* ---- Builder is an APP SHELL on desktop ----
      The board fills the viewport and the PAGE never scrolls; the ticket column scrolls inside
@@ -139,242 +109,103 @@
   @media (min-width:769px){
     /* box-sizing here is deliberate: the reset above is `.rvd *`, which excludes .rvd itself,
        so a content-box 100vh would add its own 80px of padding back and re-introduce a scrollbar. */
-    .rvd{box-sizing:border-box;height:100vh;min-height:0;padding-bottom:40px;overflow:hidden}
+    .rvd{box-sizing:border-box;height:100vh;min-height:0;padding-bottom:var(--pk-space-6h);overflow:hidden}
     .rvd .pk-app{display:flex;flex-direction:column;height:100%;min-height:0}
     .rvd .pk-shell{flex:1 1 auto;min-height:0;align-items:stretch}
     .rvd .pk-side{position:static;height:100%}
     .rvd .pk-content{height:100%;overflow-y:auto;overscroll-behavior:contain}
   }
 
-  /* ---- toolbar: search + sort + export/copy actions ---- */
-  .rvd .rvd-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:20px}
-  .rvd .rvd-toolbar-sp{flex:1 1 24px}
   /* Direction toggle (Inbound │ Outbound) — segmented control; active side is a solid red fill */
   /* segmented toggle now uses global .pk-seg/.pk-segbtn */
   /* Status filter chips — the Queue's status slicer (Needs you · Open · lifecycle · overflow) */
-  .rvd .rvd-statuschips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:16px}
+  .rvd .rvd-statuschips{display:flex;flex-wrap:wrap;gap:var(--pk-space-3);align-items:center;margin-bottom:var(--pk-space-4)}
   /* status-filter chips now use global .pk-schip */
   /* Table density = the full ledger; the card-only filters don't apply, so hide them (search stays). */
-  .rvd #rvd-view-dash[data-density="table"] #rvd-statuschips,
-  .rvd #rvd-view-dash[data-density="table"] .rvd-tabsrow,
-  .rvd #rvd-view-dash[data-density="table"] #rvd-selectall,
-  .rvd #rvd-view-dash[data-density="table"] #rvd-copy-mount{display:none}
-  /* select all / none toggle (mirrors the small dropdown triggers) */
-  .rvd .rvd-selectall{height:42px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;cursor:pointer;
-    background:var(--pk-input);color:var(--pk-body);font:600 12px/1 var(--pk-font);letter-spacing:.04em;
-    white-space:nowrap;transition:border-color .15s,color .15s}
-  .rvd .rvd-selectall.is-active{background:var(--pk-red);color:var(--pk-on-accent);border-color:var(--pk-red)}
-  .rvd .rvd-selectall:disabled{opacity:.5;cursor:default}
+  .rvd #rvd-view-dash[data-density="table"] #rvd-statuschips,.rvd #rvd-view-dash[data-density="table"] #rvd-selectall,.rvd #rvd-view-dash[data-density="table"] #rvd-copy-mount{display:none}
+
   /* search now uses global .pk-search */
-  .rvd .rvd-sort{height:42px;padding:0 40px 0 16px;border:1px solid var(--pk-hair);border-radius:0;cursor:pointer;
+  .rvd .rvd-sort{height:var(--pk-control-h-md);padding:0 var(--pk-space-6h) 0 var(--pk-space-4);border:1px solid var(--pk-hair);border-radius:0;cursor:pointer;
     background:var(--pk-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;
-    color:var(--pk-ink);font:600 12px/1 var(--pk-font);letter-spacing:.04em;appearance:none;-webkit-appearance:none}
-  .rvd .rvd-sort:focus{outline:none;border-color:var(--pk-red)}
+    color:var(--pk-ink);font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;appearance:none;-webkit-appearance:none}
+  .rvd .rvd-sort:focus-visible{outline:none;border-color:var(--pk-red)}
   .rvd .rvd-sort option{background:var(--pk-input);color:var(--pk-on-accent)}
-  .rvd .rvd-tbtn{height:42px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
-    display:inline-flex;align-items:center;transition:border-color .15s,color .15s}
-  @media (max-width:640px){ .rvd .rvd-toolbar-sp{flex-basis:100%;height:0} }
   /* per-page rollup + copy-prompts on By Page group headers */
-  .rvd .rvd-gh-rollup{font-size:12px;font-weight:500;color:var(--pk-muted);letter-spacing:0;text-transform:none}
-  .rvd .rvd-gh-actions{margin-left:auto;display:flex;gap:8px}
-  .rvd .rvd-gh-copy{height:28px;padding:0 8px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-    color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;transition:border-color .15s,color .15s}
-  /* "new since last visit" badge */
-  /* .rvd-new folded into global .pk-status-chip.rvd-new */
-  /* bulk multi-select */
-  .rvd .rvd-sel{flex:none;width:18px;height:18px;margin-top:2px;cursor:pointer;accent-color:var(--pk-red)}
-  .rvd .rvd-bulk{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;
-    display:flex;align-items:center;gap:8px;padding:8px 8px 8px 8px;background:var(--pk-card);
+  .rvd .rvd-gh-rollup{font-size:var(--pk-text-sm);font-weight:500;color:var(--pk-muted);letter-spacing:0;text-transform:none}
+  .rvd .rvd-gh-actions{margin-left:auto;display:flex;gap:var(--pk-space-3)}
+  .rvd .rvd-gh-copy{height:var(--pk-control-h-xs);padding:0 var(--pk-space-3);border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+    color:var(--pk-body);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;transition:border-color .15s,color .15s}
+
+  .rvd .rvd-bulk{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:var(--pk-z-fab);
+    display:flex;align-items:center;gap:var(--pk-space-3);padding:var(--pk-space-3) var(--pk-space-3) var(--pk-space-3) var(--pk-space-3);background:var(--pk-card);
     border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-lg)}
   .rvd .rvd-bulk[hidden]{display:none}
-  .rvd .rvd-bulk-n{font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-body);padding:0 8px}
-  .rvd .rvd-bulk-a{height:34px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
-  .rvd .rvd-bulk-a.danger{color:var(--pk-softred)}
-  .rvd .rvd-bulk-a:disabled{opacity:.5;cursor:default}
-  .rvd .rvd-bulk-x{width:34px;height:34px;border:none;background:transparent;color:var(--pk-muted);font-size:20px;line-height:1;cursor:pointer}
-  /* ---- tabs ---- */
-  /* Tabs + team-filter share one row: tabs left, "From …" filter right, both sitting on the
-     same bottom hairline (Figma node 2053:11876). */
-  .rvd .rvd-tabsrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;
-    border-bottom:1px solid var(--pk-hair);margin-bottom:20px}
-  .rvd .rvd-tabs{display:flex;gap:2px;flex-wrap:wrap}
-  .rvd .rvd-tab{height:46px;padding:0 16px;border:none;background:none;cursor:pointer;margin-bottom:-1px;
-    font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
-    border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
-  .rvd .rvd-tab.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
-  .rvd .rvd-tab-n{color:var(--pk-muted);font-weight:700}
-  .rvd .rvd-tab.is-active .rvd-tab-n{color:var(--pk-red-ink)}
+  .rvd .rvd-bulk-n{font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-body);padding:0 var(--pk-space-3)}
+  .rvd .rvd-bulk-x{width:var(--pk-control-h-sm);height:var(--pk-control-h-sm);border:none;background:transparent;color:var(--pk-muted);font-size:var(--pk-text-3xl);line-height:1;cursor:pointer}
 
-  /* ---- team filter chips (colours set inline by JS) ---- */
-  /* "From" label on the left of the team filter chips (they filter by raising team) */
-  /* Underline-tab style (Figma 2053:11691): active = solid fill + white ink; inactive =
-     team-colour text over a 1.5px team-colour bottom rule (no side/top borders). All the
-     colours are set inline by buildTeamChips so the base stays neutral. */
-  /* collapsed control: the ▸ arrow that opens the full team picker */
-
-  /* team picker — a horizontal reveal, not a pop-over.
-     The backdrop darkens/blurs the page, but its transition is DELAYED so it only kicks in once
-     the chips are almost fully slid out. */
-  /* --pk-scrim-veil already flips to a white veil in the light skin */
-  /* The rail sits exactly over the collapsed control, right-anchored so growing the reveal strip
-     between the selected chip and the arrow slides "From" + selected leftward. */
-  /* the clipped strip that unveils on open — width animates 0 → natural */
-  @media (min-width:1024px) and (hover:hover){
-  }
-
-  /* ---- list ---- */
-  /* card list now uses global .pk-grid */
-  /* By-Page group now uses global .pk-group / .pk-gh (collapse-hides .pk-grid) */
-  /* (collapse toggle + hide now global .pk-group / .pk-gh-toggle) */
-
-  /* ---- comment card — geometric bands: META / COMMENT / ROUTE / CALLOUT / FOOTER ---- */
-  .rvd .rvd-item{display:flex;flex-direction:column;gap:16px;padding:16px 20px;border-radius:0;max-width:100%;
-    background:var(--pk-card);border:1px solid var(--pk-hair);border-left:3px solid var(--pk-hair);
-    transition:border-color .15s,background .15s;overflow-wrap:anywhere;cursor:pointer}
-  .rvd .rvd-item:focus-visible{outline:none;border-left-color:var(--pk-red);background:var(--pk-elev)}
-  /* left edge colour-keyed to lifecycle state (fast visual scan; hover still wins → red) */
-  .rvd .rvd-item[data-state="tbi"]{border-left-color:var(--pk-amber)}       /* To Be Initiated */
-  .rvd .rvd-item[data-state="inprog"]{border-left-color:var(--pk-blue-ink)} /* In Progress */
-  .rvd .rvd-item[data-state="deployed"]{border-left-color:var(--pk-green)}  /* Deployed live */
-  .rvd .rvd-item[data-state="reopened"]{border-left-color:var(--pk-red)}    /* Reopened */
-  .rvd .rvd-item[data-state="disregarded"]{border-left-color:var(--pk-muted)} /* Disregarded & closed */
-  /* SELECTED (multi-select) — a vibrant red-filled state that stands right out */
-  .rvd .rvd-item.is-selected{background:var(--pk-new-bg);border-color:var(--pk-red);border-left-color:var(--pk-red)}
-  /* META band: select · status · New · (pushed right) page · time */
-  .rvd .rvd-card-top{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-  .rvd .rvd-card-top .rvd-sel{margin-top:0}
-  .rvd .rvd-loc{margin-left:auto;display:inline-flex;align-items:center;gap:8px;min-width:0}
   /* ROUTE band: <chip> → <chip> (raising team → directed team) */
-  .rvd .rvd-route{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-  /* ACTION FOOTER: replies toggle (left) · actions (right), fenced by a hairline */
-  .rvd .rvd-card-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
-    padding-top:16px;border-top:1px solid var(--pk-hair)}
-  .rvd .rvd-foot-left{display:flex;align-items:center;min-height:32px}
-  .rvd .rvd-acts{flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-left:auto}
-  /* BODY: the comment, clamped to ~4 lines until expanded */
-  .rvd .rvd-card-body{display:flex;flex-direction:column;gap:8px;min-width:0}
-  .rvd .rvd-comment-text{font-size:15px;font-weight:500;line-height:1.5;color:var(--pk-ink);
+  .rvd .rvd-route{display:flex;align-items:center;flex-wrap:wrap;gap:var(--pk-space-3)}
+
+  .rvd .rvd-comment-text{font-size:var(--pk-text-lg);font-weight:500;line-height:1.5;color:var(--pk-ink);
     white-space:pre-wrap;overflow-wrap:anywhere}
   .rvd .rvd-comment-text.rvd-clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
     overflow:hidden;white-space:normal}
-  .rvd .rvd-morebtn{align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;
-    font:700 10px/1.4 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
-  .rvd .rvd-morebtn[hidden]{display:none}
-  .rvd .rvd-snip{font-size:12px;color:var(--pk-muted);overflow-wrap:anywhere}
-  /* FOOTER: replies collapsed behind an "N replies" toggle */
-  .rvd .rvd-repliestoggle{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:none;border:none;padding:0;cursor:pointer;
-    font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
-  .rvd .rvd-repliestoggle .rvd-caret{transition:transform .15s}
-  .rvd .rvd-repliestoggle.is-open .rvd-caret{transform:rotate(90deg)}
 
-  /* row action buttons */
-  .rvd .rvd-openpin{height:32px;padding:0 16px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;
-    color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
-    display:inline-flex;align-items:center;text-decoration:none;white-space:nowrap;transition:border-color .15s,color .15s}
-  .rvd .rvd-a{height:32px;padding:0 16px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
-    white-space:nowrap;color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+  .rvd .rvd-a{height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
+    white-space:nowrap;color:var(--pk-body);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
     display:inline-flex;align-items:center;transition:border-color .15s,color .15s}
-  /* Quiet variant — a closing/withdrawing action (Disregard & close), muted vs the primary lifecycle buttons. */
-  .rvd .rvd-a.rvd-a-quiet{color:var(--pk-muted)}
-  .rvd .rvd-a.rvd-a-quiet:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
-  .rvd .rvd-del{height:32px;background:none;border:none;padding:0 8px;cursor:pointer;white-space:nowrap;
-    font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);transition:color .15s}
 
-  /* status + team chips (badge pills) — uniform width for parity (see --pk-chip-w) */
-  /* status chips now use global .pk-status-chip (+ states / --revoked) */
-  /* iteration marker on a card (timeline iter now global .pk-tl-iter) */
-  .rvd .rvd-iter{font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
-
-  /* content-copy-match validation flag on a card (only when method=content-copy-match) */
-  .rvd .rvd-valid{display:inline-flex;align-items:center;gap:8px;font:600 12px/1.4 var(--pk-font);cursor:help}
-  .rvd .rvd-valid.ok{color:var(--pk-green)}
-  .rvd .rvd-valid.warn{color:var(--pk-amber)}
   /* team chip now uses global .pk-team-chip + per-team modifier */
   /* From → To route: an arrow between the raising team and the directed team */
-  .rvd .rvd-route-arrow{color:var(--pk-muted);font-weight:700;font-size:12px;margin:0 1px}
+  .rvd .rvd-route-arrow{color:var(--pk-muted);font-weight:700;font-size:var(--pk-text-sm);margin:0 1px}
   .rvd .rvd-team-none{background:var(--pk-elev);color:var(--pk-muted);border:1px solid var(--pk-hair)}
 
-  /* "change to" callout now uses global .pk-callout (+ --scroll for long text) */
-
-  /* The queue card itself now lives in the SHARED ./card.css (`.pkc-*`), used by both the
-     admin and team dashboards — see core/card.js. Only the admin-specific list chrome
-     (grid, toolbar, tabs, master log, detail view) remains below. */
-
-  /* meta + replies */
-  .rvd .rvd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
-  .rvd .rvd-by{font-size:12px;font-weight:600;color:var(--pk-ink)}
-  .rvd .rvd-time{font-size:12px;color:var(--pk-muted)}
-  .rvd .rvd-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:1px solid var(--pk-hair)}
-  .rvd .rvd-ticket{font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;
-    letter-spacing:.02em;color:var(--pk-red-ink);white-space:nowrap}
+  .rvd .rvd-time{font-size:var(--pk-text-sm);color:var(--pk-muted)}
   /* Per-page pin number — now the global .pk-pinno (detail header). */
   /* reply rows now use global .pk-reply / .pk-reply-x (container = .pk-qq-thread) */
 
   /* empty states now use global .pk-empty / .pk-empty--inline */
 
   /* ---- Deploy Bucket view ---- */
-  .rvd #rvd-view-deploy .rvd-deployhead,.rvd #rvd-view-notifs .rvd-notifhead{
-    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
-  .rvd .rvd-deployhead h2,.rvd .rvd-notifhead h2{margin:0 0 8px;font-size:14px;font-weight:700;
+  .rvd #rvd-view-notifs .rvd-notifhead{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-4);flex-wrap:wrap;margin-bottom:var(--pk-space-4h)}
+  .rvd .rvd-notifhead h2{margin:0 0 var(--pk-space-3);font-size:var(--pk-text-base);font-weight:700;
     letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
-  .rvd .rvd-deploy-explain{margin:0;font-size:13px;line-height:1.5;color:var(--pk-body)}
-  /* the prominent Deploy CTA: strong dark green (ship it) */
-  .rvd .rvd-deploy-btn{flex:none;height:44px;padding:0 24px;border:1px solid var(--pk-deploy);border-radius:0;background:var(--pk-deploy);
-    color:var(--pk-on-accent);font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
-    display:inline-flex;align-items:center;transition:background .15s,border-color .15s,opacity .15s}
-  .rvd .rvd-deploy-btn:disabled{opacity:.45;cursor:default}
-  .rvd .rvd-deploy-banner{margin-bottom:20px;padding:16px 16px;border:1px solid var(--pk-green);border-left:2px solid var(--pk-green);
-    background:var(--pk-done-bg);color:var(--pk-done-ink);font:600 13px/1.4 var(--pk-font)}
+  .rvd .rvd-deploy-explain{margin:0;font-size:var(--pk-text-md);line-height:1.5;color:var(--pk-body)}
 
   /* ---- Notifications view ---- */
   /* notif list + card now use global .pk-notes / .pk-notif; the Mark-read toggle below stays an admin fork */
   .rvd .rvd-notif-toggle{flex:none;margin-top:2px}
 
   /* ---- Comments view: per-thread read/unread bar (mirrors the Notifications toggle) ---- */
-  .rvd #rvd-view-threads .rvd-notifhead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
-  /* thread read/unread bar now uses global .pk-thread-* */
+  .rvd #rvd-view-threads .rvd-notifhead{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-4);flex-wrap:wrap;margin-bottom:var(--pk-space-4h)}
 
-  /* All Entries head + prompt trigger */
-  .rvd .rvd-entrieshead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
-  .rvd .rvd-entrieshead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
-
-  /* Master Log table — compact so all nine columns fit the content width across
-     laptop breakpoints; overflow-x:auto stays as the fallback on very narrow screens. */
-  .rvd .rvd-logwrap{overflow-x:auto;border:1px solid var(--pk-hair);border-radius:0}
-  .rvd .rvd-log{width:100%;border-collapse:collapse;font-size:12px;background:var(--pk-card);table-layout:auto}
-  .rvd .rvd-log th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
-    color:var(--pk-muted);padding:12px 10px;white-space:nowrap;border-bottom:1px solid var(--pk-hair);background:var(--pk-thead-bg)}
-  .rvd .rvd-log td{padding:12px 10px;border-bottom:1px solid var(--pk-hair);vertical-align:middle;color:var(--pk-body)}
+  .rvd .rvd-log{width:100%;border-collapse:collapse;font-size:var(--pk-text-sm);background:var(--pk-card);table-layout:auto}
+  .rvd .rvd-log th{text-align:left;font-size:var(--pk-text-2xs);font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--pk-muted);padding:var(--pk-space-3h) var(--pk-space-3h);white-space:nowrap;border-bottom:1px solid var(--pk-hair);background:var(--pk-thead-bg)}
+  .rvd .rvd-log td{padding:var(--pk-space-3h) var(--pk-space-3h);border-bottom:1px solid var(--pk-hair);vertical-align:middle;color:var(--pk-body)}
   .rvd .rvd-log tbody tr:last-child td{border-bottom:none}
-  .rvd .rvd-logrow{cursor:pointer;transition:background .12s}
   .rvd .rvd-log td.num{font-weight:700;text-align:center;color:var(--pk-ink);font-variant-numeric:tabular-nums}
   /* Chips run compact inside the table so From / Directed to / Status stay narrow. */
-  .rvd .rvd-log .pk-team-chip{margin:0;min-width:0;padding:4px 10px}
-  /* log-table compaction now global (.rvd-log .pk-status-chip) */
-  /* "More options" trigger — icon-only ⋮ square (kebab), toggles the row menu. */
-  .rvd .rvd-log-morecell{width:44px;text-align:center}
-  .rvd .rvd-moreopts{width:32px;height:32px;padding:0;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
+  .rvd .rvd-log .pk-team-chip{margin:0;min-width:0;padding:var(--pk-space-2) var(--pk-space-3h)}
+
+  .rvd .rvd-moreopts{width:var(--pk-control-h-sm);height:var(--pk-control-h-sm);padding:0;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
     color:var(--pk-body);display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s}
   .rvd .rvd-moreopts svg{display:block}
   /* fixed-position row action menu now uses global .pk-rowmenu (+ --rise animation) */
 
   /* ---- Edit-teams modal (re-route From/To) ---- */
-  .rvd-editmodal{position:fixed;inset:0;z-index:2147483300;display:flex;align-items:center;justify-content:center;padding:16px;
+  .rvd-editmodal{position:fixed;inset:0;z-index:var(--pk-z-embed-scrim);display:flex;align-items:center;justify-content:center;padding:var(--pk-space-4);
     background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
   .rvd-editcard{width:420px;max-width:100%;background:var(--pk-card);border:1px solid var(--pk-hair);
-    box-shadow:var(--pk-shadow-md);padding:24px;box-sizing:border-box;font-family:var(--pk-font)}
-  .rvd-edithead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-  .rvd-edittitle{font:700 16px/1.2 var(--pk-font);color:var(--pk-ink)}
-  .rvd-editx{background:none;border:none;cursor:pointer;font-size:20px;line-height:1;color:var(--pk-muted)}
-  .rvd-editsub{margin:8px 0 24px;font-size:13px;line-height:1.5;color:var(--pk-muted)}
-  .rvd-editfield{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-  .rvd-editlbl{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
-  .rvd-editactions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
-  .rvd-editbtn{height:40px;padding:0 20px;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
-    color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
-    display:inline-flex;align-items:center;transition:border-color .15s,color .15s,background .15s}
+    box-shadow:var(--pk-shadow-md);padding:var(--pk-space-5);box-sizing:border-box;font-family:var(--pk-font)}
+  .rvd-edithead{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-3h)}
+  .rvd-edittitle{font:700 var(--pk-text-xl)/1.2 var(--pk-font);color:var(--pk-ink)}
+  .rvd-editx{background:none;border:none;cursor:pointer;font-size:var(--pk-text-3xl);line-height:1;color:var(--pk-muted)}
+  .rvd-editsub{margin:var(--pk-space-3) 0 var(--pk-space-5);font-size:var(--pk-text-md);line-height:1.5;color:var(--pk-muted)}
+  .rvd-editfield{display:flex;flex-direction:column;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4)}
+  .rvd-editlbl{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd-editactions{display:flex;justify-content:flex-end;gap:var(--pk-space-3);margin-top:var(--pk-space-3)}
   .rvd-editsave{border-color:var(--pk-red);color:var(--pk-on-accent);background:var(--pk-red)}
   .rvd-editsave:disabled{opacity:.6;cursor:default}
   @media (min-width:1024px) and (hover:hover){
@@ -390,7 +221,7 @@
 
   /* ===== responsive ===== */
   @media (max-width:768px){
-    .rvd .rvd-teamview{margin-top:0;padding-top:0;border-top:none;flex-direction:row;align-items:center;gap:8px}
+    .rvd .rvd-teamview{margin-top:0;padding-top:0;border-top:none;flex-direction:row;align-items:center;gap:var(--pk-space-3)}
     /* The rail is a wrapping row here — the actions sit beside the picker, sized to content. */
     .rvd .rvd-sideactions{margin-top:0;flex-direction:row;align-items:center}
     .rvd .rvd-sideactions .pk-tt--row,
@@ -398,32 +229,19 @@
   }
   @media (max-width:560px){
     .rvd #rvd-counts{grid-template-columns:1fr}
-    .rvd .rvd-loc{margin-left:0;width:100%}
-    .rvd .rvd-card-foot .rvd-acts{margin-left:0}
   }
 
   /* ===== hover (desktop only, gated) ===== */
   @media (min-width:1024px) and (hover:hover){
-    .rvd .rvd-tab:hover{color:var(--pk-ink)}
-    .rvd .rvd-item:hover{border-left-color:var(--pk-red);background:var(--pk-elev)}
     .rvd .rvd-gh-copy:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
-    .rvd .rvd-selectall:not(.is-active):hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
       .rvd .rvd-moreopts:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
-    .rvd .rvd-deploy-btn:not(:disabled):hover{background:var(--pk-deploy-hover);border-color:var(--pk-deploy-hover)}
-    .rvd .rvd-bulk-a.danger:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
     .rvd .rvd-bulk-x:hover{color:var(--pk-ink)}
     .rvd .rvd-a:hover{border-color:var(--pk-ink);color:var(--pk-ink)}
-    .rvd .rvd-del:hover{color:var(--pk-softred)}
-    .rvd .rvd-slug:hover{color:var(--pk-red-ink);border-color:var(--pk-red)}
-    .rvd .rvd-logrow:hover{background:var(--pk-elev)}
-    .rvd .rvd-morebtn:hover,.rvd .rvd-repliestoggle:hover{color:var(--pk-red-ink)}
     .rvd-login-btn:hover{background:var(--pk-red-2)}
   }
 
   @media (prefers-reduced-motion:reduce){
-    .rvd .pk-app > *,.rvd #rvd-counts .pk-count,.rvd .pk-grid > .pkc-card,.rvd .rvd-logwrap,
-    .rvd .rvd-entrieshead,.rvd .pk-btn.is-refreshing .ico-sync,.rvd .pk-btn.is-resetting::after,
-    .rvd-login-card{animation:none !important}
+    .rvd .pk-app > *,.rvd #rvd-counts .pk-count,.rvd .pk-grid > .pkc-card,.rvd .pk-btn.is-refreshing .ico-sync,.rvd .pk-btn.is-resetting::after,.rvd-login-card{animation:none !important}
     .rvd .rvd-refresh-ico svg{transition:none !important}
   }
 
@@ -436,42 +254,27 @@
   /* status chips, "change to" callout, deploy banner, active nav + table header now
      theme automatically via the tint / --pk-active-bg / --pk-thead-bg tokens. */
   /* native <option> menus */
-  :root[data-pk-theme="light"] .rvd .rvd-sort option,
-  :root[data-pk-theme="light"] .rvd-login-select option{background:var(--pk-card);color:var(--pk-ink)}
+  :root[data-pk-theme="light"] .rvd .rvd-sort option{background:var(--pk-card);color:var(--pk-ink)}
 
-  /* ============================================================
-     V3 FEATURES (F1/F3/F4/F6/F8/F10/F11/F12) — admin-dashboard-specific styles. Every
-     colour is a --pk-* token (the reopen modal + insights bars/tiles reuse the shared
-     .pk-* classes in design/components.css; these are the rvd-scoped extras).
-     ============================================================ */
-  /* F1 — the one-line summary preview above the freeform comment */
-  .rvd .rvd-summary{font:600 13px/1.45 var(--pk-font);color:var(--pk-body);overflow-wrap:anywhere}
-  .rvd .rvd-reopen-note{margin-top:6px;font:500 13px/1.5 var(--pk-font);color:var(--pk-body);font-style:italic}
-  /* F4 — screenshot thumbnails now use global .pk-media/.pk-thumb/.pk-detail-media/.pk-shot */
-  /* F8 — "Success criteria" callout now the global .pk-criteria (shared with the team board). */
-  /* F10 — location hint: clamped selector + copy button */
-  .rvd .rvd-lochint{display:flex;align-items:center;gap:8px;min-width:0}
-  .rvd .rvd-selector{flex:1;min-width:0;max-width:100%;padding:6px 10px;background:var(--pk-input);border:1px solid var(--pk-hair);
-    font:500 12px/1.4 var(--pk-font);color:var(--pk-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rvd .rvd-loc-copy{flex:none}
-  .rvd .rvd-lochint-cap{margin-top:6px;font:400 11px/1.4 var(--pk-font);color:var(--pk-muted)}
+  .rvd .rvd-reopen-note{margin-top:var(--pk-space-3);font:500 var(--pk-text-md)/1.5 var(--pk-font);color:var(--pk-body);font-style:italic}
+
   /* F6 — Quick questions now use global .pk-qq family */
   /* F6 — reply notification chip (icon + "Reply") */
   /* reply chip now global .pk-status-chip--reply */
   /* F11 — saved "Team views" quick-select chips now use global .pk-views/.pk-viewchip */
   /* F12 — Insights: header + date-range picker (the tiles/bars are shared .pk-* classes) */
-  .rvd .rvd-ins-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
-  .rvd .rvd-ins-head h2{margin:0 0 8px;font:700 14px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
-  .rvd .rvd-ins-range{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
-  .rvd .rvd-ins-lbl{display:flex;flex-direction:column;gap:4px;font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
-  .rvd .rvd-ins-date{height:42px;padding:0 12px;border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);
-    color:var(--pk-ink);font:500 13px/1 var(--pk-font);color-scheme:dark}
+  .rvd .rvd-ins-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-4);flex-wrap:wrap;margin-bottom:var(--pk-space-5)}
+  .rvd .rvd-ins-head h2{margin:0 0 var(--pk-space-3);font:700 var(--pk-text-base)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+  .rvd .rvd-ins-range{display:flex;align-items:flex-end;gap:var(--pk-space-3);flex-wrap:wrap}
+  .rvd .rvd-ins-lbl{display:flex;flex-direction:column;gap:var(--pk-space-2);font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
+  .rvd .rvd-ins-date{height:var(--pk-control-h-md);padding:0 var(--pk-space-3h);border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);
+    color:var(--pk-ink);font:500 var(--pk-text-md)/1 var(--pk-font);color-scheme:dark}
   :root[data-pk-theme="light"] .rvd .rvd-ins-date{color-scheme:light}
-  .rvd .rvd-ins-date:focus{outline:none;border-color:var(--pk-red)}
-  .rvd .rvd-ins-h{font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);margin-bottom:4px}
+  .rvd .rvd-ins-date:focus-visible{outline:none;border-color:var(--pk-red)}
+  .rvd .rvd-ins-h{font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);margin-bottom:var(--pk-space-2)}
   /* .pk-empty--inline */
   @media (min-width:1024px) and (hover:hover){
-    .rvd .rvd-loc-copy:hover,.rvd .pk-qq-send:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
+    .rvd .pk-qq-send:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
   }
 
   /* ============================================================
@@ -488,13 +291,13 @@
 
   /* ---- screenshot lightbox ---- */
   /* .pk-thumb-zoom (global) */
-  .rvd-lightbox{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;
+  .rvd-lightbox{position:fixed;inset:0;z-index:var(--pk-z-lightbox);display:flex;align-items:center;justify-content:center;padding:var(--pk-space-5);
     background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
-  .rvd-lightbox-fig{margin:0;max-width:96vw;max-height:92vh;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .rvd-lightbox-fig{margin:0;max-width:96vw;max-height:92vh;display:flex;flex-direction:column;gap:var(--pk-space-3);align-items:center}
   .rvd-lightbox-fig img{max-width:96vw;max-height:86vh;object-fit:contain;border:1px solid var(--pk-hair);background:var(--pk-card)}
-  .rvd-lightbox-fig figcaption{font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:#ddd}
-  .rvd-lightbox-x{position:fixed;top:18px;right:22px;width:40px;height:40px;border:1px solid var(--pk-on-media-line);
-    background:transparent;color:#fff;font-size:26px;line-height:1;cursor:pointer;border-radius:9999px}
+  .rvd-lightbox-fig figcaption{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-on-media-sub)}
+  .rvd-lightbox-x{position:fixed;top:18px;right:22px;width:var(--pk-control-h-md);height:var(--pk-control-h-md);border:1px solid var(--pk-on-media-line);
+    background:transparent;color:var(--pk-on-media);font-size:var(--pk-text-4xl);line-height:1;cursor:pointer;border-radius:9999px}
 
   /* Settings view — .pk-set / .pk-set-* now GLOBAL in design/components.css (shared with team).
      Admin-only preference refinements (density/reduce-motion) stay below. */
@@ -502,75 +305,76 @@
   /* ============================================================
      Preference tokens — density + reduce-motion (scoped to .rvd)
      ============================================================ */
-  .rvd[data-pk-density="compact"] .pk-detail-grid{gap:12px}
+  .rvd[data-pk-density="compact"] .pk-detail-grid{gap:var(--pk-space-3h)}
   .rvd[data-pk-density="compact"] .pk-detail-main,
-  .rvd[data-pk-density="compact"] .pk-detail-side{gap:12px}
-  .rvd[data-pk-density="compact"] .pk-dcard-b{padding:0 12px 12px}
-  .rvd[data-pk-density="compact"] .pk-dcard-h{padding:9px 12px}
-  .rvd[data-pk-density="compact"] .pk-dmeta{gap:9px}
-  .rvd[data-pk-density="compact"] .pk-set-card-b{padding:4px 14px}
-  .rvd[data-pk-density="compact"] .pk-set-row{padding:9px 0}
-  .rvd[data-pk-density="compact"] .pk-grid{gap:10px}
+  .rvd[data-pk-density="compact"] .pk-detail-side{gap:var(--pk-space-3h)}
+  .rvd[data-pk-density="compact"] .pk-dcard-b{padding:0 var(--pk-space-3h) var(--pk-space-3h)}
+  .rvd[data-pk-density="compact"] .pk-dcard-h{padding:var(--pk-space-3) var(--pk-space-3h)}
+  .rvd[data-pk-density="compact"] .pk-dmeta{gap:var(--pk-space-3)}
+  .rvd[data-pk-density="compact"] .pk-set-card-b{padding:var(--pk-space-2) var(--pk-space-4)}
+  .rvd[data-pk-density="compact"] .pk-set-row{padding:var(--pk-space-3) 0}
+  .rvd[data-pk-density="compact"] .pk-grid{gap:var(--pk-space-3h)}
   .rvd[data-pk-reduce] *,.rvd[data-pk-reduce] *::before,.rvd[data-pk-reduce] *::after{animation:none !important;transition:none !important}
 
   /* ---- hover (desktop only) ---- */
   @media (min-width:1024px) and (hover:hover){
-    .rvd-lightbox-x:hover{border-color:#fff}
+    .rvd-lightbox-x:hover{border-color:var(--pk-on-media)}
   }
   /* detail responsive (grid→1col, sticky-bar→static on mobile) lives with the global
      .pk-detail* rules in design/components.css — shared by both dashboards. */
-
 
 /* ---- 7.x visibility matrix (Settings → Visibility) ----------------------------------------
    Rows are the viewing team, columns the team being viewed. A cell has THREE states, because
    "follow the mode" has to stay distinguishable from an explicit allow that happens to agree
    with it — otherwise flipping the project mode would silently rewrite every pair. */
 .pk-vis-wrap { overflow-x: auto; }                 /* many teams > panel width; scroll the grid, not the page */
-.pk-vis-table { border-collapse: collapse; font-size: 12px; }
-.pk-vis-table th { font-weight: 600; color: var(--pk-muted); padding: 6px 10px; text-align: left; white-space: nowrap; }
+.pk-vis-table { border-collapse: collapse; font-size:var(--pk-text-sm); }
+.pk-vis-table th { font-weight: 600; color: var(--pk-muted); padding: var(--pk-space-3) var(--pk-space-3h); text-align: left; white-space: nowrap; }
 .pk-vis-table tbody th { color: var(--pk-ink); }
 .pk-vis-table td { padding: 3px; text-align: center; }
 .pk-vis-self { color: var(--pk-muted); opacity: .5; }
 .pk-vis-cell {
-  width: 30px; height: 30px; border-radius: var(--pk-radius-sm);
+  width: var(--pk-control-h-sm); height: var(--pk-control-h-sm); border-radius: var(--pk-radius-sm);
   border: 1px solid var(--pk-hair); background: var(--pk-elev);
-  color: var(--pk-muted); font: 600 12px/1 var(--pk-font); cursor: pointer;
+  color: var(--pk-muted); font: 600 var(--pk-text-sm)/1 var(--pk-font); cursor: pointer;
   transition: background .14s, border-color .14s, color .14s;
 }
-.pk-vis-cell:hover { border-color: var(--pk-muted); }
-.pk-vis-cell.is-on { background: rgba(61,220,132,.14); border-color: var(--pk-green); color: var(--pk-green); }
-.pk-vis-cell:not(.is-on) { background: rgba(218,41,28,.10); border-color: var(--pk-hair); color: var(--pk-softred); }
+@media (min-width:1024px) and (hover:hover){.pk-vis-cell:hover { border-color: var(--pk-muted); }}
+/* Reuses the DONE / NEW status tints rather than mixing its own alpha wash: a green
+   tint on a card and a red tint on a card already exist as roles, and a second pair
+   would drift from the first the next time either is retuned. */
+.pk-vis-cell.is-on { background: var(--pk-done-bg); border-color: var(--pk-green); color: var(--pk-green); }
+.pk-vis-cell:not(.is-on) { background: var(--pk-new-bg); border-color: var(--pk-hair); color: var(--pk-softred); }
 /* An explicit choice is ringed, so "pinned open/shut" reads differently from "inherited". */
 .pk-vis-cell.is-set { box-shadow: 0 0 0 2px var(--pk-canvas), 0 0 0 3px currentColor; }
-
 
 /* ---- 7.4: Builder home tiles ---------------------------------------------------------------
    An index of what Builder mode can do. auto-fit rather than fixed columns so the grid reflows
    sensibly from a laptop to a wide monitor without a media-query ladder. */
-.pk-tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: 4px; }
+.pk-tiles { display: grid; gap: var(--pk-space-3h); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: var(--pk-space-2); }
 .pk-tile {
-  display: flex; flex-direction: column; gap: 4px; text-align: left;
-  padding: 16px 18px; min-height: 8.5rem;
+  display: flex; flex-direction: column; gap: var(--pk-space-2); text-align: left;
+  padding: var(--pk-space-4) var(--pk-space-4h); min-height: 8.5rem;
   border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-lg);
   background: var(--pk-card); color: var(--pk-ink); cursor: pointer;
   transition: border-color .16s, background .16s;
 }
-/* Stroke only — no lift. See .pk-card-tile for why. */
-.pk-tile:hover { border-color: var(--pk-red); }
+@media (min-width:1024px) and (hover:hover){/* Stroke only — no lift. See .pk-card-tile for why. */
+.pk-tile:hover { border-color: var(--pk-red); }}
 .pk-tile:focus-visible { outline: 2px solid var(--pk-red); outline-offset: 2px; }
 /* The queue is the only tile that represents work waiting on you, so it leads. */
 .pk-tile.is-wide { grid-column: span 2; }
-.pk-tile.is-accent { background: linear-gradient(180deg, rgba(218,41,28,.10), transparent 70%); border-color: rgba(218,41,28,.35); }
-.pk-tile-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.pk-tile-title { font: 650 13px/1.2 var(--pk-font); letter-spacing: .01em; }
+.pk-tile.is-accent { background: linear-gradient(180deg, rgba(218,41,28,.10), transparent 70%); border-color: var(--pk-ring-red); }
+.pk-tile-head { display: flex; align-items: center; justify-content: space-between; gap: var(--pk-space-3); }
+.pk-tile-title { font: 650 var(--pk-text-md)/1.2 var(--pk-font); letter-spacing: .01em; }
 .pk-tile-badge {
-  font: 600 10px/1 var(--pk-font); letter-spacing: .04em; text-transform: uppercase;
-  padding: 4px 7px; border-radius: var(--pk-radius-full);
+  font: 600 var(--pk-text-2xs)/1 var(--pk-font); letter-spacing: .04em; text-transform: uppercase;
+  padding: var(--pk-space-2) var(--pk-space-3); border-radius: var(--pk-radius-full);
   background: var(--pk-red); color: var(--pk-on-accent); white-space: nowrap;
 }
-.pk-tile-stat { font: 700 30px/1.05 var(--pk-font); letter-spacing: -.02em; margin-top: 6px; }
-.pk-tile-sub { font-size: 11.5px; color: var(--pk-body); }
-.pk-tile-desc { margin-top: auto; padding-top: 8px; font-size: 11.5px; color: var(--pk-muted); line-height: 1.45; }
+.pk-tile-stat { font: 700 var(--pk-text-5xl)/1.05 var(--pk-font); letter-spacing: -.02em; margin-top: var(--pk-space-3); }
+.pk-tile-sub { font-size:var(--pk-text-sm); color: var(--pk-body); }
+.pk-tile-desc { margin-top: auto; padding-top: var(--pk-space-3); font-size:var(--pk-text-sm); color: var(--pk-muted); line-height: 1.45; }
 @media (max-width: 40rem) { .pk-tile.is-wide { grid-column: span 1; } }
 @media (prefers-reduced-motion: reduce) { .pk-tile { transition: none } }
 
@@ -637,7 +441,7 @@
 .pk-side .rvd-teamview .pk-dropdown-trigger,
 .pk-side .pk-side-theme-btn,
 .pk-side .pk-side-logout--row {
-  display: flex !important; align-items: center; gap: 12px;
+  display: flex !important; align-items: center; gap: var(--pk-space-3h);
   width: 100% !important; box-sizing: border-box;
   /* `min-width: 0` on ALL FOUR, in BOTH states. Three of them are plain rows and never needed it;
      the team trigger is a flex container carrying a component `min-width: 170px` and the flex
@@ -648,7 +452,7 @@
      width in the collapsed state instead (as this used to) gave it a width the rail transition
      could not interpolate, so it snapped to 64px in a single frame while the rest slid. */
   min-width: 0 !important;
-  padding-left: var(--pk-rail-gutter) !important; padding-right: 12px !important;
+  padding-left: var(--pk-rail-gutter) !important; padding-right: var(--pk-space-3h) !important;
   justify-content: flex-start !important;
   white-space: nowrap; overflow: hidden; text-align: left;
 }
@@ -671,18 +475,18 @@
   background: var(--pk-card) !important;
   border: 1px solid var(--pk-hair) !important;
   border-radius: var(--pk-radius-md) !important;
-  font: 500 13px/1 var(--pk-font) !important;
+  font: 500 var(--pk-text-md)/1 var(--pk-font) !important;
   cursor: pointer;
   transition: color .14s, border-color .14s, background .14s;
 }
-.pk-side .pk-side-collapse:hover,
+@media (min-width:1024px) and (hover:hover){.pk-side .pk-side-collapse:hover,
 .pk-side .rvd-teamview .pk-dropdown-trigger:hover,
 .pk-side .pk-side-theme-btn:hover,
 .pk-side .pk-side-logout--row:hover {
   color: var(--pk-ink) !important;
   border-color: var(--pk-muted) !important;
   background: var(--pk-elev) !important;
-}
+}}
 /* Team picker: glyph and label left, chevron pinned right. */
 .pk-side .rvd-teamview .pk-dropdown-trigger .pk-dropdown-label { margin-right: auto !important; }
 .pk-side .rvd-teamview .pk-dropdown-trigger > svg { margin-left: auto !important; }
@@ -743,13 +547,13 @@
 /* The indent differs between states (under the parent's label when expanded, tucked in when not),
    so the icons MOVE — and they were teleporting while the track beside them slid. Transitioning
    the padding is what animates them; it costs a layout pass on five 38px rows, once per toggle. */
-.pk-side .pk-subnav .pk-nav--sub{display:flex;align-items:center;gap:10px;height:38px;
+.pk-side .pk-subnav .pk-nav--sub{display:flex;align-items:center;gap:var(--pk-space-3h);height:var(--pk-control-h-md);
   transition:padding-left .26s cubic-bezier(.4,0,.2,1),color .15s;
   /* Indented so the sub-item's ICON sits under the parent's LABEL. That one alignment is what
      reads as "belongs to the thing above" rather than "another top-level item, slightly moved". */
-  padding-left:calc(var(--pk-rail-gutter) + 18px + 12px) !important;
-  padding-right:12px !important;
-  font:500 12.5px/1 var(--pk-font);color:var(--pk-muted);background:transparent;border:none}
+  padding-left:calc(var(--pk-rail-gutter) + var(--pk-space-4h) + var(--pk-space-3h)) !important;
+  padding-right:var(--pk-space-3h) !important;
+  font:500 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted);background:transparent;border:none}
 /* Smaller than the parent's 18px. Size is the hierarchy: a sub-item drawn at the same weight as
    its parent stops looking like a child of it. */
 .pk-side .pk-subnav .pk-nav--sub .pk-nav-ico{flex:none;width:15px;height:15px;stroke-width:1.9}
@@ -808,7 +612,7 @@
      remove. Collapsing the rail changes its WIDTH; nothing may move vertically. */
   gap:0;justify-content:flex-start;
   /* 26px: 4px right of the top-level icon column, so the indent survives without labels. */
-  padding-left:26px !important;padding-right:0 !important}
+  padding-left:var(--pk-space-5) !important;padding-right:0 !important}
 :root.pk-side-collapsed .pk-side .pk-nav--sub .pk-nav-txt{display:none}
 /* A badge has no room beside a lone icon — it becomes a dot on the icon's shoulder. */
 :root.pk-side-collapsed .pk-side .pk-nav--sub .pk-navbadge{position:absolute;left:34px;top:6px;
@@ -842,9 +646,9 @@
 
 /* Product name leads; which board you are on is a qualifier, not the title. */
 .pk-h1-mode {
-  display: inline-block; margin-left: 10px;
-  font: 500 12px/1 var(--pk-font); letter-spacing: .06em; text-transform: uppercase;
+  display: inline-block; margin-left: var(--pk-space-3h);
+  font: 500 var(--pk-text-sm)/1 var(--pk-font); letter-spacing: .06em; text-transform: uppercase;
   color: var(--pk-muted); vertical-align: middle;
-  padding: 4px 8px; border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-full);
+  padding: var(--pk-space-2) var(--pk-space-3); border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-full);
 }
-@media (max-width: 34rem) { .pk-h1-mode { display: block; margin: 6px 0 0; width: max-content; } }
+@media (max-width: 34rem) { .pk-h1-mode { display: block; margin: var(--pk-space-3) 0 0; width: max-content; } }

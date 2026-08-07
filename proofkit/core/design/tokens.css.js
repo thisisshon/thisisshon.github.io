@@ -131,6 +131,23 @@ export default `/* =============================================================
   /* accent gold (the host-project wordmark tag) */
   --pk-brand-gold:#f3b83f;
 
+  /* ---- ALWAYS-DARK surfaces. Two places in the product deliberately ignore the skin: the auth
+     door (a hard cut away from wherever you came from) and the media lightbox (a photo needs a
+     neutral dark surround, not a themed one). They are the same problem, so they share one role
+     family instead of each hardcoding its own greys — which is what auth.css did, with 19 raw
+     hexes including a hand-typed copy of the brand red.
+
+     The ink values are set by CONTRAST, not by eye. Measured against --pk-fixed-bg (#000) and the
+     raised --pk-fixed-elev (#0d0d0d), because a placeholder sitting in the input well is the
+     worst case and it is the one that used to fail:
+       --pk-fixed-sub   6.1:1 on bg / 5.4:1 on elev   (was #8a8a8a — already passing, kept)
+       --pk-fixed-faint 4.9:1 on bg / 4.5:1 on elev   (replaces #6e6e6e 4.1:1, #5a5a5a 3.3:1 and
+                                                       placeholder #4e4e4e 2.1:1 — all failed AA) */
+  --pk-fixed-bg:#000000;    --pk-fixed-elev:#0d0d0d;  --pk-fixed-line:#2c2c2c;
+  --pk-fixed-ink:#ffffff;   --pk-fixed-sub:#8a8a8a;   --pk-fixed-faint:#7a7a7a;
+  --pk-fixed-danger:#ef5b50; /* error ink that must not flip to the light skin's dark red */
+  --pk-fixed-ring:#431c19;   /* solid focus halo — the ONE ring value, never an rgba() */
+
   /* accent presets (skin-agnostic) — the admin appearance picker's theme swatches.
      crimson-2 is the brand pressed red (matches --pk-red-2), not a fourth red. */
   --pk-accent-crimson:#da291c; --pk-accent-crimson-2:#b01e0a;
@@ -142,9 +159,23 @@ export default `/* =============================================================
   /* uniform chip width (parity) — every badge chip is as wide as the longest label. */
   --pk-chip-w:92px;      /* team + status badge chips */
 
-  /* control heights — one ladder for buttons / inputs / nav (48px = mobile tap target) */
-  --pk-control-h-lg:48px; --pk-control-h-md:40px; --pk-control-h-sm:32px; --pk-control-h-xs:28px;
-  --pk-nav-h:48px;
+  /* ---- CONTROL HEIGHTS — ONE ladder for every interactive control: buttons, inputs, selects,
+     chips, segmented controls, toolbar controls, icon buttons. Not a ladder per component.
+
+     Five rungs, every one a multiple of 8. Before the 12.1 cleanup this ladder was declared and
+     referenced ZERO times, while the product shipped TWELVE distinct control heights — 24, 26, 28,
+     30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 54, 56. That is what a dormant ladder costs: a 42px
+     search box beside a 40px button beside a 34px bulk action, in one toolbar, and nobody able to
+     say why the row looks off. Controls that do not share a ladder do not line up.
+
+     Adoption moved every control by at most 4px. If a new control needs a sixth rung, that is a
+     design decision to escalate — not a token to add quietly. */
+  --pk-control-h-xs:24px;  /* inline chips, pills, badges, the settings switch */
+  --pk-control-h-sm:32px;  /* small buttons, filter chips, dense row actions */
+  --pk-control-h-md:40px;  /* toolbar controls, search, selects, secondary buttons */
+  --pk-control-h-lg:48px;  /* primary buttons, fields, nav rows — and the mobile tap target */
+  --pk-control-h-xl:56px;  /* the login form only: one marquee surface, deliberately larger */
+  --pk-nav-h:48px;         /* = --pk-control-h-lg; the rail row IS a control-sized row */
 
   /* type — ONE typeface, Outfit, everywhere in the tool (matches the host site's single
      family; loaded by the page shell / on-page overlay). No second font, no monospace —
@@ -152,18 +183,43 @@ export default `/* =============================================================
      face. */
   --pk-font:'Outfit',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
 
-  /* type scale — a fixed ramp (no one-off sizes), weight set, and line-heights.
-     rule 3: body copy is 1.5; headings tighten to 1.2; single-line controls use 1. */
-  --pk-text-3xs:10px; --pk-text-2xs:11px; --pk-text-xs:12px; --pk-text-sm:13px;
-  --pk-text-md:14px;  --pk-text-lg:18px;  --pk-text-xl:28px; --pk-text-2xl:32px;
+  /* type scale — a CLOSED ramp. Every font-size in the product is one of these; the check in
+     scripts/design-conformance.sh fails if a literal size appears outside it.
+
+     Renumbered during the 12.1 cleanup: the ramp declared 8 steps while the product shipped 19
+     distinct sizes, including 11.5px and 12.5px — a half-pixel is always someone matching a mock by
+     eye, never a decision. Off-ramp values were snapped to a neighbour (11.5/12.5→12, 26→28), or
+     promoted to a step where they were load-bearing (15, 16, 20), or turned out not to be sizes at
+     all (a stray 21px was a line-height written in px). Names are ordered by value, so a name
+     predicts its size and adjacent names are adjacent sizes. */
+  --pk-text-3xs:9px;   /* tracked uppercase micro-badge — a designed micro-label, not an accident */
+  --pk-text-2xs:10px; --pk-text-xs:11px; --pk-text-sm:12px; --pk-text-md:13px;
+  --pk-text-base:14px;                    /* the UI default: buttons, rows, chrome */
+  --pk-text-lg:15px;                      /* card titles and comment bodies — the reading size */
+  --pk-text-xl:16px;                      /* text inputs: 16px is the floor below which iOS zooms
+                                             the viewport on focus. Not a taste decision. */
+  --pk-text-2xl:18px; --pk-text-3xl:20px; --pk-text-4xl:28px; --pk-text-5xl:32px;
+  /* Fluid display type. One clamp is ONE decision, not three sizes — bind the whole expression so
+     its call sites cannot drift apart, which is what had happened to the two count tiles. */
+  --pk-text-count:clamp(30px,4vw,42px);      /* the big stat numerals */
+  --pk-text-display:clamp(30px,4.4vw,44px);  /* page h1 */
   --pk-w-regular:400; --pk-w-medium:500; --pk-w-semibold:600; --pk-w-bold:700;
   --pk-lh-none:1; --pk-lh-body:1.5; --pk-lh-heading:1.2;
   /* tracking — the only sanctioned letter-spacing values (no decimals) */
   --pk-track-1:1px; --pk-track-2:2px;
 
-  /* spacing ladder — 4/8px grid (4px worst case) */
-  --pk-space-2:4px; --pk-space-3:8px; --pk-space-3h:12px; --pk-space-4:16px; --pk-space-4h:20px;
-  --pk-space-5:24px; --pk-space-6:32px; --pk-space-7:48px; --pk-space-8:64px; --pk-space-9:96px; --pk-space-10:128px;
+  /* ---- SPACING LADDER — 4px grid, 8px wherever the ladder offers it. Every gap, padding and
+     margin in the product is one of these steps.
+
+     Two steps (40px, 56px) were added during the 12.1 cleanup because the product was already
+     using them deliberately and they had nowhere to bind. Everything else off the ladder was
+     snapped to its nearest step — 13 off-grid values across ~110 declarations, none moving by more
+     than 2px. Values below 4px are NOT spacing: a 1–3px offset is an optical nudge on a border or
+     an icon baseline, and forcing those onto the grid would move things that were placed by eye
+     against a stroke. The check exempts them for that reason, and only for that reason. */
+  --pk-space-2:4px;  --pk-space-3:8px;  --pk-space-3h:12px; --pk-space-4:16px; --pk-space-4h:20px;
+  --pk-space-5:24px; --pk-space-6:32px; --pk-space-6h:40px; --pk-space-7:48px; --pk-space-7h:56px;
+  --pk-space-8:64px; --pk-space-9:96px; --pk-space-10:128px;
 
   /* radius — sharp corners are the signature; curves used sparingly */
   --pk-radius-sm:4px; --pk-radius-md:8px; --pk-radius-lg:12px; --pk-radius-full:9999px;
@@ -175,6 +231,33 @@ export default `/* =============================================================
   --pk-shadow-sm:0 1px 4px rgba(0,0,0,.28);
   --pk-shadow-md:0 6px 20px rgba(0,0,0,.28);
   --pk-shadow-lg:0 24px 64px rgba(0,0,0,.5);
+
+  /* ---- STACKING ORDER — the whole ladder, in order, and the only place a z-index is written.
+     The numbers are the ones the components already carried; naming them was a rename, not a
+     retune, so adopting the scale could not change what sits above what. The gaps are deliberate
+     (room to insert a layer without renumbering its neighbours).
+
+     Unscaled z-index decays in a predictable sequence — 1 → 20 → 60 → 210 → 9999 → max-int — and
+     this file is the evidence: ProofKit had every one of those. Once a codebase contains a raw
+     9999, every later stacking decision is made by escalation instead of by design.
+
+     Six rungs, because six is what the product actually stacks. A first draft of this ladder also
+     carried a \`raised:10\` and a \`nav:100\` copied from a reference scale; nothing referenced either,
+     so both were deleted the same day. A rung nobody stands on asserts the ladder is complete while
+     the code stacks by accident — worse than the gap it was added to fill. Add one back at the
+     moment a component needs it, in the commit that uses it. */
+  --pk-z-sticky:20;        /* sticky bars inside a scroller (detail bar) */
+  --pk-z-fab:60;           /* floating action bar — must clear the sticky bar */
+  --pk-z-popover:210;      /* in-page anchored menus (dropdown) */
+  --pk-z-overlay:9998;     /* modal layer */
+  --pk-z-gate:9999;        /* the login gate — covers the modal layer it may be raised over */
+  --pk-z-lightbox:10000;   /* media viewer — the top of the ordinary stack */
+  /* The embedded exception, and the ONLY place max-int is correct: the overlay and the widgets it
+     shares (row menu, chip rail) inject into arbitrary host pages whose stacking contexts are
+     unknown and unbounded. Two rungs so a panel always clears its own scrim. A bare 2147483400 in
+     a rule reads as panic; a named token reads as a decision. */
+  --pk-z-embed-scrim:2147483300;
+  --pk-z-embed-panel:2147483400;
 
   /* motion */
   --pk-ease:cubic-bezier(.4,0,.2,1);

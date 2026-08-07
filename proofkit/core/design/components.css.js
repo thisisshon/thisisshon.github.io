@@ -12,23 +12,23 @@ export default `/* =============================================================
 
 /* ---- eyebrow: the uppercase tracked micro-label (voltage red) ---- */
 .pk-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  font:700 11px/1.4 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-red-ink);
+  display:inline-flex;align-items:center;gap:var(--pk-space-3);
+  font:700 var(--pk-text-xs)/1.4 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-red-ink);
 }
 .pk-eyebrow::before{content:"";width:8px;height:8px;background:var(--pk-red);flex:none}
 
 /* ---- buttons: sharp corners, uppercase tracked, one voltage ---- */
 .pk-btn{
-  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  height:48px;padding:0 24px;border:1px solid transparent;border-radius:0;cursor:pointer;text-decoration:none;
-  font:700 13px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;white-space:nowrap;
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:var(--pk-space-3);
+  height:var(--pk-control-h-lg);padding:0 var(--pk-space-5);border:1px solid transparent;border-radius:0;cursor:pointer;text-decoration:none;
+  font:700 var(--pk-text-md)/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;white-space:nowrap;
   transition:background .15s var(--pk-ease),border-color .15s,color .15s,transform .15s;
 }
 .pk-btn svg{width:18px;height:18px;flex:none}
 .pk-btn--primary{background:var(--pk-red);color:var(--pk-on-accent)}
 .pk-btn--ghost{background:transparent;border-color:var(--pk-hair);color:var(--pk-ink)}
 /* --md = the dashboards' 40px top-bar size; --icon = square icon-only (refresh/logout) */
-.pk-btn--md{height:40px;padding:0 20px;font-size:12px;letter-spacing:.12em}
+.pk-btn--md{height:var(--pk-control-h-md);padding:0 var(--pk-space-4h);font-size:var(--pk-text-sm);letter-spacing:.12em}
 .pk-btn--icon{width:40px;padding:0}
 @media (min-width:1024px) and (hover:hover){
   .pk-btn--primary:hover{background:var(--pk-red-2)}
@@ -38,18 +38,13 @@ export default `/* =============================================================
 /* ---- card: the elevated surface ---- */
 .pk-card{
   background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-hair);
-  padding:24px;color:var(--pk-ink);transition:border-color .15s,background .15s;
+  padding:var(--pk-space-5);color:var(--pk-ink);transition:border-color .15s,background .15s;
 }
 @media (min-width:1024px) and (hover:hover){
   .pk-card--hover:hover{border-left-color:var(--pk-red);background:var(--pk-elev)}
 }
 
 /* ---- chip / tag: the pill ---- */
-.pk-chip{
-  display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:var(--pk-radius-full);
-  border:1px solid var(--pk-hair);background:transparent;
-  font:700 10px/1 var(--pk-font);letter-spacing:1px;text-transform:uppercase;color:var(--pk-body);
-}
 .pk-chip--red{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
 .pk-chip--green{color:var(--pk-green);border-color:var(--pk-green)}
 
@@ -58,7 +53,7 @@ export default `/* =============================================================
    (VAPT T4/A2), which drops style attributes, so an inline background rendered the dot
    invisible. One class per STATUS_COLORS key — keep the two in sync. ---- */
 .pk-count-dot{display:inline-block;width:var(--pk-space-3);height:var(--pk-space-3);
-  border-radius:var(--pk-radius-full);margin:0 6px 1px 0;vertical-align:middle;
+  border-radius:var(--pk-radius-full);margin:0 var(--pk-space-3) 1px 0;vertical-align:middle;
   background:var(--pk-muted)}
 .pk-count-dot--to_be_initiated{background:var(--pk-amber)}
 .pk-count-dot--in_progress{background:var(--pk-blue)}
@@ -76,8 +71,8 @@ export default `/* =============================================================
 .pk-u-opt{color:var(--pk-muted)}
 .pk-u-count{font-weight:500;color:var(--pk-muted)}
 .pk-u-pending{color:var(--pk-muted);font-style:italic}
-.pk-u-errtext{color:var(--pk-softred);font:600 13px/1.4 var(--pk-font)}
-.pk-u-inlinerow{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pk-u-errtext{color:var(--pk-softred);font:600 var(--pk-text-md)/1.4 var(--pk-font)}
+.pk-u-inlinerow{display:inline-flex;gap:var(--pk-space-3);flex-wrap:wrap;align-items:center}
 .pk-u-projid{width:78px}
 .pk-u-projname{width:104px}
 .pk-u-secgap{margin-top:var(--pk-space-3)}
@@ -86,11 +81,45 @@ export default `/* =============================================================
 .pk-u-h3dup{margin:var(--pk-space-3h) 0 var(--pk-space-3)}
 .pk-u-h3frag{margin:var(--pk-space-4) 0 var(--pk-space-3)}
 .pk-u-duptile{display:block;text-align:left;margin-bottom:var(--pk-space-3)}
-.pk-u-duprow{display:flex;align-items:center;gap:10px;justify-content:space-between}
-.pk-u-list{margin:var(--pk-space-3) 0 0;padding-left:18px;color:var(--pk-body)}
-.pk-u-list-flush{padding-left:18px;color:var(--pk-body)}
+.pk-u-duprow{display:flex;align-items:center;gap:var(--pk-space-3h);justify-content:space-between}
+.pk-u-list{margin:var(--pk-space-3) 0 0;padding-left:var(--pk-space-4h);color:var(--pk-body)}
+.pk-u-list-flush{padding-left:var(--pk-space-4h);color:var(--pk-body)}
 /* auto-verification chip (was inline border-color/color per status) */
-.pk-status-chip--verified{border-color:var(--pk-green-ink);color:var(--pk-green-ink)}
+/* ---- THE LABEL PILL — read-only, rounded, never clickable ------------------------------------
+   .pk-chip (neutral), .pk-type-chip (change-type, blue) and .pk-status-chip (lifecycle, tinted by
+   a status modifier) were three rules for one shape. They disagreed on height (24px, 22px, and
+   whatever padding produced), on tracking (1px vs .1em vs .1em) and on whether box-sizing was
+   set — none of it deliberate. .pk-type-chip's 22px was the last control height in the product
+   that sat off the ladder; it is --xs (24px) now, a 2px change.
+   The distinction that IS real: a pill has no cursor and no transition, because it is a label.
+   Anything clickable is the FILTER CHIP below. */
+.pk-chip,.pk-type-chip,.pk-status-chip{
+  display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+  height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-full);
+  background:transparent;color:var(--pk-body);
+  font:700 var(--pk-text-2xs)/var(--pk-lh-none) var(--pk-font);
+  letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.pk-type-chip{background:var(--pk-blue-bg);border-color:var(--pk-blue-ink);color:var(--pk-blue-ink);
+  font-size:var(--pk-text-3xs)}
+.pk-status-chip{gap:var(--pk-space-2);min-width:var(--pk-chip-w);border-color:transparent}
+
+/* ---- THE FILTER CHIP — square, clickable, sits on the --sm rung ------------------------------
+   .pk-tchip (team) and .pk-schip (status) are the same control with different label copy. */
+.pk-tchip,.pk-schip{
+  display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+  height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;
+  background:transparent;color:var(--pk-body);
+  font:700 var(--pk-text-2xs)/var(--pk-lh-none) var(--pk-font);
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  transition:background var(--pk-dur-base) var(--pk-ease),color var(--pk-dur-base) var(--pk-ease),
+             border-color var(--pk-dur-base) var(--pk-ease)}
+.pk-tchip{min-width:96px;border-width:var(--pk-border-strong);border-color:transparent}
+.pk-schip{gap:var(--pk-space-3);padding:0 var(--pk-space-3h);
+  font-weight:600;font-size:var(--pk-text-xs);letter-spacing:.03em;text-transform:none}
+
+.pk-status-chip--verified{border-color:var(--pk-done-ink);color:var(--pk-done-ink)}
 .pk-status-chip--mismatch{border-color:var(--pk-softred);color:var(--pk-softred)}
 .pk-status-chip--unreachable{border-color:var(--pk-muted);color:var(--pk-muted)}
 /* on-page overlay status chip — one class per STATUS_COLORS key (was inline background/colour) */
@@ -107,22 +136,19 @@ export default `/* =============================================================
 /* ---- read-only change-type badge on cards + detail (NOT .pk-typechip, the overlay
    selector button below — one hyphen apart). Faithful merge of .tmd-type-chip / .rvd-typechip;
    the off-grid 22/10/9px sizing is a Phase-4 type-scale normalization, kept literal for now. ---- */
-.pk-type-chip{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:var(--pk-radius-full);
-  background:var(--pk-blue-bg);color:var(--pk-blue-ink);border:var(--pk-border-hair) solid var(--pk-blue-ink);
-  font:700 9px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
 
 /* ---- "Reopened: <label>" badge (+ clarify variant) on cards + detail. Faithful merge of
    .tmd-reopen-badge / .rvd-reopen-badge (+ .tmd-clarify-badge). ---- */
-.pk-reopen-badge{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:var(--pk-radius-full);
+.pk-reopen-badge{display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3h);border-radius:var(--pk-radius-full);
   background:var(--pk-new-bg);color:var(--pk-new-ink);border:var(--pk-border-hair) solid var(--pk-softred);
-  font:700 9px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+  font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .pk-reopen-badge--clarify{background:var(--pk-clarify-bg);color:var(--pk-clarify-ink);border-color:var(--pk-clarify)}
 
 /* ---- per-team identity chip — colour via a per-team modifier bound to --pk-team-*-bg/-ink
    (no runtime inline style, borderless). base = dashboards; --compact = overlay popover. ---- */
 .pk-team-chip{display:inline-flex;align-items:center;justify-content:center;min-width:var(--pk-chip-w);box-sizing:border-box;
   padding:var(--pk-space-2) var(--pk-space-3);border-radius:var(--pk-radius-full);
-  font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+  font-weight:700;font-size:var(--pk-text-2xs);text-transform:uppercase;letter-spacing:.08em}
 .pk-team-chip--compact{padding:2px var(--pk-space-3);border-radius:var(--pk-radius-full);letter-spacing:.02em}
 .pk-team-chip--product{background:var(--pk-team-product-bg);color:var(--pk-team-product-ink)}
 .pk-team-chip--seo{background:var(--pk-team-seo-bg);color:var(--pk-team-seo-ink)}
@@ -134,20 +160,18 @@ export default `/* =============================================================
 .pk-team-chip--none{background:var(--pk-team-none-bg);color:var(--pk-team-none-ink)}
 
 /* ---- status chip — the ticket's team-status pill (unifies .tmd-chip/.rvd-chip/.rv-chip) ---- */
-.pk-status-chip{padding:4px 12px;border-radius:var(--pk-radius-full);font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:var(--pk-chip-w);box-sizing:border-box}
 .pk-status-chip.open,.pk-status-chip.tbi{background:var(--pk-open-bg);color:var(--pk-open-ink)}
 .pk-status-chip.inprog,.pk-status-chip.bucket{background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
 .pk-status-chip.resolved,.pk-status-chip.deployed,.pk-status-chip.verified{background:var(--pk-done-bg);color:var(--pk-done-ink)}
 .pk-status-chip.reopened,.pk-status-chip.rvd-new{background:var(--pk-new-bg);color:var(--pk-new-ink)}
 .pk-status-chip.clarify{background:var(--pk-clarify-bg);color:var(--pk-clarify-ink)}
 .pk-status-chip.closed,.pk-status-chip.disregarded{background:var(--pk-closed-bg);color:var(--pk-closed-ink)}
-.pk-status-chip--reply{gap:6px;background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
+.pk-status-chip--reply{gap:var(--pk-space-3);background:var(--pk-blue-bg);color:var(--pk-blue-ink)}
 .pk-status-chip--reply svg{flex:none}
 .pk-status-chip--revoked{background:var(--pk-closed-bg);color:var(--pk-closed-ink);text-decoration:line-through}
 button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid transparent;transition:filter .15s,border-color .15s}
 .pk-status-chip--set .pk-status-chip-chev{width:12px;height:12px;margin-right:-2px;opacity:.8}
-.rvd-log .pk-status-chip{min-width:0;padding:4px 10px}
+.rvd-log .pk-status-chip{min-width:0;padding:var(--pk-space-2) var(--pk-space-3h)}
 @media (min-width:1024px) and (hover:hover){
   button.pk-status-chip--set:hover{filter:brightness(1.12);border-color:var(--pk-hair)}
 }
@@ -156,18 +180,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    -sub base is overridden by the admin dcard coupling (stays scoped in dashboard.css);
    admin send:hover stays scoped there too, to out-specify .rvd .rvd-a:hover. ---- */
 .pk-qq{margin-top:var(--pk-space-3);padding-top:var(--pk-space-4h);border-top:var(--pk-border-hair) solid var(--pk-hair);display:flex;flex-direction:column;gap:var(--pk-space-3h)}
-.pk-qq-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.pk-qq-title{margin:0;font:700 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
-.pk-qq-sub{font:400 12px/1.4 var(--pk-font);color:var(--pk-muted)}
+.pk-qq-head{display:flex;align-items:baseline;gap:var(--pk-space-3h);flex-wrap:wrap}
+.pk-qq-title{margin:0;font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-qq-sub{font:400 var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-muted)}
 .pk-qq-thread{display:flex;flex-direction:column;gap:var(--pk-space-3h);padding-left:var(--pk-space-4);border-left:var(--pk-border-strong) solid var(--pk-hair)}
 .pk-qq-compose{display:flex;gap:var(--pk-space-3);align-items:flex-end;flex-wrap:wrap}
-.pk-qq-input{flex:1 1 240px;min-width:180px;padding:10px 12px;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;box-sizing:border-box;
-  background:var(--pk-input);color:var(--pk-ink);font:500 14px/1.5 var(--pk-font);resize:vertical}
-.pk-qq-input:focus{outline:none;border-color:var(--pk-red)}
+.pk-qq-input{flex:1 1 240px;min-width:180px;padding:var(--pk-space-3h) var(--pk-space-3h);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 var(--pk-text-base)/1.5 var(--pk-font);resize:vertical}
+.pk-qq-input:focus-visible{outline:none;border-color:var(--pk-red)}
 .pk-qq-send{flex:none}
-.pk-qq-canned{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--pk-space-3h)}
-.pk-qq-preset{padding:5px 10px;background:var(--pk-elev);border:var(--pk-border-hair) solid var(--pk-hair);cursor:pointer;
-  font:500 11px/1.2 var(--pk-font);color:var(--pk-body);border-radius:var(--pk-radius-full);transition:border-color .15s,color .15s}
+.pk-qq-canned{display:flex;flex-wrap:wrap;gap:var(--pk-space-3);margin-top:var(--pk-space-3h)}
+.pk-qq-preset{padding:var(--pk-space-2) var(--pk-space-3h);background:var(--pk-elev);border:var(--pk-border-hair) solid var(--pk-hair);cursor:pointer;
+  font:500 var(--pk-text-xs)/1.2 var(--pk-font);color:var(--pk-body);border-radius:var(--pk-radius-full);transition:border-color .15s,color .15s}
 @media (min-width:1024px) and (hover:hover){
   .pk-qq-send:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
   .pk-qq-preset:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}
@@ -178,15 +202,15 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-navbadge{display:inline-flex;align-items:center;justify-content:center;
   min-width:18px;height:18px;padding:0 var(--pk-space-2);border-radius:var(--pk-radius-full);
   background:var(--pk-blue-fill);color:var(--pk-on-accent);
-  font:var(--pk-w-bold) var(--pk-text-3xs)/var(--pk-lh-none) var(--pk-font);
+  font:var(--pk-w-bold) var(--pk-text-2xs)/var(--pk-lh-none) var(--pk-font);
   letter-spacing:.02em;vertical-align:middle;font-variant-numeric:tabular-nums}
 .pk-navbadge[hidden]{display:none}
 .pk-navbadge--alert{background:var(--pk-red)}
 
 /* ---- sidebar nav item (flex so the badge sits inline via gap; ::before = active accent bar) ---- */
-.pk-nav{position:relative;text-align:left;height:46px;padding:0 var(--pk-space-4);border:none;border-radius:0;
+.pk-nav{position:relative;text-align:left;height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:none;border-radius:0;
   background:transparent;cursor:pointer;color:var(--pk-body);display:flex;align-items:center;gap:var(--pk-space-3);
-  font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:color .15s,background .15s}
+  font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:color .15s,background .15s}
 .pk-nav[hidden]{display:none}
 .pk-nav::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:2px;background:transparent;transition:background .15s}
 .pk-nav.is-active{color:var(--pk-ink);background:var(--pk-active-bg)}
@@ -196,14 +220,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* ---- app-shell structural containers (byte-identical across both dashboards) ---- */
 .pk-app{max-width:none;margin:0}
 .pk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-5) var(--pk-space-6);flex-wrap:wrap;
-  padding:4px 0 var(--pk-space-5);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+  padding:var(--pk-space-2) 0 var(--pk-space-5);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-top-l{min-width:0;flex:1 1 420px}
 .pk-top-r{display:flex;flex-direction:column;align-items:flex-end;gap:var(--pk-space-4);flex:none}
 .pk-brand{display:flex;align-items:center;gap:var(--pk-space-3h);flex-wrap:wrap;min-width:0;justify-content:flex-end}
 .pk-mark{display:block;flex:none;width:11px;height:11px;border-radius:50%;background:var(--pk-red);box-shadow:0 0 0 4px var(--pk-ring-red)}
-.pk-word{font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
+.pk-word{font-size:var(--pk-text-2xl);font-weight:700;letter-spacing:.01em;color:var(--pk-ink)}
 .pk-bar{margin:var(--pk-space-6) 0 var(--pk-space-3)}
-.pk-shell{display:flex;gap:var(--pk-space-6);align-items:flex-start;margin-top:28px}
+.pk-shell{display:flex;gap:var(--pk-space-6);align-items:flex-start;margin-top:var(--pk-space-5)}
 .pk-side{flex:none;width:184px;display:flex;flex-direction:column;gap:2px;position:sticky;top:var(--pk-space-5);
   height:calc(100vh - var(--pk-space-5) - clamp(20px,5vw,48px));overflow-y:auto;overscroll-behavior:contain}
 .pk-content{flex:1;min-width:0}
@@ -213,42 +237,32 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 
 /* ---- action buttons (outline family): distinct sizes, one token-bound skin ---- */
-.pk-tbtn{height:42px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-  color:var(--pk-body);font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;box-sizing:border-box;
-  display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s,filter .15s}
 .pk-tbtn[hidden]{display:none}
 .pk-tbtn.is-active{border-color:var(--pk-red);color:var(--pk-red-ink)}
 .pk-tbtn--primary{border-color:var(--pk-red);background:var(--pk-red);color:var(--pk-on-accent)}
 .pk-tbtn:disabled{opacity:.5;cursor:default}
 .pk-tbtn--primary:disabled{background:var(--pk-elev);border-color:var(--pk-hair);color:var(--pk-muted);opacity:1}
 .tmd .pk-tbtn{width:140px;flex:none} /* team's fixed-width toolbar buttons */
-.pk-selectall{height:42px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;cursor:pointer;
-  background:var(--pk-input);color:var(--pk-body);font:600 12px/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:border-color .15s,color .15s}
+.pk-selectall{height:var(--pk-control-h-md);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;cursor:pointer;
+  background:var(--pk-input);color:var(--pk-body);font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:border-color .15s,color .15s}
 /* 32px outline actions: openpin (link) + .pk-a (button) share a size */
-.pk-openpin,.pk-a{height:32px;padding:0 var(--pk-space-4);border-radius:0;border:var(--pk-border-hair) solid var(--pk-hair);background:transparent;
-  color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+.pk-openpin,.pk-a{height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border-radius:0;border:var(--pk-border-hair) solid var(--pk-hair);background:transparent;
+  color:var(--pk-ink);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
   display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;transition:border-color .15s,color .15s}
 .pk-a{cursor:pointer;color:var(--pk-body)}
 .pk-a--quiet{color:var(--pk-muted)}
-.pk-bulk-a{height:34px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-  color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
 .pk-bulk-a.danger{color:var(--pk-softred)}
-.pk-prompt-btn{height:30px;padding:0 var(--pk-space-3h);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;white-space:nowrap;cursor:pointer;
-  background:transparent;color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
-.pk-deploy-btn{flex:none;height:44px;padding:0 var(--pk-space-5);border:var(--pk-border-hair) solid var(--pk-deploy);border-radius:0;background:var(--pk-deploy);
-  color:var(--pk-on-accent);font:700 12px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
-  display:inline-flex;align-items:center;transition:background .15s,border-color .15s,opacity .15s}
 .pk-deploy-btn:disabled{opacity:.45;cursor:default}
 /* tab (underline) */
-.pk-tab{height:46px;padding:0 var(--pk-space-4);border:none;background:none;cursor:pointer;margin-bottom:-1px;
-  font:600 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
+.pk-tab{height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:none;background:none;cursor:pointer;margin-bottom:-1px;
+  font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
   border-bottom:var(--pk-border-strong) solid transparent;transition:color .15s,border-color .15s}
 .pk-tab.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
 .pk-tab-n{color:var(--pk-muted);font-weight:700}
 .pk-tab.is-active .pk-tab-n{color:var(--pk-red-ink)}
 /* link-style buttons (no chrome) */
 .pk-morebtn,.pk-repliestoggle{align-self:flex-start;background:none;border:none;padding:0;cursor:pointer;
-  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+  font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
 .pk-morebtn[hidden]{display:none}
 .pk-repliestoggle{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
 .pk-repliestoggle .pk-caret{transition:transform .15s}
@@ -265,18 +279,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- master-log table (admin spec: thead-bg header, 12/10 cells, last-row reset) ---- */
 .pk-logwrap{overflow-x:auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0}
-.pk-log{width:100%;border-collapse:collapse;font-size:12px;background:var(--pk-card);table-layout:auto}
-.pk-log th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
-  color:var(--pk-muted);padding:12px 10px;white-space:nowrap;border-bottom:var(--pk-border-hair) solid var(--pk-hair);background:var(--pk-thead-bg)}
-.pk-log td{padding:12px 10px;border-bottom:var(--pk-border-hair) solid var(--pk-hair);vertical-align:middle;color:var(--pk-body)}
+.pk-log{width:100%;border-collapse:collapse;font-size:var(--pk-text-sm);background:var(--pk-card);table-layout:auto}
+.pk-log th{text-align:left;font-size:var(--pk-text-2xs);font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--pk-muted);padding:var(--pk-space-3h) var(--pk-space-3h);white-space:nowrap;border-bottom:var(--pk-border-hair) solid var(--pk-hair);background:var(--pk-thead-bg)}
+.pk-log td{padding:var(--pk-space-3h) var(--pk-space-3h);border-bottom:var(--pk-border-hair) solid var(--pk-hair);vertical-align:middle;color:var(--pk-body)}
 .pk-log tbody tr:last-child td{border-bottom:none}
 .pk-log td.num{font-weight:700;text-align:center;color:var(--pk-ink);font-variant-numeric:tabular-nums}
 .pk-logrow{cursor:pointer;transition:background .12s}
 .pk-log-morecell{width:44px;text-align:center}
 .pk-entrieshead{display:flex;justify-content:space-between;align-items:center;gap:var(--pk-space-3h);margin-bottom:var(--pk-space-4)}
-.pk-entrieshead h2{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
-.pk-slug{font-size:12px;font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
-.pk-ticket{font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--pk-red-ink);white-space:nowrap}
+.pk-entrieshead h2{font-size:var(--pk-text-base);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-slug{font-size:var(--pk-text-sm);font-weight:500;color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-ticket{font-variant-numeric:tabular-nums;font-size:var(--pk-text-sm);font-weight:600;letter-spacing:.02em;color:var(--pk-red-ink);white-space:nowrap}
 .pk-log .pk-ticket{font-weight:700}
 @media (min-width:1024px) and (hover:hover){
   .pk-logrow:hover{background:var(--pk-elev)}
@@ -284,14 +298,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 
 /* ---- headline + top-bar meta ---- */
-.pk-h1{margin:0;font-size:clamp(30px,4.4vw,44px);line-height:1.04;font-weight:500;letter-spacing:-.02em;color:var(--pk-ink)}
+.pk-h1{margin:0;font-size:var(--pk-text-display);line-height:1.04;font-weight:500;letter-spacing:-.02em;color:var(--pk-ink)}
 .pk-h1-hi{color:var(--pk-red-ink)}          /* admin "Builder" highlight */
 .pk-h1-team{color:var(--pk-red-ink)}        /* team's own name highlight */
 .pk-h1-unlock{color:var(--pk-red-ink);vertical-align:baseline;margin-left:.15em}
-.pk-lead{margin:16px 0 0;font-size:14px;line-height:1.6;color:var(--pk-body)}
-.rvd .pk-lead{margin-top:12px;color:var(--pk-muted)} /* admin subtitle is dimmer/tighter */
+.pk-lead{margin:var(--pk-space-4) 0 0;font-size:var(--pk-text-base);line-height:1.6;color:var(--pk-body)}
+.rvd .pk-lead{margin-top:var(--pk-space-3h);color:var(--pk-muted)} /* admin subtitle is dimmer/tighter */
 .pk-lead-brand{font-weight:700;color:var(--pk-body)}
-.pk-lead-sep{color:var(--pk-hair);margin:0 8px}
+.pk-lead-sep{color:var(--pk-hair);margin:0 var(--pk-space-3)}
 .pk-team-hi{color:var(--pk-blue)}
 .pk-tag-brand{color:var(--pk-brand-gold)}
 :root[data-pk-theme="light"] .pk-tag-brand{color:var(--pk-muted)}
@@ -306,18 +320,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   border-bottom:var(--pk-border-hair) solid var(--pk-hair);margin-bottom:var(--pk-space-5)}
 .pk-tabsrow[hidden]{display:none}
 .pk-tabs{display:flex;gap:2px;flex-wrap:wrap}
-.pk-statuschips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:var(--pk-space-4)}
+.pk-statuschips{display:flex;flex-wrap:wrap;gap:var(--pk-space-3);align-items:center;margin-bottom:var(--pk-space-4)}
 .pk-statuschips[hidden]{display:none}
 
 /* ---- stat-count tiles (grid of headline numbers) ---- */
 .pk-counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--pk-hair);border:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-count{background:var(--pk-canvas);padding:var(--pk-space-5) var(--pk-space-5);border-radius:0;
   display:flex;flex-direction:column;align-items:flex-start;gap:var(--pk-space-3);
-  font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted);animation:pk-rise .5s var(--pk-ease-rise) both}
+  font-size:var(--pk-text-xs);font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted);animation:pk-rise .5s var(--pk-ease-rise) both}
 .pk-count:nth-child(2){animation-delay:.07s}
 .pk-count:nth-child(3){animation-delay:.14s}
-.pk-count b{font-size:clamp(30px,4vw,42px);font-weight:700;line-height:.95;letter-spacing:-.02em;color:var(--pk-ink);font-variant-numeric:tabular-nums}
-.pk-count-lbl{display:flex;align-items:center;gap:6px}
+.pk-count b{font-size:var(--pk-text-count);font-weight:700;line-height:.95;letter-spacing:-.02em;color:var(--pk-ink);font-variant-numeric:tabular-nums}
+.pk-count-lbl{display:flex;align-items:center;gap:var(--pk-space-3)}
 .pk-count-lbl .pk-count-dot{margin:0;flex:none}
 .pk-count-tbi b,.pk-count-pending b{color:var(--pk-amber)}
 .pk-count-inprog b{color:var(--pk-blue)}
@@ -325,7 +339,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-count-clarify{cursor:pointer}
 .pk-count-done b{color:var(--pk-green)}
 .pk-count-reopened b{color:var(--pk-red-ink)}
-.pk-count-btn{cursor:pointer;text-align:left;width:100%;margin:0;border:0;font-family:var(--pk-font);font-size:11px;font-weight:600;
+.pk-count-btn{cursor:pointer;text-align:left;width:100%;margin:0;border:0;font-family:var(--pk-font);font-size:var(--pk-text-xs);font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:var(--pk-muted);transition:background .15s ease}
 .pk-count-btn:focus-visible{outline:2px solid var(--pk-red);outline-offset:-2px}
 @media (max-width:560px){.pk-counts{grid-template-columns:1fr}}
@@ -336,24 +350,24 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-detailwrap{display:flex;flex-direction:column;gap:var(--pk-space-4)}
 .pk-detail{display:flex;flex-direction:column;gap:var(--pk-space-5);max-width:none;background:none;border:none;padding:0}
 .pk-detail-head{display:flex;flex-direction:column;gap:var(--pk-space-3)}
-.pk-detail-title{margin:0;font-size:18px;font-weight:600;line-height:1.4;color:var(--pk-ink);overflow-wrap:anywhere}
+.pk-detail-title{margin:0;font-size:var(--pk-text-2xl);font-weight:600;line-height:1.4;color:var(--pk-ink);overflow-wrap:anywhere}
 .pk-detail-chips{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3)}
-.pk-detail-comment{font-size:15px;line-height:1.6}
+.pk-detail-comment{font-size:var(--pk-text-lg);line-height:1.6}
 /* success-criteria callout (raiser's expected outcome — prominent, read-only) */
-.pk-criteria{padding:14px 16px;background:var(--pk-done-bg);border:var(--pk-border-hair) solid var(--pk-green);border-left:var(--pk-border-strong) solid var(--pk-green)}
-.pk-criteria-k{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-done-ink);margin-bottom:6px}
-.pk-criteria-v{font:500 14px/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.pk-criteria{padding:var(--pk-space-4) var(--pk-space-4);background:var(--pk-done-bg);border:var(--pk-border-hair) solid var(--pk-green);border-left:var(--pk-border-strong) solid var(--pk-green)}
+.pk-criteria-k{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-done-ink);margin-bottom:var(--pk-space-3)}
+.pk-criteria-v{font:500 var(--pk-text-base)/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
 /* pin-number chip on the detail header */
-.pk-pinno{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:var(--pk-radius-full);
-  background:var(--pk-hair);color:var(--pk-ink);font:700 11px/1 var(--pk-font);white-space:nowrap}
+.pk-pinno{display:inline-flex;align-items:center;height:20px;padding:0 var(--pk-space-3);border-radius:var(--pk-radius-full);
+  background:var(--pk-hair);color:var(--pk-ink);font:700 var(--pk-text-xs)/1 var(--pk-font);white-space:nowrap}
 /* fields (label over value stack) */
 .pk-fields{display:flex;flex-direction:column;gap:var(--pk-space-4)}
 .pk-field{display:flex;flex-direction:column;gap:var(--pk-space-2);min-width:0}
-.pk-field-k{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
-.pk-field-v{font-size:14px;line-height:1.55;color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.pk-field-k{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-field-v{font-size:var(--pk-text-base);line-height:1.55;color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
 .pk-field-v a{color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-field-prompt,.pk-prompt-box{white-space:pre-wrap;background:var(--pk-input);border:var(--pk-border-hair) solid var(--pk-hair);border-left:var(--pk-border-strong) solid var(--pk-red);
-  padding:var(--pk-space-4);font:400 12px/1.6 var(--pk-font);color:var(--pk-body);overflow-wrap:anywhere;max-height:280px;overflow-y:auto}
+  padding:var(--pk-space-4);font:400 var(--pk-text-sm)/1.6 var(--pk-font);color:var(--pk-body);overflow-wrap:anywhere;max-height:280px;overflow-y:auto}
 /* connected-rail timeline */
 .pk-timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
 .pk-tl{position:relative;padding:0 0 var(--pk-space-4) var(--pk-space-5)}
@@ -362,21 +376,30 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tl:last-child::before{display:none}
 .pk-tl::after{content:"";position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:var(--pk-radius-full);background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
 .pk-tl.is-current::after{border-color:var(--pk-red);background:var(--pk-red)}
-.pk-tl-event{display:block;font:700 11px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-ink)}
-.pk-tl-time{display:block;margin-top:2px;font-size:12px;color:var(--pk-muted)}
-.pk-tl-iter{font-weight:700;font-size:11px;line-height:1;font-family:var(--pk-font);font-variant-numeric:tabular-nums;color:var(--pk-red-ink);flex:none;min-width:24px}
+.pk-tl-event{display:block;font:700 var(--pk-text-xs)/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-ink)}
+.pk-tl-time{display:block;margin-top:2px;font-size:var(--pk-text-sm);color:var(--pk-muted)}
+.pk-tl-iter{font-weight:700;font-size:var(--pk-text-xs);line-height:1;font-family:var(--pk-font);font-variant-numeric:tabular-nums;color:var(--pk-red-ink);flex:none;min-width:24px}
 /* sticky action bar (prev/next + actions) */
-.pk-detail-bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3);
-  flex-wrap:nowrap;padding:10px 0;background:var(--pk-canvas);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
-.pk-detail-bar-l{flex:none;display:flex;align-items:center;gap:14px}
+.pk-detail-bar{position:sticky;top:0;z-index:var(--pk-z-sticky);display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3);
+  flex-wrap:nowrap;padding:var(--pk-space-3h) 0;background:var(--pk-canvas);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-detail-bar-l{flex:none;display:flex;align-items:center;gap:var(--pk-space-4)}
 .pk-detail-bar-r{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;justify-content:flex-end}
 .pk-detail-bar .pk-backlink{margin:0}
 .pk-detail-acts{display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;margin:0}
 /* prev/next stepper */
 .pk-detail-step{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
-.pk-detail-pos{font:700 11px/1 var(--pk-font);letter-spacing:.06em;color:var(--pk-muted);min-width:44px;text-align:center}
-.pk-stepbtn{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border:var(--pk-border-hair) solid var(--pk-hair);
-  background:var(--pk-card);color:var(--pk-body);font-size:16px;line-height:1;cursor:pointer;transition:border-color .15s,color .15s}
+.pk-detail-pos{font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.06em;color:var(--pk-muted);min-width:44px;text-align:center}
+/* The square icon button: width = height = a ladder rung, so it lines up with the text controls
+   beside it and clears the 48px tap target at --lg. Two instances, one geometry — the tray button
+   also pulls itself back out of its parent's padding, which is the §13 trick: grow the hit area,
+   never the glyph. */
+.pk-stepbtn,.pk-tray-iconbtn{
+  display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+  width:var(--pk-control-h-sm);height:var(--pk-control-h-sm);
+  padding:0;border:var(--pk-border-hair) solid var(--pk-hair);
+  background:var(--pk-card);color:var(--pk-body);line-height:var(--pk-lh-none);cursor:pointer;
+  transition:border-color var(--pk-dur-base) var(--pk-ease),color var(--pk-dur-base) var(--pk-ease)}
+.pk-stepbtn{font-size:var(--pk-text-xl)}
 .pk-stepbtn:disabled{opacity:.4;cursor:default}
 .pk-detail-more{width:38px;padding:0;justify-content:center}
 .pk-detail-more svg{display:block}
@@ -387,83 +410,83 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-detail-side{display:flex;flex-direction:column;gap:var(--pk-space-4);min-width:0;position:sticky;top:64px}
 /* collapsible detail card */
 .pk-dcard{background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);border-left:var(--pk-border-strong) solid var(--pk-red)}
-.pk-dcard-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;
-  background:transparent;border:none;cursor:pointer;color:var(--pk-ink);text-align:left;font:700 11px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase}
+.pk-dcard-h{width:100%;display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3h);padding:var(--pk-space-3h) var(--pk-space-4);
+  background:transparent;border:none;cursor:pointer;color:var(--pk-ink);text-align:left;font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase}
 .pk-dcard-h-static{cursor:default}
 .pk-dcard-h > span{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
-.pk-dcard-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;
-  border-radius:var(--pk-radius-full);background:var(--pk-elev);color:var(--pk-muted);font:700 10px/1 var(--pk-font);letter-spacing:0}
+.pk-dcard-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 var(--pk-space-2);
+  border-radius:var(--pk-radius-full);background:var(--pk-elev);color:var(--pk-muted);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:0}
 .pk-dcard-chev{color:var(--pk-muted);transition:transform .18s}
 .pk-dcard.is-collapsed .pk-dcard-chev{transform:rotate(-90deg)}
-.pk-dcard-b{padding:0 16px 16px}
+.pk-dcard-b{padding:0 var(--pk-space-4) var(--pk-space-4)}
 .pk-dcard-h-static + .pk-dcard-b{padding-top:2px}
 .pk-dcard.is-collapsed .pk-dcard-b{display:none}
 /* side-rail meta list */
 .pk-dmeta{margin:0;display:flex;flex-direction:column;align-items:stretch;gap:var(--pk-space-3)}
 .pk-dmeta-row{display:flex;flex-direction:column;gap:3px;min-width:0}
-.pk-dmeta-row dt{margin:0;font:700 9px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
-.pk-dmeta-row dd{margin:0;font-size:13px;line-height:1.5;color:var(--pk-ink);overflow-wrap:anywhere}
+.pk-dmeta-row dt{margin:0;font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-dmeta-row dd{margin:0;font-size:var(--pk-text-md);line-height:1.5;color:var(--pk-ink);overflow-wrap:anywhere}
 .pk-dmeta-row dd a{color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
-.pk-dmeta-sub{display:block;margin-top:2px;font-size:11px;color:var(--pk-muted);overflow-wrap:anywhere}
+.pk-dmeta-sub{display:block;margin-top:2px;font-size:var(--pk-text-xs);color:var(--pk-muted);overflow-wrap:anywhere}
 .pk-prompt-copybtn{margin-left:auto}
 /* quick-questions rendered as a detail card (both dashboards): shed the standalone .pk-qq
    top-decoration, keep the card frame, space the thread/compose inside the body */
 .pk-dcard.pk-qq{margin-top:0;padding-top:0;border-top:none;border-left-color:var(--pk-hair)}
 .pk-dcard.pk-qq .pk-dcard-h .pk-qq-sub{margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0}
 .pk-dcard.pk-qq .pk-dcard-b{display:flex;flex-direction:column;gap:var(--pk-space-3h)}
-.pk-copyprompt{margin-top:var(--pk-space-3);height:34px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-  color:var(--pk-ink);font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
+.pk-copyprompt{margin-top:var(--pk-space-3);height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+  color:var(--pk-ink);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
 @media (max-width:900px){.pk-detail-grid{grid-template-columns:1fr}.pk-detail-side{position:static}}
 @media (max-width:560px){.pk-detail-bar{position:static}.pk-detail-bar-r{width:100%;justify-content:flex-start}}
 @media (min-width:1024px) and (hover:hover){.pk-copyprompt:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
 
 /* ---- reply row (F6 quick-question thread items inside .pk-qq-thread) ---- */
-.pk-reply{position:relative;display:flex;flex-direction:column;gap:var(--pk-space-2);align-items:flex-start;min-width:0;padding-right:28px}
-.pk-reply-txt{font-size:var(--pk-text-md);line-height:var(--pk-lh-body);color:var(--pk-ink);overflow-wrap:anywhere}
-.pk-reply-meta{font-size:var(--pk-text-xs);color:var(--pk-muted)}
-.pk-reply-x{position:absolute;top:0;right:0;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;
+.pk-reply{position:relative;display:flex;flex-direction:column;gap:var(--pk-space-2);align-items:flex-start;min-width:0;padding-right:var(--pk-space-5)}
+.pk-reply-txt{font-size:var(--pk-text-base);line-height:var(--pk-lh-body);color:var(--pk-ink);overflow-wrap:anywhere}
+.pk-reply-meta{font-size:var(--pk-text-sm);color:var(--pk-muted)}
+.pk-reply-x{position:absolute;top:0;right:0;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);display:inline-flex;align-items:center;justify-content:center;
   border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm);background:transparent;color:var(--pk-muted);cursor:pointer;
-  font:400 16px/1 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
+  font:400 var(--pk-text-xl)/1 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
 .pk-reply-x:disabled{opacity:.5;cursor:default}
 @media (min-width:1024px) and (hover:hover){
   .pk-reply-x:hover{color:var(--pk-softred);border-color:var(--pk-softred)}
 }
 
 /* ---- segmented toggle (Inbound|Outbound · Cards|Table). 42px toolbar height kept literal. ---- */
-.pk-seg{display:inline-flex;height:42px;flex:0 0 auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;overflow:hidden}
+.pk-seg{display:inline-flex;height:var(--pk-control-h-md);flex:0 0 auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;overflow:hidden}
 .pk-seg[hidden]{display:none}
 .pk-segbtn{height:100%;padding:0 var(--pk-space-4);border:none;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
-  font:600 12px/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:background .15s,color .15s}
+  font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:background .15s,color .15s}
 .pk-segbtn + .pk-segbtn{border-left:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-segbtn.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
 @media (min-width:1024px) and (hover:hover){.pk-segbtn:not(.is-active):hover{color:var(--pk-red-ink)}}
 
 /* ---- toolbar search input ---- */
-.pk-search{flex:1 1 220px;min-width:180px;height:42px;padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);
-  border-radius:0;background:var(--pk-input);color:var(--pk-ink);font:400 14px/var(--pk-lh-body) var(--pk-font)}
+.pk-search{flex:1 1 220px;min-width:180px;height:var(--pk-control-h-md);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);
+  border-radius:0;background:var(--pk-input);color:var(--pk-ink);font:400 var(--pk-text-base)/var(--pk-lh-body) var(--pk-font)}
 .pk-search::placeholder{color:var(--pk-muted)}
-.pk-search:focus{outline:none;border-color:var(--pk-red)}
+.pk-search:focus-visible{outline:none;border-color:var(--pk-red)}
 .tmd .pk-search{flex-grow:4} /* team toolbar gives search more grow (layout coupling) */
 
 /* ---- from/to team-filter picker: collapsed control + body-mounted reveal rail ---- */
 .pk-teamchips{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--pk-space-3)}
 .pk-teamchips[hidden]{display:none}
-.pk-chips-from{align-self:center;font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
-.pk-tchip{height:30px;padding:0 var(--pk-space-4);border:var(--pk-border-strong) solid transparent;border-radius:0;cursor:pointer;
-  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
-  display:inline-flex;align-items:center;justify-content:center;min-width:96px;box-sizing:border-box;
-  transition:background .15s,color .15s,border-color .15s}
-.pk-chips-more{height:30px;width:30px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+.pk-chips-from{align-self:center;font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
+.pk-chips-more{height:var(--pk-control-h-sm);width:var(--pk-control-h-sm);flex:none;display:inline-flex;align-items:center;justify-content:center;
   border:var(--pk-border-strong) solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;transition:border-color .15s,color .15s}
 .pk-chips-more svg{display:block}
-.pk-chips-overlay{position:fixed;inset:0;z-index:2147483300;background:var(--pk-scrim-veil);
+.pk-chips-overlay{position:fixed;inset:0;z-index:var(--pk-z-embed-scrim);background:var(--pk-scrim-veil);
   -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;transition:opacity .2s var(--pk-ease)}
 .pk-chips-overlay.is-open{opacity:1;transition:opacity .22s var(--pk-ease) .16s}
+/* z-index 1 and 2 below are SIBLING ORDERING inside a parent that already establishes its own
+   stacking context (the rail is a child of .pk-chips-overlay, the close button a child of
+   .pk-login). They order children against each other and cannot escape the parent, so they are
+   not layers and take no rung on the ladder — see tokens.css. */
 .pk-chips-rail{position:fixed;z-index:1;display:inline-flex;align-items:center;white-space:nowrap;max-width:calc(100vw - 24px)}
-.pk-chips-rail .pk-chips-from{margin-right:8px}
+.pk-chips-rail .pk-chips-from{margin-right:var(--pk-space-3)}
 .pk-chips-reveal{display:inline-flex;align-items:center;overflow:hidden;width:0;transition:width .34s var(--pk-ease)}
-.pk-chips-reveal .pk-tchip{margin-left:8px}
-.pk-chips-rail .pk-chips-more{margin-left:8px}
+.pk-chips-reveal .pk-tchip{margin-left:var(--pk-space-3)}
+.pk-chips-rail .pk-chips-more{margin-left:var(--pk-space-3)}
 .pk-chips-rail .pk-chips-more svg{transition:transform .34s var(--pk-ease)}
 .pk-chips-rail .pk-chips-more.is-open svg{transform:rotate(180deg)}
 @media (min-width:1024px) and (hover:hover){
@@ -475,14 +498,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    .tmd-viewchip / .rvd-viewchip family (container styled by class, selected by id in JS). ---- */
 .pk-views{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4)}
 .pk-views[hidden]{display:none}
-.pk-views-lbl{font:700 10px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
-.pk-viewchip{display:inline-flex;align-items:center;height:30px;border:var(--pk-border-hair) solid var(--pk-hair);
+.pk-views-lbl{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
+.pk-viewchip{display:inline-flex;align-items:center;height:var(--pk-control-h-sm);border:var(--pk-border-hair) solid var(--pk-hair);
   border-radius:var(--pk-radius-full);background:var(--pk-elev);overflow:hidden}
 .pk-viewchip.is-active{border-color:var(--pk-red)}
-.pk-viewchip-go{height:100%;padding:0 4px 0 14px;border:none;background:transparent;cursor:pointer;
-  color:var(--pk-body);font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
+.pk-viewchip-go{height:100%;padding:0 var(--pk-space-2) 0 var(--pk-space-4);border:none;background:transparent;cursor:pointer;
+  color:var(--pk-body);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
 .pk-viewchip.is-active .pk-viewchip-go{color:var(--pk-red-ink)}
-.pk-viewchip-x{height:100%;width:26px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font-size:16px;line-height:1}
+.pk-viewchip-x{height:100%;width:26px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font-size:var(--pk-text-xl);line-height:1}
 @media (min-width:1024px) and (hover:hover){
   .pk-viewchip:not(.is-active):hover{border-color:var(--pk-red)}
   .pk-viewchip-x:hover{color:var(--pk-softred)}
@@ -490,22 +513,19 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- edit-history version trail (newest first) — faithful merge of .rvd-ver / .tmd-ver;
    the -meta label takes the admin dashboard's fuller type spec. ---- */
-.pk-versions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-.pk-ver{padding:10px 12px;background:var(--pk-elev);border:var(--pk-border-hair) solid var(--pk-hair);border-left:3px solid var(--pk-hair)}
-.pk-ver-meta{font:700 11px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted)}
-.pk-ver-txt{margin-top:3px;font-size:13px;color:var(--pk-ink)}
-.pk-ver-sub{margin-top:3px;font-size:12px;color:var(--pk-muted)}
+.pk-versions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--pk-space-3h)}
+.pk-ver{padding:var(--pk-space-3h) var(--pk-space-3h);background:var(--pk-elev);border:var(--pk-border-hair) solid var(--pk-hair);border-left:3px solid var(--pk-hair)}
+.pk-ver-meta{font:700 var(--pk-text-xs)/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted)}
+.pk-ver-txt{margin-top:3px;font-size:var(--pk-text-md);color:var(--pk-ink)}
+.pk-ver-sub{margin-top:3px;font-size:var(--pk-text-sm);color:var(--pk-muted)}
 
 /* ---- status-filter chip row (filter cards by review status) — faithful merge of
    .rvd-schip / .tmd-schip (byte-identical forks). Container (.rvd-statuschips) stays scoped. ---- */
-.pk-schip{height:32px;padding:0 12px;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
-  color:var(--pk-body);font:600 11px/1 var(--pk-font);letter-spacing:.03em;display:inline-flex;align-items:center;gap:6px;
-  transition:border-color .15s,color .15s,background .15s}
 .pk-schip.is-active{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
 .pk-schip--smart:not(.is-active){border-color:var(--pk-red);color:var(--pk-red-ink)}
-.pk-schip-n{font-weight:700;font-size:10px;opacity:.75}
+.pk-schip-n{font-weight:700;font-size:var(--pk-text-2xs);opacity:.75}
 .pk-schip.is-active .pk-schip-n{opacity:1}
-.pk-schip--more{color:var(--pk-muted);gap:4px}
+.pk-schip--more{color:var(--pk-muted);gap:var(--pk-space-2)}
 /* The caret is a DOWN chevron at rest; point it RIGHT when closed and LEFT when open, so the
    affordance reads as "expand outward / collapse back" rather than a dropdown. Both boards must
    feed this the SAME down-chevron path — a right-chevron here rotates to up/down instead. */
@@ -523,17 +543,17 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- naked "← Back" link (detail views) — faithful merge of .rvd-back / .tmd-back ---- */
 .pk-backlink{margin-bottom:var(--pk-space-4);background:none;border:none;cursor:pointer;padding:0;
-  font:700 11px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
+  font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body);transition:color .15s}
 
 /* ---- empty state: block (list) + inline (qq / insights) variants ---- */
-.pk-empty{margin:64px 0;text-align:center;color:var(--pk-muted);font-size:14px;letter-spacing:.02em}
-.pk-empty--inline{margin:0;font:400 13px/1.4 var(--pk-font);color:var(--pk-muted)}
+.pk-empty{margin:var(--pk-space-8) 0;text-align:center;color:var(--pk-muted);font-size:var(--pk-text-base);letter-spacing:.02em}
+.pk-empty--inline{margin:0;font:400 var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-muted)}
 
 /* ---- "Change to" callout — base (dashboard) + --scroll (admin long text) + --compact (overlay popover) ---- */
 .pk-callout{padding:var(--pk-space-3h) var(--pk-space-4);border-radius:0;background:var(--pk-callout-bg);border:var(--pk-border-hair) solid var(--pk-callout-line);border-left:var(--pk-border-strong) solid var(--pk-amber)}
-.pk-callout span{display:block;font-size:10px;font-weight:700;text-transform:uppercase;
+.pk-callout span{display:block;font-size:var(--pk-text-2xs);font-weight:700;text-transform:uppercase;
   color:var(--pk-amber);letter-spacing:.12em;margin-bottom:var(--pk-space-2)}
-.pk-callout div{white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--pk-ink)}
+.pk-callout div{white-space:pre-wrap;font-size:var(--pk-text-base);line-height:1.5;color:var(--pk-ink)}
 .pk-callout--scroll div{overflow-wrap:anywhere;max-height:140px;overflow-y:auto}
 .pk-callout--compact{margin-top:2px;padding:var(--pk-space-3);border-radius:var(--pk-radius-md);
   border-left:var(--pk-border-hair) solid var(--pk-callout-line)}
@@ -546,17 +566,17 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 
 /* ---- row action menu — fixed, body-mounted (admin + team). --rise = admin-only entrance anim. ---- */
-.pk-rowmenu{position:fixed;z-index:2147483400;min-width:200px;display:flex;flex-direction:column;gap:2px;padding:var(--pk-space-3);
+.pk-rowmenu{position:fixed;z-index:var(--pk-z-embed-panel);min-width:200px;display:flex;flex-direction:column;gap:2px;padding:var(--pk-space-3);
   background:var(--pk-card);border:var(--pk-border-hair) solid var(--pk-hair);box-shadow:var(--pk-shadow-md);
   max-height:min(320px,60vh);overflow-y:auto;overscroll-behavior:none}
 .pk-rowmenu--rise{animation:pk-dd-panel .16s var(--pk-ease) both}
-.pk-rowmenu-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;white-space:nowrap;border:0;border-radius:0;
-  cursor:pointer;padding:11px 14px;background:transparent;color:var(--pk-body);
-  font:600 12px/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
+.pk-rowmenu-item{display:flex;align-items:center;gap:var(--pk-space-3h);width:100%;text-align:left;white-space:nowrap;border:0;border-radius:0;
+  cursor:pointer;padding:var(--pk-space-3h) var(--pk-space-4);background:transparent;color:var(--pk-body);
+  font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
 .pk-rowmenu-item .pk-mi{flex:none;color:var(--pk-muted);transition:color .12s}
 .pk-rowmenu-item.danger{color:var(--pk-softred)}
 .pk-rowmenu-item.danger .pk-mi{color:var(--pk-softred)}
-.pk-rowmenu-sep{height:1px;margin:6px 6px;background:var(--pk-hair)}
+.pk-rowmenu-sep{height:1px;margin:var(--pk-space-3) var(--pk-space-3);background:var(--pk-hair)}
 @media (min-width:1024px) and (hover:hover){.pk-rowmenu-item:hover{background:var(--pk-elev);color:var(--pk-ink)}
   .pk-rowmenu-item:hover .pk-mi{color:var(--pk-ink)}
   .pk-rowmenu-item.danger:hover{color:var(--pk-softred)}
@@ -565,15 +585,15 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* ---- detail media / screenshot thumbnails (small on cards, large in detail) ---- */
 .pk-media{margin-top:var(--pk-space-2)}
 .pk-detail-media{display:flex;flex-wrap:wrap;gap:var(--pk-space-4);align-items:flex-start}
-.pk-shot{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
-.pk-shot figcaption{font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-shot{margin:0;display:flex;flex-direction:column;gap:var(--pk-space-3);min-width:0}
+.pk-shot figcaption{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
 .pk-thumb{display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
   width:120px;height:80px;background:var(--pk-input);border:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-thumb.pk-thumb-lg{width:100%;max-width:420px;height:auto;min-height:120px}
 .pk-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .pk-thumb.pk-thumb-lg img{object-fit:contain}
 .pk-thumb.is-empty{border-style:dashed}
-.pk-thumb-ph{font:600 10px/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted);text-align:center;padding:0 var(--pk-space-3)}
+.pk-thumb-ph{font:600 var(--pk-text-2xs)/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-muted);text-align:center;padding:0 var(--pk-space-3)}
 .pk-thumb-zoom{cursor:zoom-in}
 
 /* ---- card list grid: vertical card-list container + staggered entry cascade ---- */
@@ -607,13 +627,13 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   border-radius:var(--pk-radius-full);background:transparent}
 .pk-notif.is-unread .pk-notif-dot{background:var(--pk-red)}
 .pk-notif-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--pk-space-3)}
-.pk-notif-sum{font-size:var(--pk-text-md);line-height:var(--pk-lh-body);color:var(--pk-ink);
+.pk-notif-sum{font-size:var(--pk-text-base);line-height:var(--pk-lh-body);color:var(--pk-ink);
   font-weight:var(--pk-w-medium);overflow-wrap:anywhere}
 .pk-notif-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3)}
 
 /* ---- Comments-view per-thread read/unread bar ---- */
 .pk-thread-head{display:flex;justify-content:flex-end;margin-bottom:var(--pk-space-3h)}
-.pk-thread-item{display:flex;flex-direction:column;gap:6px;animation:pk-rise .45s var(--pk-ease-rise) both}
+.pk-thread-item{display:flex;flex-direction:column;gap:var(--pk-space-3);animation:pk-rise .45s var(--pk-ease-rise) both}
 .pk-thread-mark{display:flex;align-items:center;gap:var(--pk-space-3)}
 .pk-thread-dot{flex:none;width:var(--pk-space-3);height:var(--pk-space-3);border-radius:var(--pk-radius-full);background:transparent}
 .pk-thread-item.is-unread .pk-thread-dot{background:var(--pk-red)}
@@ -621,10 +641,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- By-Page group (collapse-hides its grid + notes) ---- */
 .pk-group{margin-bottom:var(--pk-space-6)}
-.pk-gh{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4);font-size:var(--pk-text-sm);font-weight:var(--pk-w-semibold);
+.pk-gh{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4);font-size:var(--pk-text-md);font-weight:var(--pk-w-semibold);
   letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
 .pk-gh a{color:var(--pk-ink);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
-.pk-gh span{font-size:var(--pk-text-xs);font-weight:var(--pk-w-medium);color:var(--pk-muted);letter-spacing:0;text-transform:none}
+.pk-gh span{font-size:var(--pk-text-sm);font-weight:var(--pk-w-medium);color:var(--pk-muted);letter-spacing:0;text-transform:none}
 .pk-gh-toggle{display:inline-flex;align-items:center;justify-content:center;width:var(--pk-space-4h);height:var(--pk-space-4h);padding:0;
   margin-left:-2px;border:0;background:transparent;color:var(--pk-muted);cursor:pointer;flex:none}
 .pk-gh-caret{width:0;height:0;border-left:5px solid currentColor;border-top:4px solid transparent;
@@ -651,16 +671,16 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    local specificity); new surfaces should just use .pk-select. */
 .pk-select{
   appearance:none;-webkit-appearance:none;-moz-appearance:none;
-  height:48px;padding:0 44px 0 16px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  height:var(--pk-control-h-lg);padding:0 var(--pk-space-7) 0 var(--pk-space-4);border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
   background-color:var(--pk-input);color:var(--pk-ink);cursor:pointer;
-  font:600 13px/1 var(--pk-font);letter-spacing:.04em;
+  font:600 var(--pk-text-md)/1 var(--pk-font);letter-spacing:.04em;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 16px center;
   transition:border-color .15s var(--pk-ease);
 }
-.pk-select:focus{outline:none;border-color:var(--pk-red)}
+.pk-select:focus-visible{outline:none;border-color:var(--pk-red)}
 .pk-select option{background:var(--pk-card);color:var(--pk-ink)}
-.pk-select--sm{height:42px;padding:0 40px 0 16px;background-position:right 14px center;font-size:12px}
+.pk-select--sm{height:var(--pk-control-h-md);padding:0 var(--pk-space-6h) 0 var(--pk-space-4);background-position:right 14px center;font-size:var(--pk-text-sm)}
 
 /* ---------------------------------------------------------------------------
    PANEL LOGIN (.pk-login) — the shared, modern auth card both dashboards use.
@@ -668,11 +688,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    an Authenticate button, and the ProofKit logo at the bottom. Built by
    config.js buildPanelLogin(); each surface wires its own submit.
    --------------------------------------------------------------------------- */
-.pk-login{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;
+.pk-login{position:fixed;inset:0;z-index:var(--pk-z-gate);display:flex;align-items:center;justify-content:center;padding:var(--pk-space-4);
   background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
 .pk-login-card{position:relative;width:408px;max-width:100%;
   background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);border-radius:0;
-  padding:56px 48px 24px;box-shadow:var(--pk-shadow-lg);box-sizing:border-box;
+  padding:var(--pk-space-7h) var(--pk-space-7) var(--pk-space-5);box-shadow:var(--pk-shadow-lg);box-sizing:border-box;
   display:flex;flex-direction:column;align-items:center;text-align:center;animation:pk-login-pop .2s ease both}
 @keyframes pk-login-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 /* content sits above the glow via DOM order (no z-index, so a field never becomes a
@@ -685,27 +705,27 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   transform:translateX(-50%);background:radial-gradient(circle,var(--pk-red),transparent 68%);opacity:.2}
 /* close (✕) — top-right, generously spaced from the card edge, above the glow */
 .pk-login-close{position:absolute;top:16px;right:16px;z-index:2;display:flex;align-items:center;justify-content:center;
-  width:40px;height:40px;padding:0;border:none;border-radius:8px;background:transparent;color:var(--pk-muted);
+  width:var(--pk-control-h-md);height:var(--pk-control-h-md);padding:0;border:none;border-radius:8px;background:transparent;color:var(--pk-muted);
   cursor:pointer;line-height:0;transition:background .15s ease,color .15s ease}
 .pk-login-close:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
 @media (min-width:1024px) and (hover:hover){.pk-login-close:hover{background:var(--pk-hair);color:var(--pk-ink)}}
-.pk-login-eyebrow{font:700 11px/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;color:var(--pk-red-ink)}
-.pk-login-title{margin:16px 0 0;font-size:32px;font-weight:600;letter-spacing:-.02em;color:var(--pk-ink)}
-.pk-login-sub{margin:12px 0 32px;font-size:14px;line-height:1.5;color:var(--pk-body)}
-.pk-login-field{width:100%;text-align:left;margin-bottom:16px}
-.pk-login-label{display:block;margin-bottom:8px;font:700 10px/1 var(--pk-font);letter-spacing:var(--pk-track-1);
+.pk-login-eyebrow{font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;color:var(--pk-red-ink)}
+.pk-login-title{margin:var(--pk-space-4) 0 0;font-size:var(--pk-text-5xl);font-weight:600;letter-spacing:-.02em;color:var(--pk-ink)}
+.pk-login-sub{margin:var(--pk-space-3h) 0 var(--pk-space-6);font-size:var(--pk-text-base);line-height:1.5;color:var(--pk-body)}
+.pk-login-field{width:100%;text-align:left;margin-bottom:var(--pk-space-4)}
+.pk-login-label{display:block;margin-bottom:var(--pk-space-3);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:var(--pk-track-1);
   text-transform:uppercase;color:var(--pk-muted)}
-.pk-login-input{width:100%;height:56px;padding:0 16px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
-  background:var(--pk-input);color:var(--pk-ink);font:500 15px/1 var(--pk-font);transition:border-color .15s,box-shadow .15s}
+.pk-login-input{width:100%;height:var(--pk-control-h-xl);padding:0 var(--pk-space-4);border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 var(--pk-text-lg)/1 var(--pk-font);transition:border-color .15s,box-shadow .15s}
 .pk-login-input::placeholder{color:var(--pk-muted);font-weight:400}
-.pk-login-input:focus{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
-.pk-login-select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:44px;
+.pk-login-input:focus-visible{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
+.pk-login-select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:var(--pk-space-7);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 16px center}
 .pk-login-select option{background:var(--pk-card);color:var(--pk-ink)}
-.pk-login-err{width:100%;margin:-4px 0 16px;font-size:13px;font-weight:600;color:var(--pk-softred);text-align:left}
-.pk-login-btn{position:relative;overflow:hidden;width:100%;height:54px;border:none;border-radius:0;background:var(--pk-red);color:var(--pk-on-accent);
-  font:700 13px/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;cursor:pointer;transition:background .15s}
+.pk-login-err{width:100%;margin:calc(-1 * var(--pk-space-2)) 0 var(--pk-space-4);font-size:var(--pk-text-md);font-weight:600;color:var(--pk-softred);text-align:left}
+.pk-login-btn{position:relative;overflow:hidden;width:100%;height:var(--pk-control-h-xl);border:none;border-radius:0;background:var(--pk-red);color:var(--pk-on-accent);
+  font:700 var(--pk-text-md)/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;cursor:pointer;transition:background .15s}
 .pk-login-btn:disabled{opacity:.6;cursor:default}
 /* very subtle "securing" shimmer while authenticating (stays vivid, not dimmed) */
 .pk-login-btn.is-busy{opacity:1;cursor:default}
@@ -713,14 +733,136 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   background:linear-gradient(90deg,transparent,var(--pk-on-accent),transparent);
   transform:translateX(-100%);animation:pk-login-shimmer 1.5s ease-in-out infinite}
 @keyframes pk-login-shimmer{100%{transform:translateX(100%)}}
+/* A code shown for reading aloud or copying: monospaced-ish tracking so the two letters and six
+   digits stay countable at a glance, which a proportional font makes surprisingly hard. */
+.pk-accesscode{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;
+  font-weight:700;color:var(--pk-ink);white-space:nowrap}
+
+/* ---- ACCESS KEY sign-in screen ---------------------------------------------------------------
+   One question on screen. Everything else is behind Advanced, at the bottom, with enough space
+   above it that the eye never lands there on the way to the boxes. */
+.pk-access-login{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:var(--pk-scrim);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+/* An author \`display\` beats the UA's \`[hidden]{display:none}\`, so setting .hidden on this element
+   does nothing without saying so explicitly — the screen stays up over the page behind it. */
+.pk-access-login[hidden]{display:none}
+.pk-access-card{position:relative;width:400px;max-width:100%;box-sizing:border-box;
+  padding:36px 32px 24px;background:var(--pk-card);color:var(--pk-ink);
+  border:1px solid var(--pk-hair);border-top:2px solid var(--pk-red);box-shadow:var(--pk-shadow-lg);
+  animation:pk-access-rise .38s cubic-bezier(.2,.7,.3,1) both}
+@keyframes pk-access-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.pk-access-mark{display:flex;align-items:center;gap:9px;margin-bottom:26px}
+.pk-access-mark svg{width:16px;height:16px;flex:none}
+.pk-access-mark span{font:700 11px/1 var(--pk-font);letter-spacing:2px;text-transform:uppercase;color:var(--pk-muted)}
+.pk-access-title{margin:0;font:600 24px/1.25 var(--pk-font);letter-spacing:-.3px;color:var(--pk-ink)}
+.pk-access-sub{margin:8px 0 22px;font:400 13px/1.5 var(--pk-font);color:var(--pk-muted)}
+.pk-access-err{margin:-8px 0 4px;font:600 13px/1.4 var(--pk-font);color:var(--pk-softred);text-align:center}
+.pk-access-err[hidden]{display:none}
+
+/* Advanced. A quiet link, well below the boxes — recovery, not a choice to weigh every time. */
+.pk-access-adv{margin-top:36px;padding-top:18px;border-top:1px solid var(--pk-hair);text-align:center}
+.pk-access-advtoggle{padding:4px 8px;border:none;background:none;cursor:pointer;
+  font:500 12px/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
+.pk-access-advtoggle::after{content:"";display:inline-block;margin-left:7px;width:5px;height:5px;
+  border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+  transform:translateY(-2px) rotate(45deg);transition:transform .22s cubic-bezier(.4,0,.2,1)}
+.pk-access-advtoggle[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
+@media (min-width:1024px) and (hover:hover){.pk-access-advtoggle:hover{color:var(--pk-ink)}}
+
+/* Collapsed on load, every load.
+   Plainly display-toggled. Both height-animated versions — the 0fr/1fr grid trick used elsewhere
+   in this file, and a max-height transition — resolved to zero height inside this card even when
+   the value was forced inline with !important, so the panel simply never opened. A disclosure that
+   refuses to disclose is not somewhere to spend more time being elegant; the fade below keeps it
+   from appearing abruptly. */
+/* Display-toggled, with the reveal carried by a keyframe rather than a height transition.
+   Both height approaches collapsed to zero inside this card — the 0fr/1fr grid trick, and a
+   max-height transition, even with the value forced inline as !important — and so did animating
+   to a JS-measured pixel height. Whatever that is, a disclosure that refuses to disclose is not
+   the place to keep being clever: display toggles reliably, and the slide-and-fade below is the
+   animation. It reads the same to anyone using it. */
+.pk-access-advpanel{display:none}
+.pk-access-advpanel.is-open{display:block;animation:pk-adv-in .24s cubic-bezier(.2,.7,.3,1) both}
+@keyframes pk-adv-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pk-access-advpanel.is-open{animation:none}}
+
+/* Each box gives a small nudge as it takes a character — the only feedback that a keystroke
+   landed, since the caret has already moved on to the next box by then. */
+@keyframes pk-access-pop{0%{transform:scale(1)}45%{transform:scale(1.07)}100%{transform:scale(1)}}
+.pk-access-box.is-filled{animation:pk-access-pop .17s ease-out}
+@media (prefers-reduced-motion:reduce){.pk-access-box.is-filled{animation:none}}
+
+/* Accepted: the row settles green for a beat before the screen goes. Without it a correct code
+   looks identical to a dropped keystroke until the next page paints. */
+.pk-access.is-ok .pk-access-box{border-color:var(--pk-green);transition:border-color .18s ease}
+
+/* ---- signed in ------------------------------------------------------------------------------
+   The handover from "asking" to "in". Two beats, deliberately: the card leaves BEFORE the scrim
+   does, so the page behind is revealed rather than uncovered all at once — the eye follows the
+   card out instead of being dropped somewhere new. Nothing slides in from the side and nothing
+   bounces; it is a door closing, not a transition effect. */
+.pk-access-login.is-done{pointer-events:none}
+.pk-access-login.is-done .pk-access-card{animation:pk-access-out .26s cubic-bezier(.4,0,1,1) both}
+.pk-access-login.is-done{animation:pk-access-scrim-out .34s ease .1s both}
+@keyframes pk-access-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-6px) scale(.985)}}
+@keyframes pk-access-scrim-out{from{opacity:1}to{opacity:0}}
+
+/* The confirmation that replaces it. Rises into the space the card just left, so the two read as
+   one movement rather than two unrelated ones. */
+.pka-note{animation:pk-access-note-in .3s cubic-bezier(.2,.7,.3,1) .18s both}
+@keyframes pk-access-note-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .pk-access-login.is-done,.pk-access-login.is-done .pk-access-card,.pka-note{animation:none}
+  .pk-access-login.is-done{opacity:0}
+}
+.pk-access-alt{width:100%;padding:11px 8px;border:none;background:none;cursor:pointer;
+  font:500 13px/1 var(--pk-font);color:var(--pk-body);transition:color .15s,background .15s}
+.pk-access-alt:first-child{margin-top:10px}
+@media (min-width:1024px) and (hover:hover){.pk-access-alt:hover{color:var(--pk-ink);background:var(--pk-hover)}}
+
+/* ---- ACCESS KEY entry -----------------------------------------------------------------------
+   Eight boxes: two letters, a hairline, six digits. The gap is the point — it shows the shape of
+   the code before anything is typed, which is what stops someone entering AB1234-56 or 12AB3456. */
+.pk-access{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:4px 0 20px}
+.pk-access-box{width:38px;height:52px;padding:0;text-align:center;
+  border:1px solid var(--pk-hair);border-radius:10px;background:var(--pk-input);color:var(--pk-ink);
+  font:600 20px/1 var(--pk-font);text-transform:uppercase;caret-color:var(--pk-red);
+  transition:border-color .14s ease,box-shadow .14s ease,background .14s ease}
+.pk-access-box:focus{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
+/* A filled box reads as done without needing a tick or a colour change that fights the focus ring. */
+.pk-access-box:not(:placeholder-shown),
+.pk-access-box[value]:not([value=""]){border-color:var(--pk-muted)}
+.pk-access-box:disabled{opacity:.55}
+/* The letter half is tinted a shade differently, so "letters here, digits there" survives even
+   when someone is typing fast and not reading the separator. */
+.pk-access-box.is-alpha{background:var(--pk-elev)}
+.pk-access-sep{flex:none;width:10px;height:1px;background:var(--pk-hair)}
+
+/* Wrong code: a short shake. Felt before it is read, which is the point — the error text below is
+   for the second attempt, not the first. */
+.pk-access.is-wrong{animation:pk-access-shake .38s cubic-bezier(.36,.07,.19,.97)}
+.pk-access.is-wrong .pk-access-box{border-color:var(--pk-softred)}
+@keyframes pk-access-shake{
+  10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)}
+  30%,50%,70%{transform:translateX(-7px)} 40%,60%{transform:translateX(7px)} 100%{transform:none}}
+.pk-access.is-busy{opacity:.7}
+
+@media (max-width:420px){
+  .pk-access{gap:5px}
+  .pk-access-box{width:32px;height:46px;font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){ .pk-access.is-wrong{animation:none} }
+
 /* Touch ID — the SECONDARY route, styled as an outline of the primary button rather than a link.
    Same width, same height, same type: it is a real way in, not a footnote. Subordinate to
    Authenticate only by fill, so neither reads as the wrong default.
    [hidden] must win over the flex display, hence the explicit rule — it stays hidden until a
    platform authenticator is confirmed present. */
-.pk-login-touch{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:50px;
-  margin-top:10px;border:1px solid var(--pk-hair);border-radius:0;background:transparent;color:var(--pk-body);
-  font:700 13px/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;
+.pk-login-touch{display:flex;align-items:center;justify-content:center;gap:var(--pk-space-3);width:100%;height:var(--pk-control-h-lg);
+  margin-top:var(--pk-space-3h);border:1px solid var(--pk-hair);border-radius:0;background:transparent;color:var(--pk-body);
+  font:700 var(--pk-text-md)/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;
   cursor:pointer;transition:color .15s,border-color .15s,background .15s}
 .pk-login-touch[hidden]{display:none}
 .pk-login-touch:disabled{opacity:.6;cursor:default}
@@ -728,9 +870,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @media (min-width:1024px) and (hover:hover){
   .pk-login-touch:hover:not(:disabled){color:var(--pk-ink);border-color:var(--pk-muted);background:var(--pk-elev)}}
 
-.pk-login-brand{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
-  margin-top:40px;padding-top:24px;border-top:1px solid var(--pk-hair);
-  font:700 11px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-login-brand{display:flex;align-items:center;justify-content:center;gap:var(--pk-space-3);width:100%;
+  margin-top:var(--pk-space-6h);padding-top:var(--pk-space-5);border-top:1px solid var(--pk-hair);
+  font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
 .pk-login-brand svg{width:16px;height:16px;flex:none}
 @media (min-width:1024px) and (hover:hover){.pk-login-btn:hover{background:var(--pk-red-2)}}
 
@@ -742,19 +884,19 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    --------------------------------------------------------------------------- */
 .pk-dropdown{position:relative;display:inline-block;font-family:var(--pk-font)}
 .pk-dropdown--block{display:block;width:100%}
-.pk-dropdown-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
-  height:48px;padding:0 16px;min-width:170px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+.pk-dropdown-trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3h);width:100%;
+  height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);min-width:170px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
   background:var(--pk-input);color:var(--pk-ink);cursor:pointer;
-  font:600 13px/1 var(--pk-font);letter-spacing:.04em;transition:border-color .15s var(--pk-ease)}
-.pk-dropdown--sm .pk-dropdown-trigger{height:42px;min-width:0;padding:0 16px;font-size:12px}
+  font:600 var(--pk-text-md)/1 var(--pk-font);letter-spacing:.04em;transition:border-color .15s var(--pk-ease)}
+.pk-dropdown--sm .pk-dropdown-trigger{height:var(--pk-control-h-md);min-width:0;padding:0 var(--pk-space-4);font-size:var(--pk-text-sm)}
 .pk-dropdown-trigger:focus-visible{outline:none;border-color:var(--pk-red)}
 .pk-dropdown.is-open .pk-dropdown-trigger{border-color:var(--pk-red)}
 .pk-dropdown-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pk-dropdown-label.is-placeholder{color:var(--pk-muted)}
 .pk-dropdown-chev{width:16px;height:16px;flex:none;color:var(--pk-muted);transition:transform .18s var(--pk-ease)}
 .pk-dropdown.is-open .pk-dropdown-chev{transform:rotate(180deg)}
-.pk-dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:100%;z-index:210;display:none;
-  flex-direction:column;gap:2px;padding:8px;box-sizing:border-box;
+.pk-dropdown-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:100%;z-index:var(--pk-z-popover);display:none;
+  flex-direction:column;gap:2px;padding:var(--pk-space-3);box-sizing:border-box;
   background:var(--pk-card);border:1px solid var(--pk-hair);box-shadow:var(--pk-shadow-md);
   /* Cap the height and scroll. The list had no ceiling, so a deployment with a dozen-odd teams
      produced a menu taller than the viewport with its last entries simply unreachable —
@@ -774,10 +916,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @keyframes pk-dd-stack{from{opacity:0;transform:translateY(-18px) scale(.85)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
   .pk-dropdown.is-open .pk-dropdown-menu,.pk-dropdown.is-open .pk-dropdown-item{animation:none}}
-.pk-dropdown-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;white-space:nowrap;
-  border:0;border-radius:0;cursor:pointer;padding:12px 16px;background:transparent;color:var(--pk-body);
-  font:600 12px/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
-.pk-dropdown-sep{height:1px;margin:4px 8px;background:var(--pk-hair);flex:none}
+.pk-dropdown-item{display:flex;align-items:center;gap:var(--pk-space-3);width:100%;text-align:left;white-space:nowrap;
+  border:0;border-radius:0;cursor:pointer;padding:var(--pk-space-3h) var(--pk-space-4);background:transparent;color:var(--pk-body);
+  font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;transition:background .12s,color .12s}
+.pk-dropdown-sep{height:1px;margin:var(--pk-space-2) var(--pk-space-3);background:var(--pk-hair);flex:none}
 .pk-dropdown-ico{display:flex;flex:none}
 .pk-dropdown-ico svg{width:16px;height:16px;display:block}
 .pk-dropdown-item[aria-selected="true"]{background:var(--pk-elev);color:var(--pk-red-ink)}
@@ -795,7 +937,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tt{
   --tt-w:46px; --tt-h:24px; --tt-thumb:18px; --tt-pad:4px;
   position:relative;display:inline-flex;align-items:center;justify-content:center;
-  width:48px;height:48px;margin:-12px;padding:0;border:0;background:none;cursor:pointer;
+  width:var(--pk-control-h-lg);height:var(--pk-control-h-lg);margin:calc(-1 * var(--pk-space-3h));padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
 .pk-tt-track{
@@ -820,11 +962,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    row that borrows the dropdown trigger's box (48px, 1px hair, 16px inset, --pk-input)
    so the colour-mode switch stacks flush under the Jump-To-Team picker. Overrides only
    the base's icon-button box; the checked/thumb behaviour above still applies. */
-.pk-tt--row{width:100%;height:48px;margin:0;padding:0 16px;box-sizing:border-box;
-  justify-content:space-between;gap:12px;border:1px solid var(--pk-hair);
+.pk-tt--row{width:100%;height:var(--pk-control-h-lg);margin:0;padding:0 var(--pk-space-4);box-sizing:border-box;
+  justify-content:space-between;gap:var(--pk-space-3h);border:1px solid var(--pk-hair);
   background:var(--pk-input);color:var(--pk-ink);transition:border-color .15s var(--pk-ease)}
 .pk-tt--row .pk-tt-lbl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font:600 13px/1 var(--pk-font);letter-spacing:.04em}
+  font:600 var(--pk-text-md)/1 var(--pk-font);letter-spacing:.04em}
 .pk-tt--row .pk-tt-track{flex:none}
 .pk-tt--row:focus-visible{outline:none;border-radius:0;border-color:var(--pk-red)}
 @media (min-width:1024px) and (hover:hover){.pk-tt--row:hover{border-color:var(--pk-body)}}
@@ -853,10 +995,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    =========================================================================== */
 
 /* ---- TYPE SELECTOR (Feature 1) — the 5 comment-type chips in the composer ---- */
-.pk-typesel{display:flex;flex-wrap:wrap;gap:8px}
-.pk-typechip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:6px 14px;
+.pk-typesel{display:flex;flex-wrap:wrap;gap:var(--pk-space-3)}
+.pk-typechip{display:inline-flex;align-items:center;gap:var(--pk-space-3);min-height:var(--pk-control-h-sm);padding:var(--pk-space-3) var(--pk-space-4);
   border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
-  font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
+  font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
   transition:border-color .12s,color .12s,background .12s}
 .pk-typechip svg{width:16px;height:16px;flex:none}
 .pk-typechip[aria-pressed="true"],.pk-typechip.is-active{border-color:var(--pk-red);background:var(--pk-red);color:var(--pk-on-accent)}
@@ -869,65 +1011,67 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* ---- DRAFT TRAY (Feature 2) — "Pending pins (n)" dock panel ---- */
 .pk-tray{display:flex;flex-direction:column;background:var(--pk-card);border:1px solid var(--pk-hair);
   border-left:2px solid var(--pk-red);box-shadow:var(--pk-shadow-md)}
-.pk-tray-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:12px 16px;border-bottom:1px solid var(--pk-hair);cursor:pointer;
-  font:700 12px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-ink)}
-.pk-tray-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+.pk-tray-head{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3h);
+  padding:var(--pk-space-3h) var(--pk-space-4);border-bottom:1px solid var(--pk-hair);cursor:pointer;
+  font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-tray-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 var(--pk-space-3);
   border-radius:var(--pk-radius-full);background:var(--pk-red);color:var(--pk-on-accent);
-  font:700 11px/1 var(--pk-font)}
+  font:700 var(--pk-text-xs)/1 var(--pk-font)}
 .pk-tray-list{display:flex;flex-direction:column;gap:1px;max-height:300px;overflow:auto;overscroll-behavior:none;background:var(--pk-hair)}
-.pk-tray-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--pk-card)}
+.pk-tray-item{display:flex;align-items:flex-start;gap:var(--pk-space-3h);padding:var(--pk-space-3h) var(--pk-space-4);background:var(--pk-card)}
 .pk-tray-item-body{flex:1;min-width:0}
-.pk-tray-item-summary{font:600 13px/1.4 var(--pk-font);color:var(--pk-ink);
+.pk-tray-item-summary{font:600 var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-ink);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pk-tray-item-meta{margin-top:4px;font:600 10px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
-.pk-tray-item-actions{display:flex;gap:8px;flex:none}
-.pk-tray-iconbtn{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;margin:-14px -12px;
-  padding:0;border:0;background:none;color:var(--pk-muted);cursor:pointer;transition:color .12s}
+.pk-tray-item-meta{margin-top:var(--pk-space-2);font:600 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-tray-item-actions{display:flex;gap:var(--pk-space-3);flex:none}
+.pk-tray-iconbtn{width:var(--pk-control-h-lg);height:var(--pk-control-h-lg);
+  margin:calc(-1 * var(--pk-space-4)) calc(-1 * var(--pk-space-3h));
+  border:0;background:none;color:var(--pk-muted);
+  transition:color var(--pk-dur-fast) var(--pk-ease)}
 .pk-tray-iconbtn svg{width:16px;height:16px}
 @media (min-width:1024px) and (hover:hover){.pk-tray-iconbtn:hover{color:var(--pk-red-ink)}}
-.pk-tray-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--pk-hair)}
+.pk-tray-foot{display:flex;gap:var(--pk-space-3);padding:var(--pk-space-3h) var(--pk-space-4);border-top:1px solid var(--pk-hair)}
 .pk-tray-item.is-failed{border-left:2px solid var(--pk-softred)}
 .pk-tray-item.is-failed .pk-tray-item-meta{color:var(--pk-softred)}
 
 /* ---- DUPLICATE-WARNING STRIP (Feature 7) — non-blocking "similar open" notice ---- */
-.pk-dupwarn{display:flex;align-items:center;gap:10px;padding:10px 14px;
+.pk-dupwarn{display:flex;align-items:center;gap:var(--pk-space-3h);padding:var(--pk-space-3h) var(--pk-space-4);
   background:var(--pk-open-bg);border:1px solid var(--pk-amber);border-left:3px solid var(--pk-amber);
-  color:var(--pk-open-ink);font:600 12px/1.4 var(--pk-font)}
+  color:var(--pk-open-ink);font:600 var(--pk-text-sm)/1.4 var(--pk-font)}
 .pk-dupwarn svg{width:16px;height:16px;flex:none;color:var(--pk-amber)}
 .pk-dupwarn-link{margin-left:auto;flex:none;color:var(--pk-open-ink);text-decoration:underline;
   font-weight:700;cursor:pointer;background:none;border:0;font:inherit}
 
 /* ---- REOPEN MODAL (Feature 3) — reason dropdown + note, replaces the prompt ---- */
-.pk-reopen{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;
+.pk-reopen{position:fixed;inset:0;z-index:var(--pk-z-overlay);display:flex;align-items:center;justify-content:center;padding:var(--pk-space-4);
   background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
 .pk-reopen-card{width:440px;max-width:100%;background:var(--pk-card);color:var(--pk-ink);
   border:1px solid var(--pk-hair);border-top:2px solid var(--pk-softred);box-shadow:var(--pk-shadow-lg);
-  padding:28px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;
+  padding:var(--pk-space-5);box-sizing:border-box;display:flex;flex-direction:column;gap:var(--pk-space-4);
   animation:pk-login-pop .2s ease both}
-.pk-reopen-title{margin:0;font:600 20px/1.2 var(--pk-font);letter-spacing:-.01em;color:var(--pk-ink)}
-.pk-reopen-sub{margin:-8px 0 0;font:400 13px/1.5 var(--pk-font);color:var(--pk-body)}
-.pk-reopen-field{display:flex;flex-direction:column;gap:8px}
-.pk-reopen-label{font:700 10px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
-.pk-reopen-note{width:100%;min-height:88px;padding:12px 14px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
-  background:var(--pk-input);color:var(--pk-ink);font:500 14px/1.5 var(--pk-font);resize:vertical}
-.pk-reopen-note:focus{outline:none;border-color:var(--pk-red)}
+.pk-reopen-title{margin:0;font:600 var(--pk-text-3xl)/1.2 var(--pk-font);letter-spacing:-.01em;color:var(--pk-ink)}
+.pk-reopen-sub{margin:calc(-1 * var(--pk-space-3)) 0 0;font:400 var(--pk-text-md)/1.5 var(--pk-font);color:var(--pk-body)}
+.pk-reopen-field{display:flex;flex-direction:column;gap:var(--pk-space-3)}
+.pk-reopen-label{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-reopen-note{width:100%;min-height:88px;padding:var(--pk-space-3h) var(--pk-space-4);border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
+  background:var(--pk-input);color:var(--pk-ink);font:500 var(--pk-text-base)/1.5 var(--pk-font);resize:vertical}
+.pk-reopen-note:focus-visible{outline:none;border-color:var(--pk-red)}
 .pk-reopen-note::placeholder{color:var(--pk-muted)}
-.pk-reopen-err{margin:-8px 0 0;font:600 13px/1.4 var(--pk-font);color:var(--pk-softred)}
-.pk-reopen-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.pk-reopen-err{margin:calc(-1 * var(--pk-space-3)) 0 0;font:600 var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-softred)}
+.pk-reopen-actions{display:flex;justify-content:flex-end;gap:var(--pk-space-3);margin-top:var(--pk-space-2)}
 
 /* ---- INSIGHTS BARS (Feature 12) — the CSS bar charts + stat tiles ---- */
-.pk-insights{display:flex;flex-direction:column;gap:24px}
-.pk-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.pk-insights{display:flex;flex-direction:column;gap:var(--pk-space-5)}
+.pk-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--pk-space-4)}
 /* The per-project breakdown is a different KIND of thing from the tiles above it — those are
    places to go, this is a report. The gap says so; at 16px it read as a thirteenth tile. */
-.pk-home-byproject{margin-top:64px}
-.pk-tile{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:20px}
-.pk-tile-val{font:600 28px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums}
-.pk-tile-label{margin-top:8px;font:700 10px/1.3 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
-.pk-bars{display:flex;flex-direction:column;gap:12px}
-.pk-bar-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;gap:12px}
-.pk-bar-key{font:600 12px/1.3 var(--pk-font);color:var(--pk-body);
+.pk-home-byproject{margin-top:var(--pk-space-8)}
+.pk-tile{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:var(--pk-space-4h)}
+.pk-tile-val{font:600 var(--pk-text-4xl)/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums}
+.pk-tile-label{margin-top:var(--pk-space-3);font:700 var(--pk-text-2xs)/1.3 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-bars{display:flex;flex-direction:column;gap:var(--pk-space-3h)}
+.pk-bar-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;gap:var(--pk-space-3h)}
+.pk-bar-key{font:600 var(--pk-text-sm)/1.3 var(--pk-font);color:var(--pk-body);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk-bar-track{position:relative;height:12px;background:var(--pk-input);border:1px solid var(--pk-hair);overflow:hidden}
 .pk-bar-fill{position:absolute;inset:0 auto 0 0;width:var(--pct,0%);background:var(--pk-red);
@@ -937,46 +1081,46 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-bar-fill--blue{background:var(--pk-blue)}
 .pk-bar-fill--green{background:var(--pk-green)}
 .pk-bar-fill--softred{background:var(--pk-softred)}
-.pk-bar-val{font:600 12px/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums;text-align:right}
+.pk-bar-val{font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums;text-align:right}
 /* per-team workload table (Insights) */
 .pk-teamtbl{display:flex;flex-direction:column;background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red)}
-.pk-teamtbl-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 90px 110px 130px;gap:12px;align-items:center;
-  padding:10px 16px;border-top:1px solid var(--pk-hair);font:600 13px/1.3 var(--pk-font);color:var(--pk-ink);
+.pk-teamtbl-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 90px 110px 130px;gap:var(--pk-space-3h);align-items:center;
+  padding:var(--pk-space-3h) var(--pk-space-4);border-top:1px solid var(--pk-hair);font:600 var(--pk-text-md)/1.3 var(--pk-font);color:var(--pk-ink);
   font-variant-numeric:tabular-nums}
 .pk-teamtbl-row:first-child{border-top:none}
 .pk-teamtbl-row > span:not(:first-child){text-align:right}
-.pk-teamtbl-head{font:700 10px/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+.pk-teamtbl-head{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
 .pk-teamtbl-team{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--pk-body)}
 
 /* ============================================================
    Settings view — GLOBAL (shared by admin .rvd + team .tmd)
    ============================================================ */
-.pk-set-head{margin:0 0 16px}
-.pk-set-head .pk-h2{margin:0;font:800 20px/1.2 var(--pk-font);color:var(--pk-ink)}
-.pk-set-sub{margin:6px 0 0;font:400 13px/1.5 var(--pk-font);color:var(--pk-muted);max-width:60ch}
-.pk-set{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;align-items:start;margin-top:8px}
+.pk-set-head{margin:0 0 var(--pk-space-4)}
+.pk-set-head .pk-h2{margin:0;font:800 var(--pk-text-3xl)/1.2 var(--pk-font);color:var(--pk-ink)}
+.pk-set-sub{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-md)/1.5 var(--pk-font);color:var(--pk-muted);max-width:60ch}
+.pk-set{display:grid;grid-template-columns:190px minmax(0,1fr);gap:var(--pk-space-5);align-items:start;margin-top:var(--pk-space-3)}
 /* Organisation has no tab rail, so its panel is the ONLY child — and in a two-column grid a lone
    child lands in the FIRST column and renders 190px wide. That squeezed every level of the module,
    not just the projects list, because they all render into this same panel. One column, full width. */
 .pk-set--solo{grid-template-columns:minmax(0,1fr)}
 .pk-set-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:16px}
-.pk-set-tab{padding:10px 14px;border:none;border-left:2px solid transparent;background:transparent;cursor:pointer;
-  text-align:left;color:var(--pk-body);font:600 13px/1.2 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
+.pk-set-tab{padding:var(--pk-space-3h) var(--pk-space-4);border:none;border-left:2px solid transparent;background:transparent;cursor:pointer;
+  text-align:left;color:var(--pk-body);font:600 var(--pk-text-md)/1.2 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
 .pk-set-tab.is-active{border-left-color:var(--pk-red);color:var(--pk-ink);background:var(--pk-elev)}
-.pk-set-panel{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pk-set-panel{display:flex;flex-direction:column;gap:var(--pk-space-4);min-width:0}
 .pk-set-card{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red)}
-.pk-set-card-h{padding:16px 18px 0}
-.pk-set-card-h h3{margin:0;font:700 12px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
-.pk-set-card-h p{margin:6px 0 0;font:400 12px/1.5 var(--pk-font);color:var(--pk-muted)}
-.pk-set-card-b{padding:8px 18px 6px}
-.pk-set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--pk-hair)}
+.pk-set-card-h{padding:var(--pk-space-4) var(--pk-space-4h) 0}
+.pk-set-card-h h3{margin:0;font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
+.pk-set-card-h p{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-sm)/1.5 var(--pk-font);color:var(--pk-muted)}
+.pk-set-card-b{padding:var(--pk-space-3) var(--pk-space-4h) var(--pk-space-3)}
+.pk-set-row{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-4);padding:var(--pk-space-3h) 0;border-bottom:1px solid var(--pk-hair)}
 .pk-set-row:last-child{border-bottom:none}
 .pk-set-row-main{min-width:0}
-.pk-set-row-label{font:600 13px/1.3 var(--pk-font);color:var(--pk-ink)}
-.pk-set-row-desc{margin-top:3px;font:400 12px/1.45 var(--pk-font);color:var(--pk-muted)}
-.pk-set-ctl{flex:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pk-set-row-label{font:600 var(--pk-text-md)/1.3 var(--pk-font);color:var(--pk-ink)}
+.pk-set-row-desc{margin-top:3px;font:400 var(--pk-text-sm)/1.45 var(--pk-font);color:var(--pk-muted)}
+.pk-set-ctl{flex:none;display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;justify-content:flex-end}
 /* switch */
-.pk-set-switch{width:44px;height:24px;padding:0;border:none;border-radius:9999px;background:var(--pk-hair);cursor:pointer;
+.pk-set-switch{width:44px;height:var(--pk-control-h-xs);padding:0;border:none;border-radius:9999px;background:var(--pk-hair);cursor:pointer;
   position:relative;transition:background .18s}
 .pk-set-switch[aria-checked="true"]{background:var(--pk-red)}
 .pk-set-switch-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:9999px;background:var(--pk-on-accent);
@@ -984,29 +1128,77 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-switch[aria-checked="true"] .pk-set-switch-thumb{transform:translateX(20px)}
 /* segmented */
 .pk-set-seg{display:inline-flex;border:1px solid var(--pk-hair);overflow:hidden}
-.pk-set-segbtn{padding:7px 14px;border:none;background:transparent;cursor:pointer;color:var(--pk-body);
-  font:600 12px/1 var(--pk-font);transition:background .15s,color .15s}
+.pk-set-segbtn{padding:var(--pk-space-3) var(--pk-space-4);border:none;background:transparent;cursor:pointer;color:var(--pk-body);
+  font:600 var(--pk-text-sm)/1 var(--pk-font);transition:background .15s,color .15s}
 .pk-set-segbtn + .pk-set-segbtn{border-left:1px solid var(--pk-hair)}
 .pk-set-segbtn.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
 /* accent swatches */
-.pk-set-swatches{display:inline-flex;gap:8px;flex-wrap:wrap}
-.pk-set-swatch{width:26px;height:26px;padding:0;border:1px solid var(--pk-hair);border-radius:9999px;cursor:pointer;
+.pk-set-swatches{display:inline-flex;gap:var(--pk-space-3);flex-wrap:wrap}
+.pk-set-swatch{width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);padding:0;border:1px solid var(--pk-hair);border-radius:9999px;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;background:var(--pk-card)}
 .pk-set-swatch > span{width:16px;height:16px;border-radius:9999px;background:var(--sw,var(--pk-red))}
 .pk-set-swatch-def > span{background:linear-gradient(135deg,var(--pk-muted) 0 50%,var(--pk-hair) 50% 100%)}
 .pk-set-swatch.is-active{border-color:var(--pk-red);box-shadow:0 0 0 2px var(--pk-canvas),0 0 0 3px var(--pk-red)}
 /* pills / tags / ping / kbd */
-.pk-set-pill{display:inline-flex;align-items:center;height:24px;padding:0 10px;background:var(--pk-elev);
-  border:1px solid var(--pk-hair);font:600 12px/1 var(--pk-font);color:var(--pk-body)}
-.pk-set-ping{font:600 12px/1 var(--pk-font);color:var(--pk-muted)}
-.pk-set-teamtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;max-width:320px}
-.pk-set-teamtag{display:inline-flex;align-items:center;height:24px;padding:0 10px;background:var(--pk-elev);
-  border:1px solid var(--pk-hair);font:600 11px/1 var(--pk-font);color:var(--pk-body)}
+.pk-set-pill{display:inline-flex;align-items:center;height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);background:var(--pk-elev);
+  border:1px solid var(--pk-hair);font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-body)}
+.pk-set-ping{font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted)}
+.pk-set-teamtags{display:flex;flex-wrap:wrap;gap:var(--pk-space-3);justify-content:flex-end;max-width:320px}
+.pk-set-teamtag{display:inline-flex;align-items:center;height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);background:var(--pk-elev);
+  border:1px solid var(--pk-hair);font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body)}
 .pk-set-teamtag.is-off{opacity:.5}
 /* Was an inline style= in dashboard.js; a class instead, so \`style-src 'self'\` holds. */
 .pk-set-teamtag-meta{color:var(--pk-muted)}
-.pk-set-kbd{display:inline-flex;align-items:center;height:22px;padding:0 8px;background:var(--pk-input);
-  border:1px solid var(--pk-hair);border-bottom-width:2px;border-radius:4px;font:700 11px/1 var(--pk-font);color:var(--pk-ink)}
+.pk-set-kbd{display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3);background:var(--pk-input);
+  border:1px solid var(--pk-hair);border-bottom-width:2px;border-radius:4px;font:700 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-ink)}
+
+
+/* ---- THE ACTION BUTTON — ONE implementation, eight names -----------------------------------
+   Sharp corners, hairline stroke, uppercase tracked label, transparent fill. Every toolbar
+   action, bulk action, card action and modal action in the product is this button.
+
+   It used to be eight separate rules — .pk-tbtn, .pk-selectall, .pk-bulk-a, .pk-prompt-btn,
+   .rvd-editbtn, .tmd-modal-btn, .pkc-btn, .pk-deploy-btn — each a hand-copy of the last. By the
+   time they were measured, exactly ONE declaration (cursor:pointer) was still byte-identical
+   across all eight. That is the whole argument against parallel implementations: nobody chose to
+   make them differ, and nobody could have told you they did.
+
+   Merging them normalised four accidental differences. Each is a no-op or a fix, never a
+   restyling:
+     border      \`1px\` vs \`var(--pk-border-hair)\` — the same 1px, written two ways.
+     transition  three different property lists; now the union. Transitioning a property that
+                 never changes on a given button costs nothing.
+     padding     .pkc-btn carried \`1px\` of vertical padding inside a fixed-height flex box,
+                 where it could not have any effect.
+     centering   three of the eight never set display/align/justify and relied on the <button>
+                 UA default. Now they centre the same way as the other five.
+   Everything that differs ON PURPOSE — height rung, label size, tracking, fill — stays below as
+   a modifier. If you are about to add a ninth name, add a modifier instead. */
+.pk-tbtn,.pk-selectall,.pk-bulk-a,.pk-prompt-btn,.rvd-editbtn,.tmd-modal-btn,.pkc-btn,.pk-deploy-btn,
+.tmd .tmd-ack-btn{
+  display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+  height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;
+  background:transparent;color:var(--pk-body);
+  font:700 var(--pk-text-2xs)/var(--pk-lh-none) var(--pk-font);
+  letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;text-decoration:none;
+  cursor:pointer;
+  transition:border-color var(--pk-dur-base) var(--pk-ease),color var(--pk-dur-base) var(--pk-ease),
+             background var(--pk-dur-base) var(--pk-ease),filter var(--pk-dur-base) var(--pk-ease),
+             opacity var(--pk-dur-base) var(--pk-ease)}
+/* the deliberate deltas — the only reason these eight names still exist */
+.pk-tbtn,.pk-selectall,.rvd-editbtn,.tmd-modal-btn{height:var(--pk-control-h-md)}
+.tmd .tmd-ack-btn{background:var(--pk-elev);font-size:var(--pk-text-xs);letter-spacing:.04em}
+.rvd-editbtn,.tmd-modal-btn{padding:0 var(--pk-space-4h)}
+.pk-tbtn{font-size:var(--pk-text-xs)}
+.pk-prompt-btn{padding:0 var(--pk-space-3h)}
+.pk-bulk-a,.pk-prompt-btn{color:var(--pk-ink)}
+.pkc-btn{min-width:116px}
+.pk-selectall{background:var(--pk-input);font-weight:600;font-size:var(--pk-text-sm);
+  letter-spacing:.04em;text-transform:none}
+.pk-deploy-btn{flex:none;height:var(--pk-control-h-lg);padding:0 var(--pk-space-5);
+  border-color:var(--pk-deploy);background:var(--pk-deploy);color:var(--pk-on-accent);
+  font-size:var(--pk-text-sm);letter-spacing:.12em}
 
 /* ---- Settings 9.0: the Organisation drill-down -------------------------------------------
    Projects contain teams contain people, so the settings screen navigates rather than lists.
@@ -1014,9 +1206,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    that goes somewhere, a breadcrumb back up, and an empty state that carries its own action. */
 
 /* Something is waiting — today, a person locked out of their account. */
-.pk-set-tab{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
-.pk-set-tab-badge{flex:none;min-width:18px;height:18px;padding:0 5px;border-radius:9999px;
-  background:var(--pk-red);color:var(--pk-on-accent);font:700 11px/18px var(--pk-font);text-align:center}
+.pk-set-tab{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3);width:100%}
+.pk-set-tab-badge{flex:none;min-width:18px;height:18px;padding:0 var(--pk-space-2);border-radius:9999px;
+  background:var(--pk-red);color:var(--pk-on-accent);font:700 var(--pk-text-xs)/18px var(--pk-font);text-align:center}
 .pk-set-tab-badge[hidden]{display:none}
 
 /* A row you can open. Same metrics as .pk-set-row so a list of them lines up with the static
@@ -1033,16 +1225,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-row--go:focus-visible{outline:2px solid var(--pk-red);outline-offset:-2px}
 
 /* Breadcrumb — the way back up, and the only place the hierarchy is spelled out in words. */
-.pk-set-crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+/* Same 16px gap .pk-set-head puts under a screen title — a crumb IS the title on drill-down
+   screens, so it sits the same distance above the content it names. */
+.pk-set-crumbs{display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;margin-bottom:var(--pk-space-4)}
 .pk-set-crumb{padding:0;border:none;background:none;cursor:pointer;
-  font:600 12px/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
+  font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
 .pk-set-crumb.is-here{cursor:default;color:var(--pk-ink)}
-.pk-set-crumb-sep{color:var(--pk-hair);font:600 12px/1 var(--pk-font)}
+.pk-set-crumb-sep{color:var(--pk-hair);font:600 var(--pk-text-sm)/1 var(--pk-font)}
 @media (min-width:1024px) and (hover:hover){.pk-set-crumb:not(.is-here):hover{color:var(--pk-ink)}}
 
 /* Empty states say what is missing and offer the fix, rather than explaining the concept. */
-.pk-set-empty{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;
-  font:400 13px/1.4 var(--pk-font);color:var(--pk-muted);border-bottom:1px solid var(--pk-hair)}
+.pk-set-empty{display:flex;align-items:center;gap:var(--pk-space-3h);flex-wrap:wrap;padding:var(--pk-space-4) 0;
+  font:400 var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-muted);border-bottom:1px solid var(--pk-hair)}
 .pk-set-empty:last-child{border-bottom:none}
 
 /* Irreversible actions, grouped and marked. The left rule is the tool's card accent, so this
@@ -1053,42 +1247,42 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* ---- Project and team CARDS ---------------------------------------------------------------
    Projects and teams are BROWSED — you pick one of them — so they are tiles, not rows. The stat
    strip is the point: it answers "which one do I need" without opening any of them. */
-.pk-card-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));padding:8px 0 14px}
+.pk-card-grid{display:grid;gap:var(--pk-space-3h);grid-template-columns:repeat(auto-fit,minmax(230px,1fr));padding:var(--pk-space-3) 0 var(--pk-space-4)}
 /* Hover changes the STROKE and nothing else. No lift: a card that moves under the cursor makes
    the pointer chase it, and with a grid of them the whole page appears to twitch as you cross it. */
-.pk-card-tile{display:flex;flex-direction:column;gap:14px;padding:16px;text-align:left;cursor:pointer;
+.pk-card-tile{display:flex;flex-direction:column;gap:var(--pk-space-4);padding:var(--pk-space-4);text-align:left;cursor:pointer;
   background:var(--pk-elev);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
   color:inherit;font:inherit;transition:border-color .16s,background .16s}
-.pk-card-tile-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.pk-card-tile-name{font:700 14px/1.3 var(--pk-font);color:var(--pk-ink)}
-.pk-card-tile-tag{flex:none;padding:2px 8px;background:var(--pk-card);border:1px solid var(--pk-hair);
-  font:600 10px/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
-.pk-card-tile-stats{display:flex;gap:16px}
+.pk-card-tile-h{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-3)}
+.pk-card-tile-name{font:700 var(--pk-text-base)/1.3 var(--pk-font);color:var(--pk-ink)}
+.pk-card-tile-tag{flex:none;padding:2px var(--pk-space-3);background:var(--pk-card);border:1px solid var(--pk-hair);
+  font:600 var(--pk-text-2xs)/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-card-tile-stats{display:flex;gap:var(--pk-space-4)}
 .pk-card-tile-stat{display:flex;flex-direction:column;gap:2px}
-.pk-card-tile-stat b{font:700 18px/1 var(--pk-font);color:var(--pk-ink)}
-.pk-card-tile-stat i{font:500 11px/1 var(--pk-font);font-style:normal;color:var(--pk-muted)}
+.pk-card-tile-stat b{font:700 var(--pk-text-2xl)/1 var(--pk-font);color:var(--pk-ink)}
+.pk-card-tile-stat i{font:500 var(--pk-text-xs)/1 var(--pk-font);font-style:normal;color:var(--pk-muted)}
 /* The projects list has no card around it, so its actions need their own spacing — a card used to
    supply that as its final row. */
-.pk-org-actions{display:flex;justify-content:flex-end;margin-top:16px}
+.pk-org-actions{display:flex;justify-content:flex-end;margin-top:var(--pk-space-4)}
 
 /* ROW layout. Projects are few, their names are long, and the useful comparison is between them —
    so one per line, with the stat columns aligned down the page. Side-by-side cards forced the
    names to wrap and put each project's numbers at a different x, which is the one arrangement that
    makes four projects hard to compare. */
-.pk-card-grid--rows{grid-template-columns:1fr;gap:8px;padding:0}
-.pk-card-grid--rows .pk-card-tile{flex-direction:row;align-items:center;gap:24px;padding:14px 18px}
+.pk-card-grid--rows{grid-template-columns:1fr;gap:var(--pk-space-3);padding:0}
+.pk-card-grid--rows .pk-card-tile{flex-direction:row;align-items:center;gap:var(--pk-space-5);padding:var(--pk-space-4) var(--pk-space-4h)}
 /* The base card pushes the tag to the far right (space-between). In a row that flings it across
    the whole width to sit against the numbers; beside the name is where it belongs. */
-.pk-card-grid--rows .pk-card-tile-h{flex:1 1 auto;min-width:0;align-items:center;gap:10px;
+.pk-card-grid--rows .pk-card-tile-h{flex:1 1 auto;min-width:0;align-items:center;gap:var(--pk-space-3h);
   justify-content:flex-start}
-.pk-card-grid--rows .pk-card-tile-name{font-size:15px}
+.pk-card-grid--rows .pk-card-tile-name{font-size:var(--pk-text-lg)}
 /* Fixed-width stat columns so the numbers line up row to row rather than drifting with the name. */
 .pk-card-grid--rows .pk-card-tile-stats{flex:none;gap:0}
 .pk-card-grid--rows .pk-card-tile-stat{width:88px;align-items:flex-start}
-.pk-card-grid--rows .pk-card-tile-stat b{font-size:20px}
+.pk-card-grid--rows .pk-card-tile-stat b{font-size:var(--pk-text-3xl)}
 
 @media (max-width:640px){
-  .pk-card-grid--rows .pk-card-tile{flex-direction:column;align-items:flex-start;gap:12px}
+  .pk-card-grid--rows .pk-card-tile{flex-direction:column;align-items:flex-start;gap:var(--pk-space-3h)}
   .pk-card-grid--rows .pk-card-tile-stat{width:auto;min-width:64px}
 }
 
@@ -1100,14 +1294,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* Project scope in the header. Sized to sit level with the buttons beside it rather than being
    styled as one — it reports what you are looking at, and only incidentally changes it. */
 .pk-projscope{display:flex;align-items:center}
-.pk-projscope .pk-dropdown-trigger{height:40px}
+.pk-projscope .pk-dropdown-trigger{height:var(--pk-control-h-md)}
 @media (max-width:900px){.pk-projscope{display:none}}
 
 /* Search across the hierarchy. Fine at six teams; the point is thirty.
    The top margin separates it from the page heading — at the inherited 8px the two read as one
    block, which made the title look like a label for the field rather than for the screen. */
-.pk-set-search{margin-top:20px;margin-bottom:0}
-.pk-set-search input{width:100%;height:42px}
+.pk-set-search{margin-top:var(--pk-space-4h);margin-bottom:0}
+.pk-set-search input{width:100%;height:var(--pk-control-h-md)}
 
 /* The recycle bin's waiting state is a fact, not a button — a control that refuses half the time
    teaches people to click it twice, which is the opposite of what a two-day delete is for. */
@@ -1136,17 +1330,17 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pkd-head{display:flex;flex-direction:row;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-6);flex-wrap:wrap}
 .pkd-id{display:flex;flex-direction:column;gap:var(--pk-space-3h);flex:1 1 420px;min-width:0}
 .pkd-eyebrow{display:inline-flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;
-  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
+  font:var(--pk-w-bold) var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted)}
 .pkd-eyebrow b{color:var(--pk-red-ink)}
 .pkd-sep{color:var(--pk-hair)}
-.pkd-sub{display:inline-flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;font-size:var(--pk-text-sm);color:var(--pk-body)}
+.pkd-sub{display:inline-flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;font-size:var(--pk-text-md);color:var(--pk-body)}
 .pkd-sub a{color:var(--pk-body);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
 /* routing: plain text, no team-tint chips — the flow reads as one line */
 .pkd-route{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:var(--pk-space-3);text-align:right;padding-top:2px}
-.pkd-route-k{font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
-.pkd-route-v{font:var(--pk-w-semibold) var(--pk-text-md)/1 var(--pk-font);color:var(--pk-ink)}
+.pkd-route-k{font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
+.pkd-route-v{font:var(--pk-w-semibold) var(--pk-text-base)/1 var(--pk-font);color:var(--pk-ink)}
 .pkd-route-v span{color:var(--pk-muted);margin:0 var(--pk-space-2)}
-.pkd-route-i{font:var(--pk-w-medium) var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
+.pkd-route-i{font:var(--pk-w-medium) var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
 /* status stepper (side rail) */
 .pkd-status{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4);
   padding-bottom:var(--pk-space-4);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
@@ -1155,10 +1349,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pkd-step::before{content:"";position:absolute;left:11px;top:calc(var(--pk-space-3) + 26px);
   height:calc(100% - 26px);width:2px;background:var(--pk-hair)}
 .pkd-step:last-child::before{display:none}
-.pkd-step-n{flex:none;width:24px;height:24px;border-radius:var(--pk-radius-full);display:inline-flex;align-items:center;justify-content:center;
-  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);border:var(--pk-border-strong) solid var(--pk-hair);
+.pkd-step-n{flex:none;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);border-radius:var(--pk-radius-full);display:inline-flex;align-items:center;justify-content:center;
+  font:var(--pk-w-bold) var(--pk-text-xs)/1 var(--pk-font);border:var(--pk-border-strong) solid var(--pk-hair);
   background:var(--pk-card);color:var(--pk-muted);font-variant-numeric:tabular-nums}
-.pkd-step-t{font:var(--pk-w-semibold) var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-muted)}
+.pkd-step-t{font:var(--pk-w-semibold) var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-muted)}
 .pkd-step.is-done .pkd-step-n{background:var(--pk-green);border-color:var(--pk-green);color:var(--pk-on-accent)}
 .pkd-step.is-done .pkd-step-t{color:var(--pk-ink)}
 .pkd-step.is-current .pkd-step-n{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
@@ -1172,10 +1366,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
 .pkd-node.is-done .pkd-dot{background:var(--pk-green);border-color:var(--pk-green)}
 .pkd-node.is-current .pkd-dot{background:var(--pk-red);border-color:var(--pk-red)}
-.pkd-stage{font:var(--pk-w-bold) var(--pk-text-sm)/1.2 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-ink)}
+.pkd-stage{font:var(--pk-w-bold) var(--pk-text-md)/1.2 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-ink)}
 .pkd-node.is-current .pkd-stage{color:var(--pk-red-ink)}
-.pkd-actor{margin-top:var(--pk-space-3h);font:var(--pk-w-semibold) var(--pk-text-md)/1.2 var(--pk-font);color:var(--pk-ink)}
-.pkd-when{margin-top:var(--pk-space-2);font:var(--pk-w-regular) var(--pk-text-xs)/1.3 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
+.pkd-actor{margin-top:var(--pk-space-3h);font:var(--pk-w-semibold) var(--pk-text-base)/1.2 var(--pk-font);color:var(--pk-ink)}
+.pkd-when{margin-top:var(--pk-space-2);font:var(--pk-w-regular) var(--pk-text-sm)/1.3 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
 @media (max-width:900px){
   .pkd-route{align-items:flex-start;text-align:left}
   .pkd-ftl{grid-template-columns:1fr}
@@ -1188,7 +1382,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pkd-acc{border-top:var(--pk-border-hair) solid var(--pk-hair)}
 .pkd-acc:first-child{border-top:none}
 .pkd-acc-h{width:100%;display:flex;align-items:center;gap:var(--pk-space-3);padding:var(--pk-space-3h) 0;background:none;border:none;cursor:pointer;
-  font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-red-ink);text-align:left;font-family:var(--pk-font)}
+  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-red-ink);text-align:left;font-family:var(--pk-font)}
 .pkd-acc-chev{width:14px;height:14px;margin-left:auto;color:var(--pk-muted);transition:transform .18s}
 .pkd-acc.is-collapsed .pkd-acc-chev{transform:rotate(-90deg)}
 .pkd-acc.is-collapsed .pkd-acc-b{display:none}
@@ -1199,8 +1393,8 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-side-brand{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3);
   padding:0 var(--pk-space-4) var(--pk-space-4h)}
 .pk-side-mark{flex:none;width:11px;height:11px;border-radius:50%;background:var(--pk-red);box-shadow:0 0 0 4px var(--pk-ring-red)}
-.pk-side-word{font-size:var(--pk-text-lg);font-weight:var(--pk-w-bold);letter-spacing:.01em;color:var(--pk-ink)}
-.pk-side-tag{flex-basis:100%;margin-left:23px;font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);
+.pk-side-word{font-size:var(--pk-text-2xl);font-weight:var(--pk-w-bold);letter-spacing:.01em;color:var(--pk-ink)}
+.pk-side-tag{flex-basis:100%;margin-left:var(--pk-space-5);font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);
   letter-spacing:.14em;text-transform:uppercase;color:var(--pk-brand-gold)}
 :root[data-pk-theme="light"] .pk-side-tag{color:var(--pk-muted)}
 /* the side rail is a horizontal wrap on small screens — the brand block would break it */
@@ -1211,12 +1405,12 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    Proofkit mark into the side rail — reclaiming ~160px of vertical space before content. The
    classic header is untouched when the flag is 'old'. ---------------------------------------- */
 :root[data-pk-newui] .pk-top{align-items:center;padding-top:0;padding-bottom:var(--pk-space-4)}
-:root[data-pk-newui] .pk-h1{font-size:var(--pk-text-xl);line-height:var(--pk-lh-heading);letter-spacing:-.01em}
+:root[data-pk-newui] .pk-h1{font-size:var(--pk-text-4xl);line-height:var(--pk-lh-heading);letter-spacing:-.01em}
 :root[data-pk-newui] .pk-lead{display:none}            /* the strapline is chrome, not information */
 :root[data-pk-newui] .pk-top-r .pk-brand{display:none} /* the mark now lives at the top of the side rail */
 :root[data-pk-newui] .pk-top-r{flex-direction:row;align-items:center;gap:var(--pk-space-3)}
 :root[data-pk-newui] .pk-bar{margin-top:var(--pk-space-5)}
-@media (max-width:768px){:root[data-pk-newui] .pk-h1{font-size:var(--pk-text-lg)}}
+@media (max-width:768px){:root[data-pk-newui] .pk-h1{font-size:var(--pk-text-2xl)}}
 
 /* ---- side-nav icons (isolated-design parity: icon + label, badge pushed right) ---- */
 .pk-nav-ico{width:16px;height:16px;flex:none;color:currentColor}
@@ -1232,18 +1426,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-stepbtn-ico{width:16px;height:16px;display:block;flex:none}
 
 /* ---- detail toolbar (isolated-design parity): icon-led actions, one red lead action ---- */
-.pk-a-ico{display:inline-flex;align-items:center;justify-content:center;margin-right:6px;flex:none}
+.pk-a-ico{display:inline-flex;align-items:center;justify-content:center;margin-right:var(--pk-space-3);flex:none}
 .pk-a-ico svg{width:14px;height:14px;display:block}
 .pk-a--primary{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
 @media (min-width:1024px) and (hover:hover){
   .pk-a--primary:hover{background:var(--pk-red-2);border-color:var(--pk-red-2);color:var(--pk-on-accent)}
 }
 /* the Copy dropdown sits in the same bar — match the action type ramp */
-:root[data-pk-newui] .pk-detail-bar-r .pk-dropdown-trigger{text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:700}
+:root[data-pk-newui] .pk-detail-bar-r .pk-dropdown-trigger{text-transform:uppercase;letter-spacing:.1em;font-size:var(--pk-text-2xs);font-weight:700}
 
 /* ---- row-menu section headers (categorised ⋮ menu) ---- */
 .pk-rowmenu-h{padding:var(--pk-space-3) var(--pk-space-3h) var(--pk-space-2);
-  font:var(--pk-w-bold) var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
+  font:var(--pk-w-bold) var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.14em;text-transform:uppercase;color:var(--pk-muted)}
 .pk-rowmenu-h:not(:first-child){margin-top:var(--pk-space-2);border-top:var(--pk-border-hair) solid var(--pk-hair);padding-top:var(--pk-space-3h)}
 
 /* ---- nav count badges: same circle, lighter/smaller digits, optically centred, right-snapped.
@@ -1254,7 +1448,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-nav .pk-navbadge{
   margin-left:auto;
   min-width:18px;height:18px;padding:0 2px;
-  font-weight:var(--pk-w-semibold);font-size:9px;line-height:1;letter-spacing:0;
+  font-weight:var(--pk-w-semibold);font-size:var(--pk-text-3xs);line-height:1;letter-spacing:0;
   display:inline-flex;align-items:center;justify-content:center;
 }
 /* MUST stay below the rule above: \`.pk-navbadge[hidden]{display:none}\` up in the base block ties
@@ -1273,13 +1467,13 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- row-menu drill-down (submenu in the same panel) ---- */
 .pk-rowmenu-chev{width:14px;height:14px;margin-left:auto;flex:none;color:var(--pk-muted)}
-.pk-rowmenu-item:hover .pk-rowmenu-chev{color:var(--pk-ink)}
-.pk-rowmenu-back .pk-rowmenu-lbl{font-weight:var(--pk-w-bold);letter-spacing:.06em;text-transform:uppercase;font-size:var(--pk-text-3xs)}
+@media (min-width:1024px) and (hover:hover){.pk-rowmenu-item:hover .pk-rowmenu-chev{color:var(--pk-ink)}}
+.pk-rowmenu-back .pk-rowmenu-lbl{font-weight:var(--pk-w-bold);letter-spacing:.06em;text-transform:uppercase;font-size:var(--pk-text-2xs)}
 
 /* ---- team name doubles as the route back to Builder (team board) ---- */
 .pk-h1-teamlink{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;
   border-bottom:var(--pk-border-strong) solid transparent;transition:border-color .15s}
-.pk-h1-teamlink:hover{border-bottom-color:currentColor}
+@media (min-width:1024px) and (hover:hover){.pk-h1-teamlink:hover{border-bottom-color:currentColor}}
 .pk-h1-teamlink:focus-visible{outline:2px solid var(--pk-red);outline-offset:3px}
 
 /* ---- side-rail foot: the flexible gap that pins what follows to the rail's bottom ----
@@ -1292,7 +1486,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    On short viewports the column overflows, the spacer collapses to that 40px, and the
    group rides the bottom of the scrolling stack rather than colliding with the nav. The
    team dropdown opens UPWARD in the rail so the rail's overflow never clips it. */
-.pk-side-spacer{flex:1 1 40px;min-height:40px}
+.pk-side-spacer{flex:1 1 40px;min-height:var(--pk-control-h-md)}
 .pk-side .pk-dropdown-menu{top:auto;bottom:calc(100% + 8px)}
 /* A rail menu opens UPWARD, so its entry has to travel the other way or it reads as falling
    into place from above: the panel rises from below and the options stack UP from the item
@@ -1308,19 +1502,19 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @keyframes pk-dd-panel-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes pk-dd-stack-up{from{opacity:0;transform:translateY(18px) scale(.85)}to{opacity:1;transform:none}}
 .pk-side-logout{margin-left:0;display:inline-flex;align-items:center;justify-content:center;
-  width:40px;height:40px;flex:none;border:var(--pk-border-hair) solid var(--pk-hair);
+  width:var(--pk-control-h-md);height:var(--pk-control-h-md);flex:none;border:var(--pk-border-hair) solid var(--pk-hair);
   background:transparent;color:var(--pk-muted);cursor:pointer;transition:border-color .15s,color .15s}
 .pk-side-logout svg{width:18px;height:18px}
-.pk-side-logout:hover{border-color:var(--pk-softred);color:var(--pk-softred)}
+@media (min-width:1024px) and (hover:hover){.pk-side-logout:hover{border-color:var(--pk-softred);color:var(--pk-softred)}}
 .pk-side-logout:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
 /* Row variant — Log out as a labelled row in the rail's action stack (Builder), sharing the
    dropdown trigger's box with the colour-mode switch instead of floating at the rail's foot.
    Hover still reddens (inherited above); the glyph rides the label colour. */
-.pk-side-logout--row{width:100%;height:48px;padding:0 16px;box-sizing:border-box;
-  justify-content:space-between;gap:12px;background:var(--pk-input);color:var(--pk-ink);
-  font:600 13px/1 var(--pk-font);letter-spacing:.04em}
+.pk-side-logout--row{width:100%;height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);box-sizing:border-box;
+  justify-content:space-between;gap:var(--pk-space-3h);background:var(--pk-input);color:var(--pk-ink);
+  font:600 var(--pk-text-md)/1 var(--pk-font);letter-spacing:.04em}
 .pk-side-logout--row svg{width:16px;height:16px;color:var(--pk-muted);transition:color .15s}
-.pk-side-logout--row:hover svg{color:inherit}
+@media (min-width:1024px) and (hover:hover){.pk-side-logout--row:hover svg{color:inherit}}
 /* Same exit animation as the header's logout (the arrow slides out through the door, the door
    stays put) — mirrored, because this glyph faces left. */
 @media (min-width:1024px) and (hover:hover){
@@ -1359,7 +1553,6 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   .pk-statuschips .pk-schip,.pk-detailwrap{animation:none}
 }
 
-
 /* ---- dropdown placement: right-end ----------------------------------------------------------
    Opens to the RIGHT of the trigger with its bottom edge level with the trigger's. Intended for a
    picker pinned to the foot of a narrow rail, where a menu opening downward would fall off-screen
@@ -1379,7 +1572,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   max-height: 60vh;
   overflow-y: auto;
   overscroll-behavior: none;   /* same rule as .pk-dropdown-menu — a menu never scrolls the page */
-  z-index: 200;
+  z-index: var(--pk-z-popover);
   transform-origin: left bottom;
 }
 
@@ -1394,9 +1587,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-dropdown--right-end.is-open > .pk-dropdown-trigger > svg { transform: rotate(90deg) !important; }
 
 /* The menu keeps the component's own item metrics; placement only moves the box. */
-.pk-dropdown--right-end > .pk-dropdown-menu { padding: 6px; }
+.pk-dropdown--right-end > .pk-dropdown-menu { padding: var(--pk-space-3); }
 .pk-dropdown--right-end > .pk-dropdown-menu .pk-dropdown-item {
-  padding: 9px 12px; font: 500 13px/1.2 var(--pk-font); border-radius: var(--pk-radius-sm);
+  padding: var(--pk-space-3) var(--pk-space-3h); font: 500 var(--pk-text-md)/1.2 var(--pk-font); border-radius: var(--pk-radius-sm);
   white-space: nowrap; width: 100%; text-align: left;
 }
 `;

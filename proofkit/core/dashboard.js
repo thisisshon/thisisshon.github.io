@@ -4,7 +4,7 @@
     ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
     initTheme, buildThemeToggle, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
-    ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL,
+    ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
     reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
@@ -16,6 +16,7 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
+  import { PK_VERSION } from './version.js';
   import { createCardRenderer } from './card.js';
   import { ICON } from './icons.js';
   import { pkConfirm, pkAlert, pkPrompt } from './modal.js';
@@ -350,6 +351,8 @@
           projectUpdate: async () => { throw new Error('Needs the worker backend'); },
           projectDelete: async () => { throw new Error('Needs the worker backend'); },
           userDelete: async () => { throw new Error('Needs the worker backend'); },
+          userAccessId: async () => { throw new Error('Needs the worker backend'); },
+          accessBackfill: async () => ({ issued: [] }),
           usersBulk: async () => { throw new Error('Needs the worker backend'); },
           exportProject: async () => { throw new Error('Needs the worker backend'); },
           exportTeam: async () => { throw new Error('Needs the worker backend'); },
@@ -415,6 +418,8 @@
           projectUpdate: (id, name) => apiFetch('/projects/update', { method: 'POST', body: JSON.stringify({ id, name }) }),
           projectDelete: (id) => apiFetch('/projects/delete', { method: 'POST', body: JSON.stringify({ id }) }),
           userDelete: (email) => apiFetch('/admin/users/delete', { method: 'POST', body: JSON.stringify({ email }) }),
+          userAccessId: (email, accessId) => apiFetch('/admin/users/access-id', { method: 'POST', body: JSON.stringify({ email, accessId }) }),
+          accessBackfill: () => apiFetch('/admin/users/access-id/backfill', { method: 'POST', body: JSON.stringify({}) }),
           usersBulk: (team, people) => apiFetch('/admin/users/bulk', { method: 'POST', body: JSON.stringify({ team, people }) }),
           exportProject: (id) => apiFetch('/admin/export?project=' + encodeURIComponent(id)),
           exportTeam: (name) => apiFetch('/admin/export?team=' + encodeURIComponent(name)),
@@ -1030,7 +1035,6 @@
     // Everything the Settings view controls, cached in localStorage. The GLOBAL theme is the
     // one setting that is NOT here (it lives server-side via /settings); every pref below is
     // this-browser-only, so two admins can each keep their own density / sort / refresh cadence.
-    const PK_VERSION = '3.104.0';   // keep in step with VERSION / package.json / CHANGELOG
     const PREFS_KEY = 'reviewPrefs';
     // Curated accent presets — each sets BOTH the base red token and its hover shade so the
     // whole button system stays coherent. '' = the theme's own accent (no override).
@@ -2524,6 +2528,53 @@
       }
     }
 
+    /* Your own Access ID, and changing it. Only meaningful with an account session — a team key
+     * is not a person, so there is no code to show. */
+    async function wireMyAccess() {
+      const host = $('#pk-my-access'); if (!host) return;
+      const acct = getAccount();
+      if (!getAuthToken() || !acct) {
+        host.innerHTML = `<div class="pk-set-row"><div class="pk-set-row-main">` +
+          `<div class="pk-set-row-label">Sign in with your account</div>` +
+          `<div class="pk-set-row-desc">An Access ID belongs to a person, and this board is open on a team key.</div>` +
+          `</div></div>`;
+        return;
+      }
+      let mine = '';
+      try {
+        // There is no per-person read endpoint, and adding one would expose codes more widely than
+        // the admin list already does. A Builder can see their own row in the list they already read.
+        const list = await store.usersList();
+        mine = (list.find((u) => u.email === acct.email) || {}).accessId || '';
+      } catch (e) { mine = ''; }
+
+      host.innerHTML =
+        `<div class="pk-set-row"><div class="pk-set-row-main">` +
+          `<div class="pk-set-row-label">Your code</div>` +
+          `<div class="pk-set-row-desc">Two letters, then six digits. This is all you type to sign in.</div>` +
+        `</div><div class="pk-set-ctl"><span class="pk-u-inlinerow">` +
+          `<code class="pk-set-kbd pk-accesscode">${esc(mine || '— not set —')}</code>` +
+          (mine ? `<button class="pk-a" type="button" id="pk-my-access-copy">Copy</button>` : '') +
+          `<button class="pk-a" type="button" id="pk-my-access-change">Change</button>` +
+        `</span></div></div>`;
+
+      const copyBtn = $('#pk-my-access-copy');
+      if (copyBtn) copyBtn.addEventListener('click', (e) => copyToClip(mine, e.currentTarget, 'Copied ✓'));
+      $('#pk-my-access-change').addEventListener('click', async () => {
+        const next = await pkPrompt({
+          title: 'Change your Access ID',
+          message: 'Two letters, then six digits — like AB123456. The old one stops working immediately.',
+          value: '', confirmLabel: 'Change',
+        });
+        if (next === null || !next.trim()) return;
+        try {
+          const res = await accessChange(WORKER_URL, next.trim());
+          await pkAlert({ title: 'Changed', message: 'Your Access ID is now ' + res.accessId + '.' });
+          wireMyAccess();
+        } catch (e) { pkAlert({ title: 'Could not change it', message: e.message }); }
+      });
+    }
+
     /* ---- 8.0 passkeys ---------------------------------------------------------------------
      * Three honest states, because "Enrol" on a machine that cannot enrol is the failure this
      * screen exists to avoid:
@@ -2833,6 +2884,9 @@
           card('Signed in', '',
             row('Identity', '', pill(acct ? (acct.email || '') : (getSession().team || ADMIN_TEAM))) +
             (acct && acct.role ? row('Role', '', pill(acct.role)) : '')) +
+          card('Access ID', '',
+            `<div id="pk-my-access"><div class="pk-set-row"><div class="pk-set-row-main">` +
+              `<div class="pk-set-row-desc">Loading…</div></div></div></div>`) +
           card('Touch ID', '',
             `<div id="pk-pk-state" class="pk-set-row"><div class="pk-set-row-main"><div class="pk-set-row-label">Checking this device…</div></div></div>` +
             `<div id="pk-pk-list"></div>`) +
@@ -2865,7 +2919,7 @@
       panel.innerHTML = html;
 
       mounts.forEach((m) => { const el = document.getElementById(m.slotId); if (el) el.appendChild(m.dd.el); });
-      if (settingsSection === 'account') wirePasskeys();
+      if (settingsSection === 'account') { wirePasskeys(); wireMyAccess(); }
       if (settingsSection === 'org') {
         fillOrg();
         const q = $('#pk-org-q');
@@ -3063,7 +3117,14 @@
               row('Role', '', pill(u.role || 'member')) +
               (flags.length ? row('Flags', '', flags.map((f) => pill(f)).join(' ')) : '') +
               (u.lastLoginAt ? row('Last signed in', '', pill(u.lastLoginAt.slice(0, 10))) : '') +
-              row('PIN', '', `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>`) +
+              /* The Access ID is SHOWN, not masked. The whole reason it is stored readably is so the
+               * Builder can tell someone what theirs is — hiding it here would keep the security
+               * cost of storing it in the clear and throw away the reason. */
+              row('Access ID', 'What they type to sign in.',
+                `<span class="pk-u-inlinerow"><code class="pk-set-kbd pk-accesscode">${esc(u.accessId || '— none —')}</code>` +
+                `<button class="pk-a" type="button" data-access-copy="${esc(u.accessId || '')}">Copy</button>` +
+                `<button class="pk-a" type="button" data-access-new="${esc(u.email)}">New code</button></span>`) +
+              row('PIN', 'Backup sign-in, if they lose their Access ID.', `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>`) +
               (locked ? row('Locked', 'Too many failed attempts.', `<button class="pk-a pk-a--primary" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>`) : '') +
               // Moving someone was only possible by deleting and recreating them, which lost their
               // history. It belongs on the person, next to the team they are in.
@@ -3119,7 +3180,10 @@
               (members.filter((u) => hit(u.email) || hit(u.name)).length
                 ? members.filter((u) => hit(u.email) || hit(u.name)).map((u) => {
                     const bits = [u.status === 'active' ? '' : 'disabled', u.role === 'builder' ? 'Builder' : '', !u.hasPin ? 'no PIN' : ''].filter(Boolean);
-                    return drillRow(`data-person-open="${esc(u.email)}"`, esc(u.email), bits.join(' · '));
+                    // The code on the row itself: the commonest question about a person is what
+                    // their key is, and making that a drill-down would be a click for one word.
+                    return drillRow(`data-person-open="${esc(u.email)}"`, esc(u.email), bits.join(' · '),
+                      u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '');
                   }).join('')
                 : emptyRow(q ? 'No matches.' : 'No people yet.')) +
               row('', '', `<span class="pk-u-inlinerow">` +
@@ -3267,6 +3331,7 @@
             '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],' +
             '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
             '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],' +
+            '[data-access-copy],[data-access-new],' +
             '[data-export-project],[data-export-team],' +
             '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk,#pk-proj-import,#pk-team-import');
           if (!t) return;
@@ -3329,6 +3394,20 @@
               const to = await pkPrompt({ title: 'Additional teams', message: 'Comma-separated. Their primary team still decides which board they land on.', value: cur.join(', '), confirmLabel: 'Save' });
               if (to === null) return;
               await store.userUpdate({ email: d.personExtra, extraTeams: to.split(',').map((x) => x.trim()).filter(Boolean) });
+              return fillOrg();
+            }
+            if (d.accessCopy !== undefined) {
+              if (!d.accessCopy) { pkAlert({ title: 'No Access ID', message: 'This account has no code yet. Use “New code” to issue one.' }); return; }
+              copyToClip(d.accessCopy, t, 'Copied ✓');
+              return;
+            }
+            if (d.accessNew) {
+              if (!(await pkConfirm({
+                title: 'Issue a new Access ID',
+                message: 'The current code stops working immediately, and anyone using it is signed out at their next sign-in. Give them the new one.',
+                confirmLabel: 'Issue new code', danger: true }))) return;
+              const res = await store.userAccessId(d.accessNew, '');
+              await pkAlert({ title: 'New Access ID', message: `${d.accessNew}\n\n${res.accessId}\n\nHand this over — it is what they type to sign in.` });
               return fillOrg();
             }
             if (d.permTeam) {

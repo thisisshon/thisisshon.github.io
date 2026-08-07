@@ -12,6 +12,7 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
+  import { PK_VERSION } from './version.js';
   import { createCardRenderer } from './card.js';
   import { ICON } from './icons.js';
   import { pkConfirm, pkAlert, pkPrompt } from './modal.js';
@@ -699,7 +700,6 @@
     let statusMoreOpen = false;   // "More" overflow drawer open
     let density = 'cards';        // cards | table (full ledger of all my tickets)
     let settingsSection = 'appearance'; // active tab in the Settings view (appearance | about)
-    const PK_VERSION = '3.104.0';  // keep in step with VERSION / package.json / CHANGELOG
     const STATUS_CHIPS = [
       { f: 'needsyou', label: 'Needs You', primary: true, smart: true },
       { f: 'open', label: 'Open', primary: true },

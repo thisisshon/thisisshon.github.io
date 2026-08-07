@@ -354,6 +354,35 @@ export const passkeyRemove = (workerUrl, id) => authApi(workerUrl, '/auth/webaut
  * refuses to transmit it, so it can never reach the Worker as a bogus X-Review-Pass. */
 export const ACCOUNT_KEY_SENTINEL = 'pk-account-session';
 
+/** Exchange an Access ID for a session. Throws with the server's message on failure. */
+export async function accessLogin(workerUrl, accessId) {
+  const res = await fetch((workerUrl || WORKER_URL).replace(/\/$/, '') + '/auth/access', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ accessId }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(body.error || 'That Access ID was not recognised.');
+    err.locked = !!body.locked;
+    err.retryAfter = body.retryAfter || 0;
+    throw err;
+  }
+  setAccountSession(body.user, body.token);
+  return body;
+}
+
+/** Change your own Access ID. Requires a live session. */
+export async function accessChange(workerUrl, accessId) {
+  const res = await fetch((workerUrl || WORKER_URL).replace(/\/$/, '') + '/auth/access/change', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ accessId }),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error || 'Could not change it.');
+  return body;
+}
+
 /** Headers for an authenticated call: bearer token when signed in, else the legacy team key. */
 export function authHeaders() {
   const t = getAuthToken();
@@ -996,6 +1025,207 @@ export const PK_MARK =
   '<circle cx="12" cy="9.5" r="1.6" fill="#fff"/></svg>';
 
 /** Build the shared login card. Returns { el, teamSel, keyInput, button, setError, setBusy }. */
+/* ---------------------------------------------------------------------------
+ * ACCESS KEY entry — the whole sign-in, in eight boxes.
+ *
+ * Two letters then six digits, one box each, the way an OTP field works. The segmented form is not
+ * decoration: it tells you the shape of what you are typing before you type it, shows progress
+ * without a counter, and makes a mistyped character one backspace to fix rather than a re-read of
+ * an eight-character string.
+ *
+ * What it has to get right is the boring part — the things people actually do:
+ *   - PASTE a whole code into any box (from chat, an email, a password manager)
+ *   - BACKSPACE from an empty box and land in the previous one, not sit there doing nothing
+ *   - arrow keys, and click-to-focus that selects rather than appends
+ *   - type over a filled box without having to clear it first
+ *   - never accept a digit where a letter goes, so an error is impossible rather than reported
+ * ------------------------------------------------------------------------ */
+export const ACCESS_ID_SHAPE = 'LLDDDDDD';        // L = letter, D = digit
+
+export function buildAccessEntry(opts) {
+  opts = opts || {};
+  const el = document.createElement('div');
+  el.className = 'pk-access';
+  el.innerHTML =
+    ACCESS_ID_SHAPE.split('').map((kind, i) =>
+      `<input class="pk-access-box${kind === 'L' ? ' is-alpha' : ''}" type="text" inputmode="${kind === 'L' ? 'text' : 'numeric'}" ` +
+      `maxlength="1" autocomplete="${i === 0 ? 'one-time-code' : 'off'}" aria-label="Character ${i + 1} of 8" ` +
+      `data-i="${i}" data-kind="${kind}">` +
+      // A hairline between the letters and the digits, so the shape is legible at a glance.
+      (i === 1 ? '<span class="pk-access-sep" aria-hidden="true"></span>' : '')).join('');
+
+  const boxes = [...el.querySelectorAll('.pk-access-box')];
+  const okFor = (kind, ch) => (kind === 'L' ? /[A-Za-z]/ : /[0-9]/).test(ch);
+  const value = () => boxes.map((b) => b.value).join('').toUpperCase();
+  const focusAt = (i) => { const b = boxes[Math.max(0, Math.min(boxes.length - 1, i))]; if (b) { b.focus(); b.select(); } };
+
+  const changed = () => {
+    const v = value();
+    el.classList.toggle('is-complete', v.length === boxes.length);
+    if (opts.onChange) opts.onChange(v);
+    // Submitting on the last character is the whole point of the shape — there is nothing left to
+    // decide once eight are in.
+    if (v.length === boxes.length && opts.onComplete) opts.onComplete(v);
+  };
+
+  /** Spread a pasted or typed run across the boxes from `start`, skipping anything ill-fitting. */
+  const fill = (start, text) => {
+    const chars = String(text || '').toUpperCase().replace(/[^A-Z0-9]/g, '').split('');
+    /* A COMPLETE code always fills from the beginning, wherever the cursor was. Starting at the
+     * focused box looks reasonable and is wrong: paste a whole key while sitting in a digit box and
+     * the two leading letters fit nowhere, so every character is skipped and the field stays empty.
+     * Pasting a full code means "this is the code", not "insert here". */
+    let i = chars.length >= boxes.length ? 0 : start;
+    for (const ch of chars) {
+      while (i < boxes.length && !okFor(boxes[i].dataset.kind, ch)) i++;
+      if (i >= boxes.length) break;
+      boxes[i].value = ch;
+      i++;
+    }
+    focusAt(Math.min(i, boxes.length - 1));
+    changed();
+    return i;
+  };
+
+  boxes.forEach((box, i) => {
+    box.addEventListener('focus', () => box.select());          // typing replaces, never appends
+    box.addEventListener('input', (e) => {
+      const raw = box.value;
+      // A paste can land in `input` rather than the paste event on some browsers; treat anything
+      // longer than one character as a run to spread.
+      if (raw.length > 1) { box.value = ''; fill(i, raw); return; }
+      if (!raw) { changed(); return; }
+      if (!okFor(box.dataset.kind, raw)) {
+        // Wrong KIND, not wrong value: a digit typed into a letter box is almost always someone
+        // who started in the wrong place, so send it where it belongs instead of rejecting it.
+        box.value = '';
+        const target = boxes.findIndex((b, j) => j >= i && okFor(b.dataset.kind, raw));
+        if (target > -1) fill(target, raw);
+        return;
+      }
+      box.value = raw.toUpperCase();
+      // Restart the nudge explicitly — retyping the same box otherwise animates nothing.
+      box.classList.remove('is-filled'); void box.offsetWidth; box.classList.add('is-filled');
+      if (i < boxes.length - 1) focusAt(i + 1);
+      changed();
+    });
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace') {
+        if (box.value) { box.value = ''; changed(); return; }
+        // Empty box: step back and clear THAT one, which is what the user meant.
+        e.preventDefault();
+        if (i > 0) { boxes[i - 1].value = ''; focusAt(i - 1); changed(); }
+        return;
+      }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); focusAt(i - 1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); focusAt(i + 1); }
+      else if (e.key === 'Enter' && opts.onSubmit) opts.onSubmit(value());
+    });
+    box.addEventListener('paste', (e) => {
+      e.preventDefault();
+      fill(i, (e.clipboardData || window.clipboardData).getData('text'));
+    });
+  });
+
+  return {
+    el,
+    getValue: value,
+    focus: () => focusAt(0),
+    clear: () => { boxes.forEach((b) => { b.value = ''; }); el.classList.remove('is-complete'); focusAt(0); },
+    setBusy: (busy) => { boxes.forEach((b) => { b.disabled = !!busy; }); el.classList.toggle('is-busy', !!busy); },
+    accept: () => el.classList.add('is-ok'),
+    shake: () => {
+      // A wrong code should be felt before it is read. Restart the animation explicitly, or a
+      // second wrong attempt in a row does nothing visible.
+      el.classList.remove('is-wrong'); void el.offsetWidth; el.classList.add('is-wrong');
+    },
+  };
+}
+
+/* The sign-in screen. One question — the access key — and nothing else above the fold.
+ *
+ * Biometrics and email+password are real routes, but they are RECOVERY: the answer to "I have lost
+ * my key", not a choice to make every time. Putting three options on screen turns a one-step login
+ * into a decision, so they live behind a collapsed "Advanced" at the bottom, far enough down that
+ * the eye never lands there on the way to the boxes.
+ *
+ * opts: { onSubmit(code), onBiometric?, onEmail?, title?, sub? }
+ * Routes are only offered when the host passes a handler — an option that cannot work is worse
+ * than no option, so the extension popup (where WebAuthn is impossible) simply omits it.
+ */
+export function buildAccessLogin(opts) {
+  opts = opts || {};
+  const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const el = document.createElement('div');
+  el.className = 'pk-access-login';
+  el.innerHTML =
+    '<div class="pk-access-card">' +
+      '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
+      '<h1 class="pk-access-title">' + esc(opts.title || 'Enter access key') + '</h1>' +
+      '<p class="pk-access-sub">' + esc(opts.sub || 'Two letters, then six digits.') + '</p>' +
+      '<div class="pk-access-slot"></div>' +
+      '<div class="pk-access-err" hidden></div>' +
+      '<div class="pk-access-adv">' +
+        '<button type="button" class="pk-access-advtoggle" aria-expanded="false">Advanced</button>' +
+        '<div class="pk-access-advpanel">' +
+          '<div>' +
+            (opts.onBiometric ? '<button type="button" class="pk-access-alt" data-alt="bio">Login using biometrics</button>' : '') +
+            (opts.onEmail ? '<button type="button" class="pk-access-alt" data-alt="email">Log in using email and password</button>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  const q = (sel) => el.querySelector(sel);
+  const err = q('.pk-access-err');
+  const setError = (m) => { err.textContent = m || ''; err.hidden = !m; };
+
+  const entry = buildAccessEntry({
+    // Submit the moment the eighth character lands. There is nothing left to confirm, and asking
+    // for a button press after that is a step that exists only to be clicked.
+    onComplete: (code) => { setError(''); opts.onSubmit && opts.onSubmit(code); },
+    onChange: () => setError(''),
+  });
+  q('.pk-access-slot').appendChild(entry.el);
+
+  const toggle = q('.pk-access-advtoggle');
+  const panel = q('.pk-access-advpanel');
+  toggle.addEventListener('click', () => {
+    const open = panel.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  el.querySelectorAll('.pk-access-alt').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.alt === 'bio' && opts.onBiometric) opts.onBiometric();
+    if (b.dataset.alt === 'email' && opts.onEmail) opts.onEmail();
+  }));
+
+  return {
+    el,
+    focus: () => entry.focus(),
+    getValue: entry.getValue,
+    setBusy: (busy) => entry.setBusy(busy),
+    accept: () => entry.accept(),
+    /* Play the screen out and resolve when it has gone, so the caller can navigate on the beat
+     * rather than guessing a delay that drifts if the timing is ever changed. */
+    dismiss: () => new Promise((res) => {
+      el.classList.add('is-done');
+      const done = () => { el.hidden = true; res(); };
+      el.addEventListener('animationend', function once(e) {
+        if (e.target !== el) return;                  // the CARD's animation ends first; wait for the scrim
+        el.removeEventListener('animationend', once);
+        done();
+      });
+      setTimeout(done, 700);                          // never strand the caller on a missed event
+    }),
+    // A rejected code clears itself: the next thing anyone does is retype it, and leaving eight
+    // wrong characters in place means clearing them by hand first.
+    reject: (message) => { entry.shake(); setError(message || ''); setTimeout(() => entry.clear(), 380); },
+    setError,
+  };
+}
+
 export function buildPanelLogin(opts) {
   opts = opts || {};
   const title = opts.title || 'Panel Login';
