@@ -23,7 +23,7 @@
  * root so nothing leaks onto the marketing page.
  * ======================================================================== */
 import { pageName, getSession, ADMIN_TEAM, TEAM_COLORS, STATUS_COLORS, renderSummary, PROJECT_SHORT,
-  BASE, TEAM_BASE, boardBase,
+  BASE, TEAM_BASE, boardBase, homeUrl,
   COMMENT_TYPES, TYPE_FIELDS, ENABLED_TEAMS, needsScreenshot,
   // light/dark: the HUD follows the reviewer's setting — see the SKIN block in mountHud
   getTheme, isThemeKey, toggleTheme } from './config.js';
@@ -942,7 +942,7 @@ export function mountHud(ctx = {}) {
     const act = b.dataset.th, pane = root.querySelector('.rpane[data-pane="thread"]');
     const rec = comments.find((c) => c.id === threadId);
     if (act === 'back') { root.querySelector('.rseg[data-pane="pins"]').click(); return; }
-    if (act === 'dash') { location.href = boardBase(getSession().team) + '#c=' + encodeURIComponent(threadId || ''); return; }
+    if (act === 'dash') { location.href = homeUrl() + '#c=' + encodeURIComponent(threadId || ''); return; }
     if (!rec) return;
     const err = pane.querySelector('[data-th="err"]');
     if (act === 'send') {
@@ -1301,7 +1301,7 @@ export function mountHud(ctx = {}) {
   // dashboard trip drops you back into the HUD on every navigation.
   const gotoDashboard = () => {
     try { sessionStorage.removeItem('reviewMode'); sessionStorage.removeItem('pkAutoReview'); } catch {}
-    location.href = (getSession().team === ADMIN_TEAM) ? BASE : TEAM_BASE;
+    location.href = homeUrl();
   };
   $('dash').addEventListener('click', gotoDashboard);
   // tapping "d" jumps to the dashboard (ignored while typing in a field or with a modifier held)

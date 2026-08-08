@@ -37,7 +37,27 @@ export const PROOFKIT_ENABLED = true;
  * The on-page overlay is deliberately NOT under here: it has to run on the page
  * being reviewed (`/equity?review=1`), so its addressing belongs to the host page.
  * ------------------------------------------------------------------------ */
+/* WHERE THE DASHBOARDS ARE SERVED.
+ *
+ * BASE is a PATH, and that is fine for the dashboards themselves — they link to each other
+ * relatively and work on whatever host serves them. It is NOT fine for the overlay, which runs on
+ * SOMEBODY ELSE'S page: `location.href = '/proofkit/product'` there navigates to
+ * theirdomain.com/proofkit/product, which is a 404 on a site that has never heard of Proofkit.
+ * That is why "Go To Dashboard" failed from a review and worked from everywhere else.
+ *
+ * SITE_ORIGIN names the host the boards actually live on, so a link can be made absolute when it
+ * has to cross an origin. Moving to a custom domain is a one-line change HERE — but the domain has
+ * to resolve and GitHub Pages has to be told about it (a CNAME file in the Pages repo plus the DNS
+ * records) BEFORE this changes, or every link in the tool breaks at once.
+ */
+export const SITE_ORIGIN = 'https://thisisshon.github.io';
 export const BASE = '/proofkit';
+/** BASE as an absolute URL when the caller is on another origin; the plain path when it is not. */
+export const siteUrl = (path) => {
+  const p = String(path || '');
+  try { if (location.origin === SITE_ORIGIN) return p; } catch (e) {}
+  return SITE_ORIGIN + p;
+};
 
 /* The FIRST segment after /proofkit is always WHOSE board it is — the login identity:
  *
@@ -61,6 +81,32 @@ export function teamFromSlug(slug) {
 }
 /** The board root for a login identity: /proofkit/<slug>. */
 export const boardBase = (team) => BASE + '/' + teamSlug(team || ADMIN_TEAM);
+
+/**
+ * HOME — the board the signed-in user belongs to. The single answer to "where does Go To Dashboard
+ * go", shared by the overlay dock, the review HUD and anything else that asks.
+ *
+ * It lived in three places and all three were wrong in different ways. The HUD sent teams to
+ * TEAM_BASE (`/proofkit/team`), a pre-3.98 route that no longer exists in the build — a plain 404
+ * — and sent the Builder to BASE (`/proofkit`), the index rather than their board. The dock read
+ * the team from the SESSION, which in extension and overlay mode is routinely empty because the
+ * credential there is an account, so an authenticated Builder fell through to the login gate.
+ *
+ * The ACCOUNT is the source of truth: it carries the role and the team, and it is the same object
+ * bridge.js seeds onto the dashboard origin, so the board they land on is one they are entitled to
+ * AND already signed in to.
+ *
+ *   builder  -> /proofkit/builder   admin: every project, every team
+ *   everyone -> /proofkit/<team>    their own team's board
+ *
+ * The login gate is the fallback for a genuinely unknown user, not the common outcome.
+ */
+export function homeUrl() {
+  const acct = getAccount();
+  if (acct && acct.role === 'builder') return siteUrl(boardBase(ADMIN_TEAM));
+  const team = (acct && acct.team) || getSession().team;
+  return siteUrl(team ? boardBase(team) : BASE + '/login/');
+}
 
 /** @deprecated pre-3.98 single team route; kept so old links still resolve. */
 export const TEAM_BASE = BASE + '/team';
