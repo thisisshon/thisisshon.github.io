@@ -695,6 +695,27 @@
     setFab(false);
     fab.addEventListener('click', () => (reviewOn ? exit() : startReview()));
 
+    /* Where "Go To Dashboard" goes: the board belonging to whoever is signed in.
+     *
+     * The ACCOUNT is the source of truth, not the team session. In extension and overlay mode the
+     * credential is an account (identity + token) and `getSession().team` is frequently empty —
+     * so reading the team from the session sent an authenticated Builder to the login page,
+     * which is what "still broken" looked like. The account carries both the role and the team,
+     * and it is the same object bridge.js seeds onto the dashboard origin, so the board they land
+     * on is the board they are entitled to.
+     *
+     *   builder  -> /proofkit/builder   (admin: every project, every team)
+     *   everyone -> /proofkit/<team>    (their own team's board)
+     *
+     * The login gate is the fallback for the genuinely unknown case, not the common one.
+     */
+    function homeUrl() {
+      const acct = getAccount();
+      if (acct && acct.role === 'builder') return boardBase(ADMIN_TEAM);
+      const team = (acct && acct.team) || getSession().team;
+      return team ? boardBase(team) : BASE + '/login/';
+    }
+
     // "Go To Dashboard" — every authenticated reviewer gets it, pinned to the bottom
     // LEFT (its own fixed control, clear of the right-hand dock). Admins (ADMIN_TEAM)
     // land on /reviewdash; teams on /teamdash.
@@ -715,8 +736,7 @@
        * which team's board to open. */
       (async () => {
         if (!(await saveBeforeLeaving('opening the dashboard'))) return;
-        const team = getSession().team;
-        location.href = team ? boardBase(team) : BASE + '/login/';
+        location.href = homeUrl();
       })();
     });
     document.body.appendChild(dashBtn); // bottom-left, independent of the dock
