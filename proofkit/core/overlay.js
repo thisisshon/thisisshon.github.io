@@ -1,6 +1,6 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, ADMIN_TEAM, isTeamEnabled,
     BASE, TEAM_BASE, boardBase,
-    getSession, setSession, clearSession, homeUrl, buildPanelLogin, buildAccessLogin, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
+    getSession, setSession, clearSession, homeUrl, SITE_ORIGIN, buildLoginHandoff, buildPanelLogin, buildAccessLogin, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
     // v3 shared vocabulary (single source of truth in ./config.js — never re-declared here):
     // comment types + per-type template fields, teamStatus→token colours, the summary renderer,
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
@@ -278,6 +278,18 @@
       if (isAuthed()) return enter(); // already logged in this tab, by key or by account
       showLogin();
     }
+    /* Open the one login page, telling it who to hand the session back to. The extension id comes
+     * from the content script (it is the only code here that can see it); without an extension
+     * there is nothing to hand back to and the login page simply signs them in and goes to their
+     * dashboard. `return` is this page, so the extension knows which tab to arm. */
+    function openLoginPage() {
+      const extId = (typeof window !== 'undefined' && window.PROOFKIT_EXT_ID) || '';
+      const url = SITE_ORIGIN + BASE + '/login/'
+        + '?return=' + encodeURIComponent(location.href)
+        + (extId ? '&ext=' + encodeURIComponent(extId) : '');
+      window.open(url, '_blank', 'noopener');
+    }
+
     function showLogin() {
       if (!login) {
         /* The access key is the sign-in everywhere, including here. On a page we do not own the
@@ -285,12 +297,12 @@
          * that option is simply not offered; the extension round trip through the hosted page is
          * what stands in for it, and it is reached from the popup. */
         const backOut = () => { try { sessionStorage.removeItem(KEY); } catch (e) {} hideLogin(); };
-        login = buildAccessLogin({
-          title: 'Access Key',
-          sub: 'Two letters, then six digits.',
-          onSubmit: (code) => tryAccess(code),
-          onEmail: () => showTeamKeyFallback(),
-        });
+        /* One button, and it leaves. Everything a sign-in needs — the key entry, biometrics, the
+         * email route, the throttling, the error copy — lives on /proofkit/login and nowhere else.
+         * Reproducing any of it here would be a second implementation on somebody else's domain,
+         * and biometrics cannot work here at all, since a passkey belongs to the origin that made
+         * it. The extension carries the finished session back to this tab and arms it. */
+        login = buildLoginHandoff({ onLogin: () => openLoginPage() });
         // Clicking the backdrop backs fully out of review, rather than leaving the page greyed
         // behind a dismissed panel.
         login.el.addEventListener('click', (e) => { if (e.target === login.el) backOut(); });

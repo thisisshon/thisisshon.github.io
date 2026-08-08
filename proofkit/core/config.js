@@ -1351,6 +1351,40 @@ export function buildReady(opts) {
   };
 }
 
+/**
+ * HAND-OFF — the sign-in widget shown on a page we do not own.
+ *
+ * One button. It cannot ask for anything itself: a passkey is bound to the origin that created it,
+ * so biometrics are impossible here, and asking for an access key on a third party's domain means
+ * a second implementation of the entry, the throttling and the error states, drifting from the
+ * real one from the day it ships. So it asks for nothing and sends them to /proofkit/login, which
+ * is the one place a Proofkit sign-in happens.
+ *
+ *   opts.onLogin  () => void — open the login page
+ */
+export function buildLoginHandoff(opts) {
+  opts = opts || {};
+  const el = document.createElement('div');
+  el.className = 'pk-access-login';
+  el.innerHTML =
+    '<div class="pk-access-card">' +
+      '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
+      '<h1 class="pk-access-title">Sign In to Review</h1>' +
+      '<p class="pk-access-sub">Opens the Proofkit login in a new tab. Come straight back — this page will be ready.</p>' +
+      '<button type="button" class="pk-unlock-go pk-handoff-go">Login</button>' +
+    '</div>';
+  const go = el.querySelector('.pk-handoff-go');
+  go.addEventListener('click', () => {
+    go.disabled = true;
+    go.textContent = 'Opening…';
+    // Re-enable: they may close the login tab without signing in, and a permanently dead button
+    // would leave them with no way back in.
+    setTimeout(() => { go.disabled = false; go.textContent = 'Login'; }, 4000);
+    if (opts.onLogin) opts.onLogin();
+  });
+  return { el, focus: () => go.focus(), setError: () => {} };
+}
+
 export function buildAccessLogin(opts) {
   opts = opts || {};
   const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) =>
