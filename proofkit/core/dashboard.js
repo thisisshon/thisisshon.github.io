@@ -1,7 +1,7 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     BASE, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
-    ADMIN_TEAM, buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
+    ADMIN_TEAM, buildAccessLogin, accessLogin, passkeyLoginDiscoverable, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
     initTheme, buildThemeToggle, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
@@ -575,34 +575,57 @@
       if (sseUp) { sseUp = false; restartAutoRefresh(); }
     }
 
+    /* An account session has no team key — the sentinel opens the board locally while
+     * authHeaders() authenticates every call with the bearer token. */
+    function afterAccount(user) {
+      const team = user.role === 'builder' ? ADMIN_TEAM : (user.team || ADMIN_TEAM);
+      setSession(team, ACCOUNT_KEY_SENTINEL);
+      if (team !== ADMIN_TEAM) { location.replace(boardBase(team)); return; }
+      loadData()
+        .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
+        .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });
+    }
+
     function showLogin() {
       if (!login) {
-        login = buildPanelLogin({
-          title: 'Panel Login', sub: 'Enter your key to continue.',
-          // Touch ID is offered here because this board runs on the SAME origin the passkey was
-          // enrolled against. The in-page overlay deliberately does not pass this: a credential is
-          // bound to its origin, so a dashboard passkey cannot be used on a third-party site.
-          onPasskey: (body) => {
-            // A passkey session has no team key — the sentinel opens the board locally while
-            // authHeaders() authenticates every call with the bearer token.
-            const team = body.user.role === 'builder' ? ADMIN_TEAM : (body.user.team || ADMIN_TEAM);
-            setSession(team, ACCOUNT_KEY_SENTINEL);
-            if (team !== ADMIN_TEAM) { location.replace(boardBase(team)); return; }
-            loadData()
-              .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
-              .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });
+        /* The access key, same as everywhere else. It replaces a Team dropdown plus a shared team
+         * key — two questions where there is one, and a credential belonging to a team rather than
+         * to a person, so the board could not tell who had opened it. Biometrics are offered here
+         * because this board runs on the SAME origin the passkey was enrolled against; the in-page
+         * overlay deliberately cannot, since a credential is bound to its origin. */
+        login = buildAccessLogin({
+          title: 'Access Key',
+          sub: 'Two letters, then six digits.',
+          onSubmit: async (code) => {
+            login.setBusy(true);
+            try {
+              const body = await accessLogin(WORKER_URL, code);
+              login.setBusy(false); login.accept(); afterAccount(body.user);
+            } catch (e) {
+              login.setBusy(false);
+              login.reject(e && e.locked ? 'Too many attempts. Try again shortly.'
+                                         : 'Access denied. Please enter the correct access key.');
+            }
           },
+          onBiometric: async () => {
+            login.setBusy(true);
+            try {
+              const body = await passkeyLoginDiscoverable(WORKER_URL);
+              login.setBusy(false); login.accept(); afterAccount(body.user);
+            } catch (e) {
+              login.setBusy(false);
+              login.setError('No passkey was used. Enter your access key instead.');
+            }
+          },
+          onEmail: () => { location.href = BASE + '/login/'; },
         });
-        const go = () => tryLogin();
-        login.button.addEventListener('click', go);
-        login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
       }
-      login.setError(''); login.keyInput.value = '';
-      let prefill = '';
-      try { if ((new URLSearchParams(location.search).get('login') || '').toLowerCase() === ADMIN_TEAM.toLowerCase()) prefill = ADMIN_TEAM; } catch {}
-      login.setTeam(prefill);
+      login.setError('');
+      // No `?login=builder` prefill any more: there is no team to preselect. The key names the
+      // person, and the board they get follows from who that is.
       document.body.appendChild(login.el);
-      if (prefill) login.keyInput.focus(); else login.focusTeam();
+      login.el.hidden = false;
+      login.focus();
     }
     function hideLogin() { login && login.el.remove(); }
 

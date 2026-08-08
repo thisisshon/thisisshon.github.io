@@ -1,7 +1,7 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    buildPanelLogin, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
 
@@ -2280,16 +2280,57 @@
 
     // ---- login (the shared common login — Team + Key) ----
     let login = null;
+    /* An account session carries no team key — the sentinel opens the board locally while
+     * authHeaders() authenticates every call with the bearer token. A key belonging to a PERSON
+     * also means the board can send them to the right place: their own team's, not whichever one
+     * they happened to pick from a dropdown. */
+    function afterAccount(user) {
+      const t = user.role === 'builder' ? ADMIN_TEAM : (user.team || '');
+      if (!t) { login.setError('This account has no team assigned. Ask the Builder to add you to one.'); return; }
+      setSession(t, ACCOUNT_KEY_SENTINEL);
+      if (teamSlug(t) !== teamSlug(team() || t)) { location.replace(boardBase(t)); return; }
+      loadData()
+        .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
+        .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });
+    }
+
     function showLogin() {
       if (!login) {
-        login = buildPanelLogin({ title: 'Panel Login', sub: 'Enter your key to continue.' });
-        const go = () => tryLogin();
-        login.button.addEventListener('click', go);
-        login.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+        /* The access key, the same screen as everywhere else. It replaces a Team dropdown plus a
+         * shared team key: two questions where there is one, and a credential belonging to a team
+         * rather than to a person — so the board could not tell who had opened it, and anyone with
+         * the key could open any team they chose. */
+        login = buildAccessLogin({
+          title: 'Access Key',
+          sub: 'Two letters, then six digits.',
+          onSubmit: async (code) => {
+            login.setBusy(true);
+            try {
+              const body = await accessLogin(WORKER_URL, code);
+              login.setBusy(false); login.accept(); afterAccount(body.user);
+            } catch (e) {
+              login.setBusy(false);
+              login.reject(e && e.locked ? 'Too many attempts. Try again shortly.'
+                                         : 'Access denied. Please enter the correct access key.');
+            }
+          },
+          onBiometric: async () => {
+            login.setBusy(true);
+            try {
+              const body = await passkeyLoginDiscoverable(WORKER_URL);
+              login.setBusy(false); login.accept(); afterAccount(body.user);
+            } catch (e) {
+              login.setBusy(false);
+              login.setError('No passkey was used. Enter your access key instead.');
+            }
+          },
+          onEmail: () => { location.href = BASE + '/login/'; },
+        });
       }
-      login.setError(''); login.keyInput.value = ''; login.setTeam(team() || '');
+      login.setError('');
       document.body.appendChild(login.el);
-      if (team()) login.keyInput.focus(); else login.focusTeam();
+      login.el.hidden = false;
+      login.focus();
     }
     function hideLogin() { login && login.el.remove(); }
 
