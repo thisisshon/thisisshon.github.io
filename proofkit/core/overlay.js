@@ -658,7 +658,10 @@
     // which invites the opposite mistake, leaving without pressing it and assuming things were lost.
     // No glyph on the exit state: a tick means "done/saved", which is the exact thing this button
     // does NOT do. The words carry it.
-    const fabHtml = (on) => (on ? '' : ICON_CHAT) + '<span>' + (on ? 'Exit Review' : 'Comment') + '</span>';
+    /* "Stop Review Mode" rather than "Exit Review": while review is running this is the only
+     * control that ends it, and the pair it sits with — Go To Dashboard, Log Out — are both
+     * full statements of what they do. */
+    const fabHtml = (on) => (on ? '' : ICON_CHAT) + '<span>' + (on ? 'Stop Review Mode' : 'Comment') + '</span>';
 
     /**
      * Move the FAB between its two states without the UI appearing to blink from one layout to
@@ -710,8 +713,11 @@
        * than on its sign-in screen. Without an extension there is nothing to carry it, and the
        * login gate is the honest destination — it is also the right one when we do not yet know
        * which team's board to open. */
-      const team = getSession().team;
-      location.href = team ? boardBase(team) : BASE + '/login/';
+      (async () => {
+        if (!(await saveBeforeLeaving('opening the dashboard'))) return;
+        const team = getSession().team;
+        location.href = team ? boardBase(team) : BASE + '/login/';
+      })();
     });
     document.body.appendChild(dashBtn); // bottom-left, independent of the dock
 
@@ -1018,11 +1024,35 @@
     // Log out — drop the session identity and return to the sign-in panel. Unlike exit() (which
     // keeps you signed in, ready to re-enter review), this disarms the authed chrome (dock + the
     // bottom-left buttons) and clears the session, so a fresh sign-in re-reveals everything.
+    /* Leaving a review — by logging out or by opening the dashboard — submits what is pending
+     * first. Pins are the whole product of the session, and both of these used to lose them: the
+     * dashboard link navigated away without a word, and logout offered only to DISCARD them.
+     * Offering to throw away someone's work as the default path out is a strange thing for a
+     * review tool to do. Saving is now the default, and it is still a question, because a failed
+     * submit must not silently strand the pins either. */
+    async function saveBeforeLeaving(what) {
+      if (!drafts.length) return true;
+      const n = drafts.length;
+      const choice = await pkConfirm({
+        title: 'Save your pins?',
+        message: n + ' pending pin(s) have not been submitted yet. Submit them before ' + what + '?',
+        confirmLabel: 'Submit and continue',
+        cancelLabel: 'Cancel',
+      });
+      if (!choice) return false;              // they backed out — stay exactly where they are
+      try { await submitAll(); } catch (e) {
+        return await pkConfirm({
+          title: 'Could not submit',
+          message: 'Your pins could not be sent. Continue anyway and lose them?',
+          confirmLabel: 'Continue anyway', danger: true,
+        });
+      }
+      return true;
+    }
+
     async function logout() {
-      const msg = drafts.length
-        ? 'Log out? ' + drafts.length + ' pending pin(s) not yet submitted will be discarded.'
-        : 'Log out of this review session?';
-      if (!(await pkConfirm({ title: 'Log out', message: msg, confirmLabel: 'Log out', danger: true }))) return;
+      if (!(await saveBeforeLeaving('logging out'))) return;
+      if (!(await pkConfirm({ title: 'Log out', message: 'Log out of this review session?', confirmLabel: 'Log out', danger: true }))) return;
       teardownReview();
       dock.style.display = 'none';
       dashBtn.style.display = 'none';

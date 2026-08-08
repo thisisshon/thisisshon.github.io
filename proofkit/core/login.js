@@ -1,100 +1,105 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, getSession, isTeamEnabled, BASE, PK_MARK } from './config.js';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, boardBase } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
-    const LOCAL = !WORKER_URL;
-    const PASS_KEY = 'reviewAdminPass'; // admin password (shared with the dashboard)
-    const DASH = BASE;
-
-    // Validate a password. With the Worker: hit the admin-only "list all comments"
-    // endpoint (401 => wrong). Without it (static/no-Worker, incl. live): check the
-    // configured review password (hash-compared, so it holds on every deployment).
-    async function validate(pass) {
-      if (LOCAL) {
-        if (!(await checkReviewPassword(pass))) throw new Error('unauthorized');
-        return true;
-      }
-      const res = await fetch(WORKER_URL + '/comments', {
-        headers: { 'Content-Type': 'application/json', 'X-Review-Pass': pass },
-      });
-      if (res.status === 401) throw new Error('unauthorized');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return true;
-    }
-
     let loginEl = null;
+    let screen = null;
 
+    /* The gate asks for an ACCESS KEY — the same eight boxes, the same component, the same
+     * Advanced routes as the extension popup and the hosted sign-in page. It used to ask for the
+     * shared review password (ADMIN_PASS, kept in sessionStorage as `reviewAdminPass`), which was
+     * one secret for everyone: it identified nobody, so the dashboard behind it could not tell who
+     * had opened it, and changing it meant telling every reviewer at once. A key belongs to a
+     * person, and signing in with one produces a real session with a real identity.
+     */
     function showLogin() {
       if (!loginEl) {
         loginEl = document.createElement('div');
         loginEl.className = 'rvd-login';
-        loginEl.innerHTML =
-          /* The shared auth card. The .rvd-* classes stay ON the same elements purely as JS
-           * hooks — every visual property now comes from .pk-access-* / .pk-unlock-*, so this
-           * screen cannot drift from the others by being edited in isolation. */
-          '<div class="pk-access-card rvd-login-card" role="dialog" aria-modal="true">' +
-          '<button type="button" class="rvd-login-close" aria-label="Close">' +
-          '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
-          '</button>' +
-          '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
-          '<h1 class="pk-access-title rvd-login-title">Annotate Live Pages</h1>' +
-          '<p class="pk-access-sub rvd-login-sub">Enter the review password to open the dashboard.</p>' +
-          '<input class="pk-unlock-input pk-unlock-input--text rvd-login-input" type="password" placeholder="Password" autocomplete="current-password">' +
-          '<div class="pk-access-err rvd-login-err" hidden></div>' +
-          '<button type="button" class="pk-unlock-go rvd-login-btn">Log In</button>' +
-          '</div>';
-        const input = loginEl.querySelector('.rvd-login-input');
-        const go = () => tryLogin(input);
-        loginEl.querySelector('.rvd-login-btn').addEventListener('click', go);
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-        const close = () => hideLogin();
-        loginEl.querySelector('.rvd-login-close').addEventListener('click', close);
-        // Esc closes; clicking the dimmed backdrop (outside the card) closes too.
-        loginEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-        loginEl.addEventListener('mousedown', (e) => { if (e.target === loginEl) close(); });
+        screen = buildAccessLogin({
+          title: 'Access Key',
+          sub: 'Two letters, then six digits.',
+          onSubmit: (code) => submit(code),
+          onBiometric: () => viaPasskey(),
+          // The email + password form lives on the hosted sign-in page. One implementation of it,
+          // reached from here, rather than a second copy of the same three fields.
+          onEmail: () => { location.href = BASE + '/auth/'; },
+        });
+        loginEl.appendChild(screen.el);
+        screen.el.hidden = false;
+
+        // Close (✕) — the gate is dismissible; you can read the page without reviewing it.
+        const close = document.createElement('button');
+        close.type = 'button'; close.className = 'rvd-login-close';
+        close.setAttribute('aria-label', 'Close');
+        close.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+        close.addEventListener('click', hideLogin);
+        screen.el.querySelector('.pk-access-card').appendChild(close);
+
+        loginEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideLogin(); });
+        loginEl.addEventListener('mousedown', (e) => { if (e.target === loginEl) hideLogin(); });
       }
       document.body.appendChild(loginEl);
-      loginEl.querySelector('.rvd-login-input').focus();
+      screen.focus();
     }
 
     function hideLogin() {
       if (loginEl && loginEl.parentNode) loginEl.parentNode.removeChild(loginEl);
     }
 
-    async function tryLogin(input) {
-      const pass = input.value.trim();
-      if (!pass) { input.focus(); return; }
-      const err = loginEl.querySelector('.rvd-login-err');
-      const btn = loginEl.querySelector('.rvd-login-btn');
-      // Access gate (defence-in-depth): if the shared session belongs to a team
-      // parked off via TEAM_ENABLED, reject here — before hitting the Worker.
+    /** Where a signed-in user belongs: their own board. */
+    function landing(user) {
+      return boardBase((user && user.team) || getSession().team);
+    }
+
+    function enter(user) {
+      sessionStorage.setItem('reviewMode', '1'); // arm the on-page Comment dock site-wide
+      location.replace(landing(user));
+    }
+
+    async function submit(code) {
+      /* Defence in depth: a session belonging to a team parked off via TEAM_ENABLED is refused
+       * here, before the Worker is asked anything. */
       const sTeam = getSession().team;
       if (sTeam && !isTeamEnabled(sTeam)) {
-        err.textContent = "This team's review access isn't currently available.";
-        err.hidden = false; input.focus(); return;
+        screen.reject("This team's review access isn't currently available.");
+        return;
       }
-      btn.disabled = true; btn.textContent = 'Checking…'; err.hidden = true;
+      screen.setBusy(true);
       try {
-        await validate(pass);
-        sessionStorage.setItem(PASS_KEY, pass); // dashboard reuses this session token
-        sessionStorage.setItem('reviewMode', '1'); // arm the on-page Comment dock site-wide
-        location.replace(DASH);
+        const body = await accessLogin(WORKER_URL, code);
+        screen.setBusy(false);
+        screen.accept();
+        await screen.dismiss();
+        enter(body.user);
       } catch (e) {
-        btn.disabled = false; btn.textContent = 'Login';
-        err.textContent = e.message === 'unauthorized'
-          ? 'Incorrect password. Please try again.'
-          : ('Could not connect — ' + e.message);
-        err.hidden = false; input.focus(); input.select();
+        screen.setBusy(false);
+        screen.reject(e && e.locked
+          ? 'Too many attempts. Try again shortly.'
+          : 'Access denied. Please enter the correct access key.');
       }
     }
 
-    // Already signed in this session? Verify the stored token still works, then
-    // skip straight to the dashboard; otherwise clear it and ask again.
-    async function init() {
-      const existing = sessionStorage.getItem(PASS_KEY);
-      if (existing) {
-        try { await validate(existing); sessionStorage.setItem('reviewMode', '1'); location.replace(DASH); return; }
-        catch { sessionStorage.removeItem(PASS_KEY); }
+    /* Biometrics run HERE rather than handing off: this page is on our own origin, which is the
+     * origin the passkey was created for. */
+    async function viaPasskey() {
+      screen.setBusy(true);
+      try {
+        const body = await passkeyLoginDiscoverable(WORKER_URL);
+        screen.setBusy(false);
+        screen.accept();
+        await screen.dismiss();
+        enter(body && body.user);
+      } catch (e) {
+        screen.setBusy(false);
+        screen.setError('No passkey was used. Enter your access key instead.');
       }
+    }
+
+    // Already signed in? Skip the gate entirely — the account session is the whole credential now,
+    // and it is the same one the extension seeds through bridge.js.
+    async function init() {
+      if (getAccount()) { sessionStorage.setItem('reviewMode', '1'); location.replace(landing(getAccount())); return; }
       showLogin();
     }
 
