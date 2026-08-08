@@ -864,6 +864,29 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-unlock-go + .pk-access-err + .pk-access-alt{margin-top:var(--pk-space-4)}
 @media (prefers-reduced-motion:reduce){.pk-unlock-input.is-wrong{animation:none}}
 
+/* The email/PIN recovery route. A stack of the same field and button used everywhere else, so it
+   is a variation on the sign-in screen rather than a second design for the same job. */
+.pk-emailform{display:block;margin-top:var(--pk-space-4)}
+.pk-emailform.hidden{display:none}
+/* Email is prose, not a code: no tracking, no centring, and a size you can read a domain in. */
+.pk-unlock-input--text{text-align:left;letter-spacing:0;
+  font:400 var(--pk-text-md)/var(--pk-lh-none) var(--pk-font)}
+
+/* ---- READY (review toggle) ---------------------------------------------------------------------
+   Same button as Unlock, plus a state dot. Armed it inverts to an outline — the one difference that
+   carries information. What is NOT here is deliberate: no gradient, no hover lift, no click sweep,
+   no perpetual ring. Motion is for what changed, and an always-on animation reports nothing. */
+.pk-ready-go{display:flex;align-items:center;justify-content:center;gap:var(--pk-space-3)}
+.pk-ready-dot{width:8px;height:8px;flex:none;border-radius:50%;background:currentColor;opacity:.85;
+  transition:background var(--pk-dur-base) var(--pk-ease),opacity var(--pk-dur-base) var(--pk-ease)}
+.pk-ready-go[aria-pressed="true"]{background:transparent;color:var(--pk-red);
+  box-shadow:inset 0 0 0 var(--pk-border-strong) var(--pk-red)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-ready-go[aria-pressed="true"]:hover{background:var(--pk-hover);opacity:1}}
+.pk-ready-go[aria-pressed="true"] .pk-ready-dot{background:var(--pk-red);opacity:1}
+.pk-ready-hint{margin:var(--pk-space-3) 0 0;text-align:center;
+  font:400 var(--pk-text-sm)/var(--pk-lh-snug) var(--pk-font);color:var(--pk-muted)}
+
 /* ---- ACCESS KEY entry -------------------------------------------------------------------------
    Eight boxes: two letters, a hairline, six digits. The gap shows the shape of the code before
    anything is typed, which is what stops someone entering AB1234-56 or 12AB3456. */

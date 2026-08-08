@@ -1246,6 +1246,65 @@ export function buildUnlock(opts) {
   };
 }
 
+/**
+ * READY — the unlocked state. One control, because there is one thing to do.
+ *
+ * On the same card as the other two auth screens, and deliberately quieter than what it replaces:
+ * that was a gradient-filled button that lifted on hover, threw a radial sweep from the click
+ * point, and pulsed a ring forever once armed. Four animations on one control, none of them
+ * carrying information the label did not already have. What survives is the part that IS
+ * information: a dot that fills when review is on, and a single flat button that inverts to an
+ * outline so armed and not-armed cannot be confused at a glance.
+ *
+ *   opts.name / opts.role   shown as the subtitle, same as the unlock screen
+ *   opts.onToggle           (wantOn) => void
+ */
+export function buildReady(opts) {
+  opts = opts || {};
+  const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const el = document.createElement('div');
+  el.className = 'pk-access-login';
+  el.innerHTML =
+    '<div class="pk-access-card">' +
+      '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
+      '<h1 class="pk-access-title">' + esc(opts.title || 'Ready') + '</h1>' +
+      '<p class="pk-access-sub"></p>' +
+      '<button type="button" class="pk-unlock-go pk-ready-go" aria-pressed="false">' +
+        '<span class="pk-ready-dot"></span><span class="pk-ready-label">Start Proofing</span>' +
+      '</button>' +
+      '<p class="pk-ready-hint">Greys the page so you can pin comments.</p>' +
+    '</div>';
+
+  const q = (sel) => el.querySelector(sel);
+  const go = q('.pk-ready-go');
+  const label = q('.pk-ready-label');
+  const hint = q('.pk-ready-hint');
+
+  const setOn = (on) => {
+    go.setAttribute('aria-pressed', on ? 'true' : 'false');
+    label.textContent = on ? 'Stop Proofing' : 'Start Proofing';
+    hint.textContent = on
+      ? 'Reviewing. ⌘/Ctrl-click an element to pin.'
+      : 'Greys the page so you can pin comments.';
+  };
+  go.addEventListener('click', () => {
+    const wantOn = go.getAttribute('aria-pressed') !== 'true';
+    if (opts.onToggle) opts.onToggle(wantOn);
+  });
+
+  return {
+    el,
+    setWho: (name, role) => {
+      q('.pk-access-sub').textContent = [name, role].filter(Boolean).join(' · ') || '';
+    },
+    setOn,
+    isOn: () => go.getAttribute('aria-pressed') === 'true',
+    setBusy: (busy) => { go.disabled = !!busy; },
+  };
+}
+
 export function buildAccessLogin(opts) {
   opts = opts || {};
   const esc = (t) => String(t == null ? '' : t).replace(/[&<>"]/g, (c) =>
@@ -1274,6 +1333,15 @@ export function buildAccessLogin(opts) {
   const q = (sel) => el.querySelector(sel);
   const err = q('.pk-access-err');
   const setError = (m) => { err.textContent = m || ''; err.hidden = !m; };
+
+  /* The title doubles as an invisible shortcut to biometrics: no styling, no cursor change, no tab
+   * stop — nothing about it looks or behaves like a control, which is the point. It is for the one
+   * person who knows it is there. The discoverable route stays where it was, under Advanced, and
+   * that is the one screen readers and the keyboard get; adding a second focusable element with the
+   * same job would announce a heading as a button to everyone who did not ask for the shortcut. */
+  if (opts.onBiometric) {
+    q('.pk-access-title').addEventListener('click', () => opts.onBiometric());
+  }
 
   const entry = buildAccessEntry({
     // Submit the moment the eighth character lands. There is nothing left to confirm, and asking
