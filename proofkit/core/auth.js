@@ -109,7 +109,7 @@ function showWaiting() {
     '<div class="pk-access-card pk-access-card--wait">' +
       '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
       '<div class="pka-scan">' + ICON_TOUCH + '<p>Waiting for Touch ID…</p></div>' +
-      '<button type="button" class="pk-access-alt" id="waitKey">Use my access key instead</button>' +
+      '<button type="button" class="pk-access-alt" id="waitKey">Use My Access Key Instead</button>' +
     '</div>';
   document.body.appendChild(el);
   el.querySelector('#waitKey').addEventListener('click', () => { el.remove(); login.el.hidden = false; login.focus(); });
@@ -152,7 +152,7 @@ let fallback = null;
 const wantBiometric = (params.get('auth') || '') === 'biometric';                 // the email + PIN form, built only if someone asks for it
 
 const login = buildAccessLogin({
-  title: 'Enter access key',
+  title: 'Access Key',
   sub: 'Two letters, then six digits.',
   onSubmit: (code) => signInWithAccess(code),
   onBiometric: () => tryPasskey(false),
@@ -177,7 +177,7 @@ async function signInWithAccess(code) {
     // distinguishing a wrong code from an unknown one would say which codes exist.
     login.reject(e.locked
       ? 'Too many attempts. Try again in ' + Math.ceil((e.retryAfter || 60000) / 1000) + 's.'
-      : (e.message || 'That access key was not recognised.'));
+      : 'Access denied. Please enter the correct access key.');
   }
 }
 

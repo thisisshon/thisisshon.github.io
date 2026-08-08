@@ -286,7 +286,7 @@
          * what stands in for it, and it is reached from the popup. */
         const backOut = () => { try { sessionStorage.removeItem(KEY); } catch (e) {} hideLogin(); };
         login = buildAccessLogin({
-          title: 'Enter access key',
+          title: 'Access Key',
           sub: 'Two letters, then six digits.',
           onSubmit: (code) => tryAccess(code),
           onEmail: () => showTeamKeyFallback(),
@@ -317,7 +317,7 @@
         login.setBusy(false);
         login.reject(e.locked
           ? 'Too many attempts. Try again in ' + Math.ceil((e.retryAfter || 60000) / 1000) + 's.'
-          : (e.message || 'That access key was not recognised.'));
+          : 'Access denied. Please enter the correct access key.');
       }
     }
 

@@ -765,17 +765,25 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    maintained by hand in the popup's own stylesheet, which is how the two would drift. */
 .pk-access-login--inline{position:static;inset:auto;padding:0;background:none;
   -webkit-backdrop-filter:none;backdrop-filter:none;display:block}
-/* The boxes are fixed-width, so the row cannot shrink — it stretches the card past the popup
-   instead. Sized to fit with room to spare: 8x31 + 7 gaps + separator = 283, plus 32 of padding,
-   inside the 328 a 360px popup leaves after its own gutter. */
+/* No border here: the red top edge moves to the popup WINDOW (see popup.html). The card is inset
+   by the body gutter, so its own top border would read as a line floating in the dark rather than
+   as the top of Proofkit — which is why it looked, at a glance, like the top had been cut off. */
 .pk-access-login--inline .pk-access-card{width:100%;border:none;box-shadow:none;
   padding:24px 16px 16px;animation:none}
 .pk-access-login--inline .pk-access-mark{margin-bottom:22px}
 .pk-access-login--inline .pk-access-title{font-size:21px}
 .pk-access-login--inline .pk-access-sub{margin:8px 0 22px;font-size:13px}
+/* The row spans EXACTLY the card's text column, so the boxes start where the wordmark starts and
+   end where it ends. The arithmetic, since it has to be exact: the popup is 360 wide, the body
+   gutter takes 32 and the card padding another 32, leaving 296. The separator makes NINE flex items,
+   so there are EIGHT gaps, not seven: 8w + 8x4 + 8 = 296, w = 32. Getting that off by one gap
+   overflows by 4px, and the card silently GROWS to fit rather than clipping — `#fresh` is a grid and
+   its track expands to min-content — so the symptom is a card wider than the window, not a truncated
+   row. Letting the boxes flex instead does NOT work: they have no intrinsic width to divide and the
+   row blows past the card entirely. */
 .pk-access-login--inline .pk-access{gap:4px;margin:4px 0 6px}
-.pk-access-login--inline .pk-access-box{width:31px;height:44px;font-size:17px;border-radius:8px}
-.pk-access-login--inline .pk-access-sep{width:7px}
+.pk-access-login--inline .pk-access-box{width:32px;height:44px;font-size:24px;border-radius:8px}
+.pk-access-login--inline .pk-access-sep{width:8px}
 .pk-access-login--inline .pk-access-adv{margin-top:26px;padding-top:14px}
 
 /* Symmetric padding — the old rule was 36/32/24, so the card sat visibly off-centre in its own
@@ -821,9 +829,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    Eight boxes: two letters, a hairline, six digits. The gap shows the shape of the code before
    anything is typed, which is what stops someone entering AB1234-56 or 12AB3456. */
 .pk-access{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:6px 0 8px}
+/* padding:0 with a single-line input leaves the browser to centre the value in the content box,
+   which it does vertically by default — so the mask dot sits on the true centre rather than on a
+   baseline near the bottom. text-align does the horizontal half. The dot is sized by font-size,
+   hence the step up from the text size: a masked box should read as a deliberate mark, not as a
+   full stop someone left behind. */
 .pk-access-box{width:42px;height:58px;padding:0;text-align:center;
   border:1px solid var(--pk-hair);border-radius:10px;background:var(--pk-input);color:var(--pk-ink);
-  font:600 22px/1 var(--pk-font);text-transform:uppercase;caret-color:var(--pk-red);
+  font:600 34px/1 var(--pk-font);letter-spacing:0;caret-color:var(--pk-red);
   transition:border-color .14s ease,box-shadow .14s ease,background .14s ease}
 .pk-access-box:hover:not(:focus):not(:disabled){border-color:var(--pk-muted)}
 .pk-access-box:focus{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
@@ -854,7 +867,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @media (max-width:480px){
   .pk-access-card{padding:32px 24px 22px}
   .pk-access{gap:6px}
-  .pk-access-box{width:34px;height:48px;font-size:19px}
+  .pk-access-box{width:34px;height:48px;font-size:28px}
   .pk-access-title{font-size:23px}
 }
 @media (prefers-reduced-motion:reduce){

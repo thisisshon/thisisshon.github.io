@@ -1048,8 +1048,14 @@ export function buildAccessEntry(opts) {
   el.className = 'pk-access';
   el.innerHTML =
     ACCESS_ID_SHAPE.split('').map((kind, i) =>
-      `<input class="pk-access-box${kind === 'L' ? ' is-alpha' : ''}" type="text" inputmode="${kind === 'L' ? 'text' : 'numeric'}" ` +
-      `maxlength="1" autocomplete="${i === 0 ? 'one-time-code' : 'off'}" aria-label="Character ${i + 1} of 8" ` +
+      /* type=password so the character is MASKED. The value is still read and validated exactly as
+       * before — only the rendering changes — and the browser's own masking is used rather than a
+       * CSS trick, because `-webkit-text-security` is not supported everywhere and a code that
+       * shows in plain text on one browser is not "masked". autocomplete is off on every box: a
+       * manager offering to fill one character of eight helps nobody. */
+      `<input class="pk-access-box${kind === 'L' ? ' is-alpha' : ''}" type="password" ` +
+      `inputmode="${kind === 'L' ? 'text' : 'numeric'}" ` +
+      `maxlength="1" autocomplete="off" aria-label="Character ${i + 1} of 8" ` +
       `data-i="${i}" data-kind="${kind}">` +
       // A hairline between the letters and the digits, so the shape is legible at a glance.
       (i === 1 ? '<span class="pk-access-sep" aria-hidden="true"></span>' : '')).join('');
@@ -1163,7 +1169,7 @@ export function buildAccessLogin(opts) {
   el.innerHTML =
     '<div class="pk-access-card">' +
       '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
-      '<h1 class="pk-access-title">' + esc(opts.title || 'Enter access key') + '</h1>' +
+      '<h1 class="pk-access-title">' + esc(opts.title || 'Access Key') + '</h1>' +
       '<p class="pk-access-sub">' + esc(opts.sub || 'Two letters, then six digits.') + '</p>' +
       '<div class="pk-access-slot"></div>' +
       '<div class="pk-access-err" hidden></div>' +
@@ -1171,8 +1177,8 @@ export function buildAccessLogin(opts) {
         '<button type="button" class="pk-access-advtoggle" aria-expanded="false">Advanced</button>' +
         '<div class="pk-access-advpanel">' +
           '<div>' +
-            (opts.onBiometric ? '<button type="button" class="pk-access-alt" data-alt="bio">Login using biometrics</button>' : '') +
-            (opts.onEmail ? '<button type="button" class="pk-access-alt" data-alt="email">Log in using email and password</button>' : '') +
+            (opts.onBiometric ? '<button type="button" class="pk-access-alt" data-alt="bio">Login Using Biometrics</button>' : '') +
+            (opts.onEmail ? '<button type="button" class="pk-access-alt" data-alt="email">Log In Using Email and Password</button>' : '') +
           '</div>' +
         '</div>' +
       '</div>' +
