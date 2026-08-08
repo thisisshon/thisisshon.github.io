@@ -1088,8 +1088,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   .pk-logout:hover .pk-logout-ico .pk-logout-out{transform:translateX(3px)}
 }
 
-/* Shared refresh hover — a small, quick nudge-rotation on hover (the full spin is reserved
-   for the click-triggered \`.is-refreshing\` state). Used by both dashboards' refresh button. */
+/* Shared refresh hover — a small, quick nudge-rotation on hover. The click-triggered states live
+   in each board's own stylesheet, which already crossfades the sync icon into a tick by animating
+   opacity and transform on two absolutely-stacked SVGs. Do NOT add display-toggling rules here:
+   \`display:none\` on either icon removes it from the layout and the morph has nothing to animate.
+
+   The button carries a "Refresh" label and is secondary (ghost). It used to be an unlabelled icon
+   sitting beside a primary "Go to site" link; the link is gone, and a lone unlabelled icon next to
+   nothing is a guess rather than a control. */
 .pk-refresh .ico-sync{transform-origin:50% 50%;transition:transform .2s var(--pk-ease,cubic-bezier(.4,0,.2,1))}
 @media (min-width:1024px) and (hover:hover){
   .pk-refresh:not(.is-refreshing):hover .ico-sync{transform:rotate(-38deg)}
