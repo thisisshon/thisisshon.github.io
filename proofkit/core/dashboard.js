@@ -3442,7 +3442,7 @@
             }
 
             // team actions
-            if (d.teamView) { window.open(boardBase(d.teamView), '_blank', 'noopener'); return; }
+            if (d.teamView) { location.href = boardBase(d.teamView); return; }   // same tab: see Jump To Team
             if (d.teamProject) {
               const next = await pkPrompt({ title: 'Move team', message: 'Everyone on this team moves with it, and their tickets become visible only inside the new project.', value: d.teamCurrent || 'default', confirmLabel: 'Move' });
               if (next === null) return;
@@ -4695,9 +4695,17 @@
         placement: 'right-end',
         // Teams gated off via config.js (isTeamEnabled) render greyed + inert (buildDropdown
         // honours `disabled`: aria-disabled, out of the focus order, click is a no-op).
+        /* Same tab, deliberately. This opened a new one with `noopener`, and `noopener` is what
+         * made it ask for a password: it severs the new tab from this one, so the tab starts with
+         * a FRESH sessionStorage — and `pkAuthToken` lives only there. The Builder was signed in
+         * the whole time; the tab they landed in simply had no token to prove it with.
+         *
+         * Navigating in place keeps sessionStorage intact, so the team board opens already
+         * authenticated. It is also just what switching views should do — a new tab per team
+         * leaves a trail of boards nobody closes. Back returns to the Builder board. */
         items: TEAMS.map((t) => ({
           value: t, label: t, disabled: !teamEnabled(t),
-          onSelect: () => window.open(boardBase(t), '_blank', 'noopener'),
+          onSelect: () => { location.href = boardBase(t); },
         })),
       });
       teamViewMount.appendChild(teamViewDD.el);
