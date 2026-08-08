@@ -774,7 +774,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* No border here: the red top edge moves to the popup WINDOW (see popup.html). The card is inset
    by the body gutter, so its own top border would read as a line floating in the dark rather than
    as the top of Proofkit — which is why it looked, at a glance, like the top had been cut off. */
-.pk-access-login--inline .pk-access-card{width:100%;border:none;box-shadow:none;
+/* Transparent, not \`--pk-card\`. The card colour exists to lift a floating panel off whatever is
+   behind it; in the popup there is nothing behind it — the window IS the panel — so that lighter
+   fill only drew a second, slightly paler rectangle inside the first, with a band of the darker
+   floor showing around it and no edge to explain either one. */
+.pk-access-login--inline .pk-access-card{width:100%;border:none;box-shadow:none;background:transparent;
   padding:var(--pk-space-5) var(--pk-space-4) var(--pk-space-4);animation:none}
 .pk-access-login--inline .pk-access-mark{margin-bottom:var(--pk-space-5)}
 .pk-access-login--inline .pk-access-title{font-size:var(--pk-text-3xl)}
