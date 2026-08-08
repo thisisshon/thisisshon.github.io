@@ -143,6 +143,10 @@
                                                        placeholder #4e4e4e 2.1:1 — all failed AA) */
   --pk-fixed-bg:#000000;    --pk-fixed-elev:#0d0d0d;  --pk-fixed-line:#2c2c2c;
   --pk-fixed-ink:#ffffff;   --pk-fixed-sub:#8a8a8a;   --pk-fixed-faint:#7a7a7a;
+  /* The white a captured page or an attachment is composited on. It must NOT flip with the skin:
+     a screenshot of a white page sitting on a dark card reads as a rendering fault, and a
+     transparent PNG flattened onto anything but white changes what the reviewer is looking at. */
+  --pk-media-bg:#ffffff;
   --pk-fixed-danger:#ef5b50; /* error ink that must not flip to the light skin's dark red */
   --pk-fixed-ring:#431c19;   /* solid focus halo — the ONE ring value, never an rgba() */
 
@@ -254,8 +258,26 @@
      shares (row menu, chip rail) inject into arbitrary host pages whose stacking contexts are
      unknown and unbounded. Two rungs so a panel always clears its own scrim. A bare 2147483400 in
      a rule reads as panic; a named token reads as a decision. */
+  /* The overlay's own ladder, in order. It injects into third-party pages, so every rung sits in
+     max-int territory — but "near max-int" is not a design, and before these were named the
+     overlay carried 2147480000 / 2147483000 / 2147483003 / 2147483004 / 2147483039 / 2147483040 /
+     2147483200 as bare numbers, each one chosen by nudging the last. Values unchanged; naming
+     them was a rename, not a retune. */
+  --pk-z-ov-backdrop:2147480000;  /* click-catcher behind everything the overlay draws */
+  --pk-z-ov-pin:2147483000;       /* the pins themselves, on the page */
+  --pk-z-ov-pop:2147483003;       /* a pin's composer popover */
+  --pk-z-ov-toast:2147483004;     /* transient confirmations */
+  --pk-z-ov-tray:2147483039;      /* draft tray, just under the dock */
+  --pk-z-ov-dock:2147483040;      /* the always-there dock / dash / logout controls */
+  --pk-z-ov-hud:2147483200;       /* the full-screen HUD, above the page-level overlay */
   --pk-z-embed-scrim:2147483300;
   --pk-z-embed-panel:2147483400;
+
+  /* LOCAL ordering inside #pkhud, which establishes its own stacking context via the rung above.
+     These order siblings against each other and cannot escape the HUD, so they are not layers on
+     the ladder — but there are five of them, which is too many to leave as bare numbers. */
+  --pk-z-hud-pins:3; --pk-z-hud-label:6;
+  --pk-z-hud-flyout:120; --pk-z-hud-panel:125; --pk-z-hud-rail:130;
 
   /* motion */
   --pk-ease:cubic-bezier(.4,0,.2,1);

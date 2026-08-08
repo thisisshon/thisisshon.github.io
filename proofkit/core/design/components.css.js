@@ -18,7 +18,10 @@ export default `/* =============================================================
 .pk-eyebrow::before{content:"";width:8px;height:8px;background:var(--pk-red);flex:none}
 
 /* ---- buttons: sharp corners, uppercase tracked, one voltage ---- */
-.pk-btn{
+.pk-btn{box-sizing:border-box;
+  /* transparent, not unset: an unset background falls through to the UA button colour, which
+     under color-scheme:dark is a mid grey. Every variant below sets its own. */
+  background:transparent;
   position:relative;display:inline-flex;align-items:center;justify-content:center;gap:var(--pk-space-3);
   height:var(--pk-control-h-lg);padding:0 var(--pk-space-5);border:1px solid transparent;border-radius:0;cursor:pointer;text-decoration:none;
   font:700 var(--pk-text-md)/1 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;white-space:nowrap;
@@ -28,7 +31,7 @@ export default `/* =============================================================
 .pk-btn--primary{background:var(--pk-red);color:var(--pk-on-accent)}
 .pk-btn--ghost{background:transparent;border-color:var(--pk-hair);color:var(--pk-ink)}
 /* --md = the dashboards' 40px top-bar size; --icon = square icon-only (refresh/logout) */
-.pk-btn--md{height:var(--pk-control-h-md);padding:0 var(--pk-space-4h);font-size:var(--pk-text-sm);letter-spacing:.12em}
+.pk-btn--md{box-sizing:border-box;height:var(--pk-control-h-md);padding:0 var(--pk-space-4h);font-size:var(--pk-text-sm);letter-spacing:.12em}
 .pk-btn--icon{width:40px;padding:0}
 @media (min-width:1024px) and (hover:hover){
   .pk-btn--primary:hover{background:var(--pk-red-2)}
@@ -139,7 +142,7 @@ export default `/* =============================================================
 
 /* ---- "Reopened: <label>" badge (+ clarify variant) on cards + detail. Faithful merge of
    .tmd-reopen-badge / .rvd-reopen-badge (+ .tmd-clarify-badge). ---- */
-.pk-reopen-badge{display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3h);border-radius:var(--pk-radius-full);
+.pk-reopen-badge{box-sizing:border-box;display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3h);border-radius:var(--pk-radius-full);
   background:var(--pk-new-bg);color:var(--pk-new-ink);border:var(--pk-border-hair) solid var(--pk-softred);
   font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 .pk-reopen-badge--clarify{background:var(--pk-clarify-bg);color:var(--pk-clarify-ink);border-color:var(--pk-clarify)}
@@ -199,7 +202,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- nav badge — count pill on a sidebar nav item. base = blue; --alert flips red.
    18px pill + .02em kept literal (no rung/token fits). ---- */
-.pk-navbadge{display:inline-flex;align-items:center;justify-content:center;
+.pk-navbadge{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
   min-width:18px;height:18px;padding:0 var(--pk-space-2);border-radius:var(--pk-radius-full);
   background:var(--pk-blue-fill);color:var(--pk-on-accent);
   font:var(--pk-w-bold) var(--pk-text-2xs)/var(--pk-lh-none) var(--pk-font);
@@ -208,7 +211,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-navbadge--alert{background:var(--pk-red)}
 
 /* ---- sidebar nav item (flex so the badge sits inline via gap; ::before = active accent bar) ---- */
-.pk-nav{position:relative;text-align:left;height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:none;border-radius:0;
+.pk-nav{box-sizing:border-box;position:relative;text-align:left;height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:none;border-radius:0;
   background:transparent;cursor:pointer;color:var(--pk-body);display:flex;align-items:center;gap:var(--pk-space-3);
   font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:color .15s,background .15s}
 .pk-nav[hidden]{display:none}
@@ -243,10 +246,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tbtn:disabled{opacity:.5;cursor:default}
 .pk-tbtn--primary:disabled{background:var(--pk-elev);border-color:var(--pk-hair);color:var(--pk-muted);opacity:1}
 .tmd .pk-tbtn{width:140px;flex:none} /* team's fixed-width toolbar buttons */
-.pk-selectall{height:var(--pk-control-h-md);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;cursor:pointer;
+.pk-selectall{box-sizing:border-box;height:var(--pk-control-h-md);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;cursor:pointer;
   background:var(--pk-input);color:var(--pk-body);font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:border-color .15s,color .15s}
 /* 32px outline actions: openpin (link) + .pk-a (button) share a size */
-.pk-openpin,.pk-a{height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border-radius:0;border:var(--pk-border-hair) solid var(--pk-hair);background:transparent;
+.pk-openpin,.pk-a{box-sizing:border-box;height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border-radius:0;border:var(--pk-border-hair) solid var(--pk-hair);background:transparent;
   color:var(--pk-ink);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
   display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;transition:border-color .15s,color .15s}
 .pk-a{cursor:pointer;color:var(--pk-body)}
@@ -254,7 +257,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-bulk-a.danger{color:var(--pk-softred)}
 .pk-deploy-btn:disabled{opacity:.45;cursor:default}
 /* tab (underline) */
-.pk-tab{height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:none;background:none;cursor:pointer;margin-bottom:-1px;
+.pk-tab{box-sizing:border-box;height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:none;background:none;cursor:pointer;margin-bottom:-1px;
   font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);
   border-bottom:var(--pk-border-strong) solid transparent;transition:color .15s,border-color .15s}
 .pk-tab.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
@@ -358,7 +361,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-criteria-k{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-done-ink);margin-bottom:var(--pk-space-3)}
 .pk-criteria-v{font:500 var(--pk-text-base)/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap;overflow-wrap:anywhere}
 /* pin-number chip on the detail header */
-.pk-pinno{display:inline-flex;align-items:center;height:20px;padding:0 var(--pk-space-3);border-radius:var(--pk-radius-full);
+.pk-pinno{box-sizing:border-box;display:inline-flex;align-items:center;height:20px;padding:0 var(--pk-space-3);border-radius:var(--pk-radius-full);
   background:var(--pk-hair);color:var(--pk-ink);font:700 var(--pk-text-xs)/1 var(--pk-font);white-space:nowrap}
 /* fields (label over value stack) */
 .pk-fields{display:flex;flex-direction:column;gap:var(--pk-space-4)}
@@ -374,7 +377,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tl:last-child{padding-bottom:0}
 .pk-tl::before{content:"";position:absolute;left:4px;top:16px;bottom:-4px;width:2px;background:var(--pk-hair)}
 .pk-tl:last-child::before{display:none}
-.pk-tl::after{content:"";position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:var(--pk-radius-full);background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
+.pk-tl::after{box-sizing:border-box;content:"";position:absolute;left:0;top:4px;width:12px;height:12px;border-radius:var(--pk-radius-full);background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
 .pk-tl.is-current::after{border-color:var(--pk-red);background:var(--pk-red)}
 .pk-tl-event{display:block;font:700 var(--pk-text-xs)/1.3 var(--pk-font);letter-spacing:.04em;color:var(--pk-ink)}
 .pk-tl-time{display:block;margin-top:2px;font-size:var(--pk-text-sm);color:var(--pk-muted)}
@@ -414,7 +417,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   background:transparent;border:none;cursor:pointer;color:var(--pk-ink);text-align:left;font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase}
 .pk-dcard-h-static{cursor:default}
 .pk-dcard-h > span{display:inline-flex;align-items:center;gap:var(--pk-space-3)}
-.pk-dcard-n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 var(--pk-space-2);
+.pk-dcard-n{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 var(--pk-space-2);
   border-radius:var(--pk-radius-full);background:var(--pk-elev);color:var(--pk-muted);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:0}
 .pk-dcard-chev{color:var(--pk-muted);transition:transform .18s}
 .pk-dcard.is-collapsed .pk-dcard-chev{transform:rotate(-90deg)}
@@ -434,7 +437,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-dcard.pk-qq{margin-top:0;padding-top:0;border-top:none;border-left-color:var(--pk-hair)}
 .pk-dcard.pk-qq .pk-dcard-h .pk-qq-sub{margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0}
 .pk-dcard.pk-qq .pk-dcard-b{display:flex;flex-direction:column;gap:var(--pk-space-3h)}
-.pk-copyprompt{margin-top:var(--pk-space-3);height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
+.pk-copyprompt{box-sizing:border-box;margin-top:var(--pk-space-3);height:var(--pk-control-h-sm);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;background:transparent;cursor:pointer;
   color:var(--pk-ink);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:border-color .15s,color .15s}
 @media (max-width:900px){.pk-detail-grid{grid-template-columns:1fr}.pk-detail-side{position:static}}
 @media (max-width:560px){.pk-detail-bar{position:static}.pk-detail-bar-r{width:100%;justify-content:flex-start}}
@@ -444,7 +447,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-reply{position:relative;display:flex;flex-direction:column;gap:var(--pk-space-2);align-items:flex-start;min-width:0;padding-right:var(--pk-space-5)}
 .pk-reply-txt{font-size:var(--pk-text-base);line-height:var(--pk-lh-body);color:var(--pk-ink);overflow-wrap:anywhere}
 .pk-reply-meta{font-size:var(--pk-text-sm);color:var(--pk-muted)}
-.pk-reply-x{position:absolute;top:0;right:0;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);display:inline-flex;align-items:center;justify-content:center;
+.pk-reply-x{box-sizing:border-box;position:absolute;top:0;right:0;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);display:inline-flex;align-items:center;justify-content:center;
   border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm);background:transparent;color:var(--pk-muted);cursor:pointer;
   font:400 var(--pk-text-xl)/1 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
 .pk-reply-x:disabled{opacity:.5;cursor:default}
@@ -453,16 +456,21 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 
 /* ---- segmented toggle (Inbound|Outbound · Cards|Table). 42px toolbar height kept literal. ---- */
-.pk-seg{display:inline-flex;height:var(--pk-control-h-md);flex:0 0 auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;overflow:hidden}
+/* Segmented control — one track, one segment, two sizes. The settings variant differs only in
+   rung (--sm) and in resting fill (transparent, because it sits on a card rather than in a
+   toolbar well). It was a separate pair of rules that had already drifted to an off-ladder 28px. */
+.pk-seg,.pk-set-seg{box-sizing:border-box;display:inline-flex;height:var(--pk-control-h-md);flex:0 0 auto;border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;overflow:hidden}
 .pk-seg[hidden]{display:none}
-.pk-segbtn{height:100%;padding:0 var(--pk-space-4);border:none;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
+.pk-segbtn,.pk-set-segbtn{box-sizing:border-box;height:100%;padding:0 var(--pk-space-4);border:none;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
   font:600 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.04em;white-space:nowrap;transition:background .15s,color .15s}
+.pk-set-seg{height:var(--pk-control-h-sm)}
+.pk-set-segbtn{background:transparent}
 .pk-segbtn + .pk-segbtn{border-left:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-segbtn.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
 @media (min-width:1024px) and (hover:hover){.pk-segbtn:not(.is-active):hover{color:var(--pk-red-ink)}}
 
 /* ---- toolbar search input ---- */
-.pk-search{flex:1 1 220px;min-width:180px;height:var(--pk-control-h-md);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);
+.pk-search{box-sizing:border-box;flex:1 1 220px;min-width:180px;height:var(--pk-control-h-md);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);
   border-radius:0;background:var(--pk-input);color:var(--pk-ink);font:400 var(--pk-text-base)/var(--pk-lh-body) var(--pk-font)}
 .pk-search::placeholder{color:var(--pk-muted)}
 .pk-search:focus-visible{outline:none;border-color:var(--pk-red)}
@@ -472,7 +480,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-teamchips{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--pk-space-3)}
 .pk-teamchips[hidden]{display:none}
 .pk-chips-from{align-self:center;font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
-.pk-chips-more{height:var(--pk-control-h-sm);width:var(--pk-control-h-sm);flex:none;display:inline-flex;align-items:center;justify-content:center;
+.pk-chips-more{box-sizing:border-box;height:var(--pk-control-h-sm);width:var(--pk-control-h-sm);flex:none;display:inline-flex;align-items:center;justify-content:center;
   border:var(--pk-border-strong) solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;transition:border-color .15s,color .15s}
 .pk-chips-more svg{display:block}
 .pk-chips-overlay{position:fixed;inset:0;z-index:var(--pk-z-embed-scrim);background:var(--pk-scrim-veil);
@@ -499,13 +507,13 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-views{display:flex;flex-wrap:wrap;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-4)}
 .pk-views[hidden]{display:none}
 .pk-views-lbl{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);margin-right:2px}
-.pk-viewchip{display:inline-flex;align-items:center;height:var(--pk-control-h-sm);border:var(--pk-border-hair) solid var(--pk-hair);
+.pk-viewchip{box-sizing:border-box;display:inline-flex;align-items:center;height:var(--pk-control-h-sm);border:var(--pk-border-hair) solid var(--pk-hair);
   border-radius:var(--pk-radius-full);background:var(--pk-elev);overflow:hidden}
 .pk-viewchip.is-active{border-color:var(--pk-red)}
-.pk-viewchip-go{height:100%;padding:0 var(--pk-space-2) 0 var(--pk-space-4);border:none;background:transparent;cursor:pointer;
+.pk-viewchip-go{box-sizing:border-box;height:100%;padding:0 var(--pk-space-2) 0 var(--pk-space-4);border:none;background:transparent;cursor:pointer;
   color:var(--pk-body);font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
 .pk-viewchip.is-active .pk-viewchip-go{color:var(--pk-red-ink)}
-.pk-viewchip-x{height:100%;width:26px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font-size:var(--pk-text-xl);line-height:1}
+.pk-viewchip-x{box-sizing:border-box;height:100%;width:26px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font-size:var(--pk-text-xl);line-height:1}
 @media (min-width:1024px) and (hover:hover){
   .pk-viewchip:not(.is-active):hover{border-color:var(--pk-red)}
   .pk-viewchip-x:hover{color:var(--pk-softred)}
@@ -587,7 +595,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-detail-media{display:flex;flex-wrap:wrap;gap:var(--pk-space-4);align-items:flex-start}
 .pk-shot{margin:0;display:flex;flex-direction:column;gap:var(--pk-space-3);min-width:0}
 .pk-shot figcaption{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
-.pk-thumb{display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
+.pk-thumb{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
   width:120px;height:80px;background:var(--pk-input);border:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-thumb.pk-thumb-lg{width:100%;max-width:420px;height:auto;min-height:120px}
 .pk-thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -645,7 +653,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
 .pk-gh a{color:var(--pk-ink);text-decoration:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
 .pk-gh span{font-size:var(--pk-text-sm);font-weight:var(--pk-w-medium);color:var(--pk-muted);letter-spacing:0;text-transform:none}
-.pk-gh-toggle{display:inline-flex;align-items:center;justify-content:center;width:var(--pk-space-4h);height:var(--pk-space-4h);padding:0;
+.pk-gh-toggle{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:var(--pk-space-4h);height:var(--pk-space-4h);padding:0;
   margin-left:-2px;border:0;background:transparent;color:var(--pk-muted);cursor:pointer;flex:none}
 .pk-gh-caret{width:0;height:0;border-left:5px solid currentColor;border-top:4px solid transparent;
   border-bottom:4px solid transparent;transform:rotate(90deg);transition:transform .12s ease}
@@ -654,7 +662,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-group.is-collapsed .pk-notes{display:none}
 
 /* ---- hairline divider ---- */
-.pk-hr{height:1px;background:var(--pk-hair);border:0;margin:0}
+.pk-hr{box-sizing:border-box;height:1px;background:var(--pk-hair);border:0;margin:0}
 
 /* ---- shared page-entry cascade: the staggered rise both dashboards animate their
    structural bands / cards / tiles with (paired with --pk-ease-rise). One keyframe,
@@ -680,7 +688,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 .pk-select:focus-visible{outline:none;border-color:var(--pk-red)}
 .pk-select option{background:var(--pk-card);color:var(--pk-ink)}
-.pk-select--sm{height:var(--pk-control-h-md);padding:0 var(--pk-space-6h) 0 var(--pk-space-4);background-position:right 14px center;font-size:var(--pk-text-sm)}
+.pk-select--sm{box-sizing:border-box;height:var(--pk-control-h-md);padding:0 var(--pk-space-6h) 0 var(--pk-space-4);background-position:right 14px center;font-size:var(--pk-text-sm)}
 
 /* ---------------------------------------------------------------------------
    PANEL LOGIN (.pk-login) — the shared, modern auth card both dashboards use.
@@ -704,7 +712,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-login-glow::before{content:"";position:absolute;top:-140px;left:50%;width:340px;height:320px;
   transform:translateX(-50%);background:radial-gradient(circle,var(--pk-red),transparent 68%);opacity:.2}
 /* close (✕) — top-right, generously spaced from the card edge, above the glow */
-.pk-login-close{position:absolute;top:16px;right:16px;z-index:2;display:flex;align-items:center;justify-content:center;
+.pk-login-close{box-sizing:border-box;position:absolute;top:16px;right:16px;z-index:2;display:flex;align-items:center;justify-content:center;
   width:var(--pk-control-h-md);height:var(--pk-control-h-md);padding:0;border:none;border-radius:8px;background:transparent;color:var(--pk-muted);
   cursor:pointer;line-height:0;transition:background .15s ease,color .15s ease}
 .pk-login-close:focus-visible{outline:2px solid var(--pk-red);outline-offset:2px}
@@ -724,7 +732,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   background-repeat:no-repeat;background-position:right 16px center}
 .pk-login-select option{background:var(--pk-card);color:var(--pk-ink)}
 .pk-login-err{width:100%;margin:calc(-1 * var(--pk-space-2)) 0 var(--pk-space-4);font-size:var(--pk-text-md);font-weight:600;color:var(--pk-softred);text-align:left}
-.pk-login-btn{position:relative;overflow:hidden;width:100%;height:var(--pk-control-h-xl);border:none;border-radius:0;background:var(--pk-red);color:var(--pk-on-accent);
+.pk-login-btn{box-sizing:border-box;position:relative;overflow:hidden;width:100%;height:var(--pk-control-h-xl);border:none;border-radius:0;background:var(--pk-red);color:var(--pk-on-accent);
   font:700 var(--pk-text-md)/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;cursor:pointer;transition:background .15s}
 .pk-login-btn:disabled{opacity:.6;cursor:default}
 /* very subtle "securing" shimmer while authenticating (stays vivid, not dimmed) */
@@ -739,109 +747,77 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   font-weight:700;color:var(--pk-ink);white-space:nowrap}
 
 /* ---- ACCESS KEY sign-in screen ---------------------------------------------------------------
-   One question on screen. Everything else is behind Advanced, at the bottom, with enough space
-   above it that the eye never lands there on the way to the boxes. */
+   One question on screen. Everything else is behind Advanced at the bottom, with enough space
+   above it that the eye never lands there on the way to the boxes.
+
+   EVERY rule here names its own font-family. The overlay injects this stylesheet into pages we do
+   not control, where the host's own font otherwise cascades straight into anything that inherits —
+   which is why the screen looked like Proofkit in the dashboard and like somebody else's site on a
+   third-party page. Outfit is the intent; the stack behind it is what actually renders when the
+   host has not loaded it, so it is spelled out rather than left to a bare \`sans-serif\`. */
 .pk-access-login{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;
-  padding:24px;background:var(--pk-scrim);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-/* An author \`display\` beats the UA's \`[hidden]{display:none}\`, so setting .hidden on this element
-   does nothing without saying so explicitly — the screen stays up over the page behind it. */
+  padding:32px;background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  font-family:var(--pk-font)}
 .pk-access-login[hidden]{display:none}
-.pk-access-card{position:relative;width:400px;max-width:100%;box-sizing:border-box;
-  padding:36px 32px 24px;background:var(--pk-card);color:var(--pk-ink);
+.pk-access-login *{font-family:var(--pk-font);box-sizing:border-box}
+
+/* Symmetric padding — the old rule was 36/32/24, so the card sat visibly off-centre in its own
+   frame. One value on the sides, and the bottom only shorter because Advanced brings its own rule. */
+.pk-access-card{position:relative;width:460px;max-width:100%;
+  padding:44px 44px 28px;background:var(--pk-card);color:var(--pk-ink);
   border:1px solid var(--pk-hair);border-top:2px solid var(--pk-red);box-shadow:var(--pk-shadow-lg);
   animation:pk-access-rise .38s cubic-bezier(.2,.7,.3,1) both}
 @keyframes pk-access-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.pk-access-card--wait{text-align:center}
 
-.pk-access-mark{display:flex;align-items:center;gap:9px;margin-bottom:26px}
-.pk-access-mark svg{width:16px;height:16px;flex:none}
-.pk-access-mark span{font:700 11px/1 var(--pk-font);letter-spacing:2px;text-transform:uppercase;color:var(--pk-muted)}
-.pk-access-title{margin:0;font:600 24px/1.25 var(--pk-font);letter-spacing:-.3px;color:var(--pk-ink)}
-.pk-access-sub{margin:8px 0 22px;font:400 13px/1.5 var(--pk-font);color:var(--pk-muted)}
-.pk-access-err{margin:-8px 0 4px;font:600 13px/1.4 var(--pk-font);color:var(--pk-softred);text-align:center}
+.pk-access-mark{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.pk-access-mark svg{width:17px;height:17px;flex:none}
+.pk-access-mark span{font:700 11px/1 var(--pk-font);letter-spacing:2.2px;text-transform:uppercase;color:var(--pk-muted)}
+.pk-access-title{margin:0;font:600 27px/1.22 var(--pk-font);letter-spacing:-.4px;color:var(--pk-ink)}
+.pk-access-sub{margin:10px 0 30px;font:400 14px/1.55 var(--pk-font);color:var(--pk-muted)}
+.pk-access-err{margin:2px 0 0;font:600 13px/1.45 var(--pk-font);color:var(--pk-softred);text-align:center}
 .pk-access-err[hidden]{display:none}
 
 /* Advanced. A quiet link, well below the boxes — recovery, not a choice to weigh every time. */
-.pk-access-adv{margin-top:36px;padding-top:18px;border-top:1px solid var(--pk-hair);text-align:center}
-.pk-access-advtoggle{padding:4px 8px;border:none;background:none;cursor:pointer;
-  font:500 12px/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
-.pk-access-advtoggle::after{content:"";display:inline-block;margin-left:7px;width:5px;height:5px;
+.pk-access-adv{margin-top:40px;padding-top:20px;border-top:1px solid var(--pk-hair);text-align:center}
+.pk-access-advtoggle{padding:6px 10px;border:none;background:none;cursor:pointer;
+  font:500 12.5px/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
+.pk-access-advtoggle::after{content:"";display:inline-block;margin-left:8px;width:5px;height:5px;
   border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
   transform:translateY(-2px) rotate(45deg);transition:transform .22s cubic-bezier(.4,0,.2,1)}
 .pk-access-advtoggle[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
 @media (min-width:1024px) and (hover:hover){.pk-access-advtoggle:hover{color:var(--pk-ink)}}
 
-/* Collapsed on load, every load.
-   Plainly display-toggled. Both height-animated versions — the 0fr/1fr grid trick used elsewhere
-   in this file, and a max-height transition — resolved to zero height inside this card even when
-   the value was forced inline with !important, so the panel simply never opened. A disclosure that
-   refuses to disclose is not somewhere to spend more time being elegant; the fade below keeps it
-   from appearing abruptly. */
-/* Display-toggled, with the reveal carried by a keyframe rather than a height transition.
-   Both height approaches collapsed to zero inside this card — the 0fr/1fr grid trick, and a
-   max-height transition, even with the value forced inline as !important — and so did animating
-   to a JS-measured pixel height. Whatever that is, a disclosure that refuses to disclose is not
-   the place to keep being clever: display toggles reliably, and the slide-and-fade below is the
-   animation. It reads the same to anyone using it. */
 .pk-access-advpanel{display:none}
 .pk-access-advpanel.is-open{display:block;animation:pk-adv-in .24s cubic-bezier(.2,.7,.3,1) both}
 @keyframes pk-adv-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pk-access-advpanel.is-open{animation:none}}
 
-/* Each box gives a small nudge as it takes a character — the only feedback that a keystroke
-   landed, since the caret has already moved on to the next box by then. */
-@keyframes pk-access-pop{0%{transform:scale(1)}45%{transform:scale(1.07)}100%{transform:scale(1)}}
-.pk-access-box.is-filled{animation:pk-access-pop .17s ease-out}
-@media (prefers-reduced-motion:reduce){.pk-access-box.is-filled{animation:none}}
+.pk-access-alt{width:100%;margin-top:6px;padding:13px 10px;border:none;border-radius:8px;
+  background:none;cursor:pointer;font:500 13.5px/1 var(--pk-font);color:var(--pk-body);
+  transition:color .15s,background .15s}
+@media (min-width:1024px) and (hover:hover){
+  .pk-access-alt:hover{color:var(--pk-ink);background:var(--pk-hover)}}
+.pk-access-alt:focus-visible{outline:2px solid var(--pk-red);outline-offset:-2px}
 
-/* Accepted: the row settles green for a beat before the screen goes. Without it a correct code
-   looks identical to a dropped keystroke until the next page paints. */
-.pk-access.is-ok .pk-access-box{border-color:var(--pk-green);transition:border-color .18s ease}
-
-/* ---- signed in ------------------------------------------------------------------------------
-   The handover from "asking" to "in". Two beats, deliberately: the card leaves BEFORE the scrim
-   does, so the page behind is revealed rather than uncovered all at once — the eye follows the
-   card out instead of being dropped somewhere new. Nothing slides in from the side and nothing
-   bounces; it is a door closing, not a transition effect. */
-.pk-access-login.is-done{pointer-events:none}
-.pk-access-login.is-done .pk-access-card{animation:pk-access-out .26s cubic-bezier(.4,0,1,1) both}
-.pk-access-login.is-done{animation:pk-access-scrim-out .34s ease .1s both}
-@keyframes pk-access-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-6px) scale(.985)}}
-@keyframes pk-access-scrim-out{from{opacity:1}to{opacity:0}}
-
-/* The confirmation that replaces it. Rises into the space the card just left, so the two read as
-   one movement rather than two unrelated ones. */
-.pka-note{animation:pk-access-note-in .3s cubic-bezier(.2,.7,.3,1) .18s both}
-@keyframes pk-access-note-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-@media (prefers-reduced-motion:reduce){
-  .pk-access-login.is-done,.pk-access-login.is-done .pk-access-card,.pka-note{animation:none}
-  .pk-access-login.is-done{opacity:0}
-}
-.pk-access-alt{width:100%;padding:11px 8px;border:none;background:none;cursor:pointer;
-  font:500 13px/1 var(--pk-font);color:var(--pk-body);transition:color .15s,background .15s}
-.pk-access-alt:first-child{margin-top:10px}
-@media (min-width:1024px) and (hover:hover){.pk-access-alt:hover{color:var(--pk-ink);background:var(--pk-hover)}}
-
-/* ---- ACCESS KEY entry -----------------------------------------------------------------------
-   Eight boxes: two letters, a hairline, six digits. The gap is the point — it shows the shape of
-   the code before anything is typed, which is what stops someone entering AB1234-56 or 12AB3456. */
-.pk-access{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:4px 0 20px}
-.pk-access-box{width:38px;height:52px;padding:0;text-align:center;
+/* ---- ACCESS KEY entry -------------------------------------------------------------------------
+   Eight boxes: two letters, a hairline, six digits. The gap shows the shape of the code before
+   anything is typed, which is what stops someone entering AB1234-56 or 12AB3456. */
+.pk-access{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:6px 0 8px}
+.pk-access-box{width:42px;height:58px;padding:0;text-align:center;
   border:1px solid var(--pk-hair);border-radius:10px;background:var(--pk-input);color:var(--pk-ink);
-  font:600 20px/1 var(--pk-font);text-transform:uppercase;caret-color:var(--pk-red);
+  font:600 22px/1 var(--pk-font);text-transform:uppercase;caret-color:var(--pk-red);
   transition:border-color .14s ease,box-shadow .14s ease,background .14s ease}
+.pk-access-box:hover:not(:focus):not(:disabled){border-color:var(--pk-muted)}
 .pk-access-box:focus{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
-/* A filled box reads as done without needing a tick or a colour change that fights the focus ring. */
-.pk-access-box:not(:placeholder-shown),
-.pk-access-box[value]:not([value=""]){border-color:var(--pk-muted)}
 .pk-access-box:disabled{opacity:.55}
 /* The letter half is tinted a shade differently, so "letters here, digits there" survives even
    when someone is typing fast and not reading the separator. */
 .pk-access-box.is-alpha{background:var(--pk-elev)}
-.pk-access-sep{flex:none;width:10px;height:1px;background:var(--pk-hair)}
+.pk-access-sep{flex:none;width:12px;height:1px;background:var(--pk-hair)}
 
-/* Wrong code: a short shake. Felt before it is read, which is the point — the error text below is
-   for the second attempt, not the first. */
+/* Wrong code: a short shake. Felt before it is read — the error text below is for the second
+   attempt, not the first. */
 .pk-access.is-wrong{animation:pk-access-shake .38s cubic-bezier(.36,.07,.19,.97)}
 .pk-access.is-wrong .pk-access-box{border-color:var(--pk-softred)}
 @keyframes pk-access-shake{
@@ -849,18 +825,53 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   30%,50%,70%{transform:translateX(-7px)} 40%,60%{transform:translateX(7px)} 100%{transform:none}}
 .pk-access.is-busy{opacity:.7}
 
-@media (max-width:420px){
-  .pk-access{gap:5px}
-  .pk-access-box{width:32px;height:46px;font-size:18px}
+/* Each box gives a small nudge as it takes a character — the only feedback that a keystroke
+   landed, since the caret has already moved on to the next box by then. */
+@keyframes pk-access-pop{0%{transform:scale(1)}45%{transform:scale(1.07)}100%{transform:scale(1)}}
+.pk-access-box.is-filled{animation:pk-access-pop .17s ease-out}
+
+/* Accepted: the row settles green for a beat before the screen goes. Without it a correct code
+   looks identical to a dropped keystroke until the next page paints. */
+.pk-access.is-ok .pk-access-box{border-color:var(--pk-green);transition:border-color .18s ease}
+
+@media (max-width:480px){
+  .pk-access-card{padding:32px 24px 22px}
+  .pk-access{gap:6px}
+  .pk-access-box{width:34px;height:48px;font-size:19px}
+  .pk-access-title{font-size:23px}
 }
-@media (prefers-reduced-motion:reduce){ .pk-access.is-wrong{animation:none} }
+@media (prefers-reduced-motion:reduce){
+  .pk-access.is-wrong,.pk-access-box.is-filled,.pk-access-card{animation:none}
+}
+
+/* ---- signed in ------------------------------------------------------------------------------
+   The handover from "asking" to "in". Two beats: the card leaves BEFORE the scrim, so the page
+   behind is revealed rather than uncovered all at once — the eye follows the card out instead of
+   being dropped somewhere new. Nothing slides in from the side and nothing bounces. */
+.pk-access-login.is-done{pointer-events:none;animation:pk-access-scrim-out .34s ease .1s both}
+.pk-access-login.is-done .pk-access-card{animation:pk-access-out .26s cubic-bezier(.4,0,1,1) both}
+@keyframes pk-access-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-6px) scale(.985)}}
+@keyframes pk-access-scrim-out{from{opacity:1}to{opacity:0}}
+.pka-note{animation:pk-access-note-in .3s cubic-bezier(.2,.7,.3,1) .18s both}
+@keyframes pk-access-note-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .pk-access-login.is-done,.pk-access-login.is-done .pk-access-card,.pka-note{animation:none}
+  .pk-access-login.is-done{opacity:0}
+}
+
+/* The biometric wait, shown when the extension sends someone here to use Touch ID. */
+.pk-access-card--wait .pka-scan{display:flex;flex-direction:column;align-items:center;gap:20px;padding:14px 0 6px}
+.pk-access-card--wait .pka-scan svg{color:var(--pk-red);animation:pk-access-pulse 1.6s ease-in-out infinite}
+.pk-access-card--wait .pka-scan p{margin:0;font:400 14px/1.5 var(--pk-font);color:var(--pk-muted)}
+@keyframes pk-access-pulse{0%,100%{opacity:.45;transform:scale(.96)}50%{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.pk-access-card--wait .pka-scan svg{animation:none}}
 
 /* Touch ID — the SECONDARY route, styled as an outline of the primary button rather than a link.
    Same width, same height, same type: it is a real way in, not a footnote. Subordinate to
    Authenticate only by fill, so neither reads as the wrong default.
    [hidden] must win over the flex display, hence the explicit rule — it stays hidden until a
    platform authenticator is confirmed present. */
-.pk-login-touch{display:flex;align-items:center;justify-content:center;gap:var(--pk-space-3);width:100%;height:var(--pk-control-h-lg);
+.pk-login-touch{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:var(--pk-space-3);width:100%;height:var(--pk-control-h-lg);
   margin-top:var(--pk-space-3h);border:1px solid var(--pk-hair);border-radius:0;background:transparent;color:var(--pk-body);
   font:700 var(--pk-text-md)/1 var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;
   cursor:pointer;transition:color .15s,border-color .15s,background .15s}
@@ -888,7 +899,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);min-width:170px;border:1px solid var(--pk-hair);border-radius:0;box-sizing:border-box;
   background:var(--pk-input);color:var(--pk-ink);cursor:pointer;
   font:600 var(--pk-text-md)/1 var(--pk-font);letter-spacing:.04em;transition:border-color .15s var(--pk-ease)}
-.pk-dropdown--sm .pk-dropdown-trigger{height:var(--pk-control-h-md);min-width:0;padding:0 var(--pk-space-4);font-size:var(--pk-text-sm)}
+.pk-dropdown--sm .pk-dropdown-trigger{box-sizing:border-box;height:var(--pk-control-h-md);min-width:0;padding:0 var(--pk-space-4);font-size:var(--pk-text-sm)}
 .pk-dropdown-trigger:focus-visible{outline:none;border-color:var(--pk-red)}
 .pk-dropdown.is-open .pk-dropdown-trigger{border-color:var(--pk-red)}
 .pk-dropdown-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -934,13 +945,13 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    buildThemeToggle(); these are its styles. One moon glyph rides the thumb; the
    thumb is ALWAYS the brand red and slides fully INSIDE the track between states.
    --------------------------------------------------------------------------- */
-.pk-tt{
+.pk-tt{box-sizing:border-box;
   --tt-w:46px; --tt-h:24px; --tt-thumb:18px; --tt-pad:4px;
   position:relative;display:inline-flex;align-items:center;justify-content:center;
   width:var(--pk-control-h-lg);height:var(--pk-control-h-lg);margin:calc(-1 * var(--pk-space-3h));padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
-.pk-tt-track{
+.pk-tt-track{box-sizing:border-box;
   position:relative;width:var(--tt-w);height:var(--tt-h);border-radius:var(--pk-radius-full);
   background:var(--pk-input);border:1px solid var(--pk-hair);
   box-shadow:var(--pk-shadow-inset);transition:background .4s var(--pk-ease),border-color .3s;
@@ -996,7 +1007,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* ---- TYPE SELECTOR (Feature 1) — the 5 comment-type chips in the composer ---- */
 .pk-typesel{display:flex;flex-wrap:wrap;gap:var(--pk-space-3)}
-.pk-typechip{display:inline-flex;align-items:center;gap:var(--pk-space-3);min-height:var(--pk-control-h-sm);padding:var(--pk-space-3) var(--pk-space-4);
+.pk-typechip{box-sizing:border-box;display:inline-flex;align-items:center;gap:var(--pk-space-3);min-height:var(--pk-control-h-sm);padding:var(--pk-space-3) var(--pk-space-4);
   border:1px solid var(--pk-hair);border-radius:0;background:var(--pk-input);color:var(--pk-body);cursor:pointer;
   font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;
   transition:border-color .12s,color .12s,background .12s}
@@ -1014,7 +1025,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tray-head{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3h);
   padding:var(--pk-space-3h) var(--pk-space-4);border-bottom:1px solid var(--pk-hair);cursor:pointer;
   font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-ink)}
-.pk-tray-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 var(--pk-space-3);
+.pk-tray-count{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 var(--pk-space-3);
   border-radius:var(--pk-radius-full);background:var(--pk-red);color:var(--pk-on-accent);
   font:700 var(--pk-text-xs)/1 var(--pk-font)}
 .pk-tray-list{display:flex;flex-direction:column;gap:1px;max-height:300px;overflow:auto;overscroll-behavior:none;background:var(--pk-hair)}
@@ -1024,7 +1035,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk-tray-item-meta{margin-top:var(--pk-space-2);font:600 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
 .pk-tray-item-actions{display:flex;gap:var(--pk-space-3);flex:none}
-.pk-tray-iconbtn{width:var(--pk-control-h-lg);height:var(--pk-control-h-lg);
+.pk-tray-iconbtn{box-sizing:border-box;width:var(--pk-control-h-lg);height:var(--pk-control-h-lg);
   margin:calc(-1 * var(--pk-space-4)) calc(-1 * var(--pk-space-3h));
   border:0;background:none;color:var(--pk-muted);
   transition:color var(--pk-dur-fast) var(--pk-ease)}
@@ -1073,7 +1084,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-bar-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;gap:var(--pk-space-3h)}
 .pk-bar-key{font:600 var(--pk-text-sm)/1.3 var(--pk-font);color:var(--pk-body);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pk-bar-track{position:relative;height:12px;background:var(--pk-input);border:1px solid var(--pk-hair);overflow:hidden}
+.pk-bar-track{box-sizing:border-box;position:relative;height:12px;background:var(--pk-input);border:1px solid var(--pk-hair);overflow:hidden}
 .pk-bar-fill{position:absolute;inset:0 auto 0 0;width:var(--pct,0%);background:var(--pk-red);
   transition:width .4s var(--pk-ease)}
 /* status-keyed fills so a per-status chart reads by colour (reuse teamStatus tokens) */
@@ -1120,36 +1131,33 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-row-desc{margin-top:3px;font:400 var(--pk-text-sm)/1.45 var(--pk-font);color:var(--pk-muted)}
 .pk-set-ctl{flex:none;display:flex;align-items:center;gap:var(--pk-space-3);flex-wrap:wrap;justify-content:flex-end}
 /* switch */
-.pk-set-switch{width:44px;height:var(--pk-control-h-xs);padding:0;border:none;border-radius:9999px;background:var(--pk-hair);cursor:pointer;
+.pk-set-switch{box-sizing:border-box;width:44px;height:var(--pk-control-h-xs);padding:0;border:none;border-radius:9999px;background:var(--pk-hair);cursor:pointer;
   position:relative;transition:background .18s}
 .pk-set-switch[aria-checked="true"]{background:var(--pk-red)}
 .pk-set-switch-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:9999px;background:var(--pk-on-accent);
   transition:transform .18s}
 .pk-set-switch[aria-checked="true"] .pk-set-switch-thumb{transform:translateX(20px)}
 /* segmented */
-.pk-set-seg{display:inline-flex;border:1px solid var(--pk-hair);overflow:hidden}
-.pk-set-segbtn{padding:var(--pk-space-3) var(--pk-space-4);border:none;background:transparent;cursor:pointer;color:var(--pk-body);
-  font:600 var(--pk-text-sm)/1 var(--pk-font);transition:background .15s,color .15s}
 .pk-set-segbtn + .pk-set-segbtn{border-left:1px solid var(--pk-hair)}
 .pk-set-segbtn.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
 /* accent swatches */
 .pk-set-swatches{display:inline-flex;gap:var(--pk-space-3);flex-wrap:wrap}
-.pk-set-swatch{width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);padding:0;border:1px solid var(--pk-hair);border-radius:9999px;cursor:pointer;
+.pk-set-swatch{box-sizing:border-box;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);padding:0;border:1px solid var(--pk-hair);border-radius:9999px;cursor:pointer;
   display:inline-flex;align-items:center;justify-content:center;background:var(--pk-card)}
 .pk-set-swatch > span{width:16px;height:16px;border-radius:9999px;background:var(--sw,var(--pk-red))}
 .pk-set-swatch-def > span{background:linear-gradient(135deg,var(--pk-muted) 0 50%,var(--pk-hair) 50% 100%)}
 .pk-set-swatch.is-active{border-color:var(--pk-red);box-shadow:0 0 0 2px var(--pk-canvas),0 0 0 3px var(--pk-red)}
 /* pills / tags / ping / kbd */
-.pk-set-pill{display:inline-flex;align-items:center;height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);background:var(--pk-elev);
+.pk-set-pill{box-sizing:border-box;display:inline-flex;align-items:center;height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);background:var(--pk-elev);
   border:1px solid var(--pk-hair);font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-body)}
 .pk-set-ping{font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted)}
 .pk-set-teamtags{display:flex;flex-wrap:wrap;gap:var(--pk-space-3);justify-content:flex-end;max-width:320px}
-.pk-set-teamtag{display:inline-flex;align-items:center;height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);background:var(--pk-elev);
+.pk-set-teamtag{box-sizing:border-box;display:inline-flex;align-items:center;height:var(--pk-control-h-xs);padding:0 var(--pk-space-3h);background:var(--pk-elev);
   border:1px solid var(--pk-hair);font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body)}
 .pk-set-teamtag.is-off{opacity:.5}
 /* Was an inline style= in dashboard.js; a class instead, so \`style-src 'self'\` holds. */
 .pk-set-teamtag-meta{color:var(--pk-muted)}
-.pk-set-kbd{display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3);background:var(--pk-input);
+.pk-set-kbd{box-sizing:border-box;display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3);background:var(--pk-input);
   border:1px solid var(--pk-hair);border-bottom-width:2px;border-radius:4px;font:700 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-ink)}
 
 
@@ -1196,7 +1204,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pkc-btn{min-width:116px}
 .pk-selectall{background:var(--pk-input);font-weight:600;font-size:var(--pk-text-sm);
   letter-spacing:.04em;text-transform:none}
-.pk-deploy-btn{flex:none;height:var(--pk-control-h-lg);padding:0 var(--pk-space-5);
+.pk-deploy-btn{box-sizing:border-box;flex:none;height:var(--pk-control-h-lg);padding:0 var(--pk-space-5);
   border-color:var(--pk-deploy);background:var(--pk-deploy);color:var(--pk-on-accent);
   font-size:var(--pk-text-sm);letter-spacing:.12em}
 
@@ -1207,7 +1215,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* Something is waiting — today, a person locked out of their account. */
 .pk-set-tab{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-3);width:100%}
-.pk-set-tab-badge{flex:none;min-width:18px;height:18px;padding:0 var(--pk-space-2);border-radius:9999px;
+.pk-set-tab-badge{box-sizing:border-box;flex:none;min-width:18px;height:18px;padding:0 var(--pk-space-2);border-radius:9999px;
   background:var(--pk-red);color:var(--pk-on-accent);font:700 var(--pk-text-xs)/18px var(--pk-font);text-align:center}
 .pk-set-tab-badge[hidden]{display:none}
 
@@ -1349,7 +1357,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pkd-step::before{content:"";position:absolute;left:11px;top:calc(var(--pk-space-3) + 26px);
   height:calc(100% - 26px);width:2px;background:var(--pk-hair)}
 .pkd-step:last-child::before{display:none}
-.pkd-step-n{flex:none;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);border-radius:var(--pk-radius-full);display:inline-flex;align-items:center;justify-content:center;
+.pkd-step-n{box-sizing:border-box;flex:none;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);border-radius:var(--pk-radius-full);display:inline-flex;align-items:center;justify-content:center;
   font:var(--pk-w-bold) var(--pk-text-xs)/1 var(--pk-font);border:var(--pk-border-strong) solid var(--pk-hair);
   background:var(--pk-card);color:var(--pk-muted);font-variant-numeric:tabular-nums}
 .pkd-step-t{font:var(--pk-w-semibold) var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-muted)}
@@ -1362,7 +1370,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pkd-node{position:relative;padding-top:var(--pk-space-5);padding-right:var(--pk-space-4)}
 .pkd-node::before{content:"";position:absolute;left:0;top:5px;right:0;height:2px;background:var(--pk-hair)}
 .pkd-node:last-child::before{right:auto;width:12px}
-.pkd-dot{position:absolute;left:0;top:0;width:12px;height:12px;border-radius:var(--pk-radius-full);
+.pkd-dot{box-sizing:border-box;position:absolute;left:0;top:0;width:12px;height:12px;border-radius:var(--pk-radius-full);
   background:var(--pk-card);border:var(--pk-border-strong) solid var(--pk-muted)}
 .pkd-node.is-done .pkd-dot{background:var(--pk-green);border-color:var(--pk-green)}
 .pkd-node.is-current .pkd-dot{background:var(--pk-red);border-color:var(--pk-red)}
@@ -1445,7 +1453,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    stays a true circle; three digits expand it to a pill, which is the correct fallback.
    \`margin-left:auto\` snaps every counter to one right edge, so the gutter is set by the longest
    label + the badge — the counters line up as a column regardless of label length. ---- */
-.pk-nav .pk-navbadge{
+.pk-nav .pk-navbadge{box-sizing:border-box;
   margin-left:auto;
   min-width:18px;height:18px;padding:0 2px;
   font-weight:var(--pk-w-semibold);font-size:var(--pk-text-3xs);line-height:1;letter-spacing:0;
@@ -1501,7 +1509,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   animation-delay:calc((var(--n,1) - 1 - var(--i,0)) * 22ms)}
 @keyframes pk-dd-panel-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes pk-dd-stack-up{from{opacity:0;transform:translateY(18px) scale(.85)}to{opacity:1;transform:none}}
-.pk-side-logout{margin-left:0;display:inline-flex;align-items:center;justify-content:center;
+.pk-side-logout{box-sizing:border-box;margin-left:0;display:inline-flex;align-items:center;justify-content:center;
   width:var(--pk-control-h-md);height:var(--pk-control-h-md);flex:none;border:var(--pk-border-hair) solid var(--pk-hair);
   background:transparent;color:var(--pk-muted);cursor:pointer;transition:border-color .15s,color .15s}
 .pk-side-logout svg{width:18px;height:18px}

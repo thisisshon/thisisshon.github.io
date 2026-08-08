@@ -100,28 +100,57 @@ async function finish(body) {
   document.body.appendChild(note);
 }
 
-/** The biometric route, from Advanced. Returns quietly when there is nothing to use. */
-async function tryPasskey() {
-  login.setBusy(true);
+/** A bare waiting screen for the biometric path — the OS sheet should own the attention, and the
+ *  page behind it should not be a form the user might start typing into. */
+function showWaiting() {
+  const el = document.createElement('div');
+  el.className = 'pk-access-login';
+  el.innerHTML =
+    '<div class="pk-access-card pk-access-card--wait">' +
+      '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
+      '<div class="pka-scan">' + ICON_TOUCH + '<p>Waiting for Touch ID…</p></div>' +
+      '<button type="button" class="pk-access-alt" id="waitKey">Use my access key instead</button>' +
+    '</div>';
+  document.body.appendChild(el);
+  el.querySelector('#waitKey').addEventListener('click', () => { el.remove(); login.el.hidden = false; login.focus(); });
+  return el;
+}
+
+/** The biometric route. Returns quietly when there is nothing to use. */
+async function tryPasskey(auto) {
+  // On the auto path the key screen has not been shown yet; on the manual one it has.
+  const waiting = auto ? showWaiting() : null;
+  if (!auto) login.setBusy(true);
   try {
     const body = await passkeyLogin(workerUrl, '');
     if (body) { await finish(body); return; }
+    // Cancelled, or nothing enrolled. Either way the access key is the way forward, so land there
+    // rather than on a dead end explaining what did not happen.
+    if (waiting) waiting.remove();
+    login.el.hidden = false;
     login.setBusy(false);
-    login.setError('No passkey on this device. Use your access key, or sign in with email.');
+    login.setError('No passkey used. Enter your access key instead.');
+    login.focus();
   } catch (e) {
+    if (waiting) waiting.remove();
+    login.el.hidden = false;
     login.setBusy(false);
     login.setError(e.message || 'Could not sign in with biometrics.');
+    login.focus();
   }
 }
 
 let hasBiometric = false;
-let fallback = null;                 // the email + PIN form, built only if someone asks for it
+let fallback = null;
+/* Arrived from the extension's Biometrics button. The click that opened this tab already WAS the
+ * request, so the page raises the prompt on load rather than showing a screen that asks again. */
+const wantBiometric = (params.get('auth') || '') === 'biometric';                 // the email + PIN form, built only if someone asks for it
 
 const login = buildAccessLogin({
   title: 'Enter access key',
   sub: 'Two letters, then six digits.',
   onSubmit: (code) => signInWithAccess(code),
-  onBiometric: () => tryPasskey(),
+  onBiometric: () => tryPasskey(false),
   onEmail: () => showEmailFallback(),
 });
 document.body.appendChild(login.el);
@@ -211,11 +240,22 @@ function showEmailFallback() {
     } catch (e) { /* unreachable Worker — fall through and let them sign in normally */ }
   }
 
-  // Only offer the biometric route where it can actually run.
   hasBiometric = await hasPlatformAuthenticator();
+  // Only offer a route that can actually run here.
   if (!hasBiometric) {
     const bio = login.el.querySelector('[data-alt="bio"]');
     if (bio) bio.remove();
+  }
+
+  if (wantBiometric && hasBiometric) {
+    // Straight to the prompt. The key screen stays built and hidden, so cancelling lands on it
+    // instantly rather than after a second page load.
+    login.el.hidden = true;
+    tryPasskey(true);
+    return;
+  }
+  if (wantBiometric && !hasBiometric) {
+    login.setError('This device has no biometric reader. Use your access key.');
   }
   login.focus();
 })();

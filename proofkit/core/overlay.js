@@ -371,7 +371,7 @@
     const css = pkTokensCss + pkComponentsCss + hideCss + `
       /* Dock sits ABOVE popovers/toasts so its buttons are always clickable,
          even when a comment popover would otherwise overlap the bottom-right. */
-      .rv-dock{position:fixed;right:24px;bottom:24px;z-index:2147483040;
+      .rv-dock{position:fixed;right:24px;bottom:24px;z-index:var(--pk-z-ov-dock);
         display:flex;align-items:center;gap:20px}
       /* The dock changes SHAPE between its two states — a dark "Comment" pill becomes a wider red
          "Exit Review Mode" one, and the prev/next pill appears beside it. Swapping that instantly
@@ -389,13 +389,13 @@
       .rv-fab.is-swapping > *{opacity:0}
       .rv-fab svg{width:20px;height:20px;flex:none}
       /* "Go To Dashboard" — pinned to the bottom-LEFT, clear of the right-hand dock */
-      .rv-dash{position:fixed;left:24px;bottom:24px;z-index:2147483040;
+      .rv-dash{position:fixed;left:24px;bottom:24px;z-index:var(--pk-z-ov-dock);
         display:flex;align-items:center;gap:8px;height:48px;padding:0 16px;border:none;border-radius:24px;
         background:var(--pk-card);color:var(--pk-ink);cursor:pointer;text-decoration:none;
         font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       .rv-dash svg{width:20px;height:20px;flex:none}
       /* "Log out" — its own bottom-left button, stacked just above "Go To Dashboard". */
-      .rv-logout{position:fixed;left:24px;bottom:84px;z-index:2147483040;
+      .rv-logout{position:fixed;left:24px;bottom:84px;z-index:var(--pk-z-ov-dock);
         display:flex;align-items:center;gap:8px;height:48px;padding:0 16px;border:none;border-radius:24px;
         background:var(--pk-card);color:var(--pk-ink);cursor:pointer;
         font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
@@ -404,7 +404,7 @@
       @media (prefers-reduced-motion:reduce){
         .rv-fab,.rv-fab > *,.rv-nav{transition:none !important}
       }
-      .rv-backdrop{position:fixed;inset:0;z-index:2147480000;pointer-events:none;
+      .rv-backdrop{position:fixed;inset:0;z-index:var(--pk-z-ov-backdrop);pointer-events:none;
         backdrop-filter:grayscale(1);-webkit-backdrop-filter:grayscale(1);
         box-shadow:inset 0 0 0 3px var(--pk-red)}
       /* Always laid out; shown by class. A display toggle cannot be transitioned, which is why
@@ -429,7 +429,7 @@
         .rv-logout{left:16px;bottom:76px;padding:0 16px}
         .rv-logout span{display:none}
       }
-      .rv-pin{position:fixed;z-index:2147483000;min-width:26px;height:26px;padding:0 8px;
+      .rv-pin{position:fixed;z-index:var(--pk-z-ov-pin);min-width:26px;height:26px;padding:0 8px;
         transform:translate(-50%,-100%);display:flex;align-items:center;justify-content:center;
         border-radius:14px;border:2px solid var(--pk-ink);background:var(--pk-red);color:var(--pk-ink);cursor:pointer;
         font:700 12px/1 var(--pk-font);box-shadow:var(--pk-shadow-md)}
@@ -439,7 +439,7 @@
          Deliberately different in size + position + saturation from the pastel team fill. */
       .rv-pin .rv-pin-status{position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;
         border:2px solid var(--pk-canvas);box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
-      .rv-pop{position:fixed;z-index:2147483003;width:344px;max-width:calc(100vw - 32px);
+      .rv-pop{position:fixed;z-index:var(--pk-z-ov-pop);width:344px;max-width:calc(100vw - 32px);
         background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);border-radius:0;
         box-shadow:var(--pk-shadow-lg);font:400 14px/1.5 var(--pk-font)}
       .rv-pop header{padding:20px 24px 16px;background:var(--pk-elev);border-bottom:1px solid var(--pk-hair);
@@ -461,7 +461,7 @@
       .rv-directlabel{font:700 10px/1 var(--pk-font);text-transform:uppercase;
         letter-spacing:.06em;color:var(--pk-muted)}
       .rv-pop textarea{min-height:96px;resize:vertical}
-      .rv-pop input:focus,.rv-pop textarea:focus,.rv-pop select:focus{outline:2px solid var(--pk-red);border-color:var(--pk-red)}
+      .rv-pop input:focus-visible,.rv-pop textarea:focus-visible,.rv-pop select:focus-visible{outline:2px solid var(--pk-red);border-color:var(--pk-red)}
       /* team chip now uses global .pk-team-chip--compact (imported via components.css?inline) */
       /* "change to" popover now uses global .pk-callout--compact (rv-ctxt kept as a JS hook) */
       .rv-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
@@ -476,12 +476,12 @@
       .rv-hactions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
       .rv-hactions .rv-btn.ghost{height:32px;padding:0 12px;border:1px solid var(--pk-hair);letter-spacing:.06em;
         color:var(--pk-ink);background:var(--pk-card);transition:background .15s,border-color .15s,color .15s}
-      .rv-hactions .rv-btn.ghost:hover{background:var(--pk-elev);border-color:var(--pk-red);color:var(--pk-red-ink)}
+      @media (min-width:1024px) and (hover:hover){.rv-hactions .rv-btn.ghost:hover{background:var(--pk-elev);border-color:var(--pk-red);color:var(--pk-red-ink)}}
       .rv-hactions .rv-btn.ghost:focus-visible{outline:2px solid var(--pk-red);outline-offset:1px}
       /* Back link in the composer header (edit mode) */
-      .rv-hback{border:none;background:none;cursor:pointer;padding:0;margin-bottom:6px;
+      .rv-hback{border:none;background:none;cursor:pointer;padding:0;margin-bottom:8px;
         font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
-      .rv-hback:hover{color:var(--pk-ink)}
+      @media (min-width:1024px) and (hover:hover){.rv-hback:hover{color:var(--pk-ink)}}
       .rv-read{padding:16px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
       .rv-viewdetails{flex:none}
       /* thread = single-open accordion of past comments (collapsed to Team + Name) */
@@ -500,11 +500,11 @@
       .rv-reply input,.rv-reply textarea{width:100%;padding:12px 16px;border:1px solid var(--pk-hair);border-radius:4px;
         font:inherit;color:var(--pk-ink);background:var(--pk-input);box-sizing:border-box}
       .rv-reply textarea{min-height:64px;resize:vertical}
-      .rv-reply input:focus,.rv-reply textarea:focus{outline:2px solid var(--pk-red);border-color:var(--pk-red)}
+      .rv-reply input:focus-visible,.rv-reply textarea:focus-visible{outline:2px solid var(--pk-red);border-color:var(--pk-red)}
       .rv-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--pk-muted)}
       /* status chip now uses global .pk-status-chip (imported via components.css?inline) */
       .rv-txt{white-space:pre-wrap;color:var(--pk-ink)}
-      .rv-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:2147483004;
+      .rv-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:var(--pk-z-ov-toast);
         max-width:calc(100vw - 32px);padding:12px 16px;border-radius:12px;background:var(--pk-card);color:var(--pk-ink);
         font:500 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       /* Draft pins (F2): a dashed, hollow marker for a pending (not-yet-submitted) draft,
@@ -512,7 +512,7 @@
       .rv-pin.draft{background:var(--pk-elev);border-style:dashed;color:var(--pk-ink)}
       /* Draft tray (F2): floats above the bottom-right dock; .pk-tray styling lives in
          components.css (shared). Hidden until there is ≥1 pending draft. */
-      .rv-tray-wrap{position:fixed;right:24px;bottom:84px;z-index:2147483039;width:340px;
+      .rv-tray-wrap{position:fixed;right:24px;bottom:84px;z-index:var(--pk-z-ov-tray);width:340px;
         max-width:calc(100vw - 32px)}
       .rv-tray-wrap[hidden]{display:none}
       .rv-tray-wrap .pk-tray-list{display:none}
@@ -521,7 +521,7 @@
       @media (max-width:768px){.rv-tray-wrap{right:16px;bottom:76px}}
       /* Composer template fields (F1) + expected-outcome (F8): labelled rows reusing the
          same input skin as the freeform textarea. currentImage/currentUrl are read-only. */
-      .rv-tf{display:flex;flex-direction:column;gap:6px}
+      .rv-tf{display:flex;flex-direction:column;gap:8px}
       .rv-tf-label{font:700 10px/1 var(--pk-font);text-transform:uppercase;
         letter-spacing:.06em;color:var(--pk-muted)}
       .rv-tf input[readonly]{color:var(--pk-muted);cursor:default}
@@ -531,18 +531,18 @@
       /* Paste-to-attach screenshot block */
       .rv-attach{margin-top:12px}
       .rv-attach-hint{font:500 12px/1.4 var(--pk-font);color:var(--pk-muted);
-        border:1px dashed var(--pk-hair);border-radius:6px;padding:10px 12px}
+        border:1px dashed var(--pk-hair);border-radius:6px;padding:12px 12px}
       /* Required variant - the same dashed well, raised to body ink on the voltage so it
          reads as a rule to satisfy rather than a passing suggestion. */
       .rv-attach-hint--req{color:var(--pk-body);border-color:var(--pk-red)}
       .rv-attach-hint--req b{color:var(--pk-red-ink);font-weight:700}
-      .rv-attach-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+      .rv-attach-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
       .rv-attach-lbl{font:700 10px/1 var(--pk-font);text-transform:uppercase;letter-spacing:.06em;color:var(--pk-muted)}
       .rv-attach-x{border:1px solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;
-        font:600 11px/1 var(--pk-font);padding:5px 10px;border-radius:4px}
-      .rv-attach-x:hover{color:var(--pk-softred);border-color:var(--pk-softred)}
+        font:600 11px/1 var(--pk-font);padding:4px 12px;border-radius:4px}
+      @media (min-width:1024px) and (hover:hover){.rv-attach-x:hover{color:var(--pk-softred);border-color:var(--pk-softred)}}
       .rv-attach-img{display:block;width:100%;max-height:180px;object-fit:contain;border:1px solid var(--pk-hair);
-        border-radius:6px;background:#fff}
+        border-radius:6px;background:var(--pk-media-bg)}
     `;
     // Mounted below, at the point the dock is built, so review-mode CSS still
     // arrives in the same order as before. injectCss keeps it out of markup, so
