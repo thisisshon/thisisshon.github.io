@@ -1617,6 +1617,27 @@ export function pageLabelFull(page) {
   return host ? host + ' · ' + label : label;
 }
 
+/**
+ * The link that actually opens the page a pin was raised on.
+ *
+ * `page.path` alone is a PATH, so a link built from it resolves against whatever origin the
+ * dashboard is served from — meaning every ticket raised on a customer's site linked to
+ * thisisshon.github.io/<their-path>, which is somebody else's page or a 404. Now that Proofkit runs
+ * on any URL that is the common case, not the edge one. The overlay has always recorded the full
+ * href; this prefers it and keeps the path as the fallback for older records that predate it.
+ */
+export function pageHref(page) {
+  const u = (page && page.url) || '';
+  if (u) { try { return new URL(String(u)).href; } catch (e) { /* fall through */ } }
+  return (page && page.path) || '/';
+}
+
+/** The URL as text, without the scheme — the part worth reading in a list. */
+export function pageUrlText(page) {
+  const href = pageHref(page);
+  return String(href).replace(/^https?:\/\//, '').replace(/\/$/, '');
+}
+
 /** Grouping key for a page across origins — mirrors the Worker's pageId. */
 export function pageGroupKey(page) {
   return pageHost(page) + '|' + ((page && page.path) || '/');

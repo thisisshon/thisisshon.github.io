@@ -1,4 +1,4 @@
-  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName,
+  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName, pageHref, pageUrlText,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     BASE, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
     ADMIN_TEAM, buildAccessLogin, accessLogin, passkeyLoginDiscoverable, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
@@ -1943,7 +1943,9 @@
           return `<tr class="pk-logrow" data-id="${esc(c.id)}">` +
             `<td><span class="pk-ticket">${c.ticket ? esc(c.ticket) : '—'}</span></td>` +
             `<td>${esc(fmt(c.createdAt))}</td>` +
-            `<td><a class="pk-slug" href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a></td>` +
+            `<td><a class="pk-pagecell" href="${esc(pageHref(c.page))}" target="_blank" rel="noopener">` +
+              `<span class="pk-pagecell-t">${esc(pageLabel(c.page))}</span>` +
+              `<span class="pk-pagecell-u">${esc(pageUrlText(c.page))}</span></a></td>` +
             `<td>${teamChip(c.team) || '—'}</td>` +
             `<td>${teamChip(c.toTeam) || '—'}</td>` +
             `<td>${statusChip(c)}</td>` +
@@ -2110,7 +2112,8 @@
           `</button><div class="pkd-acc-b"><dl class="pk-dmeta">${rowsHTML}</dl></div></div>`;
       const metaBodyNew =
         metaGroup('placement', 'Placement',
-          metaRow('Page', `<a href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a><span class="pk-dmeta-sub">${esc(c.page.path)}</span>`) +
+          metaRow('Page', `<a href="${esc(pageHref(c.page))}" target="_blank" rel="noopener">${esc(pageLabel(c.page))}</a>` +
+            `<span class="pk-dmeta-sub">${esc(pageUrlText(c.page))}</span>`) +
           (c.display ? metaRow('Display', esc(displayText(c.display))) : '')) +
         metaGroup('reference', 'Reference',
           metaRow('Ticket', c.ticket ? `<span class="pk-ticket">${esc(c.ticket)}</span>` : '—') +
@@ -2198,7 +2201,7 @@
                   (isReopened ? ` <span class="pk-reopen-badge">Reopened${reopLabel ? ': ' + esc(reopLabel) : ''}</span>` : '') +
                 `</span>` +
                 `<h2 class="pk-detail-title">${esc(tl && sum ? sum : c.comment)}</h2>` +
-                `<span class="pkd-sub">${esc(pageName(c.page.path))} <span class="pkd-sep">·</span> <a href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(c.page.path)}</a></span>` +
+                `<span class="pkd-sub">${esc(pageLabel(c.page))} <span class="pkd-sep">·</span> <a href="${esc(pageHref(c.page))}" target="_blank" rel="noopener">${esc(pageUrlText(c.page))}</a></span>` +
               `</div>` +
               `<div class="pkd-route">` +
                 `<span class="pkd-route-k">Routing</span>` +

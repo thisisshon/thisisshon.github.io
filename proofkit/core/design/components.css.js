@@ -1113,6 +1113,22 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    The overlay composer + both dashboards compose these (never re-declare them).
    =========================================================================== */
 
+/* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
+   Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
+   URL: "Checkout" is a different page on three different sites. The title is what a person
+   recognises; the URL is what tells them WHICH one. The URL is quieter and truncates from the
+   right, since the host and the first segment carry most of the meaning. */
+.pk-pagecell{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:34ch;
+  text-decoration:none;color:inherit}
+.pk-pagecell-t{font:600 var(--pk-text-sm)/1.35 var(--pk-font);color:var(--pk-ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-pagecell-u{font:400 var(--pk-text-xs)/1.35 var(--pk-font);color:var(--pk-muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr}
+@media (min-width:1024px) and (hover:hover){
+  .pk-pagecell:hover .pk-pagecell-t{color:var(--pk-red)}
+  .pk-pagecell:hover .pk-pagecell-u{color:var(--pk-body)}}
+.pk-pagecell:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:2px}
+
 /* ---- TYPE SELECTOR (Feature 1) — the 5 comment-type chips in the composer ---- */
 .pk-typesel{display:flex;flex-wrap:wrap;gap:var(--pk-space-3)}
 .pk-typechip{box-sizing:border-box;display:inline-flex;align-items:center;gap:var(--pk-space-3);min-height:var(--pk-control-h-sm);padding:var(--pk-space-3) var(--pk-space-4);

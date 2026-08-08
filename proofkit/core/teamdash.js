@@ -1,4 +1,4 @@
-  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, ADMIN_TEAM,
+  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
@@ -1509,7 +1509,8 @@
         metaRow('Ticket', c.ticket ? `<span class="pk-ticket">#${esc(c.ticket)}</span>` : '—') +
         metaRow('Pin', pinNo ? `Comment ${esc(pinNo)}` : '—') +
         metaRow('Iteration', String(c.iteration || 1)) +
-        metaRow('Page', `<a href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a><span class="pk-dmeta-sub">${esc(c.page.path)}</span>`) +
+        metaRow('Page', `<a href="${esc(pageHref(c.page))}" target="_blank" rel="noopener">${esc(pageLabel(c.page))}</a>` +
+          `<span class="pk-dmeta-sub">${esc(pageUrlText(c.page))}</span>`) +
         (c.display ? metaRow('Display', esc(displayText(c.display))) : '') +
         metaRow('Raised by', c.team ? teamChip(c.team) : '—') +
         metaRow('Directed to', c.toTeam ? teamChip(c.toTeam) : '—') +
@@ -1820,7 +1821,9 @@
         rs.map((c) => `<tr class="pk-logrow" data-id="${esc(c.id)}">` +
           `<td><span class="pk-ticket">${c.ticket ? esc(c.ticket) : '—'}</span></td>` +
           `<td>${esc(fmt(c.createdAt))}</td>` +
-          `<td><a class="pk-slug" href="${esc(c.page.path)}" target="_blank" rel="noopener">${esc(pageName(c.page.path))}</a></td>` +
+          `<td><a class="pk-pagecell" href="${esc(pageHref(c.page))}" target="_blank" rel="noopener">` +
+            `<span class="pk-pagecell-t">${esc(pageLabel(c.page))}</span>` +
+            `<span class="pk-pagecell-u">${esc(pageUrlText(c.page))}</span></a></td>` +
           `<td>${teamChip(c.team) || '—'}</td><td>${teamChip(c.toTeam) || '—'}</td><td>${statusChip(c)}</td></tr>`).join('') +
         `</tbody></table></div>`;
     }
