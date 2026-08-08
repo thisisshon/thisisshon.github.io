@@ -24,7 +24,7 @@
  */
 import {
   WORKER_URL, accountLogin, accessLogin, buildAccessLogin,
-  passkeyLogin, hasPlatformAuthenticator, getAccount, getAuthToken, PK_MARK,
+  passkeyLoginDiscoverable, hasPlatformAuthenticator, getAccount, getAuthToken, PK_MARK,
 } from './config.js';
 
 const $ = (s) => document.querySelector(s);
@@ -122,7 +122,12 @@ async function tryPasskey(auto) {
   const waiting = auto ? showWaiting() : null;
   if (!auto) login.setBusy(true);
   try {
-    const body = await passkeyLogin(workerUrl, '');
+    /* DISCOVERABLE, not passkeyLogin(''). passkeyLogin asks the server which credentials a NAMED
+     * account has; with an empty email it finds nobody, reports hasPasskey:false and returns
+     * without ever raising a prompt — which read as "no passkey on this device" when the real
+     * answer was "you never asked". Discoverable mode sends an empty allowCredentials and lets the
+     * authenticator offer whatever it holds, which is the whole point of a usernameless sign-in. */
+    const body = await passkeyLoginDiscoverable(workerUrl);
     if (body) { await finish(body); return; }
     // Cancelled, or nothing enrolled. Either way the access key is the way forward, so land there
     // rather than on a dead end explaining what did not happen.

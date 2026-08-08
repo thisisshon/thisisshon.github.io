@@ -761,6 +761,25 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-access-login[hidden]{display:none}
 .pk-access-login *{font-family:var(--pk-font);box-sizing:border-box}
 
+/* EMBEDDED. The extension popup IS the card — there is no page behind it to dim and nothing to
+   overlay — so the same component drops its fixed positioning and scrim and simply fills the
+   window. One implementation, two framings; the alternative was a second copy of this screen
+   maintained by hand in the popup's own stylesheet, which is how the two would drift. */
+.pk-access-login--inline{position:static;inset:auto;padding:0;background:none;
+  -webkit-backdrop-filter:none;backdrop-filter:none;display:block}
+/* The boxes are fixed-width, so the row cannot shrink — it stretches the card past the popup
+   instead. Sized to fit with room to spare: 8x31 + 7 gaps + separator = 283, plus 32 of padding,
+   inside the 328 a 360px popup leaves after its own gutter. */
+.pk-access-login--inline .pk-access-card{width:100%;border:none;box-shadow:none;
+  padding:24px 16px 16px;animation:none}
+.pk-access-login--inline .pk-access-mark{margin-bottom:22px}
+.pk-access-login--inline .pk-access-title{font-size:21px}
+.pk-access-login--inline .pk-access-sub{margin:8px 0 22px;font-size:13px}
+.pk-access-login--inline .pk-access{gap:4px;margin:4px 0 6px}
+.pk-access-login--inline .pk-access-box{width:31px;height:44px;font-size:17px;border-radius:8px}
+.pk-access-login--inline .pk-access-sep{width:7px}
+.pk-access-login--inline .pk-access-adv{margin-top:26px;padding-top:14px}
+
 /* Symmetric padding — the old rule was 36/32/24, so the card sat visibly off-centre in its own
    frame. One value on the sides, and the bottom only shorter because Advanced brings its own rule. */
 .pk-access-card{position:relative;width:460px;max-width:100%;
@@ -1160,6 +1179,20 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-kbd{box-sizing:border-box;display:inline-flex;align-items:center;height:22px;padding:0 var(--pk-space-3);background:var(--pk-input);
   border:1px solid var(--pk-hair);border-bottom-width:2px;border-radius:4px;font:700 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-ink)}
 
+
+
+/* ---- §13 TAP TARGETS ------------------------------------------------------------------------
+   Two icon-only controls sit below the 44px floor: .pk-btn--icon (40px, the --md rung) and
+   .pk-chips-more (32px). Text buttons are exempt — a 40x220px button is not the failure this rule
+   exists to catch — but a control whose hit area is defined by its glyph is exactly that failure.
+
+   Grow the HIT AREA, never the glyph: the icon stays on its 16/20/24 scale and the negative
+   margin absorbs the growth so neighbouring chrome does not shift. Scoped to coarse pointers, so
+   desktop density is untouched and this cannot be mistaken for a visual change. */
+@media (pointer:coarse){
+  .pk-btn--icon{min-width:var(--pk-control-h-lg);min-height:var(--pk-control-h-lg);margin:-4px}
+  .pk-chips-more{min-width:var(--pk-control-h-lg);min-height:var(--pk-control-h-lg);margin:-8px}
+}
 
 /* ---- THE ACTION BUTTON — ONE implementation, eight names -----------------------------------
    Sharp corners, hairline stroke, uppercase tracked label, transparent fill. Every toolbar

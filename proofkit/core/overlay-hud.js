@@ -34,7 +34,7 @@ import { injectCss } from './inject-css.js';   // CSP-safe sheet mount (see moun
 export const CANVAS_FRAME_NAME = 'pkCanvasFrame';
 
 const CSS = `
-#pkhud{position:fixed;inset:0;z-index:var(--pk-z-ov-hud);font:400 14px/1.5 var(--pk-font);color:var(--pk-ink);
+#pkhud{position:fixed;inset:0;z-index:var(--pk-z-ov-hud);font:400 var(--pk-text-base)/1.5 var(--pk-font);color:var(--pk-ink);
   --hud-top:40px;--hud-device:32px;--hud-bottom:60px;--hud-left:64px;--hud-right:320px}
 #pkhud *{box-sizing:border-box}
 #pkhud kbd{font-family:var(--pk-font)}
@@ -45,7 +45,7 @@ const CSS = `
 #pkhud .pkhud-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 /* right-rail open/close button — only meaningful once the rail is a slide-over */
-#pkhud .rail-toggle{display:none;align-items:center;justify-content:center;width:26px;height:26px;
+#pkhud .rail-toggle{display:none;align-items:center;justify-content:center;width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);
   border:1px solid var(--pk-hair);background:var(--pk-card);color:var(--pk-body);cursor:pointer}
 #pkhud .rail-toggle svg{width:14px;height:14px}
 @media (min-width:1024px) and (hover:hover){#pkhud .rail-toggle:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
@@ -69,11 +69,11 @@ const CSS = `
 /* snaps to the viewport bottom-center (child of #pkhud, not the scroller — never scrolls away) */
 #pkhud .cv-hint{position:absolute;bottom:calc(var(--hud-bottom) + 14px);left:50%;transform:translateX(-50%);
   z-index:var(--pk-z-hud-label);pointer-events:none;white-space:nowrap;padding:8px 12px;background:var(--pk-card);border:1px solid var(--pk-hair);
-  box-shadow:var(--pk-shadow-md);font:600 11px/1 var(--pk-font);color:var(--pk-body)}
+  box-shadow:var(--pk-shadow-md);font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body)}
 #pkhud .cv-hint kbd{border:1px solid var(--pk-hair);border-radius:var(--pk-radius-sm);padding:1px 4px;color:var(--pk-ink);font-size:var(--pk-text-3xs)}
-#pkhud .pin{position:absolute;transform:translate(-50%,-50%);min-width:28px;height:28px;padding:0 8px;border-radius:9999px;
+#pkhud .pin{position:absolute;transform:translate(-50%,-50%);min-width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);padding:0 8px;border-radius:9999px;
   display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--pk-on-accent);
-  font:700 12px/1 var(--pk-font);box-shadow:var(--pk-shadow-md);border:2px solid var(--pk-card);background:var(--pk-red)}
+  font:700 var(--pk-text-sm)/1 var(--pk-font);box-shadow:var(--pk-shadow-md);border:2px solid var(--pk-card);background:var(--pk-red)}
 #pkhud .pin--draft{background:var(--pk-elev);color:var(--pk-red-ink);border-style:dashed;border-color:var(--pk-red)}
 #pkhud .pkhud-pindot{position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--pk-card)}
 #pkhud .pin.is-located{animation:pkhud-locate .6s ease 2}
@@ -81,14 +81,14 @@ const CSS = `
 #pkhud .pkhud-plist{list-style:none;margin:0;padding:0}
 #pkhud .pkhud-pli{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--pk-hair);cursor:pointer;transition:background .12s}
 @media (min-width:1024px) and (hover:hover){#pkhud .pkhud-pli:hover,#pkhud .pkhud-pli.is-sel{background:var(--pk-elev)}}
-#pkhud .pkhud-pli-n{flex:none;width:22px;height:22px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font:700 10px/1 var(--pk-font);background:var(--pk-red);color:var(--pk-on-accent)}
+#pkhud .pkhud-pli-n{flex:none;width:22px;height:22px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font:700 var(--pk-text-2xs)/1 var(--pk-font);background:var(--pk-red);color:var(--pk-on-accent)}
 #pkhud .pkhud-pli-b{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-#pkhud .pkhud-pli-t{font:600 13px/1.3 var(--pk-font);color:var(--pk-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#pkhud .pkhud-pli-m{font:500 11px/1.2 var(--pk-font);color:var(--pk-muted);text-transform:capitalize}
+#pkhud .pkhud-pli-t{font:600 var(--pk-text-md)/1.3 var(--pk-font);color:var(--pk-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pkhud .pkhud-pli-m{font:500 var(--pk-text-xs)/1.2 var(--pk-font);color:var(--pk-muted);text-transform:capitalize}
 /* PINS list grouped by team: a collapsible header per team, shown only when that team has pins here. */
 #pkhud .pkhud-tghead{display:flex;align-items:center;gap:8px;width:100%;padding:12px 12px;background:var(--pk-elev);
   border:none;border-bottom:1px solid var(--pk-hair);cursor:pointer;color:var(--pk-body);text-align:left;
-  font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:background .12s}
+  font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;transition:background .12s}
 @media (min-width:1024px) and (hover:hover){#pkhud .pkhud-tghead:hover{background:var(--pk-card)}}
 #pkhud .pkhud-tgchev{width:14px;height:14px;flex:none;color:var(--pk-muted);transition:transform .18s var(--pk-ease)}
 #pkhud .pkhud-tghead[aria-expanded="true"] .pkhud-tgchev{transform:rotate(90deg)}
@@ -108,18 +108,18 @@ const CSS = `
   padding:0 16px;background:var(--pk-card);border-bottom:1px solid var(--pk-hair)}
 #pkhud .brand{display:flex;align-items:center;gap:8px;flex:none}
 #pkhud .brand-mark{width:9px;height:9px;border-radius:50%;background:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
-#pkhud .brand-word{font:700 13px/1 var(--pk-font)}
-#pkhud .brand-proj{font:600 11px/1 var(--pk-font);letter-spacing:.06em;color:var(--pk-muted);padding-left:8px;border-left:1px solid var(--pk-hair)}
-#pkhud .top-center{flex:1;min-width:0;text-align:center;font:500 12px/1 var(--pk-font);color:var(--pk-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pkhud .brand-word{font:700 var(--pk-text-md)/1 var(--pk-font)}
+#pkhud .brand-proj{font:600 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.06em;color:var(--pk-muted);padding-left:8px;border-left:1px solid var(--pk-hair)}
+#pkhud .top-center{flex:1;min-width:0;text-align:center;font:500 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #pkhud .top-center b{color:var(--pk-ink);font-weight:600}
 #pkhud .top-r{display:flex;align-items:center;gap:8px;flex:none}
-#pkhud .top-team{font:700 11px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-t-product,var(--pk-blue-ink))}
-#pkhud .top-count{font:600 11px/1 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
-#pkhud .top-dash{height:26px;padding:0 12px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--pk-hair);
-  background:var(--pk-card);color:var(--pk-ink);cursor:pointer;font:700 10px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
+#pkhud .top-team{font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-t-product,var(--pk-blue-ink))}
+#pkhud .top-count{font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-muted);font-variant-numeric:tabular-nums}
+#pkhud .top-dash{height:var(--pk-control-h-xs);padding:0 12px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--pk-hair);
+  background:var(--pk-card);color:var(--pk-ink);cursor:pointer;font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase}
 #pkhud .top-dash svg{width:14px;height:14px}
 @media (min-width:1024px) and (hover:hover){#pkhud .top-dash:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
-#pkhud .top-x{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--pk-red);
+#pkhud .top-x{width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--pk-red);
   background:var(--pk-red);color:var(--pk-on-accent);cursor:pointer}
 @media (min-width:1024px) and (hover:hover){#pkhud .top-x:hover{border-color:var(--pk-red);color:var(--pk-on-accent);filter:brightness(1.08)}}
 #pkhud .top-x svg{width:14px;height:14px}
@@ -127,27 +127,27 @@ const CSS = `
 /* ---- DEVICE strip ---- */
 #pkhud .hud-device{position:absolute;top:var(--hud-top);left:0;right:0;height:var(--hud-device);display:flex;align-items:center;gap:8px;
   padding:0 16px;background:var(--pk-elev);border-bottom:1px solid var(--pk-hair);overflow:hidden;white-space:nowrap}
-#pkhud .dv-lbl{font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);flex:none}
+#pkhud .dv-lbl{font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted);flex:none}
 #pkhud .dv-presets{display:flex;gap:2px;flex:none}
-#pkhud .dv-bp{height:22px;padding:0 8px;border:1px solid transparent;background:transparent;cursor:pointer;font:600 11px/1 var(--pk-font);color:var(--pk-body);transition:color .12s,background .12s,border-color .12s}
+#pkhud .dv-bp{height:22px;padding:0 8px;border:1px solid transparent;background:transparent;cursor:pointer;font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body);transition:color .12s,background .12s,border-color .12s}
 @media (min-width:1024px) and (hover:hover){#pkhud .dv-bp:hover{color:var(--pk-ink)}}
 #pkhud .dv-bp.is-active{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
 #pkhud .dv-div{width:1px;height:16px;background:var(--pk-hair);flex:none}
-#pkhud .dv-custom{display:inline-flex;align-items:center;gap:4px;flex:none;color:var(--pk-muted);font-size:11px}
-#pkhud .dv-in{width:50px;height:22px;padding:0 8px;border:1px solid var(--pk-hair);border-radius:4px;background:var(--pk-input);color:var(--pk-ink);font:500 11px/1 var(--pk-font);text-align:center;font-variant-numeric:tabular-nums}
+#pkhud .dv-custom{display:inline-flex;align-items:center;gap:4px;flex:none;color:var(--pk-muted);font-size:var(--pk-text-xs)}
+#pkhud .dv-in{width:var(--pk-control-h-lg);height:22px;padding:0 8px;border:1px solid var(--pk-hair);border-radius:4px;background:var(--pk-input);color:var(--pk-ink);font:500 var(--pk-text-xs)/1 var(--pk-font);text-align:center;font-variant-numeric:tabular-nums}
 #pkhud .dv-in::-webkit-inner-spin-button,#pkhud .dv-in::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 #pkhud .dv-in:focus-visible{outline:none;border-color:var(--pk-red)}
-#pkhud .dv-set{height:22px;padding:0 8px;border:1px solid var(--pk-hair);background:var(--pk-card);cursor:pointer;font:700 9px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
+#pkhud .dv-set{height:22px;padding:0 8px;border:1px solid var(--pk-hair);background:var(--pk-card);cursor:pointer;font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;color:var(--pk-body)}
 @media (min-width:1024px) and (hover:hover){#pkhud .dv-set:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
-#pkhud .dv-readout{margin-left:auto;flex:none;font:600 11px/1 var(--pk-font);color:var(--pk-body);font-variant-numeric:tabular-nums}
+#pkhud .dv-readout{margin-left:auto;flex:none;font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body);font-variant-numeric:tabular-nums}
 
 /* ---- LEFT rail ---- */
 #pkhud .hud-left{position:absolute;left:0;top:calc(var(--hud-top) + var(--hud-device));bottom:var(--hud-bottom);width:var(--hud-left);
   display:flex;flex-direction:column;gap:4px;padding:8px 4px;background:var(--pk-card);border-right:1px solid var(--pk-hair)}
-#pkhud .lrail-lbl{font:700 8px/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);text-align:center;margin:4px 0}
+#pkhud .lrail-lbl{font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.12em;text-transform:uppercase;color:var(--pk-muted);text-align:center;margin:4px 0}
 #pkhud .ltool{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--pk-body);transition:background .15s,color .15s,border-color .15s}
 #pkhud .ltool svg{width:20px;height:20px}
-#pkhud .ltool span{font:700 8px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase}
+#pkhud .ltool span{font:700 var(--pk-text-3xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase}
 @media (min-width:1024px) and (hover:hover){#pkhud .ltool:hover{color:var(--pk-ink);background:var(--pk-elev)}}
 #pkhud .ltool.is-on{color:var(--pk-red-ink);border-color:var(--pk-red)}
 #pkhud .ltool.is-static{color:var(--pk-ink);cursor:default}
@@ -179,38 +179,38 @@ const CSS = `
   #pkhud .hud-right{transition:none}
 }
 #pkhud .filter-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-#pkhud .filter-title{font:700 14px/1 var(--pk-font);color:var(--pk-ink)}
-#pkhud .filter-clear{border:none;background:none;cursor:pointer;font:600 12px/1 var(--pk-font);color:var(--pk-muted)}
+#pkhud .filter-title{font:700 var(--pk-text-base)/1 var(--pk-font);color:var(--pk-ink)}
+#pkhud .filter-clear{border:none;background:none;cursor:pointer;font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted)}
 @media (min-width:1024px) and (hover:hover){#pkhud .filter-clear:hover{color:var(--pk-red-ink)}}
-#pkhud .filter-search{width:100%;height:34px;padding:0 8px;border:1px solid var(--pk-hair);border-radius:4px;background:var(--pk-input);
-  color:var(--pk-ink);font:500 13px/1 var(--pk-font);font-family:var(--pk-font);margin-bottom:16px}
+#pkhud .filter-search{width:100%;height:var(--pk-control-h-sm);padding:0 8px;border:1px solid var(--pk-hair);border-radius:4px;background:var(--pk-input);
+  color:var(--pk-ink);font:500 var(--pk-text-md)/1 var(--pk-font);font-family:var(--pk-font);margin-bottom:16px}
 #pkhud .filter-search:focus-visible{outline:none;border-color:var(--pk-red)}
 #pkhud .fgroup{margin-bottom:16px}
-#pkhud .fg-lbl{display:block;font:700 12px/1 var(--pk-font);color:var(--pk-body);margin-bottom:8px}
+#pkhud .fg-lbl{display:block;font:700 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-body);margin-bottom:8px}
 #pkhud .fchips{display:flex;flex-wrap:wrap;gap:8px}
-#pkhud .fbtn{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border:1px solid var(--pk-hair);background:var(--pk-card);
-  cursor:pointer;font:600 11px/1 var(--pk-font);color:var(--pk-body);transition:border-color .12s,color .12s,background .12s}
-#pkhud .fbtn i{font-style:normal;font-weight:700;font-size:9px;color:var(--pk-muted);font-variant-numeric:tabular-nums}
+#pkhud .fbtn{display:inline-flex;align-items:center;gap:8px;height:var(--pk-control-h-sm);padding:0 12px;border:1px solid var(--pk-hair);background:var(--pk-card);
+  cursor:pointer;font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body);transition:border-color .12s,color .12s,background .12s}
+#pkhud .fbtn i{font-style:normal;font-weight:700;font-size:var(--pk-text-3xs);color:var(--pk-muted);font-variant-numeric:tabular-nums}
 @media (min-width:1024px) and (hover:hover){#pkhud .fbtn:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
 #pkhud .fbtn.is-on{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
 #pkhud .fbtn.is-on i{color:var(--pk-on-accent)}
 #pkhud .fseg{display:inline-flex;border:1px solid var(--pk-hair);overflow:hidden;max-width:100%}
-#pkhud .fsegb{height:30px;padding:0 8px;border:none;background:var(--pk-input);cursor:pointer;font:600 11px/1 var(--pk-font);color:var(--pk-body);white-space:nowrap}
+#pkhud .fsegb{height:var(--pk-control-h-sm);padding:0 8px;border:none;background:var(--pk-input);cursor:pointer;font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body);white-space:nowrap}
 #pkhud .fsegb + .fsegb{border-left:1px solid var(--pk-hair)}
 #pkhud .fsegb.is-active{background:var(--pk-red);color:var(--pk-on-accent)}
 #pkhud .filter-foot{position:sticky;bottom:-16px;margin:12px -16px -16px;padding:12px 16px;background:var(--pk-card);
-  border-top:1px solid var(--pk-hair);font:600 12px/1 var(--pk-font);color:var(--pk-ink);text-align:center}
+  border-top:1px solid var(--pk-hair);font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-ink);text-align:center}
 
 /* ---- RIGHT rail ---- */
 #pkhud .hud-right{position:absolute;right:0;top:calc(var(--hud-top) + var(--hud-device));bottom:var(--hud-bottom);width:var(--hud-right);
   display:flex;flex-direction:column;background:var(--pk-card);border-left:1px solid var(--pk-hair)}
 #pkhud .rrail-seg{flex:none;display:flex;border-bottom:1px solid var(--pk-hair)}
-#pkhud .rseg{flex:1;height:38px;border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font:700 11px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid transparent}
+#pkhud .rseg{flex:1;height:var(--pk-control-h-md);border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid transparent}
 #pkhud .rseg.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
 #pkhud .rrail-body{flex:1 1 auto;min-height:0;overflow-y:auto}
 #pkhud .rpane{display:none;flex-direction:column}
 #pkhud .rpane.is-active{display:flex}
-#pkhud .rpane-empty{padding:24px 16px;color:var(--pk-muted);font-size:13px;text-align:center}
+#pkhud .rpane-empty{padding:24px 16px;color:var(--pk-muted);font-size:var(--pk-text-md);text-align:center}
 /* ---- composer (docked, Phase 5) ---- */
 #pkhud .cpane{padding:16px;display:flex;flex-direction:column;gap:16px}
 #pkhud .fg{display:flex;flex-direction:column;gap:8px}
@@ -220,34 +220,34 @@ const CSS = `
 #pkhud .cpane > *{margin:0}
 /* Selected Element: read-only context, not a form control — flat surface, no focus affordance */
 #pkhud .csel-el{padding:12px 12px;border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
-  background:var(--pk-elev);color:var(--pk-ink);font:500 13px/1.5 var(--pk-font);
+  background:var(--pk-elev);color:var(--pk-ink);font:500 var(--pk-text-md)/1.5 var(--pk-font);
   max-height:96px;overflow:auto;overflow-wrap:anywhere}
 #pkhud .csel-el.is-empty{color:var(--pk-muted);font-style:italic;border-left-color:var(--pk-hair)}
-#pkhud .fl{display:flex;align-items:center;gap:8px;font:700 10px/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
+#pkhud .fl{display:flex;align-items:center;gap:8px;font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
 #pkhud .fl .req{color:var(--pk-red-ink)}
 #pkhud .fl .auto{margin-left:auto;font-weight:500;text-transform:none;letter-spacing:.02em}
 #pkhud .ctypes{display:flex;flex-wrap:wrap;gap:8px}
-#pkhud .ctype{height:32px;padding:0 12px;border:1px solid var(--pk-hair);background:var(--pk-card);cursor:pointer;font:600 11px/1 var(--pk-font);color:var(--pk-body);transition:border-color .15s,color .15s,background .15s}
+#pkhud .ctype{height:var(--pk-control-h-sm);padding:0 12px;border:1px solid var(--pk-hair);background:var(--pk-card);cursor:pointer;font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-body);transition:border-color .15s,color .15s,background .15s}
 @media (min-width:1024px) and (hover:hover){#pkhud .ctype:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
 #pkhud .ctype.is-active{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
-#pkhud .cinp,#pkhud .pkta,#pkhud .csel{width:100%;padding:12px 12px;border:1px solid var(--pk-hair);border-radius:4px;background:var(--pk-input);color:var(--pk-ink);font:500 13px/1.5 var(--pk-font);font-family:var(--pk-font)}
-#pkhud .csel{height:44px;cursor:pointer;border-width:2px;font-weight:600}
+#pkhud .cinp,#pkhud .pkta,#pkhud .csel{width:100%;padding:12px 12px;border:1px solid var(--pk-hair);border-radius:4px;background:var(--pk-input);color:var(--pk-ink);font:500 var(--pk-text-md)/1.5 var(--pk-font);font-family:var(--pk-font)}
+#pkhud .csel{height:var(--pk-control-h-lg);cursor:pointer;border-width:2px;font-weight:600}
 #pkhud .cinp:disabled{color:var(--pk-muted);background:var(--pk-elev);cursor:default}
 #pkhud .cinp:focus-visible,#pkhud .pkta:focus-visible,#pkhud .csel:focus-visible{outline:none;border-color:var(--pk-red)}
 #pkhud .pkta{min-height:80px;resize:vertical}
-#pkhud .cshot{border:1px dashed var(--pk-hair);border-radius:4px;padding:12px;display:flex;align-items:center;gap:8px;color:var(--pk-muted);font-size:11px}
+#pkhud .cshot{border:1px dashed var(--pk-hair);border-radius:4px;padding:12px;display:flex;align-items:center;gap:8px;color:var(--pk-muted);font-size:var(--pk-text-xs)}
 #pkhud .cshot img{max-width:100%;display:block;border:1px solid var(--pk-hair)}
 #pkhud .cshot.is-req{border-color:var(--pk-red);color:var(--pk-body)}
-#pkhud .ctest{display:flex;align-items:center;gap:8px;font:500 11px/1.4 var(--pk-font);color:var(--pk-muted);cursor:pointer}
+#pkhud .ctest{display:flex;align-items:center;gap:8px;font:500 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-muted);cursor:pointer}
 #pkhud .ctest b{color:var(--pk-amber)}
-#pkhud .cerr{color:var(--pk-softred);font:600 11px/1.4 var(--pk-font)}
+#pkhud .cerr{color:var(--pk-softred);font:600 var(--pk-text-xs)/1.4 var(--pk-font)}
 #pkhud .cerr:empty{display:none}
 /* Composer lint (Phase 5.2) — ADVISORY. It never blocks the save, so it is styled as a quiet
    note, not an error: a left rule in the severity colour, muted body text. The "missing" score
    borrows the amber open-ink (something is absent) and "vague" the clarify violet (it is there
    but unclear); neither uses red, which in this tool means destructive or selected. */
 #pkhud .clint{padding:8px 12px;background:var(--pk-card);border:1px solid var(--pk-hair);
-  border-left:var(--pk-border-strong) solid var(--pk-hair);font:400 11px/1.5 var(--pk-font);color:var(--pk-body)}
+  border-left:var(--pk-border-strong) solid var(--pk-hair);font:400 var(--pk-text-xs)/1.5 var(--pk-font);color:var(--pk-body)}
 #pkhud .clint[hidden]{display:none}
 #pkhud .clint--missing{border-left-color:var(--pk-amber)}
 #pkhud .clint--vague{border-left-color:var(--pk-clarify)}
@@ -261,7 +261,7 @@ const CSS = `
   letter-spacing:.08em;text-transform:uppercase}
 @media (min-width:1024px) and (hover:hover){#pkhud .clint-apply:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
 #pkhud .csave{width:100%;justify-content:center}
-#pkhud .cnote{font:500 11px/1.4 var(--pk-font);color:var(--pk-muted)}
+#pkhud .cnote{font:500 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-muted)}
 /* ---- thread pane (parity: read + reply + confirm) ---- */
 /* NOTE: the container is .pkth, not .th. A host stylesheet is free to own a bare .th (this
    site's data-table header does, in olive) and it would paint straight through the HUD,
@@ -269,48 +269,48 @@ const CSS = `
    host class cannot match them — so only the bare name is namespaced. */
 #pkhud .pkth{padding:16px;display:flex;flex-direction:column;gap:16px}
 #pkhud .th-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-#pkhud .th-tk{font:700 12px/1 var(--pk-font);color:var(--pk-red-ink);font-variant-numeric:tabular-nums}
+#pkhud .th-tk{font:700 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-red-ink);font-variant-numeric:tabular-nums}
 #pkhud .th-st{margin-left:auto;display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 12px;border-radius:9999px;
-  font:700 10px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;background:var(--pk-elev);color:var(--pk-body)}
+  font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;background:var(--pk-elev);color:var(--pk-body)}
 #pkhud .th-st i{width:7px;height:7px;border-radius:50%;background:var(--pk-muted);font-style:normal}
-#pkhud .th-back{border:none;background:none;padding:0;cursor:pointer;font:700 10px/1 var(--pk-font);
+#pkhud .th-back{border:none;background:none;padding:0;cursor:pointer;font:700 var(--pk-text-2xs)/1 var(--pk-font);
   letter-spacing:.08em;text-transform:uppercase;color:var(--pk-muted)}
 @media (min-width:1024px) and (hover:hover){#pkhud .th-back:hover{color:var(--pk-red-ink)}}
 /* title row: summary left, the dashboard hand-off flush to the right margin. It is a link,
    not a button — going to the dashboard is navigation, not one of the thread's actions. */
 #pkhud .th-sumrow{display:flex;align-items:flex-start;gap:12px}
-#pkhud .th-sum{flex:1 1 auto;min-width:0;font:600 14px/1.4 var(--pk-font);color:var(--pk-ink)}
+#pkhud .th-sum{flex:1 1 auto;min-width:0;font:600 var(--pk-text-base)/1.4 var(--pk-font);color:var(--pk-ink)}
 #pkhud .th-dash{flex:none;margin-left:auto;display:inline-flex;align-items:center;gap:4px;padding:0;
-  border:none;background:none;cursor:pointer;font:600 11px/1.4 var(--pk-font);color:var(--pk-red-ink);white-space:nowrap}
+  border:none;background:none;cursor:pointer;font:600 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-red-ink);white-space:nowrap}
 #pkhud .th-dash svg{width:12px;height:12px}
 @media (min-width:1024px) and (hover:hover){#pkhud .th-dash:hover{text-decoration:underline}}
-#pkhud .th-meta{font:500 11px/1.4 var(--pk-font);color:var(--pk-muted)}
-#pkhud .th-body{font:400 13px/1.5 var(--pk-font);color:var(--pk-body);white-space:pre-wrap;
+#pkhud .th-meta{font:500 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-muted)}
+#pkhud .th-body{font:400 var(--pk-text-md)/1.5 var(--pk-font);color:var(--pk-body);white-space:pre-wrap;
   padding-left:12px;border-left:2px solid var(--pk-hair)}
 #pkhud .th-reps{display:flex;flex-direction:column;gap:12px;padding-top:12px;border-top:1px solid var(--pk-hair)}
 #pkhud .th-rep{display:flex;flex-direction:column;gap:2px}
-#pkhud .th-rep-t{font:400 13px/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap}
-#pkhud .th-rep-m{font:500 11px/1 var(--pk-font);color:var(--pk-muted)}
-#pkhud .th-none{font:400 12px/1.4 var(--pk-font);color:var(--pk-muted)}
+#pkhud .th-rep-t{font:400 var(--pk-text-md)/1.5 var(--pk-font);color:var(--pk-ink);white-space:pre-wrap}
+#pkhud .th-rep-m{font:500 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-muted)}
+#pkhud .th-none{font:400 var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-muted)}
 #pkhud .th-acts{display:flex;gap:8px;flex-wrap:wrap}
-#pkhud .th-acts .btool{height:32px;padding:0 12px;font-size:10px}
-#pkhud .bdraft{display:inline-flex;align-items:center;gap:8px;font:600 11px/1 var(--pk-font);color:var(--pk-muted)}
-#pkhud .bdraft b{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9999px;background:var(--pk-red);color:var(--pk-on-accent);font-size:10px}
+#pkhud .th-acts .btool{height:var(--pk-control-h-sm);padding:0 12px;font-size:var(--pk-text-2xs)}
+#pkhud .bdraft{display:inline-flex;align-items:center;gap:8px;font:600 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-muted)}
+#pkhud .bdraft b{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 4px;border-radius:9999px;background:var(--pk-red);color:var(--pk-on-accent);font-size:var(--pk-text-2xs)}
 
 /* ---- BOTTOM toolbar ---- */
 #pkhud .hud-bottom{position:absolute;left:0;right:0;bottom:0;height:var(--hud-bottom);display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--pk-card);border-top:1px solid var(--pk-hair)}
 #pkhud .bsp{flex:1}
-#pkhud .bdiv{width:1px;height:26px;background:var(--pk-hair)}
-#pkhud .btool{height:38px;padding:0 16px;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;color:var(--pk-ink);display:inline-flex;align-items:center;gap:8px;font:700 11px/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
+#pkhud .bdiv{width:1px;height:var(--pk-control-h-xs);background:var(--pk-hair)}
+#pkhud .btool{height:var(--pk-control-h-md);padding:0 16px;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;color:var(--pk-ink);display:inline-flex;align-items:center;gap:8px;font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
 #pkhud .btool svg{width:16px;height:16px}
 @media (min-width:1024px) and (hover:hover){#pkhud .btool:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
 #pkhud .btool--primary{background:var(--pk-red);border-color:var(--pk-red);color:var(--pk-on-accent)}
 @media (min-width:1024px) and (hover:hover){#pkhud .btool--primary:hover{filter:brightness(1.08);color:var(--pk-on-accent)}}
 #pkhud .btool.is-awaiting{background:var(--pk-elev);border-color:var(--pk-amber);color:var(--pk-amber);cursor:default;filter:none;animation:pkhud-pulse 1.2s ease-in-out infinite}
 @keyframes pkhud-pulse{0%,100%{opacity:1}50%{opacity:.55}}
-#pkhud .btool--icon{width:38px;padding:0;justify-content:center}
+#pkhud .btool--icon{width:var(--pk-control-h-md);padding:0;justify-content:center}
 #pkhud .bnav{display:inline-flex;align-items:center;gap:8px}
-#pkhud .bnav-pos{font:700 11px/1 var(--pk-font);color:var(--pk-muted);min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
+#pkhud .bnav-pos{font:700 var(--pk-text-xs)/1 var(--pk-font);color:var(--pk-muted);min-width:52px;text-align:center;font-variant-numeric:tabular-nums}
 
 /* ---- RESPONSIVE: both rails are fixed-width, so below ~1100px they must stop stealing the
    canvas. The right rail becomes a slide-over sheet; below 700px the left rail becomes a
@@ -337,7 +337,7 @@ const CSS = `
   #pkhud .hud-device{gap:8px;overflow-x:auto}
   #pkhud .dv-readout{margin-left:8px}
   #pkhud .hud-bottom{gap:4px;padding:0 8px;overflow-x:auto}
-  #pkhud .hud-bottom .btool{padding:0 12px;font-size:10px}
+  #pkhud .hud-bottom .btool{padding:0 12px;font-size:var(--pk-text-2xs)}
   #pkhud .bdiv{display:none}
   /* the header can't fit the page title + counts at this width — drop what is recoverable
      elsewhere (the title is in the device strip's context, the count in the Pins list) */

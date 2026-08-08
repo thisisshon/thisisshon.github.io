@@ -378,9 +378,9 @@
          reads as two different UIs flickering past each other, so each part is transitioned:
          the colour crossfades, the label fades out and back, and the pill's width is animated
          between its measured before/after sizes (auto width cannot be transitioned on its own). */
-      .rv-fab{display:flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 16px;border:none;
+      .rv-fab{display:flex;align-items:center;justify-content:center;gap:8px;height:var(--pk-control-h-lg);padding:0 16px;border:none;
         border-radius:24px;background:var(--pk-card);color:var(--pk-ink);cursor:pointer;
-        font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md);
+        font:600 var(--pk-text-base)/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md);
         white-space:nowrap;overflow:hidden;
         transition:background-color .3s cubic-bezier(.4,0,.2,1),color .3s cubic-bezier(.4,0,.2,1),
                    width .3s cubic-bezier(.4,0,.2,1),box-shadow .3s}
@@ -390,15 +390,15 @@
       .rv-fab svg{width:20px;height:20px;flex:none}
       /* "Go To Dashboard" — pinned to the bottom-LEFT, clear of the right-hand dock */
       .rv-dash{position:fixed;left:24px;bottom:24px;z-index:var(--pk-z-ov-dock);
-        display:flex;align-items:center;gap:8px;height:48px;padding:0 16px;border:none;border-radius:24px;
+        display:flex;align-items:center;gap:8px;height:var(--pk-control-h-lg);padding:0 16px;border:none;border-radius:24px;
         background:var(--pk-card);color:var(--pk-ink);cursor:pointer;text-decoration:none;
-        font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
+        font:600 var(--pk-text-base)/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       .rv-dash svg{width:20px;height:20px;flex:none}
       /* "Log out" — its own bottom-left button, stacked just above "Go To Dashboard". */
       .rv-logout{position:fixed;left:24px;bottom:84px;z-index:var(--pk-z-ov-dock);
-        display:flex;align-items:center;gap:8px;height:48px;padding:0 16px;border:none;border-radius:24px;
+        display:flex;align-items:center;gap:8px;height:var(--pk-control-h-lg);padding:0 16px;border:none;border-radius:24px;
         background:var(--pk-card);color:var(--pk-ink);cursor:pointer;
-        font:600 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
+        font:600 var(--pk-text-base)/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       .rv-logout svg{width:20px;height:20px;flex:none}
       @media (min-width:1024px) and (hover:hover){.rv-dash:hover,.rv-logout:hover{background:var(--pk-elev)}}
       @media (prefers-reduced-motion:reduce){
@@ -409,30 +409,30 @@
         box-shadow:inset 0 0 0 3px var(--pk-red)}
       /* Always laid out; shown by class. A display toggle cannot be transitioned, which is why
          this used to pop in and out. It slides in from the right, as if out of the FAB. */
-      .rv-nav{display:flex;align-items:center;gap:16px;height:48px;padding:0 2px;border-radius:24px;
+      .rv-nav{display:flex;align-items:center;gap:16px;height:var(--pk-control-h-lg);padding:0 2px;border-radius:24px;
         background:var(--pk-card);color:var(--pk-ink);box-shadow:var(--pk-shadow-md);
         opacity:0;transform:translateX(16px) scale(.94);transform-origin:right center;
         pointer-events:none;visibility:hidden;
         transition:opacity .26s ease,transform .3s cubic-bezier(.34,1.3,.5,1),visibility 0s linear .3s}
       .rv-nav.is-in{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition-delay:0s,0s,0s}
-      .rv-nav button{width:44px;height:44px;padding:0;border:none;border-radius:22px;
+      .rv-nav button{width:var(--pk-control-h-lg);height:var(--pk-control-h-lg);padding:0;border:none;border-radius:22px;
         background:var(--pk-hair);color:var(--pk-ink);cursor:pointer;display:flex;align-items:center;justify-content:center}
       .rv-nav button svg{width:22px;height:22px;display:block}
       .rv-nav button:disabled{opacity:.4;cursor:default}
-      .rv-nav-label{min-width:44px;text-align:center;font:600 14px/1 Outfit;color:var(--pk-ink)}
+      .rv-nav-label{min-width:var(--pk-control-h-lg);text-align:center;font:600 var(--pk-text-base)/1 Outfit;color:var(--pk-ink)}
       @media (max-width:768px){
         .rv-dock{right:16px;bottom:16px;gap:16px}
         .rv-nav{gap:8px}
-        .rv-nav button{width:40px;height:40px}
+        .rv-nav button{width:var(--pk-control-h-md);height:var(--pk-control-h-md)}
         .rv-dash{left:16px;bottom:16px;padding:0 16px}
         .rv-dash span{display:none}
         .rv-logout{left:16px;bottom:76px;padding:0 16px}
         .rv-logout span{display:none}
       }
-      .rv-pin{position:fixed;z-index:var(--pk-z-ov-pin);min-width:26px;height:26px;padding:0 8px;
+      .rv-pin{position:fixed;z-index:var(--pk-z-ov-pin);min-width:var(--pk-control-h-xs);height:var(--pk-control-h-xs);padding:0 8px;
         transform:translate(-50%,-100%);display:flex;align-items:center;justify-content:center;
         border-radius:14px;border:2px solid var(--pk-ink);background:var(--pk-red);color:var(--pk-ink);cursor:pointer;
-        font:700 12px/1 var(--pk-font);box-shadow:var(--pk-shadow-md)}
+        font:700 var(--pk-text-sm)/1 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       .rv-pin.resolved{background:var(--pk-muted)}
       .rv-pin.active{background:var(--pk-card);transform:translate(-50%,-100%) scale(1.12)}
       /* Status = a small saturated corner dot, ringed in the canvas so it reads on any team fill.
@@ -441,46 +441,46 @@
         border:2px solid var(--pk-canvas);box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
       .rv-pop{position:fixed;z-index:var(--pk-z-ov-pop);width:344px;max-width:calc(100vw - 32px);
         background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);border-radius:0;
-        box-shadow:var(--pk-shadow-lg);font:400 14px/1.5 var(--pk-font)}
+        box-shadow:var(--pk-shadow-lg);font:400 var(--pk-text-base)/1.5 var(--pk-font)}
       .rv-pop header{padding:20px 24px 16px;background:var(--pk-elev);border-bottom:1px solid var(--pk-hair);
         display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
         cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}
       .rv-pop header .rv-x{cursor:pointer}
-      .rv-pop header .t{font-weight:600;font-size:15px;letter-spacing:-.01em}
-      .rv-ticket{margin-top:4px;font-size:11px;font-weight:600;letter-spacing:.02em;
+      .rv-pop header .t{font-weight:600;font-size:var(--pk-text-lg);letter-spacing:-.01em}
+      .rv-ticket{margin-top:4px;font-size:var(--pk-text-xs);font-weight:600;letter-spacing:.02em;
         font-variant-numeric:tabular-nums;color:var(--pk-red-ink)}
-      .rv-snip{font-weight:400;font-size:12px;color:var(--pk-muted);margin-top:4px;max-width:250px;
+      .rv-snip{font-weight:400;font-size:var(--pk-text-sm);color:var(--pk-muted);margin-top:4px;max-width:250px;
         white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       .rv-body{padding:24px;display:flex;flex-direction:column;gap:16px}
       .rv-pop input,.rv-pop textarea,.rv-pop select{width:100%;padding:12px 16px;border:1px solid var(--pk-hair);
         border-radius:4px;font:inherit;color:var(--pk-ink);background:var(--pk-input);box-sizing:border-box}
       .rv-pop input::placeholder,.rv-pop textarea::placeholder{color:var(--pk-muted)}
-      .rv-pop select{height:44px;cursor:pointer}
+      .rv-pop select{height:var(--pk-control-h-lg);cursor:pointer}
       /* "Direct to" — which team this comment is routed to for action */
       .rv-directto{display:flex;flex-direction:column;gap:8px}
-      .rv-directlabel{font:700 10px/1 var(--pk-font);text-transform:uppercase;
+      .rv-directlabel{font:700 var(--pk-text-2xs)/1 var(--pk-font);text-transform:uppercase;
         letter-spacing:.06em;color:var(--pk-muted)}
       .rv-pop textarea{min-height:96px;resize:vertical}
       .rv-pop input:focus-visible,.rv-pop textarea:focus-visible,.rv-pop select:focus-visible{outline:2px solid var(--pk-red);border-color:var(--pk-red)}
       /* team chip now uses global .pk-team-chip--compact (imported via components.css?inline) */
       /* "change to" popover now uses global .pk-callout--compact (rv-ctxt kept as a JS hook) */
       .rv-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
-      .rv-btn{height:44px;padding:0 24px;border-radius:0;border:none;cursor:pointer;
-        font:700 12px/1 var(--pk-font);letter-spacing:.09em;text-transform:uppercase}
+      .rv-btn{height:var(--pk-control-h-lg);padding:0 24px;border-radius:0;border:none;cursor:pointer;
+        font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.09em;text-transform:uppercase}
       .rv-btn.primary{background:var(--pk-red);color:var(--pk-ink)}
       .rv-btn.ghost{background:transparent;color:var(--pk-muted)}
-      .rv-x{border:none;background:none;cursor:pointer;font-size:20px;line-height:1;color:var(--pk-muted)}
+      .rv-x{border:none;background:none;cursor:pointer;font-size:var(--pk-text-3xl);line-height:1;color:var(--pk-muted)}
       .rv-hmain{min-width:0;flex:1}
       /* Edit + View details cluster in the thread header, right under the selected element.
          Styled as clearly-clickable outline buttons (not the muted ghost) with a red hover. */
       .rv-hactions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-      .rv-hactions .rv-btn.ghost{height:32px;padding:0 12px;border:1px solid var(--pk-hair);letter-spacing:.06em;
+      .rv-hactions .rv-btn.ghost{height:var(--pk-control-h-sm);padding:0 12px;border:1px solid var(--pk-hair);letter-spacing:.06em;
         color:var(--pk-ink);background:var(--pk-card);transition:background .15s,border-color .15s,color .15s}
       @media (min-width:1024px) and (hover:hover){.rv-hactions .rv-btn.ghost:hover{background:var(--pk-elev);border-color:var(--pk-red);color:var(--pk-red-ink)}}
       .rv-hactions .rv-btn.ghost:focus-visible{outline:2px solid var(--pk-red);outline-offset:1px}
       /* Back link in the composer header (edit mode) */
       .rv-hback{border:none;background:none;cursor:pointer;padding:0;margin-bottom:8px;
-        font:700 11px/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+        font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
       @media (min-width:1024px) and (hover:hover){.rv-hback:hover{color:var(--pk-ink)}}
       .rv-read{padding:16px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
       .rv-viewdetails{flex:none}
@@ -489,24 +489,24 @@
       .rv-titem{border:1px solid var(--pk-hair);border-radius:10px;overflow:hidden}
       .rv-thead{width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;border:none;
         background:var(--pk-elev);cursor:pointer;font:inherit;color:inherit;text-align:left}
-      .rv-tname{flex:1;min-width:0;font-weight:600;font-size:14px;
+      .rv-tname{flex:1;min-width:0;font-weight:600;font-size:var(--pk-text-base);
         white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       .rv-tchev{width:16px;height:16px;flex:none;transition:transform .15s}
       .rv-titem.open .rv-tchev{transform:rotate(180deg)}
       .rv-tbody{padding:12px;display:flex;flex-direction:column;gap:8px}
       .rv-titem:not(.open) .rv-tbody{display:none}
-      .rv-tmeta{font-size:12px;color:var(--pk-muted)}
+      .rv-tmeta{font-size:var(--pk-text-sm);color:var(--pk-muted)}
       .rv-reply{padding:16px 24px 24px;border-top:1px solid var(--pk-hair);display:flex;flex-direction:column;gap:12px}
       .rv-reply input,.rv-reply textarea{width:100%;padding:12px 16px;border:1px solid var(--pk-hair);border-radius:4px;
         font:inherit;color:var(--pk-ink);background:var(--pk-input);box-sizing:border-box}
       .rv-reply textarea{min-height:64px;resize:vertical}
       .rv-reply input:focus-visible,.rv-reply textarea:focus-visible{outline:2px solid var(--pk-red);border-color:var(--pk-red)}
-      .rv-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--pk-muted)}
+      .rv-meta{display:flex;align-items:center;gap:8px;font-size:var(--pk-text-sm);color:var(--pk-muted)}
       /* status chip now uses global .pk-status-chip (imported via components.css?inline) */
       .rv-txt{white-space:pre-wrap;color:var(--pk-ink)}
       .rv-toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:var(--pk-z-ov-toast);
         max-width:calc(100vw - 32px);padding:12px 16px;border-radius:12px;background:var(--pk-card);color:var(--pk-ink);
-        font:500 14px/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
+        font:500 var(--pk-text-base)/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md)}
       /* Draft pins (F2): a dashed, hollow marker for a pending (not-yet-submitted) draft,
          visually distinct from a live team-coloured pin. Number stays legible. */
       .rv-pin.draft{background:var(--pk-elev);border-style:dashed;color:var(--pk-ink)}
@@ -522,7 +522,7 @@
       /* Composer template fields (F1) + expected-outcome (F8): labelled rows reusing the
          same input skin as the freeform textarea. currentImage/currentUrl are read-only. */
       .rv-tf{display:flex;flex-direction:column;gap:8px}
-      .rv-tf-label{font:700 10px/1 var(--pk-font);text-transform:uppercase;
+      .rv-tf-label{font:700 var(--pk-text-2xs)/1 var(--pk-font);text-transform:uppercase;
         letter-spacing:.06em;color:var(--pk-muted)}
       .rv-tf input[readonly]{color:var(--pk-muted);cursor:default}
       .rv-tf-req{color:var(--pk-red-ink)}
@@ -530,16 +530,16 @@
       .rv-fields{display:flex;flex-direction:column;gap:16px}
       /* Paste-to-attach screenshot block */
       .rv-attach{margin-top:12px}
-      .rv-attach-hint{font:500 12px/1.4 var(--pk-font);color:var(--pk-muted);
+      .rv-attach-hint{font:500 var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-muted);
         border:1px dashed var(--pk-hair);border-radius:6px;padding:12px 12px}
       /* Required variant - the same dashed well, raised to body ink on the voltage so it
          reads as a rule to satisfy rather than a passing suggestion. */
       .rv-attach-hint--req{color:var(--pk-body);border-color:var(--pk-red)}
       .rv-attach-hint--req b{color:var(--pk-red-ink);font-weight:700}
       .rv-attach-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-      .rv-attach-lbl{font:700 10px/1 var(--pk-font);text-transform:uppercase;letter-spacing:.06em;color:var(--pk-muted)}
+      .rv-attach-lbl{font:700 var(--pk-text-2xs)/1 var(--pk-font);text-transform:uppercase;letter-spacing:.06em;color:var(--pk-muted)}
       .rv-attach-x{border:1px solid var(--pk-hair);background:transparent;color:var(--pk-body);cursor:pointer;
-        font:600 11px/1 var(--pk-font);padding:4px 12px;border-radius:4px}
+        font:600 var(--pk-text-xs)/1 var(--pk-font);padding:4px 12px;border-radius:4px}
       @media (min-width:1024px) and (hover:hover){.rv-attach-x:hover{color:var(--pk-softred);border-color:var(--pk-softred)}}
       .rv-attach-img{display:block;width:100%;max-height:180px;object-fit:contain;border:1px solid var(--pk-hair);
         border-radius:6px;background:var(--pk-media-bg)}
