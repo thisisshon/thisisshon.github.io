@@ -1,26 +1,19 @@
   .rvd-gate{min-height:60vh;display:flex;align-items:center;justify-content:center}
   .rvd-gate-note{color:var(--pk-muted);font-size:var(--pk-text-base)}
-  /* login overlay - same visual language as the dashboard gate */
+
+  /* The review-password gate. It is the SAME card as every other Proofkit sign-in — mark at the
+     top, title, subtitle, one full-width field, one full-width accent button, square corners —
+     so nothing here restates a shape that components.css already owns. What it used to be: a
+     rounded card, a rounded field, a right-aligned pill button and the wordmark as a footer,
+     which made the one screen most people see first the one screen that matched nothing else.
+     Only the scrim, the close affordance and the layout hooks live here now; everything the user
+     actually looks at comes from .pk-access-card and friends. */
   .rvd-login{position:fixed;inset:0;z-index:var(--pk-z-gate);display:flex;align-items:center;justify-content:center;padding:var(--pk-space-4);
-    background:var(--pk-scrim);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
-  .rvd-login-card{position:relative;width:360px;max-width:100%;background:var(--pk-card);color:var(--pk-ink);border-radius:var(--pk-radius-lg);
-    padding:var(--pk-space-5);box-shadow:var(--pk-shadow-lg);font:400 var(--pk-text-base)/var(--pk-lh-body) var(--pk-font);box-sizing:border-box}
+    background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .rvd-login .pk-access-card{width:400px}
   /* close button — top-right, padded away from the card edge and the title */
   .rvd-login-close{position:absolute;top:var(--pk-space-3h);right:var(--pk-space-3h);display:flex;align-items:center;justify-content:center;
     width:var(--pk-control-h-md);height:var(--pk-control-h-md);padding:0;border:none;border-radius:var(--pk-radius-md);background:transparent;color:var(--pk-muted);
     cursor:pointer;line-height:0}
   @media (min-width:1024px) and (hover:hover){.rvd-login-close:hover{background:var(--pk-input);color:var(--pk-ink)}}
   .rvd-login-close:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:var(--pk-border-strong)}
-  .rvd-login-title{font-size:var(--pk-text-3xl);font-weight:700;padding-right:var(--pk-space-6)}
-  .rvd-login-sub{font-size:var(--pk-text-base);color:var(--pk-muted);margin:var(--pk-space-3) 0 var(--pk-space-4h)}
-  .rvd-login-input{width:100%;height:var(--pk-control-h-lg);padding:0 var(--pk-space-4);border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-md);
-    font:inherit;color:var(--pk-ink);background:var(--pk-input);box-sizing:border-box}
-  .rvd-login-input:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);border-color:var(--pk-red)}
-  .rvd-login-err{margin-top:var(--pk-space-3);font-size:var(--pk-text-md);font-weight:600;color:var(--pk-softred)}
-  .rvd-login-actions{display:flex;justify-content:flex-end;margin-top:var(--pk-space-4h)}
-  .rvd-login-btn{height:var(--pk-control-h-lg);padding:0 var(--pk-space-5);border:none;border-radius:var(--pk-radius-md);background:var(--pk-red);
-    color:var(--pk-on-accent);font:600 var(--pk-text-base)/var(--pk-lh-none) var(--pk-font);cursor:pointer}
-  .rvd-login-btn:disabled{opacity:.6;cursor:default}
-  /* Proofkit brand footer (brand only — no version noise) */
-  .rvd-login-brand{margin-top:var(--pk-space-4h);padding-top:var(--pk-space-4);border-top:var(--pk-border-hair) solid var(--pk-hair);
-    text-align:center;font:700 var(--pk-text-xs)/var(--pk-lh-none) var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}

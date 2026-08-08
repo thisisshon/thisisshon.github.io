@@ -1,4 +1,4 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, getSession, isTeamEnabled, BASE } from './config.js';
+  import { WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, getSession, isTeamEnabled, BASE, PK_MARK } from './config.js';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     const LOCAL = !WORKER_URL;
@@ -28,16 +28,19 @@
         loginEl = document.createElement('div');
         loginEl.className = 'rvd-login';
         loginEl.innerHTML =
-          '<div class="rvd-login-card" role="dialog" aria-modal="true">' +
+          /* The shared auth card. The .rvd-* classes stay ON the same elements purely as JS
+           * hooks — every visual property now comes from .pk-access-* / .pk-unlock-*, so this
+           * screen cannot drift from the others by being edited in isolation. */
+          '<div class="pk-access-card rvd-login-card" role="dialog" aria-modal="true">' +
           '<button type="button" class="rvd-login-close" aria-label="Close">' +
           '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
           '</button>' +
-          '<div class="rvd-login-title">Annotate Live Pages</div>' +
-          '<div class="rvd-login-sub">Enter the review password to open the dashboard.</div>' +
-          '<input class="rvd-login-input" type="password" placeholder="Password" autocomplete="current-password">' +
-          '<div class="rvd-login-err" hidden></div>' +
-          '<div class="rvd-login-actions"><button type="button" class="rvd-login-btn">Login</button></div>' +
-          '<div class="rvd-login-brand">Proofkit</div>' +
+          '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
+          '<h1 class="pk-access-title rvd-login-title">Annotate Live Pages</h1>' +
+          '<p class="pk-access-sub rvd-login-sub">Enter the review password to open the dashboard.</p>' +
+          '<input class="pk-unlock-input pk-unlock-input--text rvd-login-input" type="password" placeholder="Password" autocomplete="current-password">' +
+          '<div class="pk-access-err rvd-login-err" hidden></div>' +
+          '<button type="button" class="pk-unlock-go rvd-login-btn">Log In</button>' +
           '</div>';
         const input = loginEl.querySelector('.rvd-login-input');
         const go = () => tryLogin(input);

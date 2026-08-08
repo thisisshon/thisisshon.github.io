@@ -704,7 +704,14 @@
     dashBtn.innerHTML = ICON_GRID + '<span>Go To Dashboard</span>';
     dashBtn.style.display = 'none'; // shown by revealDock() once authenticated
     dashBtn.addEventListener('click', () => {
-      location.href = boardBase(getSession().team);
+      /* Straight to their own board. The session crosses the origin boundary by way of the
+       * extension: bridge.js runs on the dashboard origin at document_start and seeds the page
+       * with the session it already holds, so an authenticated reviewer lands IN the board rather
+       * than on its sign-in screen. Without an extension there is nothing to carry it, and the
+       * login gate is the honest destination — it is also the right one when we do not yet know
+       * which team's board to open. */
+      const team = getSession().team;
+      location.href = team ? boardBase(team) : BASE + '/login/';
     });
     document.body.appendChild(dashBtn); // bottom-left, independent of the dock
 

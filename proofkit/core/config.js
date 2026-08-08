@@ -1407,10 +1407,13 @@ export function buildPanelLogin(opts) {
       '</button>'
     : '';
   el.innerHTML =
+    /* Same order as every other auth screen: mark, title, subtitle, fields, one full-width
+     * button. It used to open with a decorative glow and an eyebrow, put the title second and
+     * the wordmark LAST, and right-align a pill button — five things none of the other screens
+     * do. The glow is gone rather than restyled; "clean" is mostly a subtraction. */
     '<div class="pk-login-card" role="dialog" aria-modal="true">' +
-      '<div class="pk-login-glow"></div>' +
       closeBtn +
-      '<span class="pk-login-eyebrow">Annotate Live Pages</span>' +
+      '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
       '<h1 class="pk-login-title">' + esc(title) + '</h1>' +
       '<p class="pk-login-sub">' + esc(sub) + '</p>' +
       '<div class="pk-login-field">' +
@@ -1419,7 +1422,7 @@ export function buildPanelLogin(opts) {
       '</div>' +
       '<div class="pk-login-field">' +
         '<label class="pk-login-label" for="pk-login-key">Key</label>' +
-        '<input id="pk-login-key" class="pk-login-input" type="password" placeholder="Enter your key" autocomplete="off" spellcheck="false" />' +
+        '<input id="pk-login-key" class="pk-login-input" type="password" placeholder="Key" autocomplete="off" spellcheck="false" />' +
       '</div>' +
       '<div class="pk-login-err" hidden></div>' +
       '<button type="button" class="pk-login-btn">Authenticate</button>' +
@@ -1449,7 +1452,6 @@ export function buildPanelLogin(opts) {
               '<path d="M15.5 19.5A16 16 0 0 0 16 15"/></svg>' +
             '<span>Sign in with Touch ID</span></button>'
         : '') +
-      '<div class="pk-login-brand">' + PK_MARK + '<span>Proofkit</span></div>' +
     '</div>';
   const q = (s) => el.querySelector(s);
   // Team = a custom (non-native) dropdown, full-width inside the card.

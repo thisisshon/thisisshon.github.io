@@ -4517,6 +4517,11 @@
       // its own way back in — logging out has to mean logged out.
       clearSession();
       clearAccount();
+      /* And the extension, if it is here. One session across three surfaces means signing out of
+       * any one of them signs out of all — otherwise the extension quietly hands the session
+       * straight back on the next page load (see extension/bridge.js) and the logout undoes
+       * itself. A no-op in a plain browser: nothing is listening. */
+      try { window.dispatchEvent(new CustomEvent('proofkit-signout')); } catch (e) {}
       showLogin();
     }
     $('#rvd-logout') && $('#rvd-logout').addEventListener('click', doLogout);
