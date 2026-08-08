@@ -96,9 +96,10 @@ body {
 
 /* The biometric moment: the whole card dims to a single pulsing fingerprint, because the system
  * sheet is what the user should be looking at, not us. */
-.pka-scan { display: flex; flex-direction: column; align-items: center; gap: var(--pk-space-4); padding: var(--pk-space-4h) 0; }
-.pka-scan svg { color: var(--pk-accent-crimson); animation: pka-pulse 1.6s ease-in-out infinite; }
-.pka-scan p { margin: 0; font-size: var(--pk-text-base); color: var(--pk-fixed-sub); }
+/* .pka-scan is styled by components.css (`.pk-access-card--wait .pka-scan`), which this page now
+   loads. The copy that used to live here was already dead: three classes out-specify one, so every
+   declaration in it lost. It is deleted rather than left as a comfort — a rule that cannot win is
+   indistinguishable from a rule that does, right up until someone edits the wrong one. */
 @keyframes pka-pulse { 0%, 100% { opacity: .45; transform: scale(.96); } 50% { opacity: 1; transform: scale(1); } }
 
 @media (prefers-reduced-motion: reduce) {

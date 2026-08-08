@@ -807,7 +807,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* Advanced. A quiet link, well below the boxes — recovery, not a choice to weigh every time. */
 .pk-access-adv{margin-top:var(--pk-space-6h);padding-top:var(--pk-space-4h);border-top:var(--pk-border-hair) solid var(--pk-hair);text-align:center}
-.pk-access-advtoggle{padding:var(--pk-space-3) var(--pk-space-3h);border:none;background:none;cursor:pointer;
+.pk-access-advtoggle{height:var(--pk-control-h-sm);padding:0 var(--pk-space-3h);border:none;background:none;cursor:pointer;
   font:500 var(--pk-text-sm)/var(--pk-lh-none) var(--pk-font);color:var(--pk-muted);transition:color var(--pk-dur-base) var(--pk-ease)}
 .pk-access-advtoggle::after{content:"";display:inline-block;margin-left:var(--pk-space-3);width:4px;height:4px;
   border-right:var(--pk-border-strong) solid currentColor;border-bottom:var(--pk-border-strong) solid currentColor;
@@ -820,12 +820,49 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @keyframes pk-adv-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pk-access-advpanel.is-open{animation:none}}
 
-.pk-access-alt{width:100%;margin-top:var(--pk-space-3);padding:var(--pk-space-3h) var(--pk-space-3h);border:none;border-radius:var(--pk-radius-md);
+.pk-access-alt{width:100%;height:var(--pk-control-h-lg);margin-top:var(--pk-space-3);padding:0 var(--pk-space-3h);
+  display:flex;align-items:center;justify-content:center;border:none;border-radius:var(--pk-radius-md);
   background:none;cursor:pointer;font:500 var(--pk-text-md)/var(--pk-lh-none) var(--pk-font);color:var(--pk-body);
   transition:color var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease)}
 @media (min-width:1024px) and (hover:hover){
   .pk-access-alt:hover{color:var(--pk-ink);background:var(--pk-hover)}}
 .pk-access-alt:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:calc(-1 * var(--pk-border-strong))}
+
+/* ---- UNLOCK (PIN) -----------------------------------------------------------------------------
+   The returning-reviewer screen, on the same card as the access-key one. One field and one button,
+   both full width, both sized like the key boxes they stand in for — so the two screens read as the
+   same door rather than two products that happen to share a wordmark. */
+.pk-unlock-input{width:100%;height:var(--pk-control-h-lg);margin:var(--pk-space-3) 0 var(--pk-space-3);
+  padding:0 var(--pk-space-4);box-sizing:border-box;text-align:center;
+  background:var(--pk-input);color:var(--pk-ink);
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-md);
+  font:600 var(--pk-text-2xl)/var(--pk-lh-none) var(--pk-font);letter-spacing:.28em;
+  caret-color:var(--pk-red);
+  transition:border-color var(--pk-dur-base) var(--pk-ease),box-shadow var(--pk-dur-base) var(--pk-ease)}
+/* The placeholder is prose, not a value — it must not inherit the tracking meant for dots. */
+.pk-unlock-input::placeholder{font:400 var(--pk-text-md)/var(--pk-lh-none) var(--pk-font);
+  letter-spacing:0;color:var(--pk-muted)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-unlock-input:hover:not(:focus-visible):not(:disabled){border-color:var(--pk-muted)}}
+.pk-unlock-input:focus-visible{outline:none;border-color:var(--pk-red);
+  box-shadow:0 0 0 var(--pk-border-strong) var(--pk-ring-red)}
+.pk-unlock-input:disabled{opacity:.55}
+/* Same shake as a wrong access key, for the same reason: felt before it is read. */
+.pk-unlock-input.is-wrong{border-color:var(--pk-softred);
+  animation:pk-access-shake .38s cubic-bezier(.36,.07,.19,.97)}
+
+.pk-unlock-go{width:100%;height:var(--pk-control-h-lg);margin-top:var(--pk-space-2);
+  box-sizing:border-box;border:none;border-radius:var(--pk-radius-md);cursor:pointer;
+  background:var(--pk-red);color:var(--pk-on-accent);
+  font:600 var(--pk-text-md)/var(--pk-lh-none) var(--pk-font);letter-spacing:.01em;
+  transition:background var(--pk-dur-base) var(--pk-ease),opacity var(--pk-dur-base) var(--pk-ease)}
+@media (min-width:1024px) and (hover:hover){.pk-unlock-go:hover{background:var(--pk-red-hi,var(--pk-red));opacity:.92}}
+.pk-unlock-go:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:2px}
+.pk-unlock-go:disabled{opacity:.55;cursor:default}
+/* The Touch ID route sits directly under the button here — there is no Advanced footer on this
+   screen, because the one alternative worth offering is already visible. */
+.pk-unlock-go + .pk-access-err + .pk-access-alt{margin-top:var(--pk-space-4)}
+@media (prefers-reduced-motion:reduce){.pk-unlock-input.is-wrong{animation:none}}
 
 /* ---- ACCESS KEY entry -------------------------------------------------------------------------
    Eight boxes: two letters, a hairline, six digits. The gap shows the shape of the code before
