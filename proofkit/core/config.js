@@ -1140,6 +1140,14 @@ export function buildAccessEntry(opts) {
     clear: () => { boxes.forEach((b) => { b.value = ''; }); el.classList.remove('is-complete'); focusAt(0); },
     setBusy: (busy) => { boxes.forEach((b) => { b.disabled = !!busy; }); el.classList.toggle('is-busy', !!busy); },
     accept: () => el.classList.add('is-ok'),
+    /* Back to untouched: empty, no verdict, not busy. `clear` deliberately leaves the styling
+     * alone (a rejected code clears itself but stays visibly rejected); this is the stronger
+     * one, for when the screen is being reused rather than corrected. */
+    reset: () => {
+      boxes.forEach((b) => { b.value = ''; b.disabled = false; });
+      el.classList.remove('is-complete', 'is-ok', 'is-wrong', 'is-busy');
+      focusAt(0);
+    },
     shake: () => {
       // A wrong code should be felt before it is read. Restart the animation explicitly, or a
       // second wrong attempt in a row does nothing visible.
@@ -1228,6 +1236,10 @@ export function buildAccessLogin(opts) {
     // A rejected code clears itself: the next thing anyone does is retype it, and leaving eight
     // wrong characters in place means clearing them by hand first.
     reject: (message) => { entry.shake(); setError(message || ''); setTimeout(() => entry.clear(), 380); },
+    /* Hand the screen back in its opening state. The popup reuses ONE instance across sign-in and
+     * sign-out, so without this the row a signed-out user meets is the accepted one from their
+     * last sign-in: green, full of dots, and refusing input. */
+    reset: () => { entry.reset(); setError(''); },
     setError,
   };
 }

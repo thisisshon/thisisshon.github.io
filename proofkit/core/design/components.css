@@ -753,8 +753,8 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    which is why the screen looked like Proofkit in the dashboard and like somebody else's site on a
    third-party page. Outfit is the intent; the stack behind it is what actually renders when the
    host has not loaded it, so it is spelled out rather than left to a bare `sans-serif`. */
-.pk-access-login{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;
-  padding:32px;background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+.pk-access-login{position:fixed;inset:0;z-index:var(--pk-z-access);display:flex;align-items:center;justify-content:center;
+  padding:var(--pk-space-6);background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
   font-family:var(--pk-font)}
 .pk-access-login[hidden]{display:none}
 .pk-access-login *{font-family:var(--pk-font);box-sizing:border-box}
@@ -769,10 +769,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    by the body gutter, so its own top border would read as a line floating in the dark rather than
    as the top of Proofkit — which is why it looked, at a glance, like the top had been cut off. */
 .pk-access-login--inline .pk-access-card{width:100%;border:none;box-shadow:none;
-  padding:24px 16px 16px;animation:none}
-.pk-access-login--inline .pk-access-mark{margin-bottom:22px}
-.pk-access-login--inline .pk-access-title{font-size:21px}
-.pk-access-login--inline .pk-access-sub{margin:8px 0 22px;font-size:13px}
+  padding:var(--pk-space-5) var(--pk-space-4) var(--pk-space-4);animation:none}
+.pk-access-login--inline .pk-access-mark{margin-bottom:var(--pk-space-5)}
+.pk-access-login--inline .pk-access-title{font-size:var(--pk-text-3xl)}
+.pk-access-login--inline .pk-access-sub{margin:var(--pk-space-3) 0 var(--pk-space-5);font-size:var(--pk-text-md)}
 /* The row spans EXACTLY the card's text column, so the boxes start where the wordmark starts and
    end where it ends. The arithmetic, since it has to be exact: the popup is 360 wide, the body
    gutter takes 32 and the card padding another 32, leaving 296. The separator makes NINE flex items,
@@ -781,34 +781,34 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    its track expands to min-content — so the symptom is a card wider than the window, not a truncated
    row. Letting the boxes flex instead does NOT work: they have no intrinsic width to divide and the
    row blows past the card entirely. */
-.pk-access-login--inline .pk-access{gap:4px;margin:4px 0 6px}
-.pk-access-login--inline .pk-access-box{width:32px;height:44px;font-size:24px;border-radius:8px}
-.pk-access-login--inline .pk-access-sep{width:8px}
-.pk-access-login--inline .pk-access-adv{margin-top:26px;padding-top:14px}
+.pk-access-login--inline .pk-access{gap:var(--pk-space-2);margin:var(--pk-space-2) 0 var(--pk-space-2)}
+.pk-access-login--inline .pk-access-box{width:32px;height:var(--pk-control-h-lg);font-size:var(--pk-text-3xl);border-radius:var(--pk-radius-md)}
+.pk-access-login--inline .pk-access-sep{width:var(--pk-space-3)}
+.pk-access-login--inline .pk-access-adv{margin-top:var(--pk-space-5);padding-top:var(--pk-space-4)}
 
 /* Symmetric padding — the old rule was 36/32/24, so the card sat visibly off-centre in its own
    frame. One value on the sides, and the bottom only shorter because Advanced brings its own rule. */
 .pk-access-card{position:relative;width:460px;max-width:100%;
-  padding:44px 44px 28px;background:var(--pk-card);color:var(--pk-ink);
+  padding:var(--pk-space-6h) var(--pk-space-6h) var(--pk-space-6);background:var(--pk-card);color:var(--pk-ink);
   border:1px solid var(--pk-hair);border-top:2px solid var(--pk-red);box-shadow:var(--pk-shadow-lg);
-  animation:pk-access-rise .38s cubic-bezier(.2,.7,.3,1) both}
+  animation:pk-access-rise var(--pk-dur-slow) var(--pk-ease-rise) both}
 @keyframes pk-access-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .pk-access-card--wait{text-align:center}
 
-.pk-access-mark{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.pk-access-mark svg{width:17px;height:17px;flex:none}
-.pk-access-mark span{font:700 11px/1 var(--pk-font);letter-spacing:2.2px;text-transform:uppercase;color:var(--pk-muted)}
-.pk-access-title{margin:0;font:600 27px/1.22 var(--pk-font);letter-spacing:-.4px;color:var(--pk-ink)}
-.pk-access-sub{margin:10px 0 30px;font:400 14px/1.55 var(--pk-font);color:var(--pk-muted)}
-.pk-access-err{margin:2px 0 0;font:600 13px/1.45 var(--pk-font);color:var(--pk-softred);text-align:center}
+.pk-access-mark{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-6)}
+.pk-access-mark svg{width:16px;height:16px;flex:none}
+.pk-access-mark span{font:700 var(--pk-text-xs)/var(--pk-lh-none) var(--pk-font);letter-spacing:var(--pk-track-2);text-transform:uppercase;color:var(--pk-muted)}
+.pk-access-title{margin:0;font:600 var(--pk-text-4xl)/var(--pk-lh-heading) var(--pk-font);letter-spacing:-.01em;color:var(--pk-ink)}
+.pk-access-sub{margin:var(--pk-space-3) 0 var(--pk-space-6);font:400 var(--pk-text-base)/var(--pk-lh-body) var(--pk-font);color:var(--pk-muted)}
+.pk-access-err{margin:var(--pk-space-2) 0 0;font:600 var(--pk-text-md)/var(--pk-lh-body) var(--pk-font);color:var(--pk-softred);text-align:center}
 .pk-access-err[hidden]{display:none}
 
 /* Advanced. A quiet link, well below the boxes — recovery, not a choice to weigh every time. */
-.pk-access-adv{margin-top:40px;padding-top:20px;border-top:1px solid var(--pk-hair);text-align:center}
-.pk-access-advtoggle{padding:6px 10px;border:none;background:none;cursor:pointer;
-  font:500 12.5px/1 var(--pk-font);color:var(--pk-muted);transition:color .15s}
-.pk-access-advtoggle::after{content:"";display:inline-block;margin-left:8px;width:5px;height:5px;
-  border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+.pk-access-adv{margin-top:var(--pk-space-6h);padding-top:var(--pk-space-4h);border-top:var(--pk-border-hair) solid var(--pk-hair);text-align:center}
+.pk-access-advtoggle{padding:var(--pk-space-3) var(--pk-space-3h);border:none;background:none;cursor:pointer;
+  font:500 var(--pk-text-sm)/var(--pk-lh-none) var(--pk-font);color:var(--pk-muted);transition:color var(--pk-dur-base) var(--pk-ease)}
+.pk-access-advtoggle::after{content:"";display:inline-block;margin-left:var(--pk-space-3);width:4px;height:4px;
+  border-right:var(--pk-border-strong) solid currentColor;border-bottom:var(--pk-border-strong) solid currentColor;
   transform:translateY(-2px) rotate(45deg);transition:transform .22s cubic-bezier(.4,0,.2,1)}
 .pk-access-advtoggle[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
 @media (min-width:1024px) and (hover:hover){.pk-access-advtoggle:hover{color:var(--pk-ink)}}
@@ -818,33 +818,35 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @keyframes pk-adv-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pk-access-advpanel.is-open{animation:none}}
 
-.pk-access-alt{width:100%;margin-top:6px;padding:13px 10px;border:none;border-radius:8px;
-  background:none;cursor:pointer;font:500 13.5px/1 var(--pk-font);color:var(--pk-body);
-  transition:color .15s,background .15s}
+.pk-access-alt{width:100%;margin-top:var(--pk-space-3);padding:var(--pk-space-3h) var(--pk-space-3h);border:none;border-radius:var(--pk-radius-md);
+  background:none;cursor:pointer;font:500 var(--pk-text-md)/var(--pk-lh-none) var(--pk-font);color:var(--pk-body);
+  transition:color var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease)}
 @media (min-width:1024px) and (hover:hover){
   .pk-access-alt:hover{color:var(--pk-ink);background:var(--pk-hover)}}
-.pk-access-alt:focus-visible{outline:2px solid var(--pk-red);outline-offset:-2px}
+.pk-access-alt:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:calc(-1 * var(--pk-border-strong))}
 
 /* ---- ACCESS KEY entry -------------------------------------------------------------------------
    Eight boxes: two letters, a hairline, six digits. The gap shows the shape of the code before
    anything is typed, which is what stops someone entering AB1234-56 or 12AB3456. */
-.pk-access{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:6px 0 8px}
+.pk-access{display:flex;align-items:center;justify-content:center;gap:var(--pk-space-3);width:100%;margin:var(--pk-space-3) 0 var(--pk-space-3)}
 /* padding:0 with a single-line input leaves the browser to centre the value in the content box,
    which it does vertically by default — so the mask dot sits on the true centre rather than on a
    baseline near the bottom. text-align does the horizontal half. The dot is sized by font-size,
    hence the step up from the text size: a masked box should read as a deliberate mark, not as a
    full stop someone left behind. */
-.pk-access-box{width:42px;height:58px;padding:0;text-align:center;
-  border:1px solid var(--pk-hair);border-radius:10px;background:var(--pk-input);color:var(--pk-ink);
-  font:600 34px/1 var(--pk-font);letter-spacing:0;caret-color:var(--pk-red);
-  transition:border-color .14s ease,box-shadow .14s ease,background .14s ease}
-.pk-access-box:hover:not(:focus):not(:disabled){border-color:var(--pk-muted)}
-.pk-access-box:focus{outline:none;border-color:var(--pk-red);box-shadow:0 0 0 3px var(--pk-ring-red)}
+.pk-access-box{width:42px;height:var(--pk-control-h-xl);padding:0;text-align:center;
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-md);background:var(--pk-input);color:var(--pk-ink);
+  font:600 var(--pk-text-5xl)/var(--pk-lh-none) var(--pk-font);letter-spacing:0;caret-color:var(--pk-red);
+  transition:border-color var(--pk-dur-base) var(--pk-ease),box-shadow var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-access-box:hover:not(:focus-visible):not(:disabled){border-color:var(--pk-muted)}}
+.pk-access-box:focus-visible{outline:none;border-color:var(--pk-red);
+  box-shadow:0 0 0 var(--pk-border-strong) var(--pk-ring-red)}
 .pk-access-box:disabled{opacity:.55}
 /* The letter half is tinted a shade differently, so "letters here, digits there" survives even
    when someone is typing fast and not reading the separator. */
 .pk-access-box.is-alpha{background:var(--pk-elev)}
-.pk-access-sep{flex:none;width:12px;height:1px;background:var(--pk-hair)}
+.pk-access-sep{flex:none;width:var(--pk-space-3h);height:var(--pk-border-hair);background:var(--pk-hair)}
 
 /* Wrong code: a short shake. Felt before it is read — the error text below is for the second
    attempt, not the first. */
@@ -865,10 +867,10 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-access.is-ok .pk-access-box{border-color:var(--pk-green);transition:border-color .18s ease}
 
 @media (max-width:480px){
-  .pk-access-card{padding:32px 24px 22px}
-  .pk-access{gap:6px}
-  .pk-access-box{width:34px;height:48px;font-size:28px}
-  .pk-access-title{font-size:23px}
+  .pk-access-card{padding:var(--pk-space-6) var(--pk-space-5) var(--pk-space-5)}
+  .pk-access{gap:var(--pk-space-2)}
+  .pk-access-box{width:34px;height:var(--pk-control-h-lg);font-size:var(--pk-text-4xl)}
+  .pk-access-title{font-size:var(--pk-text-3xl)}
 }
 @media (prefers-reduced-motion:reduce){
   .pk-access.is-wrong,.pk-access-box.is-filled,.pk-access-card{animation:none}
@@ -878,11 +880,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    The handover from "asking" to "in". Two beats: the card leaves BEFORE the scrim, so the page
    behind is revealed rather than uncovered all at once — the eye follows the card out instead of
    being dropped somewhere new. Nothing slides in from the side and nothing bounces. */
-.pk-access-login.is-done{pointer-events:none;animation:pk-access-scrim-out .34s ease .1s both}
-.pk-access-login.is-done .pk-access-card{animation:pk-access-out .26s cubic-bezier(.4,0,1,1) both}
+.pk-access-login.is-done{pointer-events:none;animation:pk-access-scrim-out var(--pk-dur-slow) var(--pk-ease) .1s both}
+.pk-access-login.is-done .pk-access-card{animation:pk-access-out var(--pk-dur-slow) var(--pk-ease) both}
 @keyframes pk-access-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-6px) scale(.985)}}
 @keyframes pk-access-scrim-out{from{opacity:1}to{opacity:0}}
-.pka-note{animation:pk-access-note-in .3s cubic-bezier(.2,.7,.3,1) .18s both}
+.pka-note{animation:pk-access-note-in var(--pk-dur-slow) var(--pk-ease-rise) .18s both}
 @keyframes pk-access-note-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
   .pk-access-login.is-done,.pk-access-login.is-done .pk-access-card,.pka-note{animation:none}
@@ -890,9 +892,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 }
 
 /* The biometric wait, shown when the extension sends someone here to use Touch ID. */
-.pk-access-card--wait .pka-scan{display:flex;flex-direction:column;align-items:center;gap:20px;padding:14px 0 6px}
+.pk-access-card--wait .pka-scan{display:flex;flex-direction:column;align-items:center;gap:var(--pk-space-4h);padding:var(--pk-space-4) 0 var(--pk-space-3)}
 .pk-access-card--wait .pka-scan svg{color:var(--pk-red);animation:pk-access-pulse 1.6s ease-in-out infinite}
-.pk-access-card--wait .pka-scan p{margin:0;font:400 14px/1.5 var(--pk-font);color:var(--pk-muted)}
+.pk-access-card--wait .pka-scan p{margin:0;font:400 var(--pk-text-base)/var(--pk-lh-body) var(--pk-font);color:var(--pk-muted)}
 @keyframes pk-access-pulse{0%,100%{opacity:.45;transform:scale(.96)}50%{opacity:1;transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.pk-access-card--wait .pka-scan svg{animation:none}}
 

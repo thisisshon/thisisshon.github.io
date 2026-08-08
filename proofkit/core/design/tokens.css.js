@@ -272,6 +272,7 @@ export default `/* =============================================================
   --pk-z-ov-tray:2147483039;      /* draft tray, just under the dock */
   --pk-z-ov-dock:2147483040;      /* the always-there dock / dash / logout controls */
   --pk-z-ov-hud:2147483200;       /* the full-screen HUD, above the page-level overlay */
+  --pk-z-access:2147483600;       /* the access-key gate — above the panel it locks */
   --pk-z-embed-scrim:2147483300;
   --pk-z-embed-panel:2147483400;
 
