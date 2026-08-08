@@ -698,7 +698,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   background:var(--pk-scrim);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:var(--pk-font)}
 .pk-login-card{position:relative;width:408px;max-width:100%;
   background:var(--pk-card);color:var(--pk-ink);border:1px solid var(--pk-hair);border-radius:0;
-  padding:var(--pk-space-7h) var(--pk-space-7) var(--pk-space-5);box-shadow:var(--pk-shadow-lg);box-sizing:border-box;
+  /* One value on all four sides. It was 56 top / 48 sides / 24 bottom, which put more than
+     twice as much air above the wordmark as below the last button and read as a card that
+     had been cropped. The asymmetry made sense when the wordmark was a FOOTER with its own
+     border and padding; the wordmark is at the top now, so it does not. */
+  padding:var(--pk-space-7);box-shadow:var(--pk-shadow-lg);box-sizing:border-box;
   display:flex;flex-direction:column;align-items:center;text-align:center;animation:pk-login-pop .2s ease both}
 @keyframes pk-login-pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
 /* content sits above the glow via DOM order (no z-index, so a field never becomes a
