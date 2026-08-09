@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=ab5ed8c128';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=bc1373f10d';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=ab5ed8c128';
-  import { createCardRenderer } from './card.js?v=ab5ed8c128';
-  import { ICON } from './icons.js?v=ab5ed8c128';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=ab5ed8c128';
+  import { PK_VERSION } from './version.js?v=bc1373f10d';
+  import { createCardRenderer } from './card.js?v=bc1373f10d';
+  import { ICON } from './icons.js?v=bc1373f10d';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=bc1373f10d';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3421,8 +3421,12 @@
          * a single either-or, and "Selected" beside "Select" reads as two buttons doing different
          * things rather than one setting with two positions. A segmented control says the whole
          * thing at a glance: these are the options, that is the one in force. */
-        modeHost.innerHTML = card('Who sees what', '',
-          row('', '',
+        /* The label sits in the ROW, not in a card header above it. As a header it took a line of
+         * its own and left the control stranded on the next one — two rows for one setting. In the
+         * row it reads the way every other setting on this screen does: name on the left, control
+         * on the right, one line. */
+        modeHost.innerHTML = card('', '',
+          row('Who sees what', '',
             `<div class="pk-set-seg" role="group" aria-label="Who sees what">` +
               `<button class="pk-set-segbtn${mode === 'project' ? ' is-active' : ''}" type="button" data-vis-mode="project">Everyone in this project</button>` +
               `<button class="pk-set-segbtn${mode === 'team' ? ' is-active' : ''}" type="button" data-vis-mode="team">Own threads only</button>` +
@@ -3734,7 +3738,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=ab5ed8c128');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=bc1373f10d');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

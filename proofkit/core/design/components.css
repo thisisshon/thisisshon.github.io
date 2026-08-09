@@ -1462,7 +1462,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* Open, the body brings its own top padding, so the header stops doubling up on it. */
 .pk-crit[open]>.pk-crit-h{padding-bottom:0}
 .pk-crit>.pk-crit-h::-webkit-details-marker{display:none}
-.pk-crit-chev{flex:none;color:var(--pk-softred);
+.pk-crit-chev{flex:none;color:var(--pk-muted);
   transition:transform var(--pk-dur-base) var(--pk-ease)}
 .pk-crit[open]>.pk-crit-h .pk-crit-chev{transform:rotate(90deg)}
 @media (min-width:1024px) and (hover:hover){
@@ -1470,7 +1470,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   .pk-crit[open]>.pk-crit-h:hover .pk-crit-chev{transform:rotate(90deg)}}
 .pk-crit>.pk-crit-h:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:-2px}
 @media (prefers-reduced-motion:reduce){.pk-crit-chev{transition:none}}
-.pk-set-card--danger .pk-set-card-h h3{color:var(--pk-softred)}
+/* Default ink, not red. The section is CLOSED and its name already says what it holds — a red
+   heading on a collapsed row shouts before anything has been opened, and red then has nothing
+   left to say on the destructive buttons INSIDE, which is where the warning belongs. The left
+   accent rule stays: it marks the section without raising its voice. */
+.pk-set-card--danger .pk-set-card-h h3{color:var(--pk-ink)}
 
 /* ---- Project and team CARDS ---------------------------------------------------------------
    Projects and teams are BROWSED — you pick one of them — so they are tiles, not rows. The stat
