@@ -1,5 +1,5 @@
   import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, boardBase } from './config.js?v=fa5774af8c';
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, boardBase } from './config.js?v=7384cafdb3';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;

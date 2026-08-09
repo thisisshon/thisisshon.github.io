@@ -1434,8 +1434,14 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* Critical Actions: a closed disclosure. The chevron sits on the right margin and rotates down
    when open — the only moving part, so "there is more here" is the whole message. */
 .pk-crit{padding:0}
+/* Equal padding top and bottom. .pk-set-card-h ends in 0 because a card body normally follows and
+   supplies the space below the heading — but a CLOSED disclosure has no body, so the heading sat
+   with 16px above it and nothing beneath, pinned to the bottom edge of its own card. */
 .pk-crit>.pk-crit-h{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-4);
+  padding:var(--pk-space-4) var(--pk-space-4h);
   cursor:pointer;list-style:none;user-select:none}
+/* Open, the body brings its own top padding, so the header stops doubling up on it. */
+.pk-crit[open]>.pk-crit-h{padding-bottom:0}
 .pk-crit>.pk-crit-h::-webkit-details-marker{display:none}
 .pk-crit-chev{flex:none;color:var(--pk-softred);
   transition:transform var(--pk-dur-base) var(--pk-ease)}

@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fa5774af8c';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=7384cafdb3';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=fa5774af8c';
-  import { createCardRenderer } from './card.js?v=fa5774af8c';
-  import { ICON } from './icons.js?v=fa5774af8c';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fa5774af8c';
+  import { PK_VERSION } from './version.js?v=7384cafdb3';
+  import { createCardRenderer } from './card.js?v=7384cafdb3';
+  import { ICON } from './icons.js?v=7384cafdb3';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=7384cafdb3';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2307,7 +2307,20 @@
       // post a quick-question reply (⌘/Ctrl+Enter posts)
       const send = $('#rvd-entries').querySelector('.pk-qq-send');
       if (send && input) {
-        const submit = async () => {
+        /* Letters-only fields strip as you type rather than complaining after you submit. Names take
+       * spaces, hyphens and apostrophes — Mary-Jane, O'Brien — so "letters only" means no DIGITS
+       * and no full stops, not no punctuation at all. The full stop is barred specifically because
+       * these names are typed from an address book where initials arrive as "N.V." */
+      el.querySelectorAll('[data-letters]').forEach((i) => i.addEventListener('input', () => {
+        const clean = i.value.replace(/[^A-Za-z\u00C0-\u024F' -]/g, '').replace(/\s{2,}/g, ' ');
+        if (clean !== i.value) {
+          const at = i.selectionStart - (i.value.length - clean.length);
+          i.value = clean;
+          try { i.setSelectionRange(at, at); } catch (e) {}
+        }
+      }));
+
+      const submit = async () => {
           if (send.disabled) return;
           const text = input.value.trim(); if (!text) { input.focus(); return; }
           send.disabled = true; send.textContent = 'Posting…';
@@ -3723,14 +3736,17 @@
         openFormModal({
           title: 'Add a person',
           fields: [
+            { key: 'name', label: 'Full Name', placeholder: 'Their name as it is written', letters: true },
             { key: 'email', label: 'Email', placeholder: 'them@company.com' },
-            { key: 'pin', label: 'PIN', placeholder: '6–12 digits', generate: true, gen: () => String(Math.floor(100000 + Math.random() * 899999)) },
+            { key: 'pin', label: 'PIN', placeholder: '6–12 digits', generate: true, gen: memorablePin },
           ],
           confirmLabel: 'Add person',
           onSubmit: async (v) => {
+            if (!v.name) throw new Error('A full name is required.');
             if (!v.email) throw new Error('An email address is required.');
             if (!v.pin) throw new Error('A PIN is required.');
-            await store.userCreate({ email: v.email, team: orgPath.team || '', pin: v.pin, role: orgPath.team ? 'member' : 'builder' });
+            await store.userCreate({ email: v.email, name: v.name,
+              team: orgPath.team || '', pin: v.pin, role: orgPath.team ? 'member' : 'builder' });
             showOnce(v.email, v.pin, 'Initial PIN');
             fillOrg();
           },
@@ -3790,6 +3806,52 @@
     /* One modal for every "create a thing" on the Organisation screens. The old code hand-built a
      * bespoke dialog per entity, which is how they drifted apart. Uses the same shell as the
      * reopen/clarify dialogs, so fields and buttons inherit the tool's styling. */
+/* A PIN somebody can carry in their head.
+ *
+ * The old generator was `100000 + random*899999` — six independent digits, which is the strongest
+ * six-digit PIN available and the least usable one. Nobody memorises 738214, so it gets written on
+ * a card or pasted into a note, and the strength evaporates on the way.
+ *
+ * These are three SHAPES instead. Each is one small thing to remember rather than six:
+ *   ABCABC   a three-digit block, said twice        482482
+ *   AABBCC   three doubled digits                   449955
+ *   ABCCBA   a mirror                               481184
+ *
+ * And a blocklist, which is the part the shapes make necessary. Patterned PINs land on the common
+ * ones far more often than random digits do — 121212 and 112233 are both shapes AND top-20
+ * passwords — so anything that comes out matching one is rejected and redrawn. A generator that
+ * can hand somebody 123123 is worse than the random one it replaced.
+ *
+ * crypto.getRandomValues, not Math.random: the shape is predictable by design, so the digits
+ * filling it are the only entropy there is.
+ */
+const COMMON_PINS = new Set([
+  '123456', '111111', '000000', '121212', '112233', '123123', '654321', '666666', '696969',
+  '112211', '123321', '999999', '888888', '777777', '222222', '333333', '444444', '555555',
+  '101010', '110110', '456456', '789789', '147147', '159159', '012012', '100100',
+]);
+function memorablePin() {
+  const d = () => {
+    const b = new Uint8Array(1);
+    // Rejection-sample so 0–9 are equally likely; 256 % 10 leaves a bias if you just modulo.
+    do { crypto.getRandomValues(b); } while (b[0] >= 250);
+    return b[0] % 10;
+  };
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const a = d(), b = d(), c = d();
+    const shape = d() % 3;
+    const pin = shape === 0 ? `${a}${b}${c}${a}${b}${c}`
+              : shape === 1 ? `${a}${a}${b}${b}${c}${c}`
+              :               `${a}${b}${c}${c}${b}${a}`;
+    if (COMMON_PINS.has(pin)) continue;
+    if (a === b && b === c) continue;                 // 444444 and friends
+    if (b === a + 1 && c === b + 1) continue;         // an ascending run inside any shape
+    if (b === a - 1 && c === b - 1) continue;         // and a descending one
+    return pin;
+  }
+  return String(100000 + Math.floor(Math.random() * 899999));   // never hand back nothing
+}
+
     function openFormModal(opts) {
       const el = document.createElement('div'); el.className = 'pk-reopen';
       const esc2 = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -3803,7 +3865,7 @@
                 ? `<div style="display:flex;gap:8px;align-items:center">` +
                     `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off" style="flex:1">` +
                     `<button type="button" class="pk-a" data-gen="${esc2(f.key)}">Generate</button></div>`
-                : `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off">`) +
+                : `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off"${f.letters ? ' data-letters="1"' : ''}>`) +
             `</div>`).join('') +
           `<div class="pk-reopen-err" hidden></div>` +
           `<div class="pk-reopen-actions">` +

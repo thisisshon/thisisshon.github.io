@@ -9,7 +9,7 @@
  * on-page overlay, which don't share a stylesheet). Colours bind to the --pk-* theme
  * tokens with literal fallbacks, so it renders even before a skin is applied.
  * ------------------------------------------------------------------------ */
-import { injectCss } from './inject-css.js?v=fa5774af8c';
+import { injectCss } from './inject-css.js?v=7384cafdb3';
 
 let injected = false;
 function ensureStyles() {
