@@ -1111,6 +1111,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    The overlay composer + both dashboards compose these (never re-declare them).
    =========================================================================== */
 
+/* Notifications toolbar: Mark all read sits beside a More icon, never beside Delete All itself. */
+.rvd-notifacts{display:flex;align-items:center;gap:var(--pk-space-3);flex:none}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person
@@ -1246,7 +1249,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-set-card-h h3{margin:0;font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
 .pk-set-card-h p{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-sm)/1.5 var(--pk-font);color:var(--pk-muted)}
 .pk-set-card-b{padding:var(--pk-space-3) var(--pk-space-4h) var(--pk-space-3)}
-.pk-set-row{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-4);padding:var(--pk-space-3h) 0;border-bottom:1px solid var(--pk-hair)}
+/* Top-aligned, not centred. Most rows are one line against one control and the difference is
+   invisible; a row whose control is a tall block — a wrapped list of team chips, say — left
+   its label floating in the vertical middle with nothing beside it, reading as though it had
+   come loose from its own row. A label belongs at the top of what it labels. */
+.pk-set-row{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--pk-space-4);padding:var(--pk-space-3h) 0;border-bottom:1px solid var(--pk-hair)}
 .pk-set-row:last-child{border-bottom:none}
 .pk-set-row-main{min-width:0}
 .pk-set-row-label{font:600 var(--pk-text-md)/1.3 var(--pk-font);color:var(--pk-ink)}

@@ -648,7 +648,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=affd2ffcbc'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -656,7 +656,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js';
+} from './vocab.js?v=affd2ffcbc';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=affd2ffcbc';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js';
-  import { createCardRenderer } from './card.js';
-  import { ICON } from './icons.js';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js';
+  import { PK_VERSION } from './version.js?v=affd2ffcbc';
+  import { createCardRenderer } from './card.js?v=affd2ffcbc';
+  import { ICON } from './icons.js?v=affd2ffcbc';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=affd2ffcbc';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -326,6 +326,7 @@
           teamAction: async (rec, action, reason, note, redirectTo) => { await localGuard(); return localTeamAction(rec, action, reason, note, redirectTo); },
           notifications: async () => { await localGuard(); return localNotifs(); },
           markRead: async (ids, read = true) => { await localGuard(); return localMarkRead(ids, read); },
+          clearNotifs: async () => { await localGuard(); try { localStorage.removeItem('rvc-notifications'); } catch (e) {} return { ok: true }; },
           markThreadsRead: async (items, read = true) => { await localGuard(); return localMarkThreadsRead(items, read); },
           del: async (rec) => { await localGuard(); localDelete(rec); return { ok: true }; },
           delReply: async (reply) => { await localGuard(); localDeleteReply(reply); return { ok: true }; },
@@ -435,6 +436,9 @@
           accountAudit: (email) => apiFetch('/admin/audit' + (email ? '?email=' + encodeURIComponent(email) : '')),
           notifications: () => apiFetch('/notifications'),
           markRead: (ids, read = true) => apiFetch('/notifications/read', { method: 'POST', body: JSON.stringify({ ids, read }) }),
+          // Admin-only on the Worker: notifications are a shared log, and a team emptying
+          // "all" would clear a record other people still work from.
+          clearNotifs: () => apiFetch('/notifications/clear', { method: 'POST', body: JSON.stringify({}) }),
           markThreadsRead: (items, read = true) => apiFetch('/comments/read', { method: 'POST', body: JSON.stringify({ items, read }) }),
           // 5.0: `url` accompanies `path` on every page-addressed write, so the worker resolves the
           // record on the ORIGIN it was raised on. It rides along from the record itself.
@@ -2345,11 +2349,35 @@
         `<div class="rvd-notifhead">` +
           `<div><h2>Notifications</h2>` +
           `<p class="rvd-deploy-explain">Fired as tickets move through the status machine (started, deployed live, reopened, resubmitted).</p></div>` +
-          (unread.length ? `<button class="pk-a" id="rvd-notif-read">Mark all read (${unread.length})</button>` : '') +
+          `<div class="rvd-notifacts">` +
+            (unread.length ? `<button class="pk-a" id="rvd-notif-read">Mark all read (${unread.length})</button>` : '') +
+            /* Delete All lives behind the More icon, not beside Mark all read. The two are not
+             * peers: one is routine and reversible, the other empties the log. Giving them
+             * matching buttons an inch apart is how a tired thumb loses the lot. */
+            (list.length ? `<button class="rvd-moreopts" id="rvd-notif-more" aria-label="More options" aria-haspopup="menu">` +
+              `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
+            `</button>` : '') +
+          `</div>` +
         `</div>` +
         (list.length
           ? `<div class="pk-notes">${list.map(notifItem).join('')}</div>`
           : `<p class="pk-empty">No notifications yet.</p>`);
+      const mb = $('#rvd-notif-more');
+      if (mb) mb.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openRowMenu(mb, null, [{
+          label: 'Delete All', icon: ICON.delete, danger: true,
+          onSelect: async () => {
+            if (!(await pkConfirm({
+              title: 'Delete all notifications',
+              message: 'Remove all ' + list.length + ' notification(s)? Notifications are a record of ticket movement — the tickets themselves are not touched.',
+              confirmLabel: 'Delete All', danger: true,
+            }))) return;
+            await store.clearNotifs();
+            await loadData();
+          },
+        }]);
+      });
       const rb = $('#rvd-notif-read');
       if (rb) rb.addEventListener('click', async () => {
         rb.disabled = true;

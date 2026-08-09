@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=affd2ffcbc';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js';
-  import { createCardRenderer } from './card.js';
-  import { ICON } from './icons.js';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js';
-  import { openReopenModal, openDisregardModal } from './action-modals.js';
+  import { PK_VERSION } from './version.js?v=affd2ffcbc';
+  import { createCardRenderer } from './card.js?v=affd2ffcbc';
+  import { ICON } from './icons.js?v=affd2ffcbc';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=affd2ffcbc';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=affd2ffcbc';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -1107,13 +1107,14 @@
                 `<button class="pk-set-segbtn${density === 'table' ? ' is-active' : ''}" type="button" data-set-den="table">Table</button>` +
               `</div>`));
       } else {
-        const teamRows = TEAMS.map((t) => `<span class="pk-set-teamtag${isTeamEnabled(t) ? '' : ' is-off'}">${esc(t)}${isTeamEnabled(t) ? '' : ' · off'}</span>`).join('');
+        /* No Teams card here. It listed every team in the project and which were switched off —
+         * which is the Builder's business, not a reviewer's. It told a member of one team nothing
+         * they could act on, and told them the shape of the whole organisation to do it. It lives
+         * on the Builder board, where the person reading it is the person who sets it. */
         panel =
           card('Proofkit', 'Portable content-review tooling.',
             row('Version', 'This dashboard build.', `<span class="pk-set-pill">v${PK_VERSION}</span>`) +
             row('Signed in as', 'Your current team session.', `<span class="pk-set-pill">${esc(team() || 'team')}</span>`)) +
-          card('Teams', 'Teams configured for this project.',
-            row('Enabled', 'Greyed teams are off this phase.', `<div class="pk-set-teamtags">${teamRows}</div>`)) +
           card('Keyboard shortcuts', 'While a ticket detail or reply box is open.',
             row('Post reply / question', 'Send without reaching for the mouse.', `${kbd('⌘/Ctrl')} ${kbd('Enter')}`) +
             row('Close / dismiss', 'Back out of a detail or overlay.', kbd('Esc'))) +
@@ -2659,19 +2660,14 @@
     // team session → admin door). For an admin previewing a team board (OVERRIDE = unlocked),
     // it becomes a "Builder Mode" bar pinned to the bottom of the screen that returns to the
     // admin console with the admin session intact.
+    /* The "← Builder Mode" bar is gone. It was a full-width fixture pinned to the bottom of every
+     * page of every team board, saying what the heading already says: the team NAME is the route
+     * back, and it carries a title explaining so. One affordance, in the place a person is already
+     * looking, beats a second one shouting from the floor of the screen. */
     const upgrade = $('#tmd-upgrade');
     if (upgrade) {
-      if (OVERRIDE) {
-        upgrade.textContent = '← Builder Mode';
-        upgrade.href = boardBase(ADMIN_TEAM);
-        upgrade.classList.add('tmd-upgrade-unlocked');
-        const foot = upgrade.closest('.tmd-foot'); if (foot) foot.classList.add('tmd-foot-unlocked');
-        const rootEl = document.querySelector('.tmd'); if (rootEl) rootEl.classList.add('tmd-unlocked');
-      }
-      upgrade.addEventListener('click', (e) => {
-        e.preventDefault();
-        goBuilder();
-      });
+      const foot = upgrade.closest('.tmd-foot');
+      if (foot) foot.remove(); else upgrade.remove();
     }
 
     // Jump to Builder Mode: an admin previewing a team board (OVERRIDE) keeps its session; a real
