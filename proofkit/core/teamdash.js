@@ -2288,10 +2288,26 @@
      * also means the board can send them to the right place: their own team's, not whichever one
      * they happened to pick from a dropdown. */
     function afterAccount(user) {
-      const t = user.role === 'builder' ? ADMIN_TEAM : (user.team || '');
+      /* A BUILDER who signs in on a team board is here to see THAT team. Sending them to the
+       * Builder board — which is what `role === 'builder' -> ADMIN_TEAM` did — answers a question
+       * they did not ask, and makes the team dropdown look broken: pick a team, get asked to sign
+       * in, end up back where you started.
+       *
+       * Their session team stays ADMIN_TEAM, because that is what OVERRIDE keys on to grant a
+       * Builder read of someone else's board. OVERRIDE is computed once at module load, before
+       * this sign-in happened, so a reload is what puts them in the team view — with the session
+       * already established, it comes straight up. */
+      const isBuilder = user.role === 'builder';
+      const slugTeam = teamFromSlug(slugInUrl());
+      if (isBuilder) {
+        setSession(ADMIN_TEAM, ACCOUNT_KEY_SENTINEL);
+        location.reload();
+        return;
+      }
+      const t = user.team || '';
       if (!t) { login.setError('This account has no team assigned. Ask the Builder to add you to one.'); return; }
       setSession(t, ACCOUNT_KEY_SENTINEL);
-      if (teamSlug(t) !== teamSlug(team() || t)) { location.replace(boardBase(t)); return; }
+      if (teamSlug(t) !== teamSlug(slugTeam || t)) { location.replace(boardBase(t)); return; }
       loadData()
         .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
         .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });

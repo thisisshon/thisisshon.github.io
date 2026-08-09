@@ -219,6 +219,21 @@ export function getAuthToken() {
 export function setAccountSession(user, token) {
   try { localStorage.setItem(ACCT_ID, JSON.stringify(user || null)); } catch (e) {}
   try { sessionStorage.setItem(ACCT_TOK, token || ''); } catch (e) {}
+  /* An account session IS a session, and the boards read `getSession()` to decide what they are
+   * looking at. Signing in with an access key set the account and the token but never pkTeam /
+   * pkKey, so getSession() came back empty and every gate keyed on it failed in a different way:
+   *
+   *   - OVERRIDE on a team board requires getSession().team === ADMIN_TEAM to let a Builder in.
+   *     With no team it stayed '', so a Builder opening /proofkit/product was treated as an admin
+   *     who had landed with no slug and was bounced straight back to the Builder board.
+   *   - init() gates on `s.key`, so with no key the board showed its sign-in panel — to somebody
+   *     who had just signed in.
+   *
+   * That is one omission producing "it asks me to log in, then sends me to the wrong board". The
+   * key is the sentinel rather than a real credential: nothing authorises with it, authHeaders()
+   * carries the bearer token. It marks the session as account-backed. */
+  const team = user && user.role === 'builder' ? ADMIN_TEAM : ((user && user.team) || '');
+  if (team) setSession(team, ACCOUNT_KEY_SENTINEL);
 }
 /** Lock this tab but keep the identity, so the next prompt asks only for the PIN. */
 export function lockTab() {
