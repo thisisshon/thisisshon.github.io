@@ -1,23 +1,23 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, ADMIN_TEAM, isTeamEnabled,
     BASE, TEAM_BASE, boardBase,
-    getSession, setSession, clearSession, homeUrl, SITE_ORIGIN, buildLoginHandoff, buildPanelLogin, buildAccessLogin, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
+    getSession, setSession, clearSession, homeUrl, SITE_ORIGIN, buildLoginHandoff, buildAccessLogin, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
     // v3 shared vocabulary (single source of truth in ./config.js — never re-declared here):
     // comment types + per-type template fields, teamStatus→token colours, the summary renderer,
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
     COMMENT_TYPES, TYPE_FIELDS, STATUS_COLORS, renderSummary, needsScreenshot,
     // Overlay-UI flag (global): 'new' HUD vs 'old' rectangle composer.
-    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=74611b3e1e';
-  import { pkConfirm, pkAlert } from './modal.js?v=74611b3e1e';
-  import { injectCss } from './inject-css.js?v=74611b3e1e';
-  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=74611b3e1e'; // New HUD path (overlayUi === 'new')
+    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=9d97d34b43';
+  import { pkConfirm, pkAlert } from './modal.js?v=9d97d34b43';
+  import { injectCss } from './inject-css.js?v=9d97d34b43';
+  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=9d97d34b43'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
   // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
   // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
   // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
   // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
-  import pkTokensCss from './design/tokens.css.js?v=74611b3e1e';
-  import pkComponentsCss from './design/components.css.js?v=74611b3e1e';
+  import pkTokensCss from './design/tokens.css.js?v=9d97d34b43';
+  import pkComponentsCss from './design/components.css.js?v=9d97d34b43';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
@@ -333,48 +333,8 @@
       }
     }
 
-    /* The team-key form, kept as the fallback for a deployment that has not moved to access keys.
-     * Built on demand — it is a fallback, so it should not exist until someone asks. */
-    let teamFallback = null;
-    function showTeamKeyFallback() {
-      if (teamFallback) { teamFallback.el.hidden = false; login.el.hidden = true; return; }
-      teamFallback = buildPanelLogin({
-        title: 'Team sign-in',
-        sub: 'Select your team and enter its key.',
-        onClose: () => { teamFallback.el.hidden = true; login.el.hidden = false; login.focus(); },
-      });
-      const go = () => tryTeamKey();
-      teamFallback.button.addEventListener('click', go);
-      teamFallback.keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-      document.body.appendChild(teamFallback.el);
-      login.el.hidden = true;
-    }
-
-    async function tryTeamKey() {
-      const id = teamFallback.keyInput.value.trim();
-      if (!id) { teamFallback.keyInput.focus(); return; }
-      const picked = teamFallback.getTeam();
-      const team = picked || ADMIN_TEAM;
-      setSession(team, id);
-      teamFallback.setBusy(true, 'Authenticating'); teamFallback.setError('');
-      try {
-        if (!LOCAL) await store.list(pagePath());
-        teamFallback.el.remove(); teamFallback = null;
-        hideLogin();
-        enter();
-      } catch (e) {
-        clearSession();
-        teamFallback.setBusy(false, 'Authenticate');
-        teamFallback.setError(e.message === 'unauthorized'
-          ? (picked ? 'Incorrect key. Please try again.' : 'That is not the Builder key. Choose your team if you are signing in as a team.')
-          : ('Could not connect — ' + e.message));
-        teamFallback.keyInput.focus(); teamFallback.keyInput.select();
-      }
-    }
-
     function hideLogin() {
       if (login) login.el.remove();
-      if (teamFallback) { teamFallback.el.remove(); teamFallback = null; }
     }
 
     // ---- styles (injected once, only in review mode) ---------------------

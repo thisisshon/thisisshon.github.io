@@ -665,7 +665,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=74611b3e1e'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=9d97d34b43'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -673,7 +673,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=74611b3e1e';
+} from './vocab.js?v=9d97d34b43';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1424,141 +1424,19 @@ export function buildAccessLogin(opts) {
   };
 }
 
-export function buildPanelLogin(opts) {
-  opts = opts || {};
-  const title = opts.title || 'Panel Login';
-  const sub = opts.sub || 'Enter your key to continue.';
-  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const el = document.createElement('div');
-  el.className = 'pk-login';
-  // Optional close (✕), top-right of the card. Only rendered when a host wires
-  // opts.onClose — the on-page overlay is dismissible; the dashboards are not.
-  const closeBtn = opts.onClose
-    ? '<button type="button" class="pk-login-close" aria-label="Close">' +
-        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>' +
-      '</button>'
-    : '';
-  el.innerHTML =
-    /* Same order as every other auth screen: mark, title, subtitle, fields, one full-width
-     * button. It used to open with a decorative glow and an eyebrow, put the title second and
-     * the wordmark LAST, and right-align a pill button — five things none of the other screens
-     * do. The glow is gone rather than restyled; "clean" is mostly a subtraction. */
-    '<div class="pk-login-card" role="dialog" aria-modal="true">' +
-      closeBtn +
-      '<div class="pk-access-mark">' + PK_MARK + '<span>Proofkit</span></div>' +
-      '<h1 class="pk-login-title">' + esc(title) + '</h1>' +
-      '<p class="pk-login-sub">' + esc(sub) + '</p>' +
-      '<div class="pk-login-field">' +
-        '<span class="pk-login-label">Team</span>' +
-        '<div class="pk-login-team"></div>' +
-      '</div>' +
-      '<div class="pk-login-field">' +
-        '<label class="pk-login-label" for="pk-login-key">Key</label>' +
-        '<input id="pk-login-key" class="pk-login-input" type="password" placeholder="Key" autocomplete="off" spellcheck="false" />' +
-      '</div>' +
-      '<div class="pk-login-err" hidden></div>' +
-      '<button type="button" class="pk-login-btn">Authenticate</button>' +
-      // Touch ID. Rendered only when the host opts in (opts.onPasskey) AND revealed only once a
-      // platform authenticator is confirmed present — see below. It is deliberately absent from
-      // the in-page overlay on third-party sites: WebAuthn binds a credential to the origin that
-      // created it, so a passkey for the dashboards simply cannot be used on someone else's
-      // domain, and offering it there would be a button that can only ever fail.
-      // REMOTE auth: used where WebAuthn cannot run at all — the in-page overlay on a third-party
-      // site. It does not authenticate here; it hands off to the extension, which opens the auth
-      // page on our own origin (the only place the passkey is valid), then closes that tab and
-      // returns the user to this one. Shown unconditionally: the capability belongs to the
-      // extension, not to this page, so there is nothing local to feature-detect.
-      (opts.onRemoteAuth
-        ? '<button type="button" class="pk-login-touch">' +
-            '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-              '<path d="M12 10v4a8 8 0 0 1-.4 2.5"/><path d="M8.5 8.5a5 5 0 0 1 7 3.5v2"/>' +
-              '<path d="M5.5 6.5a9 9 0 0 1 13 5.5v2.5"/><path d="M8 20a12 12 0 0 0 1.2-3"/>' +
-              '<path d="M15.5 19.5A16 16 0 0 0 16 15"/></svg>' +
-            '<span>Sign in with Touch ID</span></button>'
-        : '') +
-      (opts.onPasskey
-        ? '<button type="button" class="pk-login-touch" hidden>' +
-            '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-              '<path d="M12 10v4a8 8 0 0 1-.4 2.5"/><path d="M8.5 8.5a5 5 0 0 1 7 3.5v2"/>' +
-              '<path d="M5.5 6.5a9 9 0 0 1 13 5.5v2.5"/><path d="M8 20a12 12 0 0 0 1.2-3"/>' +
-              '<path d="M15.5 19.5A16 16 0 0 0 16 15"/></svg>' +
-            '<span>Sign in with Touch ID</span></button>'
-        : '') +
-    '</div>';
-  const q = (s) => el.querySelector(s);
-  // Team = a custom (non-native) dropdown, full-width inside the card.
-  // Teams gated off via TEAM_ENABLED render greyed + inert; only enabled teams
-  // (and Builder, always enabled) are pickable. One flag flip re-enables one.
-  const teamItems = [...TEAMS].sort((a, b) => a.localeCompare(b)).map((t) => ({ value: t, label: t, disabled: !isTeamEnabled(t) }));
-  // Builder (admin) sits last, fenced off from the ordinary teams by a divider.
-  teamItems.push({ value: ADMIN_TEAM, label: ADMIN_TEAM, dividerBefore: true });
-  const teamDD = buildDropdown({ items: teamItems, placeholder: 'Select Team', block: true });
-  q('.pk-login-team').appendChild(teamDD.el);
-  if (opts.onClose) q('.pk-login-close').addEventListener('click', () => opts.onClose());
+/* buildPanelLogin is gone. It was the Team + Key panel — pick a team from a dropdown, type that
+ * team's shared key — and it was the last screen in Proofkit asking a different question from
+ * every other one. The credential was the deeper problem: a key belongs to a TEAM, so a board
+ * behind it could not tell who had opened it, and anyone holding one could select any team in
+ * the list. The access key names a person, so the board follows from who they are.
+ *
+ * Its final caller was a fallback in the overlay that nothing reached any more — the overlay
+ * became a single Login button that hands off to /proofkit/login. Removed rather than left
+ * dormant: a screen kept "just in case" is a screen nobody maintains and everybody eventually
+ * finds. The team key itself still authenticates at the Worker (X-Review-Pass) for older
+ * deployments; there is simply no longer a door in the product that asks for one.
+ */
 
-  /* Touch ID: show the button only after confirming this machine really has a sensor. Asking
-   * first and revealing second means the panel never advertises a route it cannot deliver — a
-   * dead biometric button on a desktop without a reader is worse than no button at all. */
-  if (opts.onRemoteAuth) {
-    const remoteBtn = q('.pk-login-touch');
-    remoteBtn.addEventListener('click', () => {
-      remoteBtn.disabled = true;
-      remoteBtn.querySelector('span').textContent = 'Opening sign-in…';
-      Promise.resolve(opts.onRemoteAuth()).catch((err) => {
-        remoteBtn.disabled = false;
-        remoteBtn.querySelector('span').textContent = 'Sign in with Touch ID';
-        const e = q('.pk-login-err');
-        e.textContent = (err && err.message) || 'Could not open the sign-in page.';
-        e.hidden = false;
-      });
-    });
-  }
-
-  const touchBtn = opts.onPasskey ? q('.pk-login-touch[hidden]') : null;
-  if (touchBtn) {
-    const setBusy = (busy) => {
-      touchBtn.disabled = busy;
-      touchBtn.querySelector('span').textContent = busy ? 'Waiting for Touch ID…' : 'Sign in with Touch ID';
-    };
-    hasPlatformAuthenticator().then((ok) => { if (ok) touchBtn.hidden = false; });
-    touchBtn.addEventListener('click', async () => {
-      setBusy(true);
-      const e = q('.pk-login-err'); e.textContent = ''; e.hidden = true;
-      try {
-        // Usernameless: the credential is resident, so the browser offers the account and the
-        // user types nothing at all.
-        const body = await passkeyLoginDiscoverable(opts.workerUrl || WORKER_URL);
-        if (body) { opts.onPasskey(body); return; }
-        // null = no resident credential, or the sheet was dismissed. Neither is an error; the
-        // key field is right there. Only say something for the case worth explaining.
-        e.textContent = 'No passkey on this device yet — sign in with your key, then enrol under Settings → Passkeys.';
-        e.hidden = false;
-      } catch (err) {
-        e.textContent = err.message || 'Could not sign in with Touch ID.';
-        e.hidden = false;
-      } finally { setBusy(false); }
-    });
-  }
-
-  return {
-    el,
-    getTeam: () => teamDD.getValue(),
-    setTeam: (t) => teamDD.setValue(t || ''),
-    focusTeam: () => teamDD.focus(),
-    keyInput: q('#pk-login-key'),
-    button: q('.pk-login-btn'),
-    setError: (msg) => { const e = q('.pk-login-err'); e.textContent = msg || ''; e.hidden = !msg; },
-    setBusy: (busy, label) => {
-      const b = q('.pk-login-btn'); b.disabled = !!busy; b.classList.toggle('is-busy', !!busy);
-      if (label != null) b.textContent = label;
-    },
-  };
-}
-
-/* --------------------------------------------------------------------------
- * Friendly page names (dashboard link text). Project-configurable.
- * ------------------------------------------------------------------------ */
 export const PAGE_NAMES = {
   '/': 'Home Page',
   '/about-us': 'About Us',
