@@ -1264,6 +1264,17 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   padding:var(--pk-space-4) var(--pk-space-6);border-top:var(--pk-border-hair) solid var(--pk-hair)}
 @media (max-width:720px){.pk-impv-card{width:96vw;height:90vh}}
 
+/* A selectable team tile. Same footprint as the drill tile it replaces, so turning selection on
+   does not reflow the grid — only the affordance changes, not the layout. */
+.pk-tsel{position:relative;display:flex;flex-direction:column;gap:var(--pk-space-2);cursor:pointer;
+  padding:var(--pk-space-4h);border:var(--pk-border-hair) solid var(--pk-hair);
+  border-left:var(--pk-border-strong) solid var(--pk-hair);background:var(--pk-input)}
+.pk-tsel.is-picked{border-left-color:var(--pk-red);background:var(--pk-hover)}
+.pk-tsel-box{position:absolute;top:var(--pk-space-3h);right:var(--pk-space-3h);accent-color:var(--pk-red)}
+.pk-tsel .pk-set-tile-t{font:600 var(--pk-text-md)/1.3 var(--pk-font);color:var(--pk-ink);padding-right:var(--pk-space-6)}
+.pk-tsel .pk-set-tile-n{font:400 var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-muted)}
+.pk-tsel-n{font:600 var(--pk-text-sm)/1 var(--pk-font);color:var(--pk-muted);margin-right:var(--pk-space-2)}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person
