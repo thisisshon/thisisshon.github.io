@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=c187d6fe81';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=4a9551b8d5';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=c187d6fe81';
-  import { createCardRenderer } from './card.js?v=c187d6fe81';
-  import { ICON } from './icons.js?v=c187d6fe81';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=c187d6fe81';
+  import { PK_VERSION } from './version.js?v=4a9551b8d5';
+  import { createCardRenderer } from './card.js?v=4a9551b8d5';
+  import { ICON } from './icons.js?v=4a9551b8d5';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=4a9551b8d5';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -416,7 +416,7 @@
            * This one adds or removes a MEMBERSHIP, so a team can be worked with on several projects
            * at once. The server refuses to remove the last one (409) and says why; apiFetch surfaces
            * that message, so callers do not have to guard against it themselves. */
-          teamProjectLink: (team, projectId, remove) => apiFetch('/teams/projects', { method: 'POST', body: JSON.stringify({ team, projectId, remove: !!remove }) }),
+          teamProjectLink: (team, projectId, remove, confirm) => apiFetch('/teams/projects', { method: 'POST', body: JSON.stringify({ team, projectId, remove: !!remove, confirm: confirm || '' }) }),
           projectLinks: () => apiFetch('/admin/project-links'),
           projectLinkSet: (viewerProject, subjectProject, canSee) => apiFetch('/admin/project-links', { method: 'POST', body: JSON.stringify({ viewerProject, subjectProject, canSee }) }),
           // ---- 10.0 ----
@@ -2401,7 +2401,7 @@
           onSelect: async () => {
             if (!(await pkConfirm({
               title: 'Delete all notifications',
-              message: 'Remove all ' + list.length + ' notification(s)? Notifications are a record of ticket movement — the tickets themselves are not touched.',
+              message: 'Remove all ' + list.length + ' ' + (list.length === 1 ? 'notification' : 'notifications') + '? Notifications are a record of ticket movement — the tickets themselves are not touched.',
               confirmLabel: 'Delete All', danger: true,
             }))) return;
             await store.clearNotifs();
@@ -3116,7 +3116,8 @@
           const left = Date.parse(iso) - Date.now();
           if (left <= 0) return 'ready now';
           const hrs = Math.ceil(left / 3600000);
-          return hrs > 24 ? 'in ' + Math.ceil(hrs / 24) + ' day(s)' : 'in ' + hrs + 'h';
+          const days = Math.ceil(hrs / 24);
+          return hrs > 24 ? 'in ' + days + (days === 1 ? ' day' : ' days') : 'in ' + hrs + 'h';
         };
         holder.innerHTML =
           card('Recycle bin', 'Deleted items keep their history. Access already ended.',
@@ -3158,6 +3159,34 @@
           });
         });
       }
+
+      /* Who is in what — read from `orgData`, which is the last thing fillOrg loaded.
+       *
+       * These lived INSIDE fillOrg, and the delegated click handler is outside it, so every branch
+       * of the team multi-select toolbar threw "teamsIn is not defined" before it did anything:
+       * Select all, Clear, Enable, Disable, Delete and Done all failed together, because the line
+       * that broke ran before the branch that told them apart. One definition, both callers.
+       */
+      const projOf = (t) => (t && t.projectId) || 'default';
+      /* Where a team IS, which is now a list. `projectId` is only its ORIGIN — the project it was
+       * created in — and a team added to a second project still carries the first one there. Fall
+       * back to the origin so a server that predates /teams/projects still renders correctly. */
+      const projectsOf = (t) => (t && t.projectIds && t.projectIds.length ? t.projectIds : [projOf(t)]);
+      const teamsIn = (pid) => (orgData.teams || []).filter((t) => projectsOf(t).includes(pid));
+      const peopleIn = (teamName) => (orgData.users || []).filter((u) => (u.team || '') === teamName);
+      const peopleInProject = (pid) => {
+        const names = new Set(teamsIn(pid).map((t) => t.name));
+        return (orgData.users || []).filter((u) => names.has(u.team || ''));
+      };
+      const ticketsFor = (name) => roots().filter((c) => (c.team || '') === name || (c.toTeam || '') === name).length;
+      /** The same count, narrowed to one project — what a team's tile means on a project page. */
+      const ticketsHere = (name, pid) => roots().filter((c) =>
+        ((c.team || '') === name || (c.toTeam || '') === name) && (c.projectId || 'default') === pid).length;
+      /** The Organisation search box, as a predicate. Outside fillOrg for the same reason. */
+      const orgHit = (x) => {
+        const q2 = orgQuery.trim().toLowerCase();
+        return !q2 || String(x || '').toLowerCase().includes(q2);
+      };
 
       async function fillOrg() {
         const outer = $('#pk-org'); if (!outer) return;
@@ -3236,19 +3265,6 @@
 
         const q = orgQuery.trim().toLowerCase();
         const hit = (x) => !q || String(x || '').toLowerCase().includes(q);
-        const projOf = (t) => (t && t.projectId) || 'default';
-        /* Where a team IS, which is now a list. `projectId` is only its ORIGIN — the project it was
-         * created in — and a team added to a second project still carries the first one there. Fall
-         * back to the origin so a server that predates /teams/projects still renders correctly. */
-        const projectsOf = (t) => (t && t.projectIds && t.projectIds.length ? t.projectIds : [projOf(t)]);
-        const teamsIn = (pid) => teams.filter((t) => projectsOf(t).includes(pid));
-        const peopleIn = (teamName) => users.filter((u) => (u.team || '') === teamName);
-        const peopleInProject = (pid) => {
-          const names = new Set(teamsIn(pid).map((t) => t.name));
-          return users.filter((u) => names.has(u.team || ''));
-        };
-        const ticketsFor = (name) => roots().filter((c) => (c.team || '') === name || (c.toTeam || '') === name).length;
-
         // ---- level: a person ------------------------------------------------------------------
         if (orgPath.person) {
           const u = users.find((x) => x.email === orgPath.person);
@@ -3423,12 +3439,16 @@
                     ? `<label class="pk-set-tile pk-tsel${teamSel.has(t.name) ? ' is-picked' : ''}">` +
                         `<input type="checkbox" class="pk-tsel-box" data-team-pick="${esc(t.name)}"${teamSel.has(t.name) ? ' checked' : ''}>` +
                         `<span class="pk-set-tile-t">${esc(t.name)}${t.enabled ? '' : ' · inactive'}</span>` +
-                        `<span class="pk-set-tile-n">${peopleIn(t.name).length} people · ${ticketsFor(t.name)} tickets</span>` +
+                        `<span class="pk-set-tile-n">${peopleIn(t.name).length} people · ${ticketsHere(t.name, p.id)} tickets</span>` +
                       `</label>`
                     : drillCard(`data-team-open="${esc(t.name)}"`,
                         esc(t.name), t.enabled ? '' : 'inactive', [
                           [peopleIn(t.name).length, 'people'],
-                          [ticketsFor(t.name), 'tickets'],
+                          /* THIS project's tickets for this team, not the team's total. On a
+                           * project page a team working on three projects would otherwise show the
+                           * same number on all three, and the number would answer a question the
+                           * page is not asking. The team's own page still shows its total. */
+                          [ticketsHere(t.name, p.id), 'tickets'],
                         ]))).join(''))
                 : emptyRow(q ? 'No matches.' : 'No teams yet.')) +
               (teamSelectMode
@@ -3468,10 +3488,14 @@
         // ---- level: all projects --------------------------------------------------------------
         const shown = projects.filter((p) => hit(p.name) || hit(p.id)
           || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email)));
-        const ticketsInProject = (pid) => {
-          const names = new Set(teamsIn(pid).map((t) => t.name));
-          return roots().filter((c) => names.has(c.team || '') || names.has(c.toTeam || '')).length;
-        };
+        /* Counted by the ticket's OWN project, not by which teams work here.
+         *
+         * Deriving it from team names double-counted the moment a team worked on two projects: the
+         * same ticket answered for both, so two projects each claimed all five. A ticket has said
+         * which project it belongs to since pins started carrying one — ask it, rather than
+         * inferring from its author. Older rows carry the derived value and still answer correctly. */
+        const ticketsInProject = (pid) =>
+          roots().filter((c) => (c.projectId || 'default') === pid).length;
         outer.innerHTML =
           (shown.length
             ? tileGrid(shown.map((p) => drillCard(`data-project-open="${esc(p.id)}"`,
@@ -3575,13 +3599,7 @@
             if (d.personOpen) return go({ person: d.personOpen });
 
             // creation
-            if (t.id === 'pk-proj-add') {
-              const name = await pkPrompt({ title: 'Add a project', message: 'Project name:', value: '', confirmLabel: 'Create' });
-              if (name === null || !name.trim()) return;
-              const id = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-              await store.createProject(id, name.trim(), 'owned');
-              return fillOrg();
-            }
+            if (t.id === 'pk-proj-add') return openAddProject();
             if (t.id === 'pk-team-add') return openAddTeam();
             if (t.id === 'pk-team-existing') return openAddExistingTeams();
             if (t.id === 'pk-person-add') return openAddPerson();
@@ -3705,11 +3723,18 @@
              * catch below shows that reason as it was written. */
             if (d.teamUnlink) {
               const pname = (orgData.projects.find((x) => x.id === d.teamUnlinkProject) || {}).name || d.teamUnlinkProject;
-              if (!(await pkConfirm({
+              /* Your OWN Access Key, not a shared password — the same one you signed in with, and
+               * the Builder types theirs. Removal is the one direction with nothing left on screen
+               * to show it happened: the project's board simply stops carrying that team's work. So
+               * it asks for the credential of the person the audit line will name, rather than a
+               * yes/no that a mis-aimed click can answer. */
+              const key = await pkPrompt({
                 title: 'Remove from this project',
-                message: `Take “${d.teamUnlink}” out of ${pname}? The team, its people and its tickets all stay — it simply is not worked with on this project any more.`,
-                confirmLabel: 'Remove' }))) return;
-              await store.teamProjectLink(d.teamUnlink, d.teamUnlinkProject, true);
+                message: `Take “${d.teamUnlink}” out of ${pname}? The team, its people and its tickets all stay — it simply is not worked with on this project any more.\n\nEnter your Access Key to confirm.`,
+                value: '', confirmLabel: 'Remove',
+              });
+              if (key === null || !key.trim()) return;
+              await store.teamProjectLink(d.teamUnlink, d.teamUnlinkProject, true, key.trim());
               return go({ team: null, person: null });
             }
             if (d.teamRotate) {
@@ -3726,7 +3751,7 @@
               return fillOrg();
             }
             if (d.tsel) {
-              const shownTeams = teamsIn(orgPath.project).filter((x) => hit(x.name)).map((x) => x.name);
+              const shownTeams = teamsIn(orgPath.project).filter((x) => orgHit(x.name)).map((x) => x.name);
               if (d.tsel === 'done') { teamSelectMode = false; teamSel.clear(); return fillOrg(); }
               if (d.tsel === 'all') { shownTeams.forEach((n2) => teamSel.add(n2)); return fillOrg(); }
               if (d.tsel === 'none') { teamSel.clear(); return fillOrg(); }
@@ -3744,9 +3769,12 @@
                 const held = picked.reduce((a, n2) => a + ticketsFor(n2), 0);
                 const folk = picked.reduce((a, n2) => a + peopleIn(n2).length, 0);
                 if (!(await pkConfirm({
-                  title: `Delete ${picked.length} team(s)`,
+                  title: `Delete ${n(picked.length, 'team')}`,
+                  /* "1 ticket", "0 tickets" — n() agrees the noun with its number. "ticket(s)" is a
+                   * template showing through: it asks the reader to do the agreement the sentence
+                   * already knows the answer to. */
                   message: picked.join(', ') +
-                    `\n\n${folk} person/people and ${held} ticket(s) go to the recycle bin with them.` +
+                    `\n\n${n(folk, 'person', 'people')} and ${n(held, 'ticket')} go to the recycle bin with them.` +
                     `\nNothing is destroyed — all of it can be restored.`,
                   confirmLabel: `Delete ${picked.length}`, danger: true }))) return;
                 let failed = 0;
@@ -3762,7 +3790,7 @@
               if (!(await pkConfirm({
                 title: 'Delete team',
                 message: `Move “${d.teamDelete}” to the recycle bin? Its password stops working immediately`
-                  + (held ? `, and its ${held} ticket(s) go with it` : '')
+                  + (held ? `, and its ${n(held, 'ticket')} ${held === 1 ? 'goes' : 'go'} with it` : '')
                   + '. Nothing is destroyed — you can restore it.',
                 confirmLabel: 'Delete', danger: true }))) return;
               await store.teamDelete(d.teamDelete);
@@ -3848,7 +3876,9 @@
               : `<p class="pk-reopen-sub">${esc2(opts.emptyText || 'There are no teams yet. Create one first.')}</p>`) +
             `<div class="pk-reopen-err" hidden></div>` +
             `<div class="pk-reopen-actions">` +
-              `<button type="button" class="pk-a pk-tp-cancel">Cancel</button>` +
+              // "Cancel" is wrong when the thing was already created and this dialog only adds to
+              // it — backing out of Add-a-project's team picker cancels nothing. Callers say so.
+              `<button type="button" class="pk-a pk-tp-cancel">${esc2(opts.cancelLabel || 'Cancel')}</button>` +
               `<button type="button" class="pk-a pk-a--primary pk-tp-go"${all.length ? '' : ' disabled'}>${esc2(opts.confirmLabel || 'Save')}</button>` +
             `</div></div>`;
         document.body.appendChild(el);
@@ -3887,6 +3917,44 @@
             }
             showOnce(v.name, key, 'Password');
             fillOrg();
+          },
+        });
+      }
+
+      /* Create a project, and bring the teams that will work on it with you.
+       *
+       * A new project used to arrive empty and stay that way until somebody remembered to go and
+       * add teams to it — which, before memberships existed, they could not do at all: importing a
+       * roster into it skipped every team, because the teams already existed globally. Naming the
+       * project and saying who works on it are one intention, so they are one dialog.
+       *
+       * The teams are optional. A project with none is a perfectly good empty project, and the
+       * picker is skipped entirely when the instance has no teams yet.
+       */
+      async function openAddProject() {
+        const name = await pkPrompt({ title: 'Add a project', message: 'Project name:', value: '', confirmLabel: 'Create' });
+        if (name === null || !name.trim()) return;
+        const id = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        await store.createProject(id, name.trim(), 'owned');
+        await fillOrg();
+
+        const all = (orgData.teams || []).map((t) => t.name).filter(Boolean);
+        if (!all.length) return;
+        openTeamPicker({
+          title: 'Who works on ' + name.trim() + '?',
+          sub: 'Existing teams that will review this project. They keep everything they already have — the same team, working on one more project. You can change this later.',
+          multi: true,
+          only: all,
+          confirmLabel: 'Add',
+          cancelLabel: 'Not now',
+          onPick: async (list) => {
+            const failed = [];
+            for (const t2 of (list || [])) {
+              try { await store.teamProjectLink(t2, id, false); }
+              catch (e) { failed.push(`${t2} — ${e.message}`); }
+            }
+            await fillOrg();
+            if (failed.length) pkAlert({ title: 'Some teams were not added', message: failed.join('\n') });
           },
         });
       }
@@ -3942,7 +4010,7 @@
           const name = `proofkit-${kind}-${String(ref).toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`;
           downloadBlob(JSON.stringify(data, null, 2), 'application/json', name);
           pkAlert({ title: 'Exported', message:
-            `${name}\n\n${data.counts ? `${data.counts.teams} team(s), ${data.counts.people} people, ${data.counts.tickets} tickets.` : ''}` +
+            `${name}\n\n${data.counts ? `${n(data.counts.teams, 'team')}, ${n(data.counts.people, 'person', 'people')}, ${n(data.counts.tickets, 'ticket')}.` : ''}` +
             `\n\nNo passwords or PINs are in this file — people and teams arrive without a way to sign in, and you assign credentials after importing.` });
         } catch (e) { pkAlert('Could not export — ' + e.message); }
       }
@@ -4050,7 +4118,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=c187d6fe81');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=4a9551b8d5');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

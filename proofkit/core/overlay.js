@@ -6,18 +6,18 @@
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
     COMMENT_TYPES, TYPE_FIELDS, STATUS_COLORS, renderSummary, needsScreenshot,
     // Overlay-UI flag (global): 'new' HUD vs 'old' rectangle composer.
-    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=c187d6fe81';
-  import { pkConfirm, pkAlert } from './modal.js?v=c187d6fe81';
-  import { injectCss } from './inject-css.js?v=c187d6fe81';
-  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=c187d6fe81'; // New HUD path (overlayUi === 'new')
+    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=4a9551b8d5';
+  import { pkConfirm, pkAlert } from './modal.js?v=4a9551b8d5';
+  import { injectCss } from './inject-css.js?v=4a9551b8d5';
+  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=4a9551b8d5'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
   // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
   // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
   // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
   // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
-  import pkTokensCss from './design/tokens.css.js?v=c187d6fe81';
-  import pkComponentsCss from './design/components.css.js?v=c187d6fe81';
+  import pkTokensCss from './design/tokens.css.js?v=4a9551b8d5';
+  import pkComponentsCss from './design/components.css.js?v=4a9551b8d5';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
@@ -223,6 +223,27 @@
       } catch (e) { /* best-effort */ }
       return rec;
     }
+    /* THE PROJECT THIS REVIEW IS BEING DONE UNDER.
+     *
+     * The extension has written `pkProject` into the page since it shipped and nothing has ever
+     * read it. It is read here because a pin now belongs to the project it was raised under, not
+     * to whichever project its author's team was created in — and because two projects can be
+     * reviewed on the SAME url, the page itself cannot say which one this is.
+     *
+     * Empty is a valid answer and means "as before": the Worker derives the project the old way and
+     * the page read is unfiltered, so a host site with no extension behaves exactly as it did.
+     */
+    const activeProject = () => {
+      try { return localStorage.getItem('pkProject') || ''; } catch (e) { return ''; }
+    };
+    /* Stamped on the way OUT rather than at the composer, so every path that saves a pin — single,
+     * batch, draft tray — carries it without each one having to remember. A record that already
+     * names a project keeps it. */
+    const withProject = (rec) => {
+      const p = activeProject();
+      return (!p || (rec && rec.projectId)) ? rec : { ...rec, projectId: p };
+    };
+
     const store = LOCAL
       ? {
           async list(path) { return localGet(path); },
@@ -255,13 +276,14 @@
           // worker reads the empty-host namespace and an overlay on a foreign site would see the
           // pins of whatever shares its path elsewhere.
           list: (path) => apiFetch('/comments?path=' + encodeURIComponent(path)
-            + '&url=' + encodeURIComponent(location.href)),
-          add: (rec) => apiFetch('/comments', { method: 'POST', body: JSON.stringify(rec) }),
+            + '&url=' + encodeURIComponent(location.href)
+            + (activeProject() ? '&projectId=' + encodeURIComponent(activeProject()) : '')),
+          add: (rec) => apiFetch('/comments', { method: 'POST', body: JSON.stringify(withProject(rec)) }),
           // Edit a root comment's content (raiser/admin, TBI only) — snapshots the prior version
           // server-side; returns the masked, updated record (with its versions[] trail).
           update: (rec) => apiFetch('/comments/update', { method: 'POST', body: JSON.stringify(rec) }),
           // Array POST /comments → 201 {results:[{ok,rec?,error?}]} in input order (F2).
-          addBatch: (recs) => apiFetch('/comments', { method: 'POST', body: JSON.stringify(recs) }),
+          addBatch: (recs) => apiFetch('/comments', { method: 'POST', body: JSON.stringify((recs || []).map(withProject)) }),
           // POST /image → {imageId}; stored KV `img:<uuid>`, never required for a comment (F4).
           uploadImage: (dataUrl) => apiFetch('/image', { method: 'POST', body: JSON.stringify({ dataUrl }) }),
           // POST /confirm → the raiser verifies a deployed bug fix; returns the masked record.
@@ -345,6 +367,12 @@
          even when a comment popover would otherwise overlap the bottom-right. */
       .rv-dock{position:fixed;right:24px;bottom:24px;z-index:var(--pk-z-ov-dock);
         display:flex;align-items:center;gap:20px}
+      /* Quiet by design: it is a standing fact, not a control, so it reads at the weight of a
+         caption and never competes with the pill beside it. */
+      .rv-proj{display:inline-flex;align-items:center;height:var(--pk-control-h-lg);padding:0 14px;
+        border-radius:24px;background:var(--pk-card);color:var(--pk-muted);
+        font:600 var(--pk-text-sm,13px)/1.5 var(--pk-font);box-shadow:var(--pk-shadow-md);
+        white-space:nowrap;max-width:40vw;overflow:hidden;text-overflow:ellipsis}
       /* The dock changes SHAPE between its two states — a dark "Comment" pill becomes a wider red
          "Exit Review Mode" one, and the prev/next pill appears beside it. Swapping that instantly
          reads as two different UIs flickering past each other, so each part is transitioned:
@@ -704,6 +732,25 @@
     logoutBtn.addEventListener('click', logout);
     document.body.appendChild(logoutBtn); // bottom-left, above dashBtn
 
+    /* WHICH PROJECT THIS IS BEING FILED UNDER, always on screen.
+     *
+     * The switcher's one real weakness is silent misfiling: twenty comments into the wrong project,
+     * discovered when somebody opens a board. The mitigation is deliberately not a setting you can
+     * go and check — it is a label you cannot miss, sitting beside the button you press to pin.
+     *
+     * Only when there IS one. A host site with no extension has no selected project and gets the
+     * dock exactly as before, rather than a chip reading "default" that tells nobody anything. */
+    const projChip = document.createElement('span');
+    projChip.className = 'rv-proj';
+    {
+      const p = activeProject();
+      const team = (getSession().team || '').trim();
+      if (p) {
+        projChip.textContent = team ? team + ' · ' + p : p;
+        projChip.title = 'Pins on this page are filed under “' + p + '”.';
+        dock.appendChild(projChip);
+      }
+    }
     dock.appendChild(nav);
     dock.appendChild(fab);
     dock.style.display = 'none'; // hidden until the review session is authenticated (revealDock)

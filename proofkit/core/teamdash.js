@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=c187d6fe81';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=4a9551b8d5';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=c187d6fe81';
-  import { createCardRenderer } from './card.js?v=c187d6fe81';
-  import { ICON } from './icons.js?v=c187d6fe81';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=c187d6fe81';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=c187d6fe81';
+  import { PK_VERSION } from './version.js?v=4a9551b8d5';
+  import { createCardRenderer } from './card.js?v=4a9551b8d5';
+  import { ICON } from './icons.js?v=4a9551b8d5';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=4a9551b8d5';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=4a9551b8d5';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -54,6 +54,22 @@
 
     // The effective team: the admin-chosen override, else the signed-in team (config).
     const team = () => OVERRIDE || getSession().team;
+
+    /* WHICH PROJECT'S BOARD THIS IS.
+     *
+     * A team can be worked with on several projects, and its queues are separate: three sites is
+     * three lists of work, not one merged list where you infer a ticket's project from its page
+     * url. Empty means every project this team works on — which is what the board did before there
+     * was anything to choose, so a team on one project never sees a selector at all.
+     *
+     * Per SESSION and per TEAM: the choice belongs to this sign-in, and a Builder who looks at two
+     * teams' boards must not have one team's choice follow them to the other. */
+    const projKey = () => 'pkTeamProject:' + (team() || '');
+    const teamProject = () => { try { return sessionStorage.getItem(projKey()) || ''; } catch (e) { return ''; } };
+    const setTeamProject = (id) => {
+      try { id ? sessionStorage.setItem(projKey(), id) : sessionStorage.removeItem(projKey()); } catch (e) {}
+    };
+    const projectQ = () => (teamProject() ? '&projectId=' + encodeURIComponent(teamProject()) : '');
 
     /* URL identity guard. A signed-in team that hand-edits the slug gets a HARD RESET back to its
      * own board — no partial state, no empty board that looks like a permissions bug. Returns
@@ -466,9 +482,11 @@
           saveViews: async (views) => localSaveViews(team(), views),
           // Screenshot dataURL (Feature 4) stored under rvc-img:<id> in demo mode.
           image: async (id) => { try { return { dataUrl: localStorage.getItem('rvc-img:' + id) || '' }; } catch { return { dataUrl: '' }; } },
+          // Demo mode has one project, so the selector correctly never appears.
+          myProjects: async () => ({ projects: [] }),
         }
       : {
-          comments: () => apiFetch('/comments?team=' + encodeURIComponent(team())),
+          comments: () => apiFetch('/comments?team=' + encodeURIComponent(team()) + projectQ()),
           // Phase 3.1 parity with Builder: conditional GET on the team scope. Send If-None-Match;
           // the Worker answers 304 (no body, no D1 read) when `team:<name>` has not moved since the
           // last poll. Returns {notModified} or {data, etag} — same shape as the Builder's allEtag.
@@ -483,12 +501,14 @@
              * is not, so both kinds of session work here. */
             const headers = { ...authHeaders() };
             if (etag) headers['If-None-Match'] = etag;
-            const res = await fetch(WORKER_URL + '/comments?team=' + encodeURIComponent(team()), { headers });
+            const res = await fetch(WORKER_URL + '/comments?team=' + encodeURIComponent(team()) + projectQ(), { headers });
             if (res.status === 304) return { notModified: true };
             if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
             if (!res.ok) throw new Error('HTTP ' + res.status);
             return { data: await res.json(), etag: res.headers.get('ETag') || '' };
           },
+          // The projects this team works on, for the selector. Its own team only — see the Worker.
+          myProjects: () => apiFetch('/teams/projects?team=' + encodeURIComponent(team())),
           notifs: () => apiFetch('/notifications?team=' + encodeURIComponent(team())),
           // Same treatment for notifications. Both endpoints gate on the SAME `team:<name>` scope,
           // so they share one ETag value — an idle board 304s on both and transfers nothing.
@@ -2755,6 +2775,47 @@
       e.preventDefault(); setDetail(note.dataset.chain);
     });
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    /* THE PROJECT SELECTOR, beside Refresh.
+     *
+     * Mounted only when this team genuinely works on more than one project: a dropdown whose every
+     * option produces the same screen is furniture, and the overwhelming majority of teams are on
+     * exactly one. Same component and the same reasoning as the Builder's project scope, but a
+     * different KIND of thing — the Builder's is a filter over everything they may already see,
+     * this is which of your own boards you are looking at. They are never merged.
+     */
+    (async function mountTeamProjectScope() {
+      const mount = $('#tmd-projscope');
+      if (!mount || LOCAL) return;
+      let projects = [];
+      /* A failure here must not take the board down — but it must not vanish either. Silence sent
+       * me looking for a rendering bug when the lookup itself was the thing failing. */
+      try { projects = ((await store.myProjects()) || {}).projects || []; }
+      catch (e) { console.warn('Proofkit: could not load this team’s projects —', e && e.message); return; }
+      if (projects.length < 2) return;
+
+      /* A remembered project the team has since been removed from would show an empty board and
+       * blame nobody. Fall back to all of them rather than to a lie. */
+      if (teamProject() && !projects.some((p) => p.id === teamProject())) setTeamProject('');
+
+      const items = [{ value: '', label: 'All projects' }]
+        .concat(projects.map((p) => ({ value: p.id, label: p.name || p.id })));
+      const dd = buildDropdown({
+        small: true, menuAlign: 'right', value: teamProject(), items, placeholder: 'All projects',
+        onSelect: async (v) => {
+          if (v === teamProject()) return;
+          setTeamProject(v);
+          /* The cached ETag belongs to the project just left. Keeping it would send an
+           * If-None-Match that cannot match — or, far worse, one that does, answering this
+           * project's board from the other one's cache. */
+          lastCommentsEtag = '';
+          lastSig = '';
+          try { await loadData(); render(); }
+          catch (err) { pkAlert('Could not load that project — ' + err.message); }
+        },
+      });
+      mount.appendChild(dd.el);
+    })();
+
     $('#tmd-refresh').addEventListener('click', async (e) => {
       const btn = e.currentTarget;
       if (btn.classList.contains('is-refreshing')) return;
