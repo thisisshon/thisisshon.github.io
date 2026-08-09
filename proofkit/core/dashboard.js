@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=98617b8fb8';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fbbd97f7b0';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=98617b8fb8';
-  import { createCardRenderer } from './card.js?v=98617b8fb8';
-  import { ICON } from './icons.js?v=98617b8fb8';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=98617b8fb8';
+  import { PK_VERSION } from './version.js?v=fbbd97f7b0';
+  import { createCardRenderer } from './card.js?v=fbbd97f7b0';
+  import { ICON } from './icons.js?v=fbbd97f7b0';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fbbd97f7b0';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -46,7 +46,15 @@
       const headers = { 'Content-Type': 'application/json', ...authHeaders() };
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
       if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) {
+        /* The SERVER'S message, not the status code. Every refusal here is written for a person —
+         * "Move or delete its 5 team(s) first." — and throwing 'HTTP 409' discarded it and showed a
+         * number instead, which tells you something failed and nothing about what to do. The code
+         * is kept only when there is no message to show. */
+        let msg = '';
+        try { msg = ((await res.json()) || {}).error || ''; } catch (e) { msg = ''; }
+        throw new Error(msg || ('HTTP ' + res.status));
+      }
       return res.json();
     }
     function localAll() {
@@ -3842,7 +3850,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=98617b8fb8');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=fbbd97f7b0');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

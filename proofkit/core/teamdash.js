@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=98617b8fb8';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fbbd97f7b0';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=98617b8fb8';
-  import { createCardRenderer } from './card.js?v=98617b8fb8';
-  import { ICON } from './icons.js?v=98617b8fb8';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=98617b8fb8';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=98617b8fb8';
+  import { PK_VERSION } from './version.js?v=fbbd97f7b0';
+  import { createCardRenderer } from './card.js?v=fbbd97f7b0';
+  import { ICON } from './icons.js?v=fbbd97f7b0';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fbbd97f7b0';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=fbbd97f7b0';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -80,7 +80,15 @@
       const headers = { 'Content-Type': 'application/json', ...authHeaders() };
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
       if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) {
+        /* The SERVER'S message, not the status code. Every refusal here is written for a person —
+         * "Move or delete its 5 team(s) first." — and throwing 'HTTP 409' discarded it and showed a
+         * number instead, which tells you something failed and nothing about what to do. The code
+         * is kept only when there is no message to show. */
+        let msg = '';
+        try { msg = ((await res.json()) || {}).error || ''; } catch (e) { msg = ''; }
+        throw new Error(msg || ('HTTP ' + res.status));
+      }
       return res.json();
     }
     // The team-visible projection (matches the Worker's maskForTeam) for LOCAL mode. The
