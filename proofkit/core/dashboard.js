@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=bc1373f10d';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=e3bb0de929';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=bc1373f10d';
-  import { createCardRenderer } from './card.js?v=bc1373f10d';
-  import { ICON } from './icons.js?v=bc1373f10d';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=bc1373f10d';
+  import { PK_VERSION } from './version.js?v=e3bb0de929';
+  import { createCardRenderer } from './card.js?v=e3bb0de929';
+  import { ICON } from './icons.js?v=e3bb0de929';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=e3bb0de929';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2886,8 +2886,8 @@
       // =========================================================================================
       if (settingsSection === 'org') {
         html =
-          `<div class="pk-set-search"><input id="pk-org-q" class="pk-login-input" type="search" ` +
-            `placeholder="Search projects, teams and people" autocomplete="off" value="${esc(orgQuery)}"></div>` +
+          // Search sits in the header beside the title, not in a band of its own above the content.
+          // It is a control on this module, and the header is where this module's controls live.
           `<div id="pk-org-resets"></div><div id="pk-org">` + card('Loading…', '', '') + `</div>`;
       }
 
@@ -3169,17 +3169,34 @@
           if (head) {
             const proj = (projects.find((p) => p.id === orgPath.project) || {});
             const here = orgPath.person || orgPath.team || proj.name || orgPath.project || 'Projects';
-            const trail = [orgPath.project ? 'Projects' : '', orgPath.team ? (proj.name || orgPath.project) : '', orgPath.person ? orgPath.team : '']
-              .filter(Boolean);
+            /* The eyebrow is the BREADCRUMB, and every step in it is a link. It was the parent's
+             * name as flat text, which told you where you had come from and gave you no way to go
+             * there — a trail you can read and not walk. */
+            const steps = [];
+            if (orgPath.project) steps.push({ label: 'Projects', go: 'projects' });
+            if (orgPath.team) steps.push({ label: proj.name || orgPath.project, go: 'project' });
+            if (orgPath.person) steps.push({ label: orgPath.team, go: 'team' });
+            const trail = steps.map((x) => x.label);
             const up = orgPath.person ? 'team' : orgPath.team ? 'project' : orgPath.project ? 'projects' : '';
             head.innerHTML =
               `<div class="pk-org-head">` +
                 (up ? `<button type="button" class="pk-org-back" data-crumb="${up}" aria-label="Back to ${esc(trail[trail.length - 1] || 'Projects')}">` +
                   `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>` : '') +
                 `<div class="pk-org-head-t">` +
-                  (trail.length ? `<span class="pk-org-head-trail">${trail.map(esc).join(' / ')}</span>` : '') +
+                  (steps.length
+                    ? `<nav class="pk-org-head-trail">` + steps.map((x, i) =>
+                        `<button type="button" class="pk-org-crumb" data-crumb="${x.go}">${esc(x.label)}</button>` +
+                        (i < steps.length - 1 ? `<span class="pk-org-crumb-sep">/</span>` : '')).join('') + `</nav>`
+                    : '') +
                   `<h2>${esc(here)}</h2>` +
                 `</div>` +
+                `<div class="pk-org-head-search"><input id="pk-org-q" class="pk-login-input" type="search" ` +
+                  `placeholder="Search projects, teams and people" autocomplete="off" value="${esc(orgQuery)}"></div>` +
+                /* Only at the top level: "Add a project" belongs beside the list of projects, not
+                 * beside one team three levels down. */
+                (up ? '' : `<span class="pk-u-inlinerow pk-org-head-acts">` +
+                  `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>` +
+                  `<button class="pk-a" type="button" id="pk-proj-import">Import a project</button></span>`) +
               `</div>`;
           }
         }
@@ -3397,9 +3414,7 @@
                   [ticketsInProject(p.id), 'tickets'],
                 ])).join(''), true)
             : `<div class="pk-set-card"><div class="pk-set-card-b">${emptyRow(q ? 'No matches.' : 'No projects yet.')}</div></div>`) +
-          `<div class="pk-org-actions"><span class="pk-u-inlinerow">` +
-            `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>` +
-            `<button class="pk-a" type="button" id="pk-proj-import">Import a project</button></span></div>`;
+          '';   // the actions live in the page header now — see fillOrg's header block
       }
 
       /* Who sees whose comments. It lives INSIDE a project because that is what it is a property
@@ -3468,7 +3483,11 @@
 
       // ---- one delegated click handler for every Organisation action -------------------------
       if (settingsSection === 'org') {
-        panel.addEventListener('click', async (e) => {
+        /* TWO hosts, not one. The page header (#pk-org-head) is a sibling of the panel, not a
+         * child, so a single listener on the panel could never see the back button or the
+         * breadcrumb — they carried the right data-crumb and nothing was listening. Same handler,
+         * bound to both, rather than a second handler that would drift from this one. */
+        const onOrgClick = async (e) => {
           const t = e.target.closest('[data-crumb],[data-project-open],[data-team-open],[data-person-open],' +
             '[data-vis-mode],[data-vis-viewer],[data-link-viewer],[data-team-project],[data-team-view],' +
             '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],' +
@@ -3652,7 +3671,10 @@
               return fillVisibility(orgPath.project);
             }
           } catch (err) { pkAlert('That did not work — ' + err.message); }
-        });
+        };
+        panel.addEventListener('click', onOrgClick);
+        const headEl = $('#pk-org-head'); if (headEl) headEl.addEventListener('click', onOrgClick);
+
       }
 
       /** Add a team, into the project currently open. */
@@ -3738,7 +3760,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=bc1373f10d');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=e3bb0de929');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
