@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=682c94c194';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=19db7351d3';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=682c94c194';
-  import { createCardRenderer } from './card.js?v=682c94c194';
-  import { ICON } from './icons.js?v=682c94c194';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=682c94c194';
+  import { PK_VERSION } from './version.js?v=19db7351d3';
+  import { createCardRenderer } from './card.js?v=19db7351d3';
+  import { ICON } from './icons.js?v=19db7351d3';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=19db7351d3';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3590,17 +3590,32 @@
               return go({ person: null });
             }
             if (d.personMove) {
-              const to = await pkPrompt({ title: 'Move to another team', message: 'Their history stays with them.', value: d.personTeam || '', confirmLabel: 'Move' });
-              if (to === null) return;
-              await store.userUpdate({ email: d.personMove, team: to.trim() });
-              return go({ person: null, team: null });
+              return openTeamPicker({
+                title: 'Move to another team',
+                sub: 'Their history stays with them. Their tickets move to the new team\u2019s project.',
+                exclude: d.personTeam || '',
+                confirmLabel: 'Move',
+                onPick: async (to) => {
+                  await store.userUpdate({ email: d.personMove, team: to });
+                  go({ person: null, team: null });
+                },
+              });
             }
             if (d.personExtra) {
               const cur = (orgData.users.find((x) => x.email === d.personExtra) || {}).extraTeams || [];
-              const to = await pkPrompt({ title: 'Additional teams', message: 'Comma-separated. Their primary team still decides which board they land on.', value: cur.join(', '), confirmLabel: 'Save' });
-              if (to === null) return;
-              await store.userUpdate({ email: d.personExtra, extraTeams: to.split(',').map((x) => x.trim()).filter(Boolean) });
-              return fillOrg();
+              const me = (orgData.users.find((x) => x.email === d.personExtra) || {});
+              return openTeamPicker({
+                title: 'Also in',
+                sub: 'Extra teams they can see. Their primary team still decides which board they land on.',
+                multi: true,
+                chosen: cur,
+                exclude: me.team || '',
+                confirmLabel: 'Save',
+                onPick: async (list) => {
+                  await store.userUpdate({ email: d.personExtra, extraTeams: list });
+                  fillOrg();
+                },
+              });
             }
             if (d.accessCopy !== undefined) {
               if (!d.accessCopy) { pkAlert({ title: 'No Access ID', message: 'This account has no code yet. Use “New code” to issue one.' }); return; }
@@ -3692,6 +3707,57 @@
 
       }
 
+      /* Pick teams for a person — one (Move) or several (Also in).
+       *
+       * Both of these were free-text prompts: "type the team name", comma-separated for the second.
+       * That asks somebody to spell from memory a value the system has to match exactly, and a typo
+       * did not fail — it silently created a person in a team that does not exist. A list cannot be
+       * mistyped.
+       *
+       * The teams come from orgData, which is what is actually in the instance, not from the TEAMS
+       * constant — that ships empty now, so a constant-driven list would offer nothing.
+       */
+      function openTeamPicker(opts) {
+        const all = (orgData.teams || []).map((t) => t.name).filter(Boolean).sort((a, b) => a.localeCompare(b));
+        const chosen = new Set(opts.chosen || []);
+        const el = document.createElement('div'); el.className = 'pk-reopen';
+        const esc2 = (x) => esc(x);
+        el.innerHTML =
+          `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="${esc2(opts.title)}">` +
+            `<h2 class="pk-reopen-title">${esc2(opts.title)}</h2>` +
+            (opts.sub ? `<p class="pk-reopen-sub">${esc2(opts.sub)}</p>` : '') +
+            (all.length
+              ? `<div class="pk-teampick">` + all.map((t) => {
+                  const on = chosen.has(t);
+                  const dis = opts.exclude === t;
+                  return `<label class="pk-teampick-i${dis ? ' is-off' : ''}">` +
+                    `<input type="${opts.multi ? 'checkbox' : 'radio'}" name="pk-tp" value="${esc2(t)}"` +
+                      `${on ? ' checked' : ''}${dis ? ' disabled' : ''}>` +
+                    `<span>${esc2(t)}${dis ? ' · current team' : ''}</span></label>`;
+                }).join('') + `</div>`
+              : `<p class="pk-reopen-sub">There are no teams yet. Create one first.</p>`) +
+            `<div class="pk-reopen-err" hidden></div>` +
+            `<div class="pk-reopen-actions">` +
+              `<button type="button" class="pk-a pk-tp-cancel">Cancel</button>` +
+              `<button type="button" class="pk-a pk-a--primary pk-tp-go"${all.length ? '' : ' disabled'}>${esc2(opts.confirmLabel || 'Save')}</button>` +
+            `</div></div>`;
+        document.body.appendChild(el);
+        const close = () => { el.remove(); document.removeEventListener('keydown', onEsc); };
+        function onEsc(e2) { if (e2.key === 'Escape') close(); }
+        document.addEventListener('keydown', onEsc);
+        el.addEventListener('click', (e2) => { if (e2.target === el) close(); });
+        el.querySelector('.pk-tp-cancel').addEventListener('click', close);
+        el.querySelector('.pk-tp-go').addEventListener('click', async () => {
+          const picked = [...el.querySelectorAll('input:checked')].map((i) => i.value);
+          if (!opts.multi && !picked.length) {
+            const err = el.querySelector('.pk-reopen-err');
+            err.textContent = 'Choose a team.'; err.hidden = false; return;
+          }
+          close();
+          await opts.onPick(opts.multi ? picked : picked[0]);
+        });
+      }
+
       /** Add a team, into the project currently open. */
       function openAddTeam() {
         openFormModal({
@@ -3775,7 +3841,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=682c94c194');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=19db7351d3');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

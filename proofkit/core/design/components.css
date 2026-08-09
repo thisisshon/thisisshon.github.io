@@ -1209,6 +1209,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   font:700 var(--pk-text-2xs)/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
 .pk-ptable-more{width:32px;text-align:right;color:var(--pk-muted)}
 
+/* Team picker. A scrollable list of what exists, because the alternative was typing a name from
+   memory that had to match exactly — and a typo did not fail, it created a team. */
+.pk-teampick{margin-top:var(--pk-space-4);max-height:min(46vh,340px);overflow:auto;
+  overscroll-behavior:contain;border:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-teampick-i{display:flex;align-items:center;gap:var(--pk-space-3h);padding:var(--pk-space-3) var(--pk-space-4);
+  cursor:pointer;border-bottom:var(--pk-border-hair) solid var(--pk-hair);
+  font:400 var(--pk-text-md)/1.4 var(--pk-font);color:var(--pk-ink)}
+.pk-teampick-i:last-child{border-bottom:none}
+.pk-teampick-i.is-off{color:var(--pk-muted);cursor:default}
+@media (min-width:1024px) and (hover:hover){.pk-teampick-i:not(.is-off):hover{background:var(--pk-hover)}}
+.pk-teampick-i input{accent-color:var(--pk-red);flex:none}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person
