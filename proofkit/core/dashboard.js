@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=96288ceff4';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=682c94c194';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=96288ceff4';
-  import { createCardRenderer } from './card.js?v=96288ceff4';
-  import { ICON } from './icons.js?v=96288ceff4';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=96288ceff4';
+  import { PK_VERSION } from './version.js?v=682c94c194';
+  import { createCardRenderer } from './card.js?v=682c94c194';
+  import { ICON } from './icons.js?v=682c94c194';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=682c94c194';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3317,16 +3317,31 @@
               { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' },
               { label: t.name },
             ]) +
+            /* A TABLE, not a stack of rows. A team is a list of people you scan across — is
+             * everyone's Access ID issued, who is still without a PIN — and stacked rows put every
+             * answer on a different line, so the eye has to travel instead of compare. Columns let
+             * you read down one and see the gaps at once. */
             card('People', '',
-              (members.filter((u) => hit(u.email) || hit(u.name)).length
-                ? members.filter((u) => hit(u.email) || hit(u.name)).map((u) => {
-                    const bits = [u.status === 'active' ? '' : 'disabled', u.role === 'builder' ? 'Builder' : '', !u.hasPin ? 'no PIN' : ''].filter(Boolean);
-                    // The code on the row itself: the commonest question about a person is what
-                    // their key is, and making that a drill-down would be a click for one word.
-                    return drillRow(`data-person-open="${esc(u.email)}"`, esc(u.email), bits.join(' · '),
-                      u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '');
-                  }).join('')
-                : emptyRow(q ? 'No matches.' : 'No people yet.')) +
+              (() => {
+                const shownM = members.filter((u) => hit(u.email) || hit(u.name) || hit(u.calledName));
+                if (!shownM.length) return emptyRow(q ? 'No matches.' : 'No people yet.');
+                return `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+                  `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team, flags</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
+                  `</tr></thead><tbody>` +
+                  shownM.map((u) => {
+                    const flags = [u.status === 'active' ? '' : 'Disabled', u.role === 'builder' ? 'Builder' : '', !u.hasPin ? 'No PIN' : ''].filter(Boolean);
+                    const teamBits = [esc(u.team || '—')].concat(flags.map((f) => `<span class="pk-ptable-flag">${esc(f)}</span>`));
+                    return `<tr class="pk-ptable-row" data-person-open="${esc(u.email)}">` +
+                      `<td>${esc(u.name || '—')}</td>` +
+                      `<td>${esc(u.calledName || '—')}</td>` +
+                      `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
+                      `<td>${teamBits.join(' ')}</td>` +
+                      `<td>${u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '<span class="pk-ptable-none">— none —</span>'}</td>` +
+                      `<td class="pk-ptable-more"><span class="pk-set-go" aria-hidden="true">` +
+                        `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
+                      `</span></td></tr>`;
+                  }).join('') + `</tbody></table></div>`;
+              })() +
               row('', '', `<span class="pk-u-inlinerow">` +
                 `<button class="pk-a pk-a--primary" type="button" id="pk-person-add">Add a person</button>` +
                 `<button class="pk-a" type="button" id="pk-person-bulk">Add many</button></span>`)) +
@@ -3760,7 +3775,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=96288ceff4');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=682c94c194');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

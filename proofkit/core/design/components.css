@@ -1190,6 +1190,25 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   font:400 var(--pk-text-sm)/1.6 var(--pk-font);color:var(--pk-body);
   max-height:min(52vh,440px);overflow:auto;overscroll-behavior:contain}
 
+/* People table inside a team. Scannable down a column — who has no Access ID, who has no PIN —
+   which a stack of rows cannot do. The whole row is the link; the chevron is decoration. */
+.pk-tablewrap{overflow-x:auto;overscroll-behavior-x:contain}
+.pk-ptable{width:100%;border-collapse:collapse;font:400 var(--pk-text-sm)/1.5 var(--pk-font)}
+.pk-ptable th{text-align:left;padding:var(--pk-space-3) var(--pk-space-3h);white-space:nowrap;
+  font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--pk-muted);border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-ptable td{padding:var(--pk-space-3h);border-bottom:var(--pk-border-hair) solid var(--pk-hair);
+  color:var(--pk-ink);vertical-align:middle}
+.pk-ptable tr:last-child td{border-bottom:none}
+.pk-ptable-row{cursor:pointer;transition:background var(--pk-dur-base) var(--pk-ease)}
+@media (min-width:1024px) and (hover:hover){.pk-ptable-row:hover td{background:var(--pk-hover)}}
+.pk-ptable-mail{color:var(--pk-body);overflow-wrap:anywhere}
+.pk-ptable-none{color:var(--pk-muted)}
+.pk-ptable-flag{display:inline-block;margin-left:var(--pk-space-2);padding:1px var(--pk-space-3);
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm,3px);
+  font:700 var(--pk-text-2xs)/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-ptable-more{width:32px;text-align:right;color:var(--pk-muted)}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person
