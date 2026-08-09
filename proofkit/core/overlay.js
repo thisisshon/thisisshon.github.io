@@ -6,18 +6,18 @@
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
     COMMENT_TYPES, TYPE_FIELDS, STATUS_COLORS, renderSummary, needsScreenshot,
     // Overlay-UI flag (global): 'new' HUD vs 'old' rectangle composer.
-    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=4a9551b8d5';
-  import { pkConfirm, pkAlert } from './modal.js?v=4a9551b8d5';
-  import { injectCss } from './inject-css.js?v=4a9551b8d5';
-  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=4a9551b8d5'; // New HUD path (overlayUi === 'new')
+    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=d9a78aeb74';
+  import { pkConfirm, pkAlert } from './modal.js?v=d9a78aeb74';
+  import { injectCss } from './inject-css.js?v=d9a78aeb74';
+  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=d9a78aeb74'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
   // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
   // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
   // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
   // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
-  import pkTokensCss from './design/tokens.css.js?v=4a9551b8d5';
-  import pkComponentsCss from './design/components.css.js?v=4a9551b8d5';
+  import pkTokensCss from './design/tokens.css.js?v=d9a78aeb74';
+  import pkComponentsCss from './design/components.css.js?v=d9a78aeb74';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
@@ -748,10 +748,14 @@
       if (p) {
         projChip.textContent = team ? team + ' · ' + p : p;
         projChip.title = 'Pins on this page are filed under “' + p + '”.';
-        dock.appendChild(projChip);
       }
     }
     dock.appendChild(nav);
+    /* AFTER the nav, so the chip sits against the Comment pill rather than adrift to its left.
+     * `.rv-nav` is always laid out — it is hidden by opacity/visibility so it can animate, and a
+     * display toggle cannot be transitioned — so anything placed BEFORE it is pushed away by the
+     * width of an invisible element whenever review mode is off. */
+    if (projChip.textContent) dock.appendChild(projChip);
     dock.appendChild(fab);
     dock.style.display = 'none'; // hidden until the review session is authenticated (revealDock)
     document.body.appendChild(dock);

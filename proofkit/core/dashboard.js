@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=4a9551b8d5';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d9a78aeb74';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=4a9551b8d5';
-  import { createCardRenderer } from './card.js?v=4a9551b8d5';
-  import { ICON } from './icons.js?v=4a9551b8d5';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=4a9551b8d5';
+  import { PK_VERSION } from './version.js?v=d9a78aeb74';
+  import { createCardRenderer } from './card.js?v=d9a78aeb74';
+  import { ICON } from './icons.js?v=d9a78aeb74';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d9a78aeb74';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2600,10 +2600,16 @@
         (d && d.projects && d.projects.length > 1
           ? `<section class="pk-set-card pk-home-byproject"><div class="pk-set-card-h"><h3>By project</h3>` +
             `<p>Each project is isolated unless you have granted access in Visibility.</p></div><div class="pk-set-card-b">` +
-            d.projects.map((p) => `<div class="pk-set-row"><div class="pk-set-row-main">` +
+            /* Each row OPENS that project. It read as a link already — a name, its counts, a
+             * total — and did nothing, so the only way to reach the project you were looking at
+             * was to go to Projects and find it again by name. */
+            d.projects.map((p) => `<button class="pk-set-row pk-set-row--go" type="button" ` +
+              `data-home-project="${esc(p.id)}"><div class="pk-set-row-main">` +
               `<div class="pk-set-row-label">${esc(p.name)}</div>` +
               `<div class="pk-set-row-desc">${p.tbi} to start · ${p.inProgress} in progress · ${p.reopened} reopened · ${p.deployed} deployed</div>` +
-            `</div><div class="pk-set-ctl"><span class="pk-set-pill">${p.total} total</span></div></div>`).join('') +
+            `</div><div class="pk-set-ctl"><span class="pk-set-pill">${p.total} total</span>` +
+              `<span class="pk-set-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>` +
+            `</div></button>`).join('') +
             `</div></section>`
           : '');
 
@@ -4118,7 +4124,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=4a9551b8d5');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=d9a78aeb74');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -4555,13 +4561,19 @@ function memorablePin() {
       } else {
         host.innerHTML = `<div class="pk-grid">${rs.map(oneCard).join('')}</div>`;
       }
+      /* AN EMPTY LIST ONLY SPEAKS WHEN IT HAS SOMETHING TO EXPLAIN.
+       *
+       * A search or a status chip that matched nothing is worth saying, because the reader just
+       * asked a question and the blank space is the answer. "Nothing directed to Builder yet." is
+       * not: the queue is visibly empty, the counts above already say zero, and a sentence stating
+       * what the screen has already shown is furniture. */
       const emp = $('#rvd-empty');
-      emp.hidden = rs.length > 0;
-      if (!rs.length) {
-        const chipLabel = (STATUS_CHIPS.find((c) => c.f === statusFilter) || {}).label || '';
+      const chipLabel = (STATUS_CHIPS.find((c) => c.f === statusFilter) || {}).label || '';
+      const narrowed = !!search || (statusFilter !== 'open' && statusFilter !== 'all');
+      emp.hidden = rs.length > 0 || !narrowed;
+      if (!rs.length && narrowed) {
         emp.textContent = search ? 'No tickets match your search.'
-          : (statusFilter !== 'open' && statusFilter !== 'all') ? `No ${chipLabel} tickets ${isOutbound() ? 'sent to other teams' : 'directed to Builder'}.`
-          : (isOutbound() ? 'Nothing sent to other teams yet.' : 'Nothing directed to Builder yet.');
+          : `No ${chipLabel} tickets ${isOutbound() ? 'sent to other teams' : 'directed to Builder'}.`;
       }
       bindActions();
       updateSelectToggle();
@@ -4986,10 +4998,20 @@ function memorablePin() {
      * tiles render into #rvd-view-home in the main column — nowhere near the rail — so the handler
      * could never fire and not one tile on the Builder home was clickable. */
     document.addEventListener('click', (e) => {
-      const tileEl = e.target.closest('[data-home-view],[data-home-settings]');
+      const tileEl = e.target.closest('[data-home-view],[data-home-settings],[data-home-project]');
       if (!tileEl) return;
       const prevT = view;
-      if (tileEl.dataset.homeSettings) { settingsSection = tileEl.dataset.homeSettings; view = 'settings'; }
+      /* A project row on the home screen goes to THAT project's page, not to the list of projects.
+       * Landing on the list would make you find by name the thing you had just clicked on. */
+      if (tileEl.dataset.homeProject) {
+        /* 'org' is a VIEW of its own, not a section of Settings — setting settingsSection to it
+         * lands on Preferences, because the settings renderer falls back when it does not
+         * recognise the section. Set the path first so the Organisation module opens ON the
+         * project rather than on the list of them. */
+        orgPath = { project: tileEl.dataset.homeProject, team: null, person: null };
+        view = 'org';
+      }
+      else if (tileEl.dataset.homeSettings) { settingsSection = tileEl.dataset.homeSettings; view = 'settings'; }
       else view = tileEl.dataset.homeView;
       entryDetail = null;
       syncUrl();
