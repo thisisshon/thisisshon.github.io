@@ -14,10 +14,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 <!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
 <style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=affd2ffcbc">
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=affd2ffcbc">
-<link rel="stylesheet" href="/proofkit/core/card.css?v=affd2ffcbc">
-<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=affd2ffcbc">
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=c3a5d053e2">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=c3a5d053e2">
+<link rel="stylesheet" href="/proofkit/core/card.css?v=c3a5d053e2">
+<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=c3a5d053e2">
 </head>
 <body>
 <!-- Non-Astro host: the Worker base URL. Precedence:
@@ -125,6 +125,7 @@
               <button class="pk-segbtn is-active" type="button" data-den="cards" role="tab" aria-selected="true">Cards</button>
               <button class="pk-segbtn" type="button" data-den="table" role="tab" aria-selected="false">Table</button>
             </div>
+            <button class="pk-tbtn" id="tmd-selectall" type="button">Select</button>
             <button class="pk-tbtn pk-tbtn--primary" id="tmd-primary" type="button">Clear filters</button>
           </div>
           <!-- Status filter chips (built by teamdash.js): Needs you · Open · lifecycle · overflow -->
@@ -152,6 +153,17 @@
         <!-- Notifications -->
         <div id="tmd-view-notifs" hidden><div id="tmd-notes"></div></div>
         <!-- Settings — personal preferences for this team member (built by teamdash.js) -->
+        <!-- Bulk bar. Only the actions a team can already perform on ONE ticket: doing ten at a
+             time is a speed difference, never a permission one. No Delete and no Reopen — the
+             first is the Builder's, the second is the raiser's. -->
+        <div class="rvd-bulk" id="tmd-bulk" hidden>
+          <span class="rvd-bulk-n" id="tmd-bulk-n">0 selected</span>
+          <button class="pk-bulk-a" type="button" data-act="all">Select all</button>
+          <button class="pk-bulk-a" type="button" data-act="start">Start</button>
+          <button class="pk-bulk-a" type="button" data-act="complete">Mark Complete</button>
+          <button class="pk-bulk-a" type="button" data-act="copy">Copy prompts</button>
+          <button class="pk-bulk-a" type="button" data-act="clear">Clear</button>
+        </div>
         <div id="tmd-view-settings" hidden></div>
 
         <p id="tmd-empty" class="pk-empty" hidden>Nothing here yet.</p>
@@ -164,6 +176,6 @@
     </footer>
   </div>
 </section>
-<script type="module" src="/proofkit/core/teamdash.js?v=affd2ffcbc"></script>
+<script type="module" src="/proofkit/core/teamdash.js?v=c3a5d053e2"></script>
 </body>
 </html>

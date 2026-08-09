@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=affd2ffcbc';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=c3a5d053e2';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=affd2ffcbc';
-  import { createCardRenderer } from './card.js?v=affd2ffcbc';
-  import { ICON } from './icons.js?v=affd2ffcbc';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=affd2ffcbc';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=affd2ffcbc';
+  import { PK_VERSION } from './version.js?v=c3a5d053e2';
+  import { createCardRenderer } from './card.js?v=c3a5d053e2';
+  import { ICON } from './icons.js?v=c3a5d053e2';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=c3a5d053e2';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=c3a5d053e2';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -1245,10 +1245,23 @@
     // as the admin dashboard. The team's role slots: Open Pin + a "View details" hint (the
     // team doesn't action tickets — Builder does, so no lifecycle buttons / ⋮ menu), and the
     // reopen band as the after-change-to block when Builder has bounced an item back.
+    /* Bulk select. The shared card renderer has always accepted `selectSlot` and `extraClass`;
+     * the team board simply never passed them, so the Builder had bulk actions and a team did
+     * the same work one card at a time. Every action offered here is one a team can already
+     * perform on a single ticket — doing ten at once is a speed difference, never a permission
+     * one — so nothing about who-may-do-what changes. */
+    let selectMode = false;
+    const sel = new Set();
+
     const card = createCardRenderer({
       esc, fmt, teamStyle, thumbTile, pageName, repliesOf, typeLabel,
       displayState: dataState,
       statusText: statusLabel,
+      selectSlot: (root) => (selectMode
+        ? `<label class="pkc-sel-wrap"><input type="checkbox" class="pkc-sel" data-id="${esc(root.id)}"` +
+          `${sel.has(root.id) ? ' checked' : ''} aria-label="Select ticket"></label>`
+        : ''),
+      extraClass: (root) => ((selectMode && sel.has(root.id)) ? ' is-selected' : ''),
       actionsSlot: (root) => {
         const id = esc(root.id);
         const canRevoke = (root.team || '') === team();  // a team may revoke only what IT raised
@@ -1693,6 +1706,7 @@
       } else {
         host.innerHTML = `<div class="pk-grid">${rs.map(card).join('')}</div>`;
       }
+      if (selectMode) bindSelects(host);
       const emp = $('#tmd-empty');
       emp.hidden = rs.length > 0;
       if (!rs.length) emp.textContent = search ? 'No items match your search.'
@@ -2050,6 +2064,83 @@
 
     // ---- team status actions (clarify / resume) — the two transitions a team drives on the
     // items directed TO it. Reload-then-repaint (like resubmit) keeps this simple + consistent. ----
+    /* ---- bulk select ---------------------------------------------------------------------- */
+    function updateBulk() {
+      const n = sel.size;
+      const bar = $('#tmd-bulk'); if (bar) bar.hidden = !(selectMode && n > 0);
+      const nEl = $('#tmd-bulk-n'); if (nEl && n) nEl.textContent = n + (n === 1 ? ' selected' : ' selected');
+      const btn = $('#tmd-selectall');
+      if (btn) { btn.textContent = selectMode ? 'Done' : 'Select'; btn.classList.toggle('is-active', selectMode); }
+    }
+    function setSelectMode(on) {
+      selectMode = on;
+      if (!on) sel.clear();
+      updateBulk(); render();
+    }
+    /* Selection is pruned to what is on screen. Changing a filter with things selected used to be
+     * the classic bulk-action trap: the count still says 12 and four of them are no longer in
+     * front of you, so "Mark Complete" reaches tickets you can no longer see. */
+    function pruneSelection() {
+      const visible = new Set(myRoots().map((r) => r.id));
+      for (const id of [...sel]) if (!visible.has(id)) sel.delete(id);
+    }
+    function bindSelects(scope) {
+      (scope || document).querySelectorAll('.pkc-sel').forEach((cb) => {
+        cb.addEventListener('change', (e) => {
+          e.stopPropagation();
+          cb.checked ? sel.add(cb.dataset.id) : sel.delete(cb.dataset.id);
+          updateBulk(); render();
+        });
+      });
+    }
+    async function runBulk(act) {
+      const bar = $('#tmd-bulk');
+      const btns = bar ? [...bar.querySelectorAll('.pk-bulk-a')] : [];
+      const chosen = myRoots().filter((r) => sel.has(r.id));
+      if (act === 'all') { myRoots().forEach((r) => sel.add(r.id)); updateBulk(); render(); return; }
+      if (act === 'clear') { setSelectMode(false); return; }
+      if (!chosen.length) return;
+
+      if (act === 'copy') {
+        const text = chosen.map((r) => (r.changePrompt || r.comment || '')).filter(Boolean).join('\n\n---\n\n');
+        try { await navigator.clipboard.writeText(text); pkAlert(chosen.length + ' prompt(s) copied.'); }
+        catch (e) { pkAlert('Could not copy — ' + e.message); }
+        return;
+      }
+
+      /* Only tickets the action actually applies to. Sending 'start' to something already in
+       * progress is not harmless — it writes a history event that says work restarted when it
+       * did not, and the timeline is the thing people trust. */
+      const applies = act === 'start'
+        ? chosen.filter((r) => ['to_be_initiated', 'needs_clarification'].includes(teamStatusOf(r)))
+        : chosen.filter((r) => teamStatusOf(r) === 'in_progress');
+      const skipped = chosen.length - applies.length;
+      if (!applies.length) {
+        pkAlert('None of the selected tickets can be ' + (act === 'start' ? 'started' : 'completed') + ' from their current status.');
+        return;
+      }
+      const label = act === 'start' ? 'Start' : 'Mark Complete';
+      if (!(await pkConfirm({
+        title: label + ' — ' + applies.length + ' ticket(s)',
+        message: skipped
+          ? applies.length + ' will change. ' + skipped + ' are skipped because their status does not allow it.'
+          : 'This applies ' + label.toLowerCase() + ' to ' + applies.length + ' ticket(s).',
+        confirmLabel: label,
+      }))) return;
+
+      btns.forEach((b) => (b.disabled = true));
+      let failed = 0;
+      try {
+        for (const r of applies) {
+          try { await store.teamAction(r, act === 'start' ? 'start' : 'complete', '', ''); }
+          catch (e) { failed += 1; }
+        }
+        await loadData();
+      } finally { btns.forEach((b) => (b.disabled = false)); }
+      sel.clear(); updateBulk(); render();
+      if (failed) pkAlert(failed + ' of ' + applies.length + ' could not be updated.');
+    }
+
     async function doTeamAction(rec, action, note) {
       try { await store.teamAction(rec, action, '', note || ''); await loadData(); }
       catch (e) { pkAlert('Could not update — ' + e.message); }
@@ -2246,12 +2337,23 @@
       // Settings is a self-contained preferences pane — no queue controls above it.
       if (view === 'settings') { if (ctrl) ctrl.hidden = true; renderSettings(); renderHeader(); return; }
       if (ctrl) ctrl.hidden = false;
-      if (view === 'notifs') renderNotes();
-      else if (view === 'threads') renderThreads();
-      else renderQueue();  // 'queue' (My Tickets) is the default + only ticket view
+      const bulkBar = $('#tmd-bulk');
+      if (view === 'notifs') { if (bulkBar) bulkBar.hidden = true; renderNotes(); }
+      else if (view === 'threads') { if (bulkBar) bulkBar.hidden = true; renderThreads(); }
+      else { pruneSelection(); renderQueue(); updateBulk(); }  // 'queue' (My Tickets) is the default ticket view
       syncControls();
       renderHeader();
       paintDynamic();   // CSP: apply data-attr team colours via CSSOM after the HTML lands
+    }
+
+    {
+      const selBtn = $('#tmd-selectall');
+      if (selBtn) selBtn.addEventListener('click', () => setSelectMode(!selectMode));
+      const bar = $('#tmd-bulk');
+      if (bar) bar.addEventListener('click', (e) => {
+        const b = e.target.closest('.pk-bulk-a'); if (!b) return;
+        runBulk(b.dataset.act);
+      });
     }
 
     // My Tickets primary: reset Search, Sort, status chip, direction, density, From-team and By Page.
@@ -2540,6 +2642,14 @@
       }
       if (e.target.closest('a, button')) return;
       const item = e.target.closest('.pkc-card[data-id]'); if (!item) return;
+      // In select mode the card IS the checkbox — drilling in mid-selection loses the set.
+      if (selectMode) {
+        e.preventDefault();
+        const id = item.dataset.id;
+        sel.has(id) ? sel.delete(id) : sel.add(id);
+        updateBulk(); render();
+        return;
+      }
       setDetail(item.dataset.id);
     });
     $('#tmd-filters').addEventListener('click', (e) => {

@@ -3,7 +3,7 @@
  * reopen (reason enum + note, note required for "other"), disregard/close-as-invalid (note
  * required), and clarify/need-clarity (optional note). Each fires `onConfirm(payload)` once valid.
  */
-import { buildDropdown, REOPEN_REASONS } from './config.js?v=affd2ffcbc';
+import { buildDropdown, REOPEN_REASONS } from './config.js?v=c3a5d053e2';
 
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
