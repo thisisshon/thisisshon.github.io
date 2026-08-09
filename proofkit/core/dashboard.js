@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=2cb6fa0359';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=29fc6d752c';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=2cb6fa0359';
-  import { createCardRenderer } from './card.js?v=2cb6fa0359';
-  import { ICON } from './icons.js?v=2cb6fa0359';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=2cb6fa0359';
+  import { PK_VERSION } from './version.js?v=29fc6d752c';
+  import { createCardRenderer } from './card.js?v=29fc6d752c';
+  import { ICON } from './icons.js?v=29fc6d752c';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=29fc6d752c';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2790,7 +2790,7 @@
 
       host.innerHTML = orgOnly
         // No tab rail: Organisation IS the screen, so a sub-nav with one entry would be furniture.
-        ? `<div class="rvd-notifhead"><div><h2>Projects</h2></div></div>` +
+        ? `<div class="rvd-notifhead" id="pk-org-head"></div>` +
           `<div class="pk-set pk-set--solo"><div class="pk-set-panel" id="pk-set-panel"></div></div>`
         : `<div class="rvd-notifhead"><div><h2>Settings</h2></div></div>` +
           `<div class="pk-set">` +
@@ -3143,6 +3143,35 @@
 
       async function fillOrg() {
         const outer = $('#pk-org'); if (!outer) return;
+
+        /* The page heading says WHERE YOU ARE, not what the module is called.
+         *
+         * It read "Projects" at every depth — so three levels into Shriram Credit / Content, the
+         * largest text on screen still said the one thing you already knew. The title is now the
+         * level you are on, with the trail above it and a back button that goes UP one level, not
+         * back in history: history would take you to wherever you came from, which after a rename
+         * or a delete is often this same page again.
+         */
+        {
+          const head = $('#pk-org-head');
+          if (head) {
+            const proj = (projects.find((p) => p.id === orgPath.project) || {});
+            const here = orgPath.person || orgPath.team || proj.name || orgPath.project || 'Projects';
+            const trail = [orgPath.project ? 'Projects' : '', orgPath.team ? (proj.name || orgPath.project) : '', orgPath.person ? orgPath.team : '']
+              .filter(Boolean);
+            const up = orgPath.person ? 'team' : orgPath.team ? 'project' : orgPath.project ? 'projects' : '';
+            head.innerHTML =
+              `<div class="pk-org-head">` +
+                (up ? `<button type="button" class="pk-org-back" data-crumb="${up}" aria-label="Back to ${esc(trail[trail.length - 1] || 'Projects')}">` +
+                  `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>` : '') +
+                `<div class="pk-org-head-t">` +
+                  (trail.length ? `<span class="pk-org-head-trail">${trail.map(esc).join(' / ')}</span>` : '') +
+                  `<h2>${esc(here)}</h2>` +
+                `</div>` +
+              `</div>`;
+          }
+        }
+
         // The reset queue rides above every Organisation screen, not just the people list.
         (async () => {
           const rh = $('#pk-org-resets'); if (!rh || LOCAL) return;

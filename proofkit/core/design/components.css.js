@@ -1154,6 +1154,25 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* Notifications toolbar: Mark all read sits beside a More icon, never beside Delete All itself. */
 .rvd-notifacts{display:flex;align-items:center;gap:var(--pk-space-3);flex:none}
 
+/* Projects page heading: a square back button, then the trail and the level you are on. */
+.pk-org-head{display:flex;align-items:center;gap:var(--pk-space-4);min-width:0}
+.pk-org-back{flex:none;display:flex;align-items:center;justify-content:center;
+  width:var(--pk-control-h-md);height:var(--pk-control-h-md);padding:0;
+  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-md);
+  background:var(--pk-input);color:var(--pk-ink);cursor:pointer;
+  transition:transform var(--pk-dur-base) var(--pk-ease),border-color var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease)}
+@media (min-width:1024px) and (hover:hover){
+  /* It moves the way it navigates — left. */
+  .pk-org-back:hover{transform:translateX(-2px);border-color:var(--pk-red);color:var(--pk-red)}}
+.pk-org-back:active{transform:translateX(-4px)}
+.pk-org-back:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:2px}
+.pk-org-head-t{min-width:0}
+.pk-org-head-trail{display:block;font:600 var(--pk-text-xs)/1.4 var(--pk-font);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--pk-muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-org-head-t h2{margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.pk-org-back{transition:none}.pk-org-back:hover,.pk-org-back:active{transform:none}}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person
