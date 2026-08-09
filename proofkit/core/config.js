@@ -519,7 +519,13 @@ export const PROJECT_NAME = '';
 /** Short form, shown as the sidebar/HUD tag. '' = omit. */
 export const PROJECT_SHORT = '';
 
-export const TEAMS = ['Product', 'SEO', 'Marketing', 'Content', 'Design', 'Business'];
+/* EMPTY on purpose. These were six invented teams shipped as a starting point, and a starting
+ * point is exactly what they stopped being: with a real instance they appeared alongside the
+ * real ones in every dropdown and chip, indistinguishable from teams somebody had actually
+ * created. syncTeams() fills this from GET /teams/public, so the list a person sees is the
+ * list that exists. Until they create one, there are none — which is true, and is the only
+ * thing a fresh instance can honestly say. */
+export const TEAMS = [];
 
 /**
  * Login-only identity that maps to ADMIN; deliberately NOT in TEAMS.
@@ -665,7 +671,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=9d97d34b43'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=b2275fd6c2'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -673,7 +679,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=9d97d34b43';
+} from './vocab.js?v=b2275fd6c2';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
