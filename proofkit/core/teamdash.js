@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=29fc6d752c';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=9390cec919';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=29fc6d752c';
-  import { createCardRenderer } from './card.js?v=29fc6d752c';
-  import { ICON } from './icons.js?v=29fc6d752c';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=29fc6d752c';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=29fc6d752c';
+  import { PK_VERSION } from './version.js?v=9390cec919';
+  import { createCardRenderer } from './card.js?v=9390cec919';
+  import { ICON } from './icons.js?v=9390cec919';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=9390cec919';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=9390cec919';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this

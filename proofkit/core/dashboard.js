@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=29fc6d752c';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=9390cec919';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=29fc6d752c';
-  import { createCardRenderer } from './card.js?v=29fc6d752c';
-  import { ICON } from './icons.js?v=29fc6d752c';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=29fc6d752c';
+  import { PK_VERSION } from './version.js?v=9390cec919';
+  import { createCardRenderer } from './card.js?v=9390cec919';
+  import { ICON } from './icons.js?v=9390cec919';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=9390cec919';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3499,7 +3499,9 @@
             if (t.id === 'pk-proj-more') {
               e.stopPropagation();
               return openRowMenu(t, null, [
-                { label: 'Import a Team', icon: ICON.upload || ICON.edit, onSelect: () => openImport() },
+                { label: 'Import People or a Team', icon: ICON.upload || ICON.edit, onSelect: () => openImport() },
+                { label: 'Download People Template', icon: ICON.download || ICON.copy,
+                  onSelect: () => downloadBlob(peopleTemplateCsv(), 'text/csv', 'proofkit-people-template.csv') },
                 { label: 'Export Project', icon: ICON.download || ICON.copy,
                   onSelect: () => exportProject(orgPath.project) },
               ]);
@@ -3690,14 +3692,21 @@
         } catch (e) { pkAlert('Could not export — ' + e.message); }
       }
 
+      /* The template, generated rather than shipped as a file: it can never fall out of step with
+       * the columns the parser looks for, because both are in this repo and this one is two lines
+       * from them. CSV because every spreadsheet opens it and none of them argue. */
+      const peopleTemplateCsv = () =>
+        'Employee Name,Mail id,Team,One Name\n' +
+        'EXAMPLE - delete this row,them@company.com,Marketing,Example\n';
+
       function openImport() {
         const el = document.createElement('div'); el.className = 'pk-reopen';
         el.innerHTML =
           `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Import">` +
             `<h2 class="pk-reopen-title">Import</h2>` +
-            `<p class="pk-reopen-sub">Choose a Proofkit export file. Importing only ADDS — anything that already exists is skipped, never overwritten.</p>` +
+            `<p class="pk-reopen-sub">A Proofkit export, or a filled people template (.xlsx / .csv). Importing only ADDS — anything that already exists is skipped, never overwritten.</p>` +
             `<div class="pk-reopen-field"><span class="pk-reopen-label">File</span>` +
-              `<input type="file" accept="application/json,.json" class="pk-login-input pk-imp-file"></div>` +
+              `<input type="file" accept=".json,.xlsx,.csv,application/json" class="pk-login-input pk-imp-file"></div>` +
             `<div class="pk-reopen-field"><span class="pk-reopen-label">Import as project id <span style="color:var(--pk-muted);font-weight:400">· optional</span></span>` +
               `<input class="pk-login-input pk-imp-as" placeholder="Leave blank to keep the id in the file" autocomplete="off"></div>` +
             `<div class="pk-reopen-err" hidden></div>` +
@@ -3718,13 +3727,46 @@
           if (!f) { err.textContent = 'Choose a file first.'; err.hidden = false; return; }
           goB.disabled = true; goB.textContent = 'Importing…';
           try {
-            const payload = JSON.parse(await f.text());
-            if (asId.value.trim()) payload.asProject = asId.value.trim();
+            /* One dialog, two shapes of file. A spreadsheet is turned into the SAME payload the
+             * export path produces, so there is one import endpoint and one set of rules about
+             * what gets skipped — a second server route for "but from a sheet" would drift. */
+            let payload;
+            const nm = (f.name || '').toLowerCase();
+            if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=9390cec919');
+              const roster = rosterFromRows(await readSheet(f));
+              if (!roster.people.length) {
+                throw new Error(roster.problems.length
+                  ? 'Nothing importable. ' + roster.problems.slice(0, 4).join(' ')
+                  : 'That sheet has no people in it.');
+              }
+              const pid = asId.value.trim() || orgPath.project || 'default';
+              payload = {
+                proofkitExport: 1,
+                asProject: pid,
+                teams: roster.teams.map((t) => ({ name: t })),
+                people: roster.people,
+              };
+              // Rows that could not be read are reported BEFORE anything is written, so a typo in
+              // one row is a decision rather than a surprise discovered afterwards.
+              if (roster.problems.length && !(await pkConfirm({
+                title: roster.problems.length + ' row(s) will be skipped',
+                message: roster.problems.slice(0, 10).join('\n') +
+                  (roster.problems.length > 10 ? `\n…and ${roster.problems.length - 10} more.` : '') +
+                  `\n\nImport the other ${roster.people.length}?`,
+                confirmLabel: 'Import ' + roster.people.length,
+              }))) { goB.disabled = false; goB.textContent = 'Import'; return; }
+            } else {
+              payload = JSON.parse(await f.text());
+              if (asId.value.trim()) payload.asProject = asId.value.trim();
+            }
             const rep = await store.importData(payload);
             close();
             await pkAlert({ title: 'Imported', message:
-              `Projects: ${rep.projects.length}\nTeams: ${rep.teams.length}\nPeople: ${rep.people.length}\nTickets: ${rep.tickets}` +
-              (rep.skipped.length ? `\n\nSkipped (already existed):\n` + rep.skipped.slice(0, 12).join('\n') : '') +
+              `Teams: ${(rep.teams || []).length}\nPeople: ${(rep.people || []).length}` +
+              ((rep.projects || []).length ? `\nProjects: ${rep.projects.length}` : '') +
+              (rep.tickets ? `\nTickets: ${rep.tickets}` : '') +
+              ((rep.skipped || []).length ? `\n\nSkipped (already existed):\n` + rep.skipped.slice(0, 12).join('\n') : '') +
               `\n\nImported teams arrive disabled and imported people cannot sign in until you assign passwords and PINs.` });
             fillOrg();
           } catch (e2) {
