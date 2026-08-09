@@ -671,7 +671,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=a6df712487'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=c187d6fe81'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -679,7 +679,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=a6df712487';
+} from './vocab.js?v=c187d6fe81';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1400,6 +1400,19 @@ export function buildAccessLogin(opts) {
     if (b.dataset.alt === 'bio' && opts.onBiometric) opts.onBiometric();
     if (b.dataset.alt === 'email' && opts.onEmail) opts.onEmail();
   }));
+
+    /* The rejected state clears the moment attention leaves the row. It used to persist until the
+     * next keystroke, so a person who read the message, looked away and came back was still being
+     * told off by eight red boxes for a mistake they had already understood. An error is a reply to
+     * an attempt, not a state the screen sits in. */
+    entry.el.addEventListener('focusout', () => {
+      // Only when focus has left the ROW — moving between boxes is still the same attempt.
+      setTimeout(() => {
+        if (entry.el.contains(document.activeElement)) return;
+        entry.el.classList.remove('is-wrong');
+        setError('');
+      }, 0);
+    });
 
   return {
     el,

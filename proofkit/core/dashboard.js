@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=a6df712487';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=c187d6fe81';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=a6df712487';
-  import { createCardRenderer } from './card.js?v=a6df712487';
-  import { ICON } from './icons.js?v=a6df712487';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=a6df712487';
+  import { PK_VERSION } from './version.js?v=c187d6fe81';
+  import { createCardRenderer } from './card.js?v=c187d6fe81';
+  import { ICON } from './icons.js?v=c187d6fe81';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=c187d6fe81';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -4050,7 +4050,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=a6df712487');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=c187d6fe81');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
