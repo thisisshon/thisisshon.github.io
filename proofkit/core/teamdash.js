@@ -465,8 +465,15 @@
           // the Worker answers 304 (no body, no D1 read) when `team:<name>` has not moved since the
           // last poll. Returns {notModified} or {data, etag} — same shape as the Builder's allEtag.
           commentsEtag: async (etag) => {
-            const pass = getSession().key; const headers = {};
-            if (pass) headers['X-Review-Pass'] = pass;
+            /* authHeaders(), NOT the raw session key. An account session's key is the SENTINEL —
+             * a marker, not a credential — so sending it as X-Review-Pass asks the Worker to
+             * authenticate with the literal string 'pk-account-session'. It 401s, the 401 handler
+             * below calls clearSession(), and the board shows its sign-in panel to somebody who is
+             * signed in. That is the whole "the team board keeps asking me to log in" bug: the
+             * poller was the only thing on the board still authenticating the old way.
+             * authHeaders() sends the bearer token when there is one and the team key when there
+             * is not, so both kinds of session work here. */
+            const headers = { ...authHeaders() };
             if (etag) headers['If-None-Match'] = etag;
             const res = await fetch(WORKER_URL + '/comments?team=' + encodeURIComponent(team()), { headers });
             if (res.status === 304) return { notModified: true };
@@ -478,8 +485,7 @@
           // Same treatment for notifications. Both endpoints gate on the SAME `team:<name>` scope,
           // so they share one ETag value — an idle board 304s on both and transfers nothing.
           notifsEtag: async (etag) => {
-            const pass = getSession().key; const headers = {};
-            if (pass) headers['X-Review-Pass'] = pass;
+            const headers = { ...authHeaders() };   // see commentsEtag above
             if (etag) headers['If-None-Match'] = etag;
             const res = await fetch(WORKER_URL + '/notifications?team=' + encodeURIComponent(team()), { headers });
             if (res.status === 304) return { notModified: true };
