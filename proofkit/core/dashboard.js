@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=7384cafdb3';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=2cb6fa0359';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=7384cafdb3';
-  import { createCardRenderer } from './card.js?v=7384cafdb3';
-  import { ICON } from './icons.js?v=7384cafdb3';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=7384cafdb3';
+  import { PK_VERSION } from './version.js?v=2cb6fa0359';
+  import { createCardRenderer } from './card.js?v=2cb6fa0359';
+  import { ICON } from './icons.js?v=2cb6fa0359';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=2cb6fa0359';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3197,7 +3197,15 @@
               { label: orgPath.team, go: 'team' },
               { label: u.email },
             ]) +
-            card(esc(u.email), '',
+            /* Headed by what they are CALLED, with the record underneath. A roster full of
+             * "Valluri Navya Lakshmi Sai Madhav" is correct and unreadable; the person opening this
+             * screen is looking for Sai. */
+            card(esc(u.displayName || u.name || u.email), esc(u.email),
+              row('Full name', 'As it is written on the record.',
+                `<span class="pk-u-inlinerow"><span>${esc(u.name || '—')}</span>` +
+                `<button class="pk-a" type="button" data-person-rename="${esc(u.email)}" data-person-name="${esc(u.name || '')}" data-person-called="${esc(u.calledName || '')}">Edit</button></span>`) +
+              row('Preferred to be called', 'What appears through the tool.',
+                pill(u.calledName || 'Full name')) +
               row('Status', '', pill(u.status === 'active' ? 'Active' : 'Disabled')) +
               row('Team', '', pill(u.team || 'None')) +
               row('Role', '', pill(u.role || 'member')) +
@@ -3431,7 +3439,7 @@
             '[data-vis-mode],[data-vis-viewer],[data-link-viewer],[data-team-project],[data-team-view],' +
             '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],' +
             '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
-            '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],' +
+            '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],[data-person-rename],' +
             '[data-access-copy],[data-access-new],' +
             '[data-export-project],[data-export-team],' +
             '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk,#pk-proj-import,#pk-team-import,#pk-proj-more');
@@ -3488,6 +3496,23 @@
               if (!(await pkConfirm({ title: 'Delete project', message: 'Move this project to the recycle bin? It can be restored, and nothing is destroyed until a two-day confirmation.', confirmLabel: 'Delete', danger: true }))) return;
               await store.projectDelete(d.projectDelete);
               return go({ project: null, team: null, person: null });
+            }
+            if (d.personRename) {
+              const em = d.personRename;
+              return openFormModal({
+                title: 'Edit name',
+                fields: [
+                  { key: 'name', label: 'Full Name', placeholder: 'As written on the record', letters: true, value: d.personName || '' },
+                  { key: 'calledName', label: 'Preferred To Be Called', placeholder: 'Leave empty to use the full name', letters: true, optional: true, value: d.personCalled || '' },
+                ],
+                confirmLabel: 'Save',
+                onSubmit: async (v) => {
+                  if (!v.name) throw new Error('A full name is required.');
+                  // calledName is sent even when empty — '' is how you clear one.
+                  await store.userUpdate({ email: em, name: v.name, calledName: v.calledName || '' });
+                  fillOrg();
+                },
+              });
             }
             if (d.personDelete) {
               if (!(await pkConfirm({ title: 'Delete account', message: 'Move this account to the recycle bin? They are signed out immediately, and the record can be restored.', confirmLabel: 'Delete', danger: true }))) return;
@@ -3737,6 +3762,7 @@
           title: 'Add a person',
           fields: [
             { key: 'name', label: 'Full Name', placeholder: 'Their name as it is written', letters: true },
+            { key: 'calledName', label: 'Preferred To Be Called', placeholder: 'What people actually call them', letters: true, optional: true },
             { key: 'email', label: 'Email', placeholder: 'them@company.com' },
             { key: 'pin', label: 'PIN', placeholder: '6–12 digits', generate: true, gen: memorablePin },
           ],
@@ -3745,7 +3771,7 @@
             if (!v.name) throw new Error('A full name is required.');
             if (!v.email) throw new Error('An email address is required.');
             if (!v.pin) throw new Error('A PIN is required.');
-            await store.userCreate({ email: v.email, name: v.name,
+            await store.userCreate({ email: v.email, name: v.name, calledName: v.calledName || '',
               team: orgPath.team || '', pin: v.pin, role: orgPath.team ? 'member' : 'builder' });
             showOnce(v.email, v.pin, 'Initial PIN');
             fillOrg();
@@ -3863,9 +3889,9 @@ function memorablePin() {
               (f.optional ? ` <span style="color:var(--pk-muted);font-weight:400">· optional</span>` : '') + `</span>` +
               (f.generate
                 ? `<div style="display:flex;gap:8px;align-items:center">` +
-                    `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off" style="flex:1">` +
+                    `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" value="${esc2(f.value || '')}" autocomplete="off" style="flex:1">` +
                     `<button type="button" class="pk-a" data-gen="${esc2(f.key)}">Generate</button></div>`
-                : `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" autocomplete="off"${f.letters ? ' data-letters="1"' : ''}>`) +
+                : `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" value="${esc2(f.value || '')}" autocomplete="off"${f.letters ? ' data-letters="1"' : ''}>`) +
             `</div>`).join('') +
           `<div class="pk-reopen-err" hidden></div>` +
           `<div class="pk-reopen-actions">` +
