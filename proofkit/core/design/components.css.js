@@ -1185,6 +1185,13 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-org-head-t h2{margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.pk-org-back{transition:none}.pk-org-back:hover,.pk-org-back:active{transform:none}}
 
+/* Modal message. \`pre-wrap\` because the text is composed with real newlines — an import preview
+   is a list, and without this the whole thing collapses into one run-on paragraph. Capped and
+   scrollable so a 200-person roster cannot push the buttons off the bottom of the screen. */
+.pk-modal-msg{margin:var(--pk-space-4) 0 0;white-space:pre-wrap;
+  font:400 var(--pk-text-sm)/1.6 var(--pk-font);color:var(--pk-body);
+  max-height:min(52vh,440px);overflow:auto;overscroll-behavior:contain}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person

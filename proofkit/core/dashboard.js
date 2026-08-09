@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=e3bb0de929';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=96288ceff4';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=e3bb0de929';
-  import { createCardRenderer } from './card.js?v=e3bb0de929';
-  import { ICON } from './icons.js?v=e3bb0de929';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=e3bb0de929';
+  import { PK_VERSION } from './version.js?v=96288ceff4';
+  import { createCardRenderer } from './card.js?v=96288ceff4';
+  import { ICON } from './icons.js?v=96288ceff4';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=96288ceff4';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3760,7 +3760,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=e3bb0de929');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=96288ceff4');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -3774,14 +3774,38 @@
                 teams: roster.teams.map((t) => ({ name: t })),
                 people: roster.people,
               };
-              // Rows that could not be read are reported BEFORE anything is written, so a typo in
-              // one row is a decision rather than a surprise discovered afterwards.
-              if (roster.problems.length && !(await pkConfirm({
-                title: roster.problems.length + ' row(s) will be skipped',
-                message: roster.problems.slice(0, 10).join('\n') +
-                  (roster.problems.length > 10 ? `\n…and ${roster.problems.length - 10} more.` : '') +
-                  `\n\nImport the other ${roster.people.length}?`,
-                confirmLabel: 'Import ' + roster.people.length,
+              /* SHOW IT BEFORE WRITING IT. An import is not reversible in one click, so the
+               * dialog that follows is a preview, not a progress note: every team, every person
+               * grouped under the team they land in, and anything that could not be read. A count
+               * ("36 people") is not a preview — you cannot spot a person in the wrong team, or a
+               * team you did not mean to create, in a number. */
+              const byTeam = {};
+              for (const pr of roster.people) (byTeam[pr.team] = byTeam[pr.team] || []).push(pr);
+              const lines = [];
+              lines.push(`TEAMS (${roster.teams.length})`);
+              for (const t of roster.teams) lines.push(`  ${t} — ${byTeam[t].length} people`);
+              lines.push('');
+              lines.push(`PEOPLE (${roster.people.length})`);
+              for (const t of roster.teams) {
+                lines.push(`  ${t}`);
+                for (const pr of byTeam[t]) {
+                  lines.push(`    ${pr.name}${pr.calledName ? ' (' + pr.calledName + ')' : ''} · ${pr.email}`);
+                }
+              }
+              if (roster.problems.length) {
+                lines.push('');
+                lines.push(`SKIPPED (${roster.problems.length}) — these rows will NOT be imported`);
+                for (const pb of roster.problems) lines.push('  ' + pb);
+              }
+              lines.push('');
+              lines.push('Teams arrive disabled and people arrive with no PIN and no Access ID.');
+              lines.push('Nobody can sign in until you enable the teams and issue codes.');
+              lines.push('Anything that already exists is skipped, never overwritten.');
+
+              if (!(await pkConfirm({
+                title: `Import ${roster.people.length} people into ${roster.teams.length} teams?`,
+                message: lines.join('\n'),
+                confirmLabel: `Import ${roster.people.length}`,
               }))) { goB.disabled = false; goB.textContent = 'Import'; return; }
             } else {
               payload = JSON.parse(await f.text());
