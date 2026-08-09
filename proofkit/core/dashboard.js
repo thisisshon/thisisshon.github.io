@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=9390cec919';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=ab5ed8c128';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=9390cec919';
-  import { createCardRenderer } from './card.js?v=9390cec919';
-  import { ICON } from './icons.js?v=9390cec919';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=9390cec919';
+  import { PK_VERSION } from './version.js?v=ab5ed8c128';
+  import { createCardRenderer } from './card.js?v=ab5ed8c128';
+  import { ICON } from './icons.js?v=ab5ed8c128';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=ab5ed8c128';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3144,6 +3144,18 @@
       async function fillOrg() {
         const outer = $('#pk-org'); if (!outer) return;
 
+        let projects = [], teams = [], users = [];
+        try {
+          [projects, teams, users] = await Promise.all([
+            store.projects().catch(() => []),
+            store.teamsList().catch(() => []),
+            store.usersList().catch(() => []),
+          ]);
+        } catch (e) { outer.innerHTML = card('Organisation', '', emptyRow('Could not load — ' + esc(e.message))); return; }
+        // Handlers live outside fillOrg (one delegated listener), so what fillOrg loaded has to be
+        // reachable from there. Without this the "additional teams" editor threw on `users`.
+        orgData = { projects, teams, users };
+
         /* The page heading says WHERE YOU ARE, not what the module is called.
          *
          * It read "Projects" at every depth — so three levels into Shriram Credit / Content, the
@@ -3186,17 +3198,6 @@
           } catch (e) { rh.innerHTML = ''; }
         })();
 
-        let projects = [], teams = [], users = [];
-        try {
-          [projects, teams, users] = await Promise.all([
-            store.projects().catch(() => []),
-            store.teamsList().catch(() => []),
-            store.usersList().catch(() => []),
-          ]);
-        } catch (e) { outer.innerHTML = card('Organisation', '', emptyRow('Could not load — ' + esc(e.message))); return; }
-        // Handlers live outside fillOrg (one delegated listener), so what fillOrg loaded has to be
-        // reachable from there. Without this the "additional teams" editor threw on `users`.
-        orgData = { projects, teams, users };
 
         const q = orgQuery.trim().toLowerCase();
         const hit = (x) => !q || String(x || '').toLowerCase().includes(q);
@@ -3733,7 +3734,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=9390cec919');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=ab5ed8c128');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
