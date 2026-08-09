@@ -1192,7 +1192,12 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 
 /* People table inside a team. Scannable down a column — who has no Access ID, who has no PIN —
    which a stack of rows cannot do. The whole row is the link; the chevron is decoration. */
-.pk-tablewrap{overflow-x:auto;overscroll-behavior-x:contain}
+/* 24px below the card heading, and the first column flush with it. The cells carried their own
+   horizontal padding on top of the card's, so every name started ~20px right of the word it
+   sat under — the heading and its own column disagreed about where the left edge was. */
+.pk-tablewrap{overflow-x:auto;overscroll-behavior-x:contain;margin-top:var(--pk-space-5)}
+.pk-ptable th:first-child,.pk-ptable td:first-child{padding-left:0}
+.pk-ptable th:last-child,.pk-ptable td:last-child{padding-right:0}
 .pk-ptable{width:100%;border-collapse:collapse;font:400 var(--pk-text-sm)/1.5 var(--pk-font)}
 .pk-ptable th{text-align:left;padding:var(--pk-space-3) var(--pk-space-3h);white-space:nowrap;
   font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;
@@ -1220,6 +1225,19 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-teampick-i.is-off{color:var(--pk-muted);cursor:default}
 @media (min-width:1024px) and (hover:hover){.pk-teampick-i:not(.is-off):hover{background:var(--pk-hover)}}
 .pk-teampick-i input{accent-color:var(--pk-red);flex:none}
+
+/* Add-many grid. Wider than the standard dialog because four columns need the room, and the
+   inputs sit flush in the cells so the grid reads as one thing rather than twenty boxes. */
+.pk-bulk-card{width:min(920px,94vw);max-width:none}
+.pk-bulk-tbl{width:100%;border-collapse:collapse;margin-top:var(--pk-space-4)}
+.pk-bulk-tbl th{text-align:left;padding:0 var(--pk-space-2) var(--pk-space-2);
+  font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-muted)}
+.pk-bulk-tbl td{padding:var(--pk-space-2)}
+.pk-bulk-tbl .pk-login-input{width:100%;height:var(--pk-control-h-md);font-size:var(--pk-text-sm)}
+.pk-bulk-x{width:40px}
+.pk-bulk-del{padding:0 var(--pk-space-3);color:var(--pk-muted)}
+@media (min-width:1024px) and (hover:hover){.pk-bulk-del:hover{color:var(--pk-softred)}}
+.pk-bulk-tools{margin-top:var(--pk-space-3)}
 
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any

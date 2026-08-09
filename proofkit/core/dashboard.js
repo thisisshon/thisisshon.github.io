@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=19db7351d3';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=758bb85cf1';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=19db7351d3';
-  import { createCardRenderer } from './card.js?v=19db7351d3';
-  import { ICON } from './icons.js?v=19db7351d3';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=19db7351d3';
+  import { PK_VERSION } from './version.js?v=758bb85cf1';
+  import { createCardRenderer } from './card.js?v=758bb85cf1';
+  import { ICON } from './icons.js?v=758bb85cf1';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=758bb85cf1';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3841,7 +3841,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=19db7351d3');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=758bb85cf1');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -3911,52 +3911,109 @@
       /* Adding eight people used to be eight dialogs. Paste a list, get PINs, hand them out once.
        * Reports per-address outcomes rather than failing the whole batch on one bad entry — a
        * typo in row six must not discard rows one to five. */
+      /* Add many — a grid of people, not a list of addresses.
+       *
+       * It used to take emails, one per line, and nothing else: everybody arrived nameless and in
+       * whatever team happened to be open. A person has a name, a name people actually use, and a
+       * team, and none of those are optional information — leaving them out just moves the work to
+       * whoever opens the roster afterwards and finds thirty rows reading "—".
+       *
+       * Rows are added one at a time, because that is how two or three people get added. For thirty
+       * there is the sheet, and the button that says so sits right here rather than somewhere else
+       * in the menu.
+       */
       function openBulkAdd() {
+        const teams = (orgData.teams || []).map((t) => t.name).filter(Boolean).sort((a, b) => a.localeCompare(b));
         const el = document.createElement('div'); el.className = 'pk-reopen';
+        const teamOpts = (sel) => teams.map((t) =>
+          `<option value="${esc(t)}"${t === sel ? ' selected' : ''}>${esc(t)}</option>`).join('');
+        const rowHtml = () =>
+          `<tr class="pk-bulk-row">` +
+            `<td><input class="pk-login-input" data-k="name" placeholder="Full name" data-letters="1" autocomplete="off"></td>` +
+            `<td><input class="pk-login-input" data-k="calledName" placeholder="Preferred" data-letters="1" autocomplete="off"></td>` +
+            `<td><input class="pk-login-input" data-k="email" placeholder="them@company.com" autocomplete="off"></td>` +
+            `<td><select class="pk-login-input" data-k="team">${teamOpts(orgPath.team || '')}</select></td>` +
+            `<td class="pk-bulk-x"><button type="button" class="pk-a pk-bulk-del" aria-label="Remove row">✕</button></td>` +
+          `</tr>`;
         el.innerHTML =
-          `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Add many people">` +
+          `<div class="pk-reopen-card pk-bulk-card" role="dialog" aria-modal="true" aria-label="Add many people">` +
             `<h2 class="pk-reopen-title">Add many people</h2>` +
-            `<p class="pk-reopen-sub">One email per line. A PIN is generated for each; you will see them once, here.</p>` +
-            `<div class="pk-reopen-field"><span class="pk-reopen-label">Emails</span>` +
-              `<textarea class="pk-login-input pk-bulk-in" rows="7" placeholder="ana@company.com&#10;bo@company.com"></textarea></div>` +
+            `<p class="pk-reopen-sub">A PIN is generated for each. You will see them once, here.</p>` +
+            (teams.length
+              ? `<div class="pk-tablewrap"><table class="pk-bulk-tbl"><thead><tr>` +
+                  `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team</th><th></th>` +
+                `</tr></thead><tbody class="pk-bulk-body">${rowHtml()}${rowHtml()}</tbody></table></div>` +
+                `<div class="pk-u-inlinerow pk-bulk-tools">` +
+                  `<button type="button" class="pk-a pk-bulk-more">Add another person</button>` +
+                  `<button type="button" class="pk-a pk-bulk-sheet">Upload a sheet instead</button>` +
+                `</div>`
+              : `<p class="pk-reopen-sub">There are no teams yet. Create one first.</p>`) +
             `<div class="pk-reopen-err" hidden></div>` +
             `<div class="pk-reopen-actions">` +
               `<button type="button" class="pk-a pk-bulk-cancel">Cancel</button>` +
-              `<button type="button" class="pk-a pk-a--primary pk-bulk-go">Add</button>` +
+              `<button type="button" class="pk-a pk-a--primary pk-bulk-go"${teams.length ? '' : ' disabled'}>Add</button>` +
             `</div></div>`;
         document.body.appendChild(el);
-        const ta = el.querySelector('.pk-bulk-in'), err = el.querySelector('.pk-reopen-err'), goB = el.querySelector('.pk-bulk-go');
+        const body = el.querySelector('.pk-bulk-body');
+        const err = el.querySelector('.pk-reopen-err'), goB = el.querySelector('.pk-bulk-go');
         const close = () => { el.remove(); document.removeEventListener('keydown', onEsc); };
         function onEsc(e2) { if (e2.key === 'Escape') close(); }
         document.addEventListener('keydown', onEsc);
         el.addEventListener('click', (e2) => { if (e2.target === el) close(); });
         el.querySelector('.pk-bulk-cancel').addEventListener('click', close);
-        // A PIN that is a run or a repeat is rejected server-side, so generate one that is neither.
-        const genPin = () => {
-          for (;;) {
-            const v = String(Math.floor(100000 + Math.random() * 900000));
-            if (!/^(\d)\1+$/.test(v) && !/012345|123456|234567|345678|456789|987654|876543|765432|654321/.test(v)) return v;
-          }
-        };
-        goB.addEventListener('click', async () => {
-          const emails = ta.value.split(/[\n,;]+/).map((x) => x.trim()).filter(Boolean);
-          if (!emails.length) { err.textContent = 'Add at least one address.'; err.hidden = false; return; }
-          goB.disabled = true; goB.textContent = 'Adding…';
-          try {
-            const res = await store.usersBulk(orgPath.team || '', emails.map((email) => ({ email, pin: genPin() })));
-            const ok = res.results.filter((r) => r.ok), bad = res.results.filter((r) => !r.ok);
-            close();
-            await pkAlert(
-              (ok.length ? `Added ${ok.length}:\n\n` + ok.map((r) => `${r.email}  ${r.pin}`).join('\n') +
-                `\n\nHand these over now — they are stored hashed and cannot be shown again.\n` : 'Nobody was added.\n') +
-              (bad.length ? `\nSkipped ${bad.length}:\n` + bad.map((r) => `${r.email || '(blank)'} — ${r.error}`).join('\n') : ''));
-            fillOrg();
-          } catch (e2) {
-            goB.disabled = false; goB.textContent = 'Add';
-            err.textContent = e2.message; err.hidden = false;
-          }
+        el.querySelector('.pk-bulk-sheet')?.addEventListener('click', () => { close(); openImport(); });
+        el.querySelector('.pk-bulk-more')?.addEventListener('click', () => {
+          body.insertAdjacentHTML('beforeend', rowHtml());
+          body.lastElementChild.querySelector('input').focus();
         });
-        ta.focus();
+        // Never leave zero rows — an empty grid gives you nothing to type into.
+        body.addEventListener('click', (e2) => {
+          if (!e2.target.closest('.pk-bulk-del')) return;
+          if (body.children.length > 1) e2.target.closest('tr').remove();
+        });
+        // Letters-only on the two name columns, stripped as typed (same rule as the single form).
+        body.addEventListener('input', (e2) => {
+          const i = e2.target;
+          if (!i.matches('[data-letters]')) return;
+          const clean = i.value.replace(/[^A-Za-z\u00C0-\u024F' -]/g, '').replace(/\s{2,}/g, ' ');
+          if (clean !== i.value) i.value = clean;
+        });
+
+        goB.addEventListener('click', async () => {
+          const rows = [...body.querySelectorAll('.pk-bulk-row')].map((tr) => {
+            const g = (k) => (tr.querySelector(`[data-k="${k}"]`) || {}).value || '';
+            return { name: g('name').trim(), calledName: g('calledName').trim(),
+                     email: g('email').trim().toLowerCase(), team: g('team') };
+          }).filter((r) => r.name || r.email);
+          if (!rows.length) { err.textContent = 'Fill in at least one person.'; err.hidden = false; return; }
+          const bad = rows.find((r) => !r.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.email))
+                   || rows.find((r) => !r.name);
+          if (bad) {
+            err.textContent = !bad.email ? 'Every person needs an email address.'
+              : !bad.name ? `${bad.email} has no name.` : `"${bad.email}" is not an email address.`;
+            err.hidden = false; return;
+          }
+          goB.disabled = true; goB.textContent = 'Adding…';
+          const done = [], failed = [];
+          for (const r of rows) {
+            const pin = memorablePin();
+            try {
+              await store.userCreate({ email: r.email, name: r.name, calledName: r.calledName,
+                team: r.team, pin, role: 'member' });
+              done.push({ ...r, pin });
+            } catch (e2) { failed.push({ ...r, error: e2.message }); }
+          }
+          close();
+          await pkAlert({ title: done.length ? `Added ${done.length}` : 'Nobody was added',
+            message:
+              (done.length
+                ? done.map((r) => `${r.name}  ${r.email}  ${r.pin}`).join('\n') +
+                  '\n\nHand these PINs over now — they are stored hashed and cannot be shown again.'
+                : '') +
+              (failed.length ? `\n\nSkipped ${failed.length}:\n` + failed.map((r) => `${r.email} — ${r.error}`).join('\n') : '') });
+          fillOrg();
+        });
+        body.querySelector('input')?.focus();
       }
 
       /** Add a person, into the team currently open. */
