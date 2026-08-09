@@ -917,8 +917,8 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    8w = 312 - 32 - 8, so w = 34. At 42 the row was 444 wide and simply overflowed: fixed-width
    boxes cannot shrink, so the overflow was silent and the row hung past the card's right edge.
    On a wider card space-between spreads the slack across the gaps and both edges still line up. */
-.pk-access-box{width:34px;height:var(--pk-control-h-xl);padding:0;text-align:center;
-  border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-md);background:var(--pk-input);color:var(--pk-ink);
+.pk-access-box{width:41px;height:var(--pk-control-h-xl);padding:0;text-align:center;
+  border:var(--pk-border-strong) solid var(--pk-hair);border-radius:4px;background:var(--pk-input);color:var(--pk-ink);
   font:600 var(--pk-text-5xl)/var(--pk-lh-none) var(--pk-font);letter-spacing:0;caret-color:var(--pk-red);
   transition:border-color var(--pk-dur-base) var(--pk-ease),box-shadow var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease)}
 @media (min-width:1024px) and (hover:hover){
@@ -948,6 +948,12 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* Accepted: the row settles green for a beat before the screen goes. Without it a correct code
    looks identical to a dropped keystroke until the next page paints. */
 .pk-access.is-ok .pk-access-box{border-color:var(--pk-green);transition:border-color .18s ease}
+/* The accepted row is green — INCLUDING the box that happens to hold focus. Submitting puts
+   the caret back on the first box, and its focus ring is red, so box one sat inside a red
+   halo while the other seven read as cleanly accepted. The border was green all along; the
+   ring was painting over it. On acceptance the ring turns green with everything else. */
+.pk-access.is-ok .pk-access-box:focus-visible{border-color:var(--pk-green);
+  box-shadow:0 0 0 var(--pk-border-strong) rgba(61,220,132,.35)}
 
 @media (max-width:480px){
   .pk-access-card{padding:var(--pk-space-6) var(--pk-space-5) var(--pk-space-5)}

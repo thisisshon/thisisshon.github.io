@@ -18,7 +18,9 @@
      to act on. Flattened to a plain block so the CARD is the flex item and .rvd-login can place it. */
   .rvd-login .pk-access-login{position:static;inset:auto;display:block;width:auto;padding:0;
     background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-  .rvd-login .pk-access-card{width:400px}
+  /* 460, the component's own width. Pinning it to 400 squeezed the key row: the boxes have to
+     span the text column, so a narrower card means narrower boxes for no reason. */
+  .rvd-login .pk-access-card{width:460px}
   /* close button — top-right, padded away from the card edge and the title */
   .rvd-login-close{position:absolute;top:var(--pk-space-3h);right:var(--pk-space-3h);display:flex;align-items:center;justify-content:center;
     width:var(--pk-control-h-md);height:var(--pk-control-h-md);padding:0;border:none;border-radius:var(--pk-radius-md);background:transparent;color:var(--pk-muted);

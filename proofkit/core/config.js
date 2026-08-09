@@ -598,9 +598,25 @@ function assignTeamColor(name) {
   TEAM_COLORS[name] = FALLBACK_TEAM_COLORS[h % FALLBACK_TEAM_COLORS.length];
 }
 
-/** Apply a `[{name, enabled}]` list to the shared lists, in place. */
-function applyTeams(list) {
-  if (!Array.isArray(list) || !list.length) return false;
+/**
+ * Apply a `[{name, enabled}]` list to the shared lists, in place.
+ *
+ * `authoritative` separates two things that look identical and are not: an empty list because the
+ * SERVER says there are no teams, and an empty list because a fetch failed, a cache was cold, or a
+ * demo has no worker. Treating both as "keep what you had" is right for the second and wrong for
+ * the first — after every team was deleted, /teams/public correctly returned [], the guard read it
+ * as a failure, and the boards went on offering a Jump To Team menu full of teams that no longer
+ * existed. There IS one source of truth; this was the line that refused to believe it.
+ */
+function applyTeams(list, authoritative) {
+  if (!Array.isArray(list)) return false;
+  if (!list.length) {
+    if (!authoritative) return false;                        // cold cache / offline: keep the list
+    TEAMS.splice(0, TEAMS.length);
+    ENABLED_TEAMS.splice(0, ENABLED_TEAMS.length);
+    for (const k of Object.keys(TEAM_ENABLED)) delete TEAM_ENABLED[k];
+    return true;
+  }
   const names = list.map((t) => t && t.name).filter(Boolean);
   if (!names.length) return false;
   TEAMS.splice(0, TEAMS.length, ...names);                 // same array reference — consumers see it
@@ -626,7 +642,8 @@ export async function syncTeams() {
     const res = await fetch(WORKER_URL + '/teams/public');
     if (!res.ok) return TEAMS;
     const list = await res.json();
-    if (applyTeams(list)) {
+    // From the worker, so an empty answer is an ANSWER: there are no teams.
+    if (applyTeams(list, true)) {
       try { localStorage.setItem(TEAMS_KEY, JSON.stringify(list)); } catch (e) {}
       if (typeof document !== 'undefined') document.dispatchEvent(new CustomEvent('pk:teamschange', { detail: { teams: [...TEAMS] } }));
     }
@@ -648,7 +665,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=c3a5d053e2'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=a90a72a1c8'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -656,7 +673,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=c3a5d053e2';
+} from './vocab.js?v=a90a72a1c8';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
