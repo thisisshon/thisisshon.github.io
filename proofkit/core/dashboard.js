@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=b2275fd6c2';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=5397a430ab';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=b2275fd6c2';
-  import { createCardRenderer } from './card.js?v=b2275fd6c2';
-  import { ICON } from './icons.js?v=b2275fd6c2';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=b2275fd6c2';
+  import { PK_VERSION } from './version.js?v=5397a430ab';
+  import { createCardRenderer } from './card.js?v=5397a430ab';
+  import { ICON } from './icons.js?v=5397a430ab';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=5397a430ab';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2802,7 +2802,12 @@
       const swCtl = (key) => `<button class="pk-set-switch" type="button" role="switch" aria-checked="${!!getPref(key)}" data-pref-toggle="${key}"><span class="pk-set-switch-thumb"></span></button>`;
       const segCtl = (key, opts) => `<div class="pk-set-seg" role="group">` + opts.map((o) => `<button class="pk-set-segbtn${getPref(key) === o.v ? ' is-active' : ''}" type="button" data-pref-choice="${key}" data-val="${esc(o.v)}">${esc(o.l)}</button>`).join('') + `</div>`;
       const row = (label, desc, ctl) => `<div class="pk-set-row"><div class="pk-set-row-main"><div class="pk-set-row-label">${label}</div>${desc ? `<div class="pk-set-row-desc">${desc}</div>` : ''}</div><div class="pk-set-ctl">${ctl}</div></div>`;
-      const card = (title, sub, rowsHTML) => `<section class="pk-set-card"><header class="pk-set-card-h"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</header><div class="pk-set-card-b">${rowsHTML}</div></section>`;
+      /* An untitled card drops its header entirely rather than rendering an empty <h3>. The
+       * header carries the red accent rule, so an empty one leaves a bar and a blank line
+       * above the content — furniture for a label that is not there. */
+      const card = (title, sub, rowsHTML) => `<section class="pk-set-card">`
+        + (title ? `<header class="pk-set-card-h"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</header>` : '')
+        + `<div class="pk-set-card-b">${rowsHTML}</div></section>`;
       const actBtn = (act, label, cls) => `<button class="pk-a${cls ? ' ' + cls : ''}" type="button" data-act="${act}">${esc(label)}</button>`;
 
       /* A row that goes somewhere. The count IS the description — "3 teams · 11 people" tells you
@@ -3279,7 +3284,10 @@
           const ts = teamsIn(p.id);
           outer.innerHTML =
             crumbs([{ label: 'Projects', go: 'projects' }, { label: p.name || p.id }]) +
-            card('Project', '',
+            /* No 'Project' heading. The breadcrumb directly above already reads
+             * Projects / <this project>, and the page is the project — a card labelled Project
+             * inside it restates the thing you are looking at. */
+            card('', '',
               row('Name', '', `<button class="pk-a" type="button" data-project-rename="${esc(p.id)}" data-project-name="${esc(p.name || p.id)}">Rename</button>`) +
               row('Kind', '', pill(p.kind || 'owned'))) +
             card('Teams', '',
