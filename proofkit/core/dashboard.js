@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=758bb85cf1';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=98617b8fb8';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=758bb85cf1';
-  import { createCardRenderer } from './card.js?v=758bb85cf1';
-  import { ICON } from './icons.js?v=758bb85cf1';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=758bb85cf1';
+  import { PK_VERSION } from './version.js?v=98617b8fb8';
+  import { createCardRenderer } from './card.js?v=98617b8fb8';
+  import { ICON } from './icons.js?v=98617b8fb8';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=98617b8fb8';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3326,16 +3326,17 @@
                 const shownM = members.filter((u) => hit(u.email) || hit(u.name) || hit(u.calledName));
                 if (!shownM.length) return emptyRow(q ? 'No matches.' : 'No people yet.');
                 return `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
-                  `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team, flags</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
+                  `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
                   `</tr></thead><tbody>` +
                   shownM.map((u) => {
-                    const flags = [u.status === 'active' ? '' : 'Disabled', u.role === 'builder' ? 'Builder' : '', !u.hasPin ? 'No PIN' : ''].filter(Boolean);
-                    const teamBits = [esc(u.team || '—')].concat(flags.map((f) => `<span class="pk-ptable-flag">${esc(f)}</span>`));
+                    /* Team only, in the list. The flags moved to the person's own page: they are
+                     * exceptions — disabled, Builder — and a column of mostly-empty exceptions
+                     * costs width on every row to say nothing about nearly all of them. */
                     return `<tr class="pk-ptable-row" data-person-open="${esc(u.email)}">` +
                       `<td>${esc(u.name || '—')}</td>` +
                       `<td>${esc(u.calledName || '—')}</td>` +
                       `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
-                      `<td>${teamBits.join(' ')}</td>` +
+                      `<td>${esc(u.team || '—')}</td>` +
                       `<td>${u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '<span class="pk-ptable-none">— none —</span>'}</td>` +
                       `<td class="pk-ptable-more"><span class="pk-set-go" aria-hidden="true">` +
                         `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
@@ -3841,7 +3842,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=758bb85cf1');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=98617b8fb8');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
