@@ -1241,6 +1241,31 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 @media (min-width:1024px) and (hover:hover){.pk-bulk-del:hover{color:var(--pk-softred)}}
 .pk-bulk-tools{margin-top:var(--pk-space-3)}
 
+/* Import preview. A screen, not a dialog: the thing being reviewed is a roster, and a roster is
+   read by scanning columns. 80% of the viewport, with only the middle scrolling so the heading and
+   the two decisions stay put however long the list is. */
+.pk-impv-card{display:flex;flex-direction:column;width:80vw;height:80vh;max-width:1100px;
+  background:var(--pk-card);color:var(--pk-ink);
+  border:var(--pk-border-hair) solid var(--pk-hair);border-top:2px solid var(--pk-red);
+  box-shadow:var(--pk-shadow-lg);box-sizing:border-box}
+.pk-impv-head{flex:none;padding:var(--pk-space-6) var(--pk-space-6) var(--pk-space-4);
+  border-bottom:var(--pk-border-hair) solid var(--pk-hair)}
+.pk-impv-head h2{margin:0;font:600 var(--pk-text-3xl)/1.2 var(--pk-font);letter-spacing:-.02em}
+.pk-impv-head p{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-md)/1.5 var(--pk-font);color:var(--pk-muted)}
+.pk-impv-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;
+  padding:var(--pk-space-5) var(--pk-space-6)}
+.pk-impv-body section + section{margin-top:var(--pk-space-6)}
+.pk-impv-body h3{margin:0;font:700 var(--pk-text-2xs)/1 var(--pk-font);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--pk-muted)}
+.pk-impv-warn{color:var(--pk-softred)}
+.pk-impv-dim{color:var(--pk-muted)}
+.pk-impv-probs{margin:var(--pk-space-3) 0 0;padding-left:var(--pk-space-5);
+  font:400 var(--pk-text-sm)/1.7 var(--pk-font);color:var(--pk-softred)}
+.pk-impv-note p{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-sm)/1.6 var(--pk-font);color:var(--pk-muted)}
+.pk-impv-foot{flex:none;display:flex;justify-content:flex-end;gap:var(--pk-space-3);
+  padding:var(--pk-space-4) var(--pk-space-6);border-top:var(--pk-border-hair) solid var(--pk-hair)}
+@media (max-width:720px){.pk-impv-card{width:96vw;height:90vh}}
+
 /* ---- PAGE CELL — the reviewed page in a list -----------------------------------------------
    Two lines, because a title alone stopped being enough the moment Proofkit could be used on any
    URL: "Checkout" is a different page on three different sites. The title is what a person

@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fbbd97f7b0';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=22d33eaab0';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=fbbd97f7b0';
-  import { createCardRenderer } from './card.js?v=fbbd97f7b0';
-  import { ICON } from './icons.js?v=fbbd97f7b0';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fbbd97f7b0';
+  import { PK_VERSION } from './version.js?v=22d33eaab0';
+  import { createCardRenderer } from './card.js?v=22d33eaab0';
+  import { ICON } from './icons.js?v=22d33eaab0';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=22d33eaab0';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3816,6 +3816,68 @@
         'Employee Name,Mail id,Team,One Name\n' +
         'EXAMPLE - delete this row,them@company.com,Marketing,Example\n';
 
+      /* The import preview, as a screen rather than an alert.
+       *
+       * It was a text blob in a confirm dialog: 49 lines of monospace-ish prose wrapping mid-email,
+       * in a box sized for a sentence. The thing being previewed is TABULAR — people in teams — and
+       * the only way to check it is to scan columns, which prose cannot be scanned as. So it gets
+       * the room it needs and the shape the data already has.
+       *
+       * Resolves true to import, false to walk away. "Discard for now" rather than "Cancel" because
+       * cancelling suggests the file is lost; it is not, and the wording should not imply a cost
+       * that does not exist.
+       */
+      function openImportPreview(roster) {
+        const byTeam = {};
+        for (const pr of roster.people) (byTeam[pr.team] = byTeam[pr.team] || []).push(pr);
+        return new Promise((resolve) => {
+          const el = document.createElement('div');
+          el.className = 'pk-reopen pk-impv';
+          el.innerHTML =
+            `<div class="pk-impv-card" role="dialog" aria-modal="true" aria-label="Review this import">` +
+              `<header class="pk-impv-head">` +
+                `<h2>Review this import</h2>` +
+                `<p>${roster.people.length} people into ${roster.teams.length} teams. Nothing is written until you confirm.</p>` +
+              `</header>` +
+              `<div class="pk-impv-body">` +
+                `<section><h3>Teams (${roster.teams.length})</h3>` +
+                  `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr><th>Team</th><th>People</th><th>Status</th></tr></thead><tbody>` +
+                    roster.teams.map((t) => `<tr><td>${esc(t)}</td><td>${byTeam[t].length}</td>` +
+                      `<td>${(orgData.teams || []).some((x) => x.name === t) ? '<span class="pk-impv-dim">exists — skipped</span>' : 'new'}</td></tr>`).join('') +
+                  `</tbody></table></div></section>` +
+                `<section><h3>People (${roster.people.length})</h3>` +
+                  `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+                    `<th>Full name</th><th>Preferred</th><th>Email</th><th>Team</th></tr></thead><tbody>` +
+                    roster.people.map((pr) => `<tr>` +
+                      `<td>${esc(pr.name)}</td><td>${esc(pr.calledName || '—')}</td>` +
+                      `<td class="pk-ptable-mail">${esc(pr.email)}</td><td>${esc(pr.team)}</td></tr>`).join('') +
+                  `</tbody></table></div></section>` +
+                (roster.problems.length
+                  ? `<section><h3 class="pk-impv-warn">Skipped (${roster.problems.length})</h3>` +
+                      `<p class="pk-impv-dim">These rows will not be imported.</p>` +
+                      `<ul class="pk-impv-probs">` + roster.problems.map((x) => `<li>${esc(x)}</li>`).join('') + `</ul></section>`
+                  : '') +
+                `<section class="pk-impv-note">` +
+                  `<p>Everyone gets an Access ID, and its six digits are their PIN — they can sign in and open their board straight away.</p>` +
+                  `<p>Anything that already exists is skipped, never overwritten.</p>` +
+                `</section>` +
+              `</div>` +
+              `<footer class="pk-impv-foot">` +
+                `<button type="button" class="pk-a pk-impv-no">Discard for now</button>` +
+                `<button type="button" class="pk-a pk-a--primary pk-impv-yes">Import ${roster.people.length}</button>` +
+              `</footer>` +
+            `</div>`;
+          document.body.appendChild(el);
+          const done = (v) => { el.remove(); document.removeEventListener('keydown', onEsc); resolve(v); };
+          function onEsc(e2) { if (e2.key === 'Escape') done(false); }
+          document.addEventListener('keydown', onEsc);
+          el.addEventListener('click', (e2) => { if (e2.target === el) done(false); });
+          el.querySelector('.pk-impv-no').addEventListener('click', () => done(false));
+          el.querySelector('.pk-impv-yes').addEventListener('click', () => done(true));
+          el.querySelector('.pk-impv-yes').focus();
+        });
+      }
+
       function openImport() {
         const el = document.createElement('div'); el.className = 'pk-reopen';
         el.innerHTML =
@@ -3850,7 +3912,7 @@
             let payload;
             const nm = (f.name || '').toLowerCase();
             if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=fbbd97f7b0');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=22d33eaab0');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -3864,39 +3926,8 @@
                 teams: roster.teams.map((t) => ({ name: t })),
                 people: roster.people,
               };
-              /* SHOW IT BEFORE WRITING IT. An import is not reversible in one click, so the
-               * dialog that follows is a preview, not a progress note: every team, every person
-               * grouped under the team they land in, and anything that could not be read. A count
-               * ("36 people") is not a preview — you cannot spot a person in the wrong team, or a
-               * team you did not mean to create, in a number. */
-              const byTeam = {};
-              for (const pr of roster.people) (byTeam[pr.team] = byTeam[pr.team] || []).push(pr);
-              const lines = [];
-              lines.push(`TEAMS (${roster.teams.length})`);
-              for (const t of roster.teams) lines.push(`  ${t} — ${byTeam[t].length} people`);
-              lines.push('');
-              lines.push(`PEOPLE (${roster.people.length})`);
-              for (const t of roster.teams) {
-                lines.push(`  ${t}`);
-                for (const pr of byTeam[t]) {
-                  lines.push(`    ${pr.name}${pr.calledName ? ' (' + pr.calledName + ')' : ''} · ${pr.email}`);
-                }
-              }
-              if (roster.problems.length) {
-                lines.push('');
-                lines.push(`SKIPPED (${roster.problems.length}) — these rows will NOT be imported`);
-                for (const pb of roster.problems) lines.push('  ' + pb);
-              }
-              lines.push('');
-              lines.push('Teams arrive disabled and people arrive with no PIN and no Access ID.');
-              lines.push('Nobody can sign in until you enable the teams and issue codes.');
-              lines.push('Anything that already exists is skipped, never overwritten.');
-
-              if (!(await pkConfirm({
-                title: `Import ${roster.people.length} people into ${roster.teams.length} teams?`,
-                message: lines.join('\n'),
-                confirmLabel: `Import ${roster.people.length}`,
-              }))) { goB.disabled = false; goB.textContent = 'Import'; return; }
+              // Nothing is written until this resolves true.
+              if (!(await openImportPreview(roster))) { goB.disabled = false; goB.textContent = 'Import'; return; }
             } else {
               payload = JSON.parse(await f.text());
               if (asId.value.trim()) payload.asProject = asId.value.trim();
