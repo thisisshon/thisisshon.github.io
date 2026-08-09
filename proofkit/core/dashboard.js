@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=5397a430ab';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=7d973de270';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=5397a430ab';
-  import { createCardRenderer } from './card.js?v=5397a430ab';
-  import { ICON } from './icons.js?v=5397a430ab';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=5397a430ab';
+  import { PK_VERSION } from './version.js?v=7d973de270';
+  import { createCardRenderer } from './card.js?v=7d973de270';
+  import { ICON } from './icons.js?v=7d973de270';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=7d973de270';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3298,10 +3298,16 @@
                       [ticketsFor(t.name), 'tickets'],
                     ])).join(''))
                 : emptyRow(q ? 'No matches.' : 'No teams yet.')) +
+              /* Add a team is the daily act and stays a button. Import and Export are neither daily
+               * nor reversible-by-accident, and sitting as equal siblings they read as three things
+               * you might do next — so they move behind the More icon, the same pattern Delete All
+               * uses on notifications. */
               row('', '', `<span class="pk-u-inlinerow">` +
                 `<button class="pk-a pk-a--primary" type="button" id="pk-team-add">Add a team</button>` +
-                `<button class="pk-a" type="button" id="pk-team-import">Import a team</button>` +
-                `<button class="pk-a" type="button" data-export-project="${esc(p.id)}">Export project</button></span>`)) +
+                `<button class="rvd-moreopts" id="pk-proj-more" aria-label="More options" aria-haspopup="menu">` +
+                  `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">` +
+                    `<circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
+                `</button></span>`)) +
             `<div id="pk-vis-mode"></div><div id="pk-vis-matrix"></div><div id="pk-vis-links"></div>` +
             (p.id === 'default' ? '' : dangerCard(
               row('Delete project', 'Moves it to the recycle bin. Move or delete its teams first.',
@@ -3345,11 +3351,17 @@
         const tnames = (data.teams || []).map((t) => t.name);
         const ov = new Map((data.overrides || []).map((o) => [o.viewer_team + ' ' + o.subject_team, !!o.can_see]));
 
+        /* ONE row, two choices, on the right where every other control on this screen lives.
+         * It was two rows each carrying its own Selected/Select button — four words of state for
+         * a single either-or, and "Selected" beside "Select" reads as two buttons doing different
+         * things rather than one setting with two positions. A segmented control says the whole
+         * thing at a glance: these are the options, that is the one in force. */
         modeHost.innerHTML = card('Who sees what', '',
-          row('Everyone in this project', '',
-            `<button class="pk-a${mode === 'project' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="project">${mode === 'project' ? 'Selected' : 'Select'}</button>`) +
-          row('Own threads only', '',
-            `<button class="pk-a${mode === 'team' ? ' pk-a--primary' : ''}" type="button" data-vis-mode="team">${mode === 'team' ? 'Selected' : 'Select'}</button>`));
+          row('', '',
+            `<div class="pk-set-seg" role="group" aria-label="Who sees what">` +
+              `<button class="pk-set-segbtn${mode === 'project' ? ' is-active' : ''}" type="button" data-vis-mode="project">Everyone in this project</button>` +
+              `<button class="pk-set-segbtn${mode === 'team' ? ' is-active' : ''}" type="button" data-vis-mode="team">Own threads only</button>` +
+            `</div>`));
 
         if (!tnames.length) { gridHost.innerHTML = ''; }
         else {
@@ -3395,7 +3407,7 @@
             '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],' +
             '[data-access-copy],[data-access-new],' +
             '[data-export-project],[data-export-team],' +
-            '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk,#pk-proj-import,#pk-team-import');
+            '#pk-proj-add,#pk-team-add,#pk-person-add,#pk-person-bulk,#pk-proj-import,#pk-team-import,#pk-proj-more');
           if (!t) return;
           const d = t.dataset;
           try {
@@ -3418,6 +3430,16 @@
             if (t.id === 'pk-team-add') return openAddTeam();
             if (t.id === 'pk-person-add') return openAddPerson();
             if (t.id === 'pk-person-bulk') return openBulkAdd();
+            /* Import and Export, behind More. Both act on the WHOLE project, so they are grouped
+             * where a whole-project action belongs rather than beside Add a team. */
+            if (t.id === 'pk-proj-more') {
+              e.stopPropagation();
+              return openRowMenu(t, null, [
+                { label: 'Import a Team', icon: ICON.upload || ICON.edit, onSelect: () => openImport() },
+                { label: 'Export Project', icon: ICON.download || ICON.copy,
+                  onSelect: () => exportProject(orgPath.project) },
+              ]);
+            }
             if (t.id === 'pk-proj-import' || t.id === 'pk-team-import') return openImport();
             if (d.exportProject) return doExport('project', d.exportProject);
             if (d.exportTeam) return doExport('team', d.exportTeam);
