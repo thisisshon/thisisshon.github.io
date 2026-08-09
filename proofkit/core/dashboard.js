@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=7d973de270';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fa5774af8c';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=7d973de270';
-  import { createCardRenderer } from './card.js?v=7d973de270';
-  import { ICON } from './icons.js?v=7d973de270';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=7d973de270';
+  import { PK_VERSION } from './version.js?v=fa5774af8c';
+  import { createCardRenderer } from './card.js?v=fa5774af8c';
+  import { ICON } from './icons.js?v=fa5774af8c';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fa5774af8c';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2836,8 +2836,22 @@
       const emptyRow = (text, btnHtml) =>
         `<div class="pk-set-empty">${text}${btnHtml ? ` <span class="pk-set-empty-act">${btnHtml}</span>` : ''}</div>`;
       // Anything irreversible lives here, at the bottom, away from the routine controls.
+      /* CRITICAL ACTIONS, and closed by default — every time, not remembered.
+       *
+       * It was "Danger zone", open, with the destructive controls sitting in the page like any
+       * other row. Two changes, for the same reason: the name says what the section is FOR rather
+       * than how to feel about it, and a closed disclosure means deleting a project or disabling an
+       * account takes a deliberate act to even reach. It does not remember being opened, because
+       * "I opened this once" is not consent for the next visit.
+       *
+       * <details> rather than a scripted toggle: it is open/closed state and nothing else, the
+       * browser already does the keyboard and screen-reader work, and there is no JS to forget. */
       const dangerCard = (rowsHTML) => rowsHTML
-        ? `<section class="pk-set-card pk-set-card--danger"><header class="pk-set-card-h"><h3>Danger zone</h3></header><div class="pk-set-card-b">${rowsHTML}</div></section>`
+        ? `<details class="pk-set-card pk-set-card--danger pk-crit">` +
+            `<summary class="pk-set-card-h pk-crit-h"><h3>Critical Actions</h3>` +
+              `<svg class="pk-crit-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>` +
+            `</summary>` +
+            `<div class="pk-set-card-b">${rowsHTML}</div></details>`
         : '';
       const crumbs = (parts) =>
         `<nav class="pk-set-crumbs">` + parts.map((p, i) => (p.go

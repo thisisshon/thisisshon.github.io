@@ -1431,6 +1431,20 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* Irreversible actions, grouped and marked. The left rule is the tool's card accent, so this
    reads as the same component in a different register rather than a foreign element. */
 .pk-set-card--danger{border-left-color:var(--pk-softred)}
+/* Critical Actions: a closed disclosure. The chevron sits on the right margin and rotates down
+   when open — the only moving part, so "there is more here" is the whole message. */
+.pk-crit{padding:0}
+.pk-crit>.pk-crit-h{display:flex;align-items:center;justify-content:space-between;gap:var(--pk-space-4);
+  cursor:pointer;list-style:none;user-select:none}
+.pk-crit>.pk-crit-h::-webkit-details-marker{display:none}
+.pk-crit-chev{flex:none;color:var(--pk-softred);
+  transition:transform var(--pk-dur-base) var(--pk-ease)}
+.pk-crit[open]>.pk-crit-h .pk-crit-chev{transform:rotate(90deg)}
+@media (min-width:1024px) and (hover:hover){
+  .pk-crit>.pk-crit-h:hover .pk-crit-chev{transform:translateX(2px)}
+  .pk-crit[open]>.pk-crit-h:hover .pk-crit-chev{transform:rotate(90deg)}}
+.pk-crit>.pk-crit-h:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:-2px}
+@media (prefers-reduced-motion:reduce){.pk-crit-chev{transition:none}}
 .pk-set-card--danger .pk-set-card-h h3{color:var(--pk-softred)}
 
 /* ---- Project and team CARDS ---------------------------------------------------------------
