@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d583e8b046';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=a46a57944c';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=d583e8b046';
-  import { createCardRenderer } from './card.js?v=d583e8b046';
-  import { ICON } from './icons.js?v=d583e8b046';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d583e8b046';
+  import { PK_VERSION } from './version.js?v=a46a57944c';
+  import { createCardRenderer } from './card.js?v=a46a57944c';
+  import { ICON } from './icons.js?v=a46a57944c';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=a46a57944c';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -4330,7 +4330,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=d583e8b046');
+              const sheet = await import('./sheet.js?v=a46a57944c');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4374,27 +4374,44 @@
                 throw new Error(problems.length ? 'Nothing importable. ' + problems.slice(0, 4).join(' ')
                   : 'That sheet has no projects in it.');
               }
-              /* One project per row, each created and then given its teams. Existing teams are
-               * ADDED rather than duplicated — the same rule the roster import follows. */
+              /* One project per row, each created and then given the teams the row names — whether
+               * or not those teams exist yet.
+               *
+               * Both halves go through the SAME import call, because the endpoint already answers
+               * both: a name it does not know becomes a team in this project, and a name it does
+               * know is ADDED to this project rather than duplicated. Distinguishing them here
+               * would be a second copy of a rule the server already owns, and the version that
+               * skipped unknown teams meant importing projects before teams quietly produced empty
+               * projects — an order dependency nothing on screen told you about.
+               *
+               * Teams arrive without a key, exactly as the roster import leaves them: people sign
+               * in with their own Access ID, and a team switched off would block a board for no
+               * reason anybody could see. */
               let made = 0;
+              const teamReport = [];
               for (const pr of projects) {
                 const id = pr.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
                 try { await store.createProject(id, pr.name, 'owned'); made += 1; } catch (e3) { /* already exists */ }
-                for (const tn of pr.teams) {
-                  try { await store.teamProjectLink(tn, id, false); } catch (e3) { /* no such team */ }
-                }
+                if (!pr.teams.length) continue;
+                try {
+                  const rep = await store.importData({
+                    proofkitExport: 1, asProject: id, teams: pr.teams.map((name) => ({ name })),
+                  });
+                  teamReport.push(...(rep.teams || []));
+                } catch (e3) { problems.push(`${pr.name}: could not add its teams — ${e3.message}`); }
               }
               close();
               await pkAlert({ title: 'Imported', message:
                 `Projects: ${made} of ${projects.length}` +
+                (teamReport.length ? `\nTeams: ${teamReport.length}\n  ` + teamReport.slice(0, 10).join('\n  ') : '') +
                 (problems.length ? `\n\nRows with problems:\n` + problems.slice(0, 8).join('\n') : '') +
-                `\n\nA team named in a row that does not exist yet was skipped — create it first, or import teams before projects.` });
+                `\n\nTeams created this way arrive without a password — people sign in with their own Access ID.` });
               fillOrg();
               return;
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=d583e8b046');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=a46a57944c');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
