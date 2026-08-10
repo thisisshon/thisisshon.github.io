@@ -682,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=79522be9c7'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=11ef251497'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=79522be9c7';
+} from './vocab.js?v=11ef251497';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -825,14 +825,32 @@ export async function setGlobalOverlayUi(v) {
   const val = v === 'new' ? 'new' : 'old';
   cacheOverlayUi(val);
   if (!WORKER_URL) return val;
+  /* authHeaders(), NOT getSession().key.
+   *
+   * This sent the session key as X-Review-Pass, from the days when the Builder's session key WAS
+   * the admin pass. An account session's key is the sentinel `pk-account-session`, which is not a
+   * credential and which authHeaders() deliberately refuses to transmit — so every save posted a
+   * meaningless header, got a 401, and silently did nothing. It LOOKED like it worked, because the
+   * local cache is written first; the next syncOverlayUi() then pulled the server's unchanged
+   * value back and the switch flipped itself off again. */
   try {
-    const pass = getSession().key || ''; // admin key = the shared session key (team === Builder)
-    await fetch(WORKER_URL + '/settings', {
+    const res = await fetch(WORKER_URL + '/settings', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Review-Pass': pass },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ overlayUi: val }),
     });
-  } catch {}
+    // A refused save must not leave the local cache claiming it succeeded — that is the whole
+    // reason this was invisible. Put the cache back and tell the caller.
+    if (!res.ok) {
+      cacheOverlayUi(val === 'new' ? 'old' : 'new');
+      await syncOverlayUi();
+      throw new Error(res.status === 401
+        ? 'Only a Builder can change the shared overlay. Sign in as one and try again.'
+        : 'Could not save the shared overlay setting.');
+    }
+  } catch (e) {
+    if (e && e.message) throw e;
+  }
   return val;
 }
 

@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=79522be9c7';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=11ef251497';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=79522be9c7';
-  import { createCardRenderer } from './card.js?v=79522be9c7';
-  import { ICON } from './icons.js?v=79522be9c7';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=79522be9c7';
+  import { PK_VERSION } from './version.js?v=11ef251497';
+  import { createCardRenderer } from './card.js?v=11ef251497';
+  import { ICON } from './icons.js?v=11ef251497';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=11ef251497';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -4717,7 +4717,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=79522be9c7');
+              const sheet = await import('./sheet.js?v=11ef251497');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4798,7 +4798,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=79522be9c7');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=11ef251497');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -5033,7 +5033,14 @@
         const ov = e.target.closest('[data-overlayui]');
         if (ov) {
           const v = ov.dataset.overlayui === 'new' ? 'new' : 'old';
-          if (v !== getGlobalOverlayUi()) { setGlobalOverlayUi(v).then(() => rerender()); }
+          /* A refused save now THROWS rather than resolving quietly — this used to swallow the
+           * 401 and repaint as though the choice had stuck, which is why the switch appeared to
+           * do nothing: it flipped, then the next sync pulled the server's unchanged value back. */
+          if (v !== getGlobalOverlayUi()) {
+            setGlobalOverlayUi(v)
+              .then(() => rerender())
+              .catch((err) => { rerender(); pkAlert({ title: 'Could not change the overlay', message: err.message }); });
+          }
           return;
         }
         const act = e.target.closest('[data-act]');

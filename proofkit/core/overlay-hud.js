@@ -26,8 +26,8 @@ import { pageName, getSession, ADMIN_TEAM, TEAM_COLORS, STATUS_COLORS, renderSum
   BASE, TEAM_BASE, boardBase, homeUrl,
   COMMENT_TYPES, TYPE_FIELDS, ENABLED_TEAMS, needsScreenshot,
   // light/dark: the HUD follows the reviewer's setting — see the SKIN block in mountHud
-  getTheme, isThemeKey, toggleTheme } from './config.js?v=79522be9c7';
-import { injectCss } from './inject-css.js?v=79522be9c7';   // CSP-safe sheet mount (see mountHud)
+  getTheme, isThemeKey, toggleTheme } from './config.js?v=11ef251497';
+import { injectCss, injectFont } from './inject-css.js?v=11ef251497';   // CSP-safe sheet mount (see mountHud)
 
 /* The canvas iframe carries this window.name so overlay.js can bail before
  * arming a nested HUD inside it (see overlay.js top-of-module guard). */
@@ -498,6 +498,7 @@ let removeHudCss = null;
 export function mountHud(ctx = {}) {
   unmountHud();
 
+  injectFont();   // the HUD is on the host page too, and Outfit is not there unless we bring it
   removeHudCss = injectCss(CSS, 'pkhud-style');
 
   const root = document.createElement('div');

@@ -38,3 +38,31 @@ export function injectCss(css, id) {
   (document.head || document.documentElement).appendChild(el);
   return () => el.remove();
 }
+
+/**
+ * THE OVERLAY'S FONT, on somebody else's page.
+ *
+ * Every board loads Outfit with a <link> in its own HTML. The OVERLAY does not have its own HTML —
+ * it mounts onto the customer's page, which has never heard of Outfit. So `--pk-font` fell straight
+ * through to the system fallback and the whole review UI rendered in whatever the host site's
+ * default happened to be, subtly wrong everywhere and jarring next to the boards.
+ *
+ * A stylesheet <link> is governed by `style-src`, not `script-src`, and a host with a strict policy
+ * may refuse it — in which case nothing breaks and the fallback is exactly what shipped before.
+ * Idempotent by id, because the overlay can be mounted and unmounted several times on one page.
+ */
+export function injectFont() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('pk-font-link')) return;
+  try {
+    const link = document.createElement('link');
+    link.id = 'pk-font-link';
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap';
+    // The font is a nicety, never a blocker: if it is slow or refused, the UI is already usable in
+    // the fallback and swapping in late is better than holding the overlay back for it.
+    link.media = 'print';
+    link.onload = () => { link.media = 'all'; };
+    (document.head || document.documentElement).appendChild(link);
+  } catch (e) { /* a host that refuses it keeps the system fallback */ }
+}
