@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=a46a57944c';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=41309f17f8';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=a46a57944c';
-  import { createCardRenderer } from './card.js?v=a46a57944c';
-  import { ICON } from './icons.js?v=a46a57944c';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=a46a57944c';
+  import { PK_VERSION } from './version.js?v=41309f17f8';
+  import { createCardRenderer } from './card.js?v=41309f17f8';
+  import { ICON } from './icons.js?v=41309f17f8';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=41309f17f8';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -1061,6 +1061,10 @@
      * makes browsing feel like filing. */
     let teamSelectMode = false;
     const teamSel = new Set();
+    /* The same for people, keyed by EMAIL — the one thing about a person that is unique
+     * instance-wide, so a selection cannot follow a rename or point at two accounts. */
+    let peopleSelectMode = false;
+    const peopleSel = new Set();
     let orgData = { projects: [], teams: [], users: [] };   // last load, for the delegated handlers
     /* What a team may do. Everyone used to have identical powers: anyone who could see a ticket
      * could resolve or reopen it. Order is least-to-most consequential. */
@@ -3236,7 +3240,13 @@
           if (head) {
             const proj = (projects.find((p) => p.id === orgPath.project) || {});
             const TAB_LABEL = { projects: 'Projects', teams: 'Teams', people: 'People' };
-            const here = orgPath.person || orgPath.team || proj.name || orgPath.project || TAB_LABEL[orgTab];
+            /* A person's heading is their NAME. orgPath.person is an email because that is what is
+             * unique, but "ALVAR.DINESH@SHRIRAMCREDIT.IN" as the largest text on the screen is an
+             * identifier shouting where a name should be. */
+            const whoHere = orgPath.person
+              ? ((users.find((x) => x.email === orgPath.person) || {}).displayName || orgPath.person)
+              : '';
+            const here = whoHere || orgPath.team || proj.name || orgPath.project || TAB_LABEL[orgTab];
             /* The eyebrow is the BREADCRUMB, and every step in it is a link. It was the parent's
              * name as flat text, which told you where you had come from and gave you no way to go
              * there — a trail you can read and not walk. */
@@ -3255,15 +3265,19 @@
               : orgPath.team ? (orgPath.project ? 'project' : 'teams')
               : orgPath.project ? 'projects' : '';
             head.innerHTML =
+              /* The trail is its own line ABOVE the row. Inside the row it made the text block two
+               * lines tall against a one-line button, so "centred" put the button level with the
+               * gap between them and nothing looked aligned with anything. Now every control in the
+               * row — back, title, search, More — sits on one axis. */
+              (steps.length
+                ? `<nav class="pk-org-head-trail">` + steps.map((x, i) =>
+                    `<button type="button" class="pk-org-crumb" data-crumb="${x.go}">${esc(x.label)}</button>` +
+                    (i < steps.length - 1 ? `<span class="pk-org-crumb-sep">/</span>` : '')).join('') + `</nav>`
+                : '') +
               `<div class="pk-org-head">` +
                 (up ? `<button type="button" class="pk-org-back" data-crumb="${up}" aria-label="Back to ${esc(trail[trail.length - 1] || 'Projects')}">` +
                   `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>` : '') +
                 `<div class="pk-org-head-t">` +
-                  (steps.length
-                    ? `<nav class="pk-org-head-trail">` + steps.map((x, i) =>
-                        `<button type="button" class="pk-org-crumb" data-crumb="${x.go}">${esc(x.label)}</button>` +
-                        (i < steps.length - 1 ? `<span class="pk-org-crumb-sep">/</span>` : '')).join('') + `</nav>`
-                    : '') +
                   `<h2>${esc(here)}</h2>` +
                 `</div>` +
                 /* `.pk-search`, the toolbar search every other screen uses — NOT `.pk-login-input`,
@@ -3315,26 +3329,55 @@
           if (u.mustChangePin) flags.push('must change PIN');
           if (locked) flags.push(u.hardLocked ? 'locked out' : 'temporarily locked');
           outer.innerHTML =
+            /* The trail is the route you TOOK. Reached from the People list there is no project and
+             * no team above this person, and printing those steps anyway rendered "Projects / / /"
+             * — two empty crumbs and two separators leading nowhere. Built from what is actually
+             * set, so it reads People / name, or Projects / Site / Team / name when you drilled. */
             crumbs([
-              { label: 'Projects', go: 'projects' },
-              { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' },
-              { label: orgPath.team, go: 'team' },
-              { label: u.email },
+              ...(orgPath.project
+                ? [{ label: 'Projects', go: 'projects' },
+                   { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' }]
+                : [{ label: 'People', go: 'people' }]),
+              ...(orgPath.team ? [{ label: orgPath.team, go: 'team' }] : []),
+              { label: u.displayName || u.name || u.email },
             ]) +
-            /* Headed by what they are CALLED, with the record underneath. A roster full of
+            /* THREE CARDS, NOT ONE LIST.
+             *
+             * This was nine rows in a single card — name, status, team, role, access id, PIN, moves
+             * — with read-only pills and live buttons at the same weight and nothing saying which
+             * belonged together. A person has three separable questions: who they are, where they
+             * belong, and how they get in. Grouping them means you can find the one you came for
+             * without reading the other six, and it puts the credentials in one place rather than
+             * scattered between a rename and a team move.
+             *
+             * Headed by what they are CALLED, with the record underneath. A roster full of
              * "Valluri Navya Lakshmi Sai Madhav" is correct and unreadable; the person opening this
              * screen is looking for Sai. */
-            card(esc(u.displayName || u.name || u.email), esc(u.email),
+            card(esc(u.displayName || u.name || u.email), esc(u.email) + (flags.length ? ' · ' + flags.join(' · ') : ''),
               row('Full name', 'As it is written on the record.',
                 `<span class="pk-u-inlinerow"><span>${esc(u.name || '—')}</span>` +
                 `<button class="pk-a" type="button" data-person-rename="${esc(u.email)}" data-person-name="${esc(u.name || '')}" data-person-called="${esc(u.calledName || '')}">Edit</button></span>`) +
+              /* THE ROW THAT SHOWS A THING CARRIES THE BUTTON THAT CHANGES IT. Both of these were
+               * read-only pills whose real action lived elsewhere — the preferred name behind the
+               * Full name row's Edit, the team behind a "Move to another team" row four lines down
+               * — so the two attributes people most often correct looked like facts about the
+               * account rather than settings of it. */
               row('Preferred to be called', 'What appears through the tool.',
-                pill(u.calledName || 'Full name')) +
-              row('Status', '', pill(u.status === 'active' ? 'Active' : 'Disabled')) +
-              row('Team', '', pill(u.team || 'None')) +
+                `<span class="pk-u-inlinerow">${pill(u.calledName || 'Full name')}` +
+                `<button class="pk-a" type="button" data-person-rename="${esc(u.email)}" data-person-name="${esc(u.name || '')}" data-person-called="${esc(u.calledName || '')}">Edit</button></span>`)) +
+
+            card('Where they belong', '',
+              row('Team', 'Their history moves with them; their tickets become visible inside the new team’s project.',
+                `<span class="pk-u-inlinerow">${pill(u.team || 'None')}` +
+                `<button class="pk-a" type="button" data-person-move="${esc(u.email)}" data-person-team="${esc(u.team || '')}">Change</button></span>`) +
+              // A person spanning two teams was unrepresentable. The primary team still decides
+              // which board they land on; this is extra reach on top of it.
+              row('Also in', (u.extraTeams || []).join(', ') || 'No other teams',
+                `<button class="pk-a" type="button" data-person-extra="${esc(u.email)}">Edit</button>`) +
               row('Role', '', pill(u.role || 'member')) +
-              (flags.length ? row('Flags', '', flags.map((f) => pill(f)).join(' ')) : '') +
-              (u.lastLoginAt ? row('Last signed in', '', pill(u.lastLoginAt.slice(0, 10))) : '') +
+              row('Status', '', pill(u.status === 'active' ? 'Active' : 'Disabled'))) +
+
+            card('Signing in', 'Two ways in. The Access ID is the everyday one.',
               /* The Access ID is SHOWN, not masked. The whole reason it is stored readably is so the
                * Builder can tell someone what theirs is — hiding it here would keep the security
                * cost of storing it in the clear and throw away the reason. */
@@ -3344,13 +3387,7 @@
                 `<button class="pk-a" type="button" data-access-new="${esc(u.email)}">New code</button></span>`) +
               row('PIN', 'Backup sign-in, if they lose their Access ID.', `<button class="pk-a" type="button" data-person-reset="${esc(u.email)}">Reset PIN</button>`) +
               (locked ? row('Locked', 'Too many failed attempts.', `<button class="pk-a pk-a--primary" type="button" data-person-unlock="${esc(u.email)}">Unlock</button>`) : '') +
-              // Moving someone was only possible by deleting and recreating them, which lost their
-              // history. It belongs on the person, next to the team they are in.
-              row('Move to another team', '', `<button class="pk-a" type="button" data-person-move="${esc(u.email)}" data-person-team="${esc(u.team || '')}">Move</button>`) +
-              // A person spanning two teams was unrepresentable. The primary team still decides
-              // which board they land on; this is extra reach on top of it.
-              row('Also in', (u.extraTeams || []).join(', ') || 'No other teams',
-                `<button class="pk-a" type="button" data-person-extra="${esc(u.email)}">Edit</button>`)) +
+              (u.lastLoginAt ? row('Last signed in', '', pill(u.lastLoginAt.slice(0, 10))) : '')) +
             `<div id="pk-person-audit"></div>` +
             dangerCard(row(u.status === 'active' ? 'Disable account' : 'Enable account',
               u.status === 'active' ? 'Signs them out immediately and blocks sign-in. Their history is kept.' : 'Restores sign-in.',
@@ -3389,9 +3426,13 @@
             oldest: oldest && oldest.at ? String(oldest.at).slice(0, 10) : '',
           };
           outer.innerHTML =
+            // Same rule as the person page: a team opened from the Teams list has no project above
+            // it, and printing one would send Back to a project it merely happens to be in.
             crumbs([
-              { label: 'Projects', go: 'projects' },
-              { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' },
+              ...(orgPath.project
+                ? [{ label: 'Projects', go: 'projects' },
+                   { label: (projects.find((p) => p.id === orgPath.project) || {}).name || orgPath.project, go: 'project' }]
+                : [{ label: 'Teams', go: 'teams' }]),
               { label: t.name },
             ]) +
             /* A TABLE, not a stack of rows. A team is a list of people you scan across — is
@@ -3561,21 +3602,65 @@
            * list that can honestly claim to be all of them — reaching a person used to mean knowing
            * which team they were on and drilling three levels to get there. */
           const shownP = users.filter((u) => hit(u.email) || hit(u.name) || hit(u.calledName) || hit(u.team));
+          /* SELECT MODE, the same shape the project page gives teams: off by default and reached
+           * from More, because selecting is not what you come here to do — a checkbox on all 132
+           * rows all the time makes browsing feel like filing.
+           *
+           * In select mode the row TICKS instead of opening. A row that both navigates and selects
+           * has to guess which you meant from where you clicked, and gets it wrong often enough to
+           * be worse than either. */
+          const sel = peopleSelectMode;
+          /* GROUPED BY TEAM. 132 names in one alphabetical run answers "who exists" and nothing
+           * else — the question people actually arrive with is "who is on Content", and scanning a
+           * Team column for it is work the screen can do once. Each team is its own card with its
+           * own count, so the grouping is the structure rather than a sorted column you have to
+           * read carefully. Someone with no team is not hidden: they get a group of their own,
+           * because an account nobody owns is exactly the one worth noticing. */
+          const groups = new Map();
+          for (const u of shownP) {
+            const k = u.team || '';
+            if (!groups.has(k)) groups.set(k, []);
+            groups.get(k).push(u);
+          }
+          const orderedTeams = [...groups.keys()].sort((a, b) =>
+            (a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)));
+
+          const personRow = (u) => `<tr class="pk-ptable-row${sel && peopleSel.has(u.email) ? ' is-picked' : ''}" ` +
+            (sel ? `data-person-pick="${esc(u.email)}"` : `data-person-open="${esc(u.email)}"`) + `>` +
+            (sel ? `<td class="pk-ptable-pick"><input type="checkbox" class="pk-tsel-box" tabindex="-1"` +
+              `${peopleSel.has(u.email) ? ' checked' : ''}></td>` : '') +
+            `<td>${esc(u.name || '—')}</td>` +
+            `<td>${esc(u.calledName || '—')}</td>` +
+            `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
+            `<td>${u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '<span class="pk-ptable-none">— none —</span>'}</td>` +
+            `<td class="pk-ptable-more">${sel ? '' : `<span class="pk-set-go" aria-hidden="true">` +
+              `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
+            `</span>`}</td></tr>`;
+
+          const teamTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+            (sel ? `<th class="pk-ptable-pick"></th>` : '') +
+            `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
+            `</tr></thead><tbody>` + list.map(personRow).join('') + `</tbody></table></div>`;
+
           outer.innerHTML =
-            card('', '', shownP.length
-              ? `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
-                `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
-                `</tr></thead><tbody>` +
-                shownP.map((u) => `<tr class="pk-ptable-row" data-person-open="${esc(u.email)}">` +
-                  `<td>${esc(u.name || '—')}</td>` +
-                  `<td>${esc(u.calledName || '—')}</td>` +
-                  `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
-                  `<td>${esc(u.team || '—')}</td>` +
-                  `<td>${u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '<span class="pk-ptable-none">— none —</span>'}</td>` +
-                  `<td class="pk-ptable-more"><span class="pk-set-go" aria-hidden="true">` +
-                    `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
-                  `</span></td></tr>`).join('') + `</tbody></table></div>`
-              : emptyRow(q ? 'No matches.' : 'No people yet.'));
+            (shownP.length
+              ? orderedTeams.map((team) => {
+                  const list = groups.get(team);
+                  // The team name is the heading and a way IN to that team, not just a label.
+                  return card(team || 'No team', n(list.length, 'person', 'people'), teamTable(list));
+                }).join('') +
+                /* The bar sits under ALL the groups, because a selection spans them: ticking two
+                 * people from Content and one from Design is one action, not three. */
+                (sel ? card('', '', row('', '', `<span class="pk-u-inlinerow">` +
+                  `<span class="pk-tsel-n">${peopleSel.size} selected</span>` +
+                  `<button class="pk-a" type="button" data-psel="all">Select all</button>` +
+                  `<button class="pk-a" type="button" data-psel="none">Clear</button>` +
+                  `<button class="pk-a pk-a--primary" type="button" data-psel="access">Issue Access IDs</button>` +
+                  `<button class="pk-a" type="button" data-psel="enable">Enable</button>` +
+                  `<button class="pk-a" type="button" data-psel="disable">Disable</button>` +
+                  `<button class="pk-a danger" type="button" data-psel="delete">Delete</button>` +
+                  `<button class="pk-a" type="button" data-psel="done">Done</button></span>`)) : '')
+              : card('', '', emptyRow(q ? 'No matches.' : 'No people yet.')));
           return;
         }
 
@@ -3679,7 +3764,7 @@
             '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
             '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],[data-person-rename],' +
             '[data-access-copy],[data-access-new],' +
-            '[data-export-project],[data-export-team],[data-team-unlink],[data-org-tab],' +
+            '[data-export-project],[data-export-team],[data-team-unlink],[data-org-tab],[data-psel],[data-person-pick],' +
             '#pk-proj-add,#pk-team-add,#pk-team-add-global,#pk-team-existing,#pk-person-add,#pk-person-bulk,' +
             '#pk-proj-import,#pk-team-import,#pk-proj-more,#pk-org-more');
           if (!t) return;
@@ -3746,7 +3831,11 @@
               const tplTeams = { label: 'Download team template', icon: ICON.view, onSelect: () => downloadTemplate('teams') };
               const tplPeople = { label: 'Download people template', icon: ICON.view, onSelect: () => downloadTemplate('people') };
               const items = orgTab === 'teams' ? [addTeam, impTeams, tplTeams]
-                : orgTab === 'people' ? [addPeople, impPeople, tplPeople]
+                : orgTab === 'people' ? [
+                    { label: peopleSelectMode ? 'Stop selecting' : 'Select people', icon: ICON.edit,
+                      onSelect: () => { peopleSelectMode = !peopleSelectMode; peopleSel.clear(); fillOrg(); } },
+                    addPeople, impPeople, tplPeople,
+                  ]
                 : [
                     { label: 'Add', icon: ICON.edit, submenu: [addProject, addTeam, addPeople] },
                     { label: 'Import', icon: ICON.copy, submenu: [impProject, impTeams, impPeople] },
@@ -3884,6 +3973,74 @@
             if (d.teamPick !== undefined) {
               teamSel.has(d.teamPick) ? teamSel.delete(d.teamPick) : teamSel.add(d.teamPick);
               return fillOrg();
+            }
+            if (d.personPick !== undefined) {
+              peopleSel.has(d.personPick) ? peopleSel.delete(d.personPick) : peopleSel.add(d.personPick);
+              return fillOrg();
+            }
+            if (d.psel) {
+              const shownEmails = (orgData.users || [])
+                .filter((u) => orgHit(u.email) || orgHit(u.name) || orgHit(u.calledName) || orgHit(u.team))
+                .map((u) => u.email);
+              if (d.psel === 'done') { peopleSelectMode = false; peopleSel.clear(); return fillOrg(); }
+              if (d.psel === 'all') { shownEmails.forEach((em) => peopleSel.add(em)); return fillOrg(); }
+              if (d.psel === 'none') { peopleSel.clear(); return fillOrg(); }
+              const picked = [...peopleSel];
+              if (!picked.length) { pkAlert('Nothing is selected.'); return; }
+
+              /* ACCESS IDS, IN ONE PASS — the reason this screen needed selection.
+               *
+               * Issued one at a time and shown once each, this is the job that gets abandoned half
+               * way through a roster. They are handed back as a LIST you can copy, because an
+               * Access ID that is only ever shown in a dialog you dismissed is an account nobody
+               * can sign in to. Anyone who already has one keeps it: re-issuing silently would
+               * lock out whoever was mid-review with the old one. */
+              if (d.psel === 'access') {
+                const already = picked.filter((em) => (orgData.users.find((u) => u.email === em) || {}).accessId);
+                const need = picked.filter((em) => !already.includes(em));
+                if (!need.length) {
+                  pkAlert({ title: 'Nothing to issue', message: 'Everyone selected already has an Access ID. Issue a replacement from a person\'s own page — that ends their current one.' });
+                  return;
+                }
+                if (!(await pkConfirm({
+                  title: `Issue ${n(need.length, 'Access ID')}`,
+                  message: (already.length ? `${n(already.length, 'person', 'people')} already ${already.length === 1 ? 'has one and is' : 'have one and are'} skipped.\n\n` : '') +
+                    'You get the list once — copy it before closing.',
+                  confirmLabel: 'Issue' }))) return;
+                const issued = [], failed = [];
+                for (const em of need) {
+                  try { const r = await store.userAccessId(em, ''); issued.push(`${em}  ${r.accessId}`); }
+                  catch (e2) { failed.push(`${em} — ${e2.message}`); }
+                }
+                peopleSel.clear(); peopleSelectMode = false;
+                await fillOrg();
+                await pkAlert({ title: `${n(issued.length, 'Access ID')} issued`, message:
+                  issued.join('\n') + (failed.length ? `\n\nNot issued:\n` + failed.join('\n') : '') +
+                  `\n\nHand these over — an Access ID is what they type to sign in.` });
+                return;
+              }
+
+              if (d.psel === 'enable' || d.psel === 'disable') {
+                const on = d.psel === 'enable';
+                for (const em of picked) {
+                  try { await store.userUpdate({ email: em, status: on ? 'active' : 'disabled' }); } catch (e2) {}
+                }
+                peopleSel.clear(); return fillOrg();
+              }
+
+              if (d.psel === 'delete') {
+                if (!(await pkConfirm({
+                  title: `Delete ${n(picked.length, 'account')}`,
+                  message: picked.join(', ') +
+                    `\n\nThey are signed out immediately. Nothing is destroyed — the records go to the recycle bin and can be restored.`,
+                  confirmLabel: `Delete ${picked.length}`, danger: true }))) return;
+                let failed = 0;
+                for (const em of picked) { try { await store.userDelete(em); } catch (e2) { failed += 1; } }
+                peopleSel.clear(); peopleSelectMode = false;
+                await fillOrg();
+                if (failed) pkAlert(`${failed} of ${picked.length} could not be deleted.`);
+                return;
+              }
             }
             if (d.tsel) {
               const shownTeams = teamsIn(orgPath.project).filter((x) => orgHit(x.name)).map((x) => x.name);
@@ -4330,7 +4487,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=a46a57944c');
+              const sheet = await import('./sheet.js?v=41309f17f8');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4411,7 +4568,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=a46a57944c');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=41309f17f8');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -5667,14 +5824,29 @@ function memorablePin() {
     // "Team dashboards" — admin can open ANY team's board. Teams not enabled in this phase
     // (config.js: isTeamEnabled) are greyed out + non-navigable.
     const teamViewMount = $('#rvd-teamview-mount');
-    if (teamViewMount) {
+    if (teamViewMount) (async () => {
+      /* THE TEAMS THAT EXIST, not the ones the config was shipped with.
+       *
+       * This listed `TEAMS` from config.js — a constant that ships EMPTY, because teams are rows in
+       * D1 now and are created through this very screen. So the menu was blank however many teams
+       * you had, and the one control whose whole job is "take me to a team's board" could not name
+       * a single one. Read live, exactly as the team picker does; the constant is only a fallback
+       * for a deployment still driving teams from config.
+       */
+      let names = [];
+      try {
+        const live = await store.teamsList();
+        names = (live || []).map((t) => ({ name: t.name, enabled: t.enabled !== false }));
+      } catch (e) { /* fall through to the constant below */ }
+      if (!names.length) names = (TEAMS || []).map((t) => ({ name: t, enabled: teamEnabled(t) }));
+
       const teamViewDD = buildDropdown({
         block: true, fixedLabel: 'Jump To Team',
         // Opens to the right, bottom-aligned: this sits at the foot of the rail, so a menu
         // dropping down would run off-screen and one opening upward would cover the nav.
         placement: 'right-end',
-        // Teams gated off via config.js (isTeamEnabled) render greyed + inert (buildDropdown
-        // honours `disabled`: aria-disabled, out of the focus order, click is a no-op).
+        // A disabled team renders greyed + inert (buildDropdown honours `disabled`), and an empty
+        // instance says so rather than opening onto nothing.
         /* Same tab, deliberately. This opened a new one with `noopener`, and `noopener` is what
          * made it ask for a password: it severs the new tab from this one, so the tab starts with
          * a FRESH sessionStorage — and `pkAuthToken` lives only there. The Builder was signed in
@@ -5683,13 +5855,15 @@ function memorablePin() {
          * Navigating in place keeps sessionStorage intact, so the team board opens already
          * authenticated. It is also just what switching views should do — a new tab per team
          * leaves a trail of boards nobody closes. Back returns to the Builder board. */
-        items: TEAMS.map((t) => ({
-          value: t, label: t, disabled: !teamEnabled(t),
-          onSelect: () => { location.href = boardBase(t); },
-        })),
+        items: names.length
+          ? names.map((t) => ({
+              value: t.name, label: t.name, disabled: !t.enabled,
+              onSelect: () => { location.href = boardBase(t.name); },
+            }))
+          : [{ value: '', label: 'No teams yet', disabled: true }],
       });
       teamViewMount.appendChild(teamViewDD.el);
-    }
+    })();
 
     // Colour mode in the rail, right under the team picker — the same personal light/dark
     // switch Settings mounts (one control, two entry points), in its labelled row form.

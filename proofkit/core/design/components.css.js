@@ -1188,10 +1188,12 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    height every other screen uses) and the More button matches — see dashboard.css, which owns
    .rvd-moreopts and would otherwise win on order. */
 .pk-org-head-search .pk-search{flex:1 1 auto}
+/* Its own line above the row, so the row below it is a single band of controls on one axis. */
 .pk-org-head-trail{display:block;font:600 var(--pk-text-xs)/1.4 var(--pk-font);letter-spacing:.08em;
-  text-transform:uppercase;color:var(--pk-muted);
+  text-transform:uppercase;color:var(--pk-muted);margin:0 0 var(--pk-space-2);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pk-org-head-t h2{margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-org-head-t{flex:1 1 auto}
+.pk-org-head-t h2{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.pk-org-back{transition:none}.pk-org-back:hover,.pk-org-back:active{transform:none}}
 
 /* Modal message. \`pre-wrap\` because the text is composed with real newlines — an import preview
@@ -1224,6 +1226,12 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm,3px);
   font:700 var(--pk-text-2xs)/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
 .pk-ptable-more{width:32px;text-align:right;color:var(--pk-muted)}
+/* Select mode on a people table. The whole ROW is the hit area — a 13px checkbox is a poor target
+   and the row is already the thing being chosen — so the box shows state and takes no clicks. */
+.pk-ptable-pick{width:32px}
+.pk-ptable-pick input{pointer-events:none;margin:0;accent-color:var(--pk-red)}
+.pk-ptable-row.is-picked{background:var(--pk-hover)}
+.pk-ptable-row.is-picked td:first-child{box-shadow:inset 2px 0 0 var(--pk-red)}
 
 /* Team picker. A scrollable list of what exists, because the alternative was typing a name from
    memory that had to match exactly — and a typo did not fail, it created a team. */
@@ -1416,24 +1424,7 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   text-align:left;color:var(--pk-body);font:600 var(--pk-text-md)/1.2 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
 .pk-set-tab.is-active{border-left-color:var(--pk-red);color:var(--pk-ink);background:var(--pk-elev)}
 .pk-set-panel{display:flex;flex-direction:column;gap:var(--pk-space-4);min-width:0}
-/* A SETTINGS ROW IS ONE SENTENCE, AND IT HAS TO READ AS ONE.
- *
- * These rows are label-left / control-right across the card, so on a wide screen "Name" sat at one
- * edge and "Rename" at the other with half a metre of nothing between them — two things you have to
- * connect by eye rather than read together. The card had no measure, so it grew to whatever the
- * window was.
- *
- * The cap is on the CARD rather than the row: everything inside inherits it, and a row left at full
- * width inside a capped card would just move the problem. Content that genuinely wants width —
- * tables you scan across, tile grids, the visibility matrix — opts out below rather than being
- * squeezed into a column that was chosen for prose.
- */
-.pk-set-card{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
-  max-width:var(--pk-measure-set,56rem)}
-/* ONE measure, not one per card. Letting table and tile cards opt out gave the column a ragged
-   right edge — some cards to 900px, their neighbours to the window — which reads as broken layout
-   rather than as breathing room. Wide tables scroll inside their own .pk-tablewrap instead, which
-   is what that wrapper has always been for. */
+.pk-set-card{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red)}
 .pk-set-card-h{padding:var(--pk-space-4) var(--pk-space-4h) 0}
 .pk-set-card-h h3{margin:0;font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
 .pk-set-card-h p{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-sm)/1.5 var(--pk-font);color:var(--pk-muted)}
