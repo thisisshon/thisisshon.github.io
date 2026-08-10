@@ -682,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=11ef251497'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=613d82bdd2'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=11ef251497';
+} from './vocab.js?v=613d82bdd2';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -796,10 +796,15 @@ export function initTheme() {
 const OVERLAY_KEY = 'pkOverlayUi';
 const OVERLAY_ME_KEY = 'pkOverlayUiMe';
 
-/** The shared default from the local cache ('new' | 'old'; defaults 'old'). */
+/* The shared default from the local cache ('new' | 'old').
+ *
+ * NEW IS THE DEFAULT NOW. It read `=== 'new' ? 'new' : 'old'`, which made OLD the answer to every
+ * uncertainty — an unset value, an unreachable Worker, a browser with no localStorage. The HUD is
+ * the overlay this product ships; the box is the fallback somebody chooses deliberately. So the
+ * test is inverted: only an explicit 'old' produces old. */
 export function getGlobalOverlayUi() {
-  try { return localStorage.getItem(OVERLAY_KEY) === 'new' ? 'new' : 'old'; }
-  catch { return 'old'; }
+  try { return localStorage.getItem(OVERLAY_KEY) === 'old' ? 'old' : 'new'; }
+  catch { return 'new'; }
 }
 
 /** This browser's own pick, or '' when it follows the shared default. */
@@ -818,11 +823,11 @@ export function setOverlayUiOverride(v) {
 /** The overlay this browser actually gets: its own pick, else the shared default. */
 export function getOverlayUi() { return getOverlayUiOverride() || getGlobalOverlayUi(); }
 
-function cacheOverlayUi(v) { try { localStorage.setItem(OVERLAY_KEY, v === 'new' ? 'new' : 'old'); } catch {} }
+function cacheOverlayUi(v) { try { localStorage.setItem(OVERLAY_KEY, v === 'old' ? 'old' : 'new'); } catch {} }
 
 /** Admin action: set the GLOBAL overlay UI for everyone (POST /settings), cache locally. */
 export async function setGlobalOverlayUi(v) {
-  const val = v === 'new' ? 'new' : 'old';
+  const val = v === 'old' ? 'old' : 'new';
   cacheOverlayUi(val);
   if (!WORKER_URL) return val;
   /* authHeaders(), NOT getSession().key.
@@ -860,7 +865,7 @@ export async function syncOverlayUi() {
   if (!WORKER_URL) return getOverlayUi();
   try {
     const r = await fetch(WORKER_URL + '/settings', { headers: { 'Content-Type': 'application/json' } });
-    if (r.ok) { const j = await r.json(); cacheOverlayUi(j && j.overlayUi === 'new' ? 'new' : 'old'); }
+    if (r.ok) { const j = await r.json(); cacheOverlayUi(j && j.overlayUi === 'old' ? 'old' : 'new'); }
   } catch {}
   return getOverlayUi();
 }
@@ -875,7 +880,7 @@ export function startOverlayUiStream() {
     overlayES = new EventSource(WORKER_URL + '/events');
     overlayES.addEventListener('overlayUi', (e) => {
       try {
-        const v = JSON.parse(e.data).overlayUi === 'new' ? 'new' : 'old';
+        const v = JSON.parse(e.data).overlayUi === 'old' ? 'old' : 'new';
         if (v === getGlobalOverlayUi()) return;
         const was = getOverlayUi();
         cacheOverlayUi(v);
