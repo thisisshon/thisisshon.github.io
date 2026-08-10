@@ -14,11 +14,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 <!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
 <style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=41309f17f8">
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=41309f17f8">
-<link rel="stylesheet" href="/proofkit/core/card.css?v=41309f17f8">
-<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=41309f17f8">
-</head>
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=91ad58ff42">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=91ad58ff42">
+<link rel="stylesheet" href="/proofkit/core/card.css?v=91ad58ff42">
+<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=91ad58ff42">
+<script>(function(){try{
+  var base="/proofkit/builder";
+  var p=location.pathname;
+  if(p===base||p.indexOf(base+'/')!==0)return;          // a team slug — this shell is correct
+  var rest=p.slice(base.length);                         // e.g. /people/alvar@example.com
+  location.replace(base+'/?pk='+encodeURIComponent(rest)+location.hash);
+}catch(e){}})();</script></head>
 <body>
 <!-- Non-Astro host: the Worker base URL. Precedence:
        1. ?worker=<url>   connect to that Worker and REMEMBER it (survives navigation)
@@ -179,6 +185,6 @@
     </footer>
   </div>
 </section>
-<script type="module" src="/proofkit/core/teamdash.js?v=41309f17f8"></script>
+<script type="module" src="/proofkit/core/teamdash.js?v=91ad58ff42"></script>
 </body>
 </html>

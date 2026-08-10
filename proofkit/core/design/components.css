@@ -1224,6 +1224,18 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   border:var(--pk-border-hair) solid var(--pk-hair);border-radius:var(--pk-radius-sm,3px);
   font:700 var(--pk-text-2xs)/1.6 var(--pk-font);letter-spacing:.06em;text-transform:uppercase;color:var(--pk-muted)}
 .pk-ptable-more{width:32px;text-align:right;color:var(--pk-muted)}
+/* One geometry across every group. Without a fixed layout each team's table sized its own columns
+   from its own longest name, so the headings shifted from group to group down the page. Declared
+   widths mean a long value ellipsizes instead of widening the column it sits in. */
+.pk-ptable--fixed{table-layout:fixed}
+.pk-ptable--fixed th,.pk-ptable--fixed td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pk-c-pick{width:36px}
+.pk-c-name{width:26%}
+.pk-c-pref{width:16%}
+.pk-c-mail{width:34%}
+.pk-c-id{width:16%}
+.pk-c-go{width:36px}
+
 /* Select mode on a people table. The whole ROW is the hit area — a 13px checkbox is a poor target
    and the row is already the thing being chosen — so the box shows state and takes no clicks. */
 .pk-ptable-pick{width:32px}

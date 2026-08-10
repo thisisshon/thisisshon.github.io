@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=41309f17f8';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=91ad58ff42';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=41309f17f8';
-  import { createCardRenderer } from './card.js?v=41309f17f8';
-  import { ICON } from './icons.js?v=41309f17f8';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=41309f17f8';
+  import { PK_VERSION } from './version.js?v=91ad58ff42';
+  import { createCardRenderer } from './card.js?v=91ad58ff42';
+  import { ICON } from './icons.js?v=91ad58ff42';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=91ad58ff42';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -693,13 +693,21 @@
     function applyUrl(replace) {
       const u = readUrl();
       if (u.view) { view = u.view; syncNav(); }
+      // Restore where in Organisation the link pointed, before render() reads either of them.
+      if (u.orgTab) orgTab = u.orgTab;
+      if (u.orgPath) orgPath = u.orgPath;
       const id = u.ticket ? idOfTicketNo(u.ticket) : '';
       let absent = '';
       if (id) {
         if (roots().find((x) => x.id === id) || all.find((x) => x.id === id)) entryDetail = id;
         else { entryDetail = null; absent = u.ticket; }   // report what the LINK said, not our lookup
       } else entryDetail = null;
-      syncUrl(replace);   // normalises a legacy ?detail= into ?ticket= without adding an entry
+      /* Always REPLACE when a path came in through `?pk=`: the query string was a transport, not
+       * somewhere the person navigated to, and leaving it in history means Back returns to a URL
+       * that only exists to bounce them here again. */
+      let carried = false;
+      try { carried = !!new URLSearchParams(location.search).get('pk'); } catch (e) {}
+      syncUrl(replace || carried);   // normalises a legacy ?detail= into ?ticket= without adding an entry
       render();
       // Explain an unreachable ticket ONCE per id. Silence here is the failure mode: the whole
       // point of a shareable link is that the recipient learns why it did not open.
@@ -944,10 +952,19 @@
       return all.find((x) => x.id === no) ? no : no;   // unknown ids pass through so they can be reported
     }
     function readUrl() {
-      // Path first. Anything under BASE that is not a known segment is treated as the home view.
+      /* `?pk=` is a path that arrived through the 404 fallback.
+       *
+       * A static host cannot serve /builder/people/<email> — there is no such file — so it serves
+       * 404.html, which hands the path here as a parameter. Read it as if it had been the path all
+       * along and put the real address back (see applyUrl), so the link somebody shared is the link
+       * they end up looking at rather than a query string. */
       let segs = [];
       try {
-        segs = location.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+        let pathname = location.pathname;
+        const q0 = new URLSearchParams(location.search);
+        const carried = q0.get('pk');
+        if (carried) pathname = myBase() + (carried.startsWith('/') ? carried : '/' + carried);
+        segs = pathname.replace(/\/+$/, '').split('/').filter(Boolean);
       } catch { return { view: '', ticket: '' }; }
       // /proofkit/<login>/… — drop the base AND the identity segment.
       const rest = segs.slice(BASE.split('/').filter(Boolean).length + 1);
@@ -962,6 +979,23 @@
       if (!rest.length) return { view: 'home', ticket: '' };
       if (rest[0] === 'tickets') return { view: 'dash', ticket: rest[1] || '' };
       if (rest[0] === 'queue') return { view: 'dash', ticket: '' };
+      /* The Organisation lists and everything under them. `projects` also arrives from older links
+       * that only ever meant the list, and those still land on the list — the extra segments are
+       * simply absent. */
+      if (rest[0] === 'projects' || rest[0] === 'teams' || rest[0] === 'people') {
+        const dec = (x) => { try { return decodeURIComponent(x || ''); } catch (e) { return x || ''; } };
+        const tab = rest[0];
+        const org = { project: null, team: null, person: null };
+        if (tab === 'projects') {
+          if (rest[1]) org.project = dec(rest[1]);
+          if (rest[2]) org.team = dec(rest[2]);
+          if (rest[3]) org.person = dec(rest[3]);
+        } else if (tab === 'teams') {
+          if (rest[1]) org.team = dec(rest[1]);
+          if (rest[2]) org.person = dec(rest[2]);
+        } else if (rest[1]) org.person = dec(rest[1]);
+        return { view: 'org', ticket: '', orgTab: tab, orgPath: org };
+      }
       const v = SEGMENT_VIEWS[rest[0]];
       return { view: v && v !== 'queue' ? v : 'home', ticket: '' };
     }
@@ -972,6 +1006,25 @@
       if (detailId) return myBase() + '/tickets/' + encodeURIComponent(ticketNoOf(detailId));
       if (v === 'home') return myBase();                 // the tiles are the board root
       if (v === 'dash') return myBase() + '/queue';      // …so the queue needs its own segment
+      /* ORGANISATION IS A PATH, NOT A PAGE.
+       *
+       * Every screen under it — the three lists, a project, a team, a person — used to share one
+       * address, so a reload dropped you back at the top, Back walked out of the module instead of
+       * up a level, and a link to "Alvar's account" was a link to the projects list. The URL now
+       * carries what you are looking at:
+       *
+       *   /projects · /teams · /people
+       *   /projects/<project> · /projects/<project>/<team> · /projects/<project>/<team>/<email>
+       *   /teams/<team> · /people/<email>
+       *
+       * Segments are encoded, so a team called "Legal Ops" and an email both survive the trip. */
+      if (v === 'org') {
+        const parts = [orgTab];
+        if (orgTab === 'projects' && orgPath.project) parts.push(orgPath.project);
+        if (orgPath.team) parts.push(orgPath.team);
+        if (orgPath.person) parts.push(orgPath.person);
+        return myBase() + '/' + parts.map(encodeURIComponent).join('/');
+      }
       const seg = VIEW_SEGMENTS[v];
       return seg ? myBase() + '/' + seg : myBase();
     }
@@ -2919,7 +2972,10 @@
       const mounts = [];
       const mkDropdown = (slotId, opts) => { const dd = buildDropdown({ small: true, menuAlign: 'right', ...opts }); mounts.push({ slotId, dd }); return `<span id="${slotId}"></span>`; };
 
-      const go = (patch) => { Object.assign(orgPath, patch); rerender(); };
+      /* Drilling in is a NAVIGATION, so it writes history. Without this the address bar sat still
+       * while the screen changed, Back left the module rather than going up a level, and a reload
+       * landed on the list you started from. */
+      const go = (patch) => { Object.assign(orgPath, patch); syncUrl(); rerender(); };
 
       let html = '';
 
@@ -3637,7 +3693,19 @@
               `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
             `</span>`}</td></tr>`;
 
-          const teamTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+          /* ONE GEOMETRY FOR EVERY GROUP.
+           *
+           * Each team is its own <table>, and a table sizes its columns from its OWN content — so
+           * Marketing's five short names gave it a narrow first column while Products' fifteen long
+           * ones gave it a wide one, and the headings marched left and right down the page. Widths
+           * are declared here and the layout fixed, so every group lines up whatever is in it.
+           *
+           * Fixed layout means a long value has to be told what to do instead of stretching its
+           * column: the cells ellipsize (see .pk-ptable--fixed in components.css). */
+          const cols = (sel ? `<col class="pk-c-pick">` : '') +
+            `<col class="pk-c-name"><col class="pk-c-pref"><col class="pk-c-mail"><col class="pk-c-id"><col class="pk-c-go">`;
+          const teamTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable pk-ptable--fixed">` +
+            `<colgroup>${cols}</colgroup><thead><tr>` +
             (sel ? `<th class="pk-ptable-pick"></th>` : '') +
             `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
             `</tr></thead><tbody>` + list.map(personRow).join('') + `</tbody></table></div>`;
@@ -4487,7 +4555,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=41309f17f8');
+              const sheet = await import('./sheet.js?v=91ad58ff42');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4568,7 +4636,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=41309f17f8');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=91ad58ff42');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
