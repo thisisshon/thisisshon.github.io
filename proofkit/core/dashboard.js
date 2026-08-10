@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d9a78aeb74';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d583e8b046';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=d9a78aeb74';
-  import { createCardRenderer } from './card.js?v=d9a78aeb74';
-  import { ICON } from './icons.js?v=d9a78aeb74';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d9a78aeb74';
+  import { PK_VERSION } from './version.js?v=d583e8b046';
+  import { createCardRenderer } from './card.js?v=d583e8b046';
+  import { ICON } from './icons.js?v=d583e8b046';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d583e8b046';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -1032,6 +1032,17 @@
      * contain people — so one path replaces what used to be four sibling screens each re-stating
      * the same structure. Null means "the level above this one". */
     let orgPath = { project: null, team: null, person: null };
+    /* WHICH LIST THE ORGANISATION MODULE OPENS ON.
+     *
+     * Projects → teams → people was a containment tree, and it stopped being true the moment a team
+     * could work on several projects: the team page lists the projects it is in, and the same team
+     * appears in every one of their branches. Teams and people are instance-wide — a team name is
+     * globally unique and so is an email — so each gets a flat list of its own, and all three drill
+     * into the SAME team and person pages rather than a second copy of them.
+     *
+     * The project page keeps its own Teams card. "Who works on this project" is membership; this is
+     * the team itself. Two questions that happen to share a noun. */
+    let orgTab = 'projects';   // projects | teams | people
     /* Which project the BOARD is looking at. '' means all of them — the Builder's cross-boundary
      * view, and what this dashboard has always shown, so the default changes nothing.
      *
@@ -1173,7 +1184,7 @@
 
     /* Which views live under which group in the sidebar. Patterns and Insights are ways of LOOKING
      * at the queue, not separate destinations, so they sit under it rather than beside it. */
-    const NAV_GROUPS = { queue: ['dash', 'threads', 'patterns', 'insights'] };
+    const NAV_GROUPS = { queue: ['dash', 'threads', 'patterns', 'insights'], org: ['org'] };
 
     function syncNav() {
       document.querySelectorAll('.pk-nav').forEach((n) => {
@@ -1181,9 +1192,12 @@
         // are even when the group is collapsed.
         const g = n.dataset.group;
         const inGroup = g && (NAV_GROUPS[g] || []).includes(view);
-        // Inbound and Outbound share data-view="dash" and differ only by direction, so matching
-        // on the view alone would light both at once.
-        const onView = n.dataset.view === view && (!n.dataset.dir || n.dataset.dir === dir);
+        /* Inbound and Outbound share data-view="dash" and differ only by direction, so matching
+         * on the view alone would light both at once. Projects, Teams and People do the same thing
+         * with data-org-tab — one view, three lists. */
+        const onView = n.dataset.view === view
+          && (!n.dataset.dir || n.dataset.dir === dir)
+          && (!n.dataset.orgTab || n.dataset.orgTab === orgTab);
         n.classList.toggle('is-active', onView || !!inGroup);
       });
       positionSubnavMarker();
@@ -3221,16 +3235,25 @@
           const head = $('#pk-org-head');
           if (head) {
             const proj = (projects.find((p) => p.id === orgPath.project) || {});
-            const here = orgPath.person || orgPath.team || proj.name || orgPath.project || 'Projects';
+            const TAB_LABEL = { projects: 'Projects', teams: 'Teams', people: 'People' };
+            const here = orgPath.person || orgPath.team || proj.name || orgPath.project || TAB_LABEL[orgTab];
             /* The eyebrow is the BREADCRUMB, and every step in it is a link. It was the parent's
              * name as flat text, which told you where you had come from and gave you no way to go
              * there — a trail you can read and not walk. */
+            /* The trail names the route you TOOK, not one canonical path. A team reached from the
+             * Teams list has no project above it — inventing one would send Back to a project the
+             * team merely happens to be in, which is exactly the false containment this tab set
+             * exists to stop implying. */
             const steps = [];
             if (orgPath.project) steps.push({ label: 'Projects', go: 'projects' });
-            if (orgPath.team) steps.push({ label: proj.name || orgPath.project, go: 'project' });
-            if (orgPath.person) steps.push({ label: orgPath.team, go: 'team' });
+            if (orgPath.team && orgPath.project) steps.push({ label: proj.name || orgPath.project, go: 'project' });
+            if (orgPath.team && !orgPath.project) steps.push({ label: 'Teams', go: 'teams' });
+            if (orgPath.person && orgPath.team) steps.push({ label: orgPath.team, go: 'team' });
+            if (orgPath.person && !orgPath.team) steps.push({ label: 'People', go: 'people' });
             const trail = steps.map((x) => x.label);
-            const up = orgPath.person ? 'team' : orgPath.team ? 'project' : orgPath.project ? 'projects' : '';
+            const up = orgPath.person ? (orgPath.team ? 'team' : 'people')
+              : orgPath.team ? (orgPath.project ? 'project' : 'teams')
+              : orgPath.project ? 'projects' : '';
             head.innerHTML =
               `<div class="pk-org-head">` +
                 (up ? `<button type="button" class="pk-org-back" data-crumb="${up}" aria-label="Back to ${esc(trail[trail.length - 1] || 'Projects')}">` +
@@ -3243,13 +3266,23 @@
                     : '') +
                   `<h2>${esc(here)}</h2>` +
                 `</div>` +
-                `<div class="pk-org-head-search"><input id="pk-org-q" class="pk-login-input" type="search" ` +
+                /* `.pk-search`, the toolbar search every other screen uses — NOT `.pk-login-input`,
+                 * which is 56px because the login form is one deliberately marquee surface. That is
+                 * why this box stood a head taller than the buttons beside it and than the search on
+                 * every other page. */
+                `<div class="pk-org-head-search"><input id="pk-org-q" class="pk-search" type="search" ` +
                   `placeholder="Search projects, teams and people" autocomplete="off" value="${esc(orgQuery)}"></div>` +
-                /* Only at the top level: "Add a project" belongs beside the list of projects, not
-                 * beside one team three levels down. */
+                /* ONE ICON, at the top level only. Six creation and import actions spread across
+                 * three lists was six buttons competing with a search box for the same strip, and
+                 * the strip changed shape every time you switched list. Behind a single More the
+                 * header stays the same on all three, and the menu names every action in full —
+                 * which an icon row never can. Deeper in, the actions belong to the thing you are
+                 * looking at, so this is not offered beside one team three levels down. */
                 (up ? '' : `<span class="pk-u-inlinerow pk-org-head-acts">` +
-                  `<button class="pk-a pk-a--primary" type="button" id="pk-proj-add">Add a project</button>` +
-                  `<button class="pk-a" type="button" id="pk-proj-import">Import a project</button></span>`) +
+                  `<button class="rvd-moreopts" id="pk-org-more" aria-label="Add or import" aria-haspopup="menu">` +
+                    `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">` +
+                      `<circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
+                  `</button></span>`) +
               `</div>`;
           }
         }
@@ -3491,6 +3524,61 @@
           return;
         }
 
+        /* ---- top level: three flat lists ------------------------------------------------------
+         *
+         * Projects, teams and people are three INDEPENDENT lists of the same instance, not three
+         * depths of one tree. Only projects contain anything; a team is worked with on projects and
+         * a person belongs to a team, and neither is owned by one place any more. */
+        /* No in-page tab strip. The rail's Organization group already names the three lists, and
+         * a second switch immediately under it would be the same control twice — two things to
+         * keep in step, and a moment's doubt about whether they mean different things. */
+
+        if (orgTab === 'teams') {
+          /* A TABLE, like the people list on a team page: a team is now something you scan ACROSS —
+           * which projects, how many people, how much work — and stacked tiles put each answer on a
+           * different line, so the eye travels instead of comparing. */
+          const shownT = teams.filter((t) => hit(t.name) || projectsOf(t).some((id) => hit(id)));
+          outer.innerHTML =
+            card('', '', shownT.length
+              ? `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+                `<th>Team</th><th>In projects</th><th>People</th><th>Tickets</th><th>Status</th><th class="pk-ptable-more"></th>` +
+                `</tr></thead><tbody>` +
+                shownT.map((t) => `<tr class="pk-ptable-row" data-team-open="${esc(t.name)}">` +
+                  `<td>${esc(t.name)}</td>` +
+                  `<td>${esc(projectsOf(t).map((id) => (projects.find((p) => p.id === id) || {}).name || id).join(', '))}</td>` +
+                  `<td>${peopleIn(t.name).length}</td>` +
+                  `<td>${ticketsFor(t.name)}</td>` +
+                  `<td>${t.enabled ? 'Active' : 'Inactive'}</td>` +
+                  `<td class="pk-ptable-more"><span class="pk-set-go" aria-hidden="true">` +
+                    `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
+                  `</span></td></tr>`).join('') + `</tbody></table></div>`
+              : emptyRow(q ? 'No matches.' : 'No teams yet.'));
+          return;
+        }
+
+        if (orgTab === 'people') {
+          /* Every account in the instance. An email is unique instance-wide, so this is the only
+           * list that can honestly claim to be all of them — reaching a person used to mean knowing
+           * which team they were on and drilling three levels to get there. */
+          const shownP = users.filter((u) => hit(u.email) || hit(u.name) || hit(u.calledName) || hit(u.team));
+          outer.innerHTML =
+            card('', '', shownP.length
+              ? `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+                `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
+                `</tr></thead><tbody>` +
+                shownP.map((u) => `<tr class="pk-ptable-row" data-person-open="${esc(u.email)}">` +
+                  `<td>${esc(u.name || '—')}</td>` +
+                  `<td>${esc(u.calledName || '—')}</td>` +
+                  `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
+                  `<td>${esc(u.team || '—')}</td>` +
+                  `<td>${u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '<span class="pk-ptable-none">— none —</span>'}</td>` +
+                  `<td class="pk-ptable-more"><span class="pk-set-go" aria-hidden="true">` +
+                    `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
+                  `</span></td></tr>`).join('') + `</tbody></table></div>`
+              : emptyRow(q ? 'No matches.' : 'No people yet.'));
+          return;
+        }
+
         // ---- level: all projects --------------------------------------------------------------
         const shown = projects.filter((p) => hit(p.name) || hit(p.id)
           || teamsIn(p.id).some((t) => hit(t.name)) || peopleInProject(p.id).some((u) => hit(u.email)));
@@ -3591,15 +3679,21 @@
             '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
             '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],[data-person-rename],' +
             '[data-access-copy],[data-access-new],' +
-            '[data-export-project],[data-export-team],[data-team-unlink],' +
-            '#pk-proj-add,#pk-team-add,#pk-team-existing,#pk-person-add,#pk-person-bulk,#pk-proj-import,#pk-team-import,#pk-proj-more');
+            '[data-export-project],[data-export-team],[data-team-unlink],[data-org-tab],' +
+            '#pk-proj-add,#pk-team-add,#pk-team-add-global,#pk-team-existing,#pk-person-add,#pk-person-bulk,' +
+            '#pk-proj-import,#pk-team-import,#pk-proj-more,#pk-org-more');
           if (!t) return;
           const d = t.dataset;
           try {
             // navigation
-            if (d.crumb === 'projects') return go({ project: null, team: null, person: null });
+            if (d.crumb === 'projects') { orgTab = 'projects'; return go({ project: null, team: null, person: null }); }
+            if (d.crumb === 'teams') { orgTab = 'teams'; return go({ project: null, team: null, person: null }); }
+            if (d.crumb === 'people') { orgTab = 'people'; return go({ project: null, team: null, person: null }); }
             if (d.crumb === 'project') return go({ team: null, person: null });
             if (d.crumb === 'team') return go({ person: null });
+            // The tab strip at the top level. Same handler as the crumbs — they navigate to the
+            // same three places, and two implementations of that would drift.
+            if (d.orgTab) { orgTab = d.orgTab; return go({ project: null, team: null, person: null }); }
             if (d.projectOpen) return go({ project: d.projectOpen, team: null, person: null });
             if (d.teamOpen) return go({ team: d.teamOpen, person: null });
             if (d.personOpen) return go({ person: d.personOpen });
@@ -3607,6 +3701,7 @@
             // creation
             if (t.id === 'pk-proj-add') return openAddProject();
             if (t.id === 'pk-team-add') return openAddTeam();
+            if (t.id === 'pk-team-add-global') return openAddTeam(true);
             if (t.id === 'pk-team-existing') return openAddExistingTeams();
             if (t.id === 'pk-person-add') return openAddPerson();
             if (t.id === 'pk-person-bulk') return openBulkAdd();
@@ -3625,6 +3720,40 @@
               ]);
             }
             if (t.id === 'pk-proj-import' || t.id === 'pk-team-import') return openImport();
+            /* THE MENU BELONGS TO THE LIST YOU ARE ON.
+             *
+             * Teams and People offer their own two actions and nothing else — a list of teams is
+             * not where you go to add a person, and six items to read for the two that apply is
+             * work the screen can do for you.
+             *
+             * Projects is the exception, because it is the whole instance's landing screen: it
+             * keeps all six, split into Add and Import so the first thing you read is which KIND of
+             * act you want. openRowMenu drills down IN PLACE, so a submenu is one popup with a back
+             * row rather than a second floating layer to position and dismiss. */
+            if (t.id === 'pk-org-more') {
+              e.stopPropagation();
+              const addProject = { label: 'Add a project', icon: ICON.edit, onSelect: () => openAddProject() };
+              const addTeam = { label: 'Add a team', icon: ICON.teams, onSelect: () => openAddTeam(true) };
+              const addPeople = { label: 'Add people', icon: ICON.teams, onSelect: () => openBulkAdd() };
+              const impProject = { label: 'Import projects', icon: ICON.copy, onSelect: () => openImport('projects') };
+              const impTeams = { label: 'Import teams', icon: ICON.copy, onSelect: () => openImport('teams') };
+              const impPeople = { label: 'Import people', icon: ICON.copy, onSelect: () => openImport('people') };
+              /* The template sits with the import it belongs to. Downloading it is the FIRST half
+               * of importing — you cannot fill in a shape you have not seen — so hiding it on a
+               * different screen from the upload is how a template goes unused and people invent
+               * their own columns. */
+              const tplProject = { label: 'Download project template', icon: ICON.view, onSelect: () => downloadTemplate('projects') };
+              const tplTeams = { label: 'Download team template', icon: ICON.view, onSelect: () => downloadTemplate('teams') };
+              const tplPeople = { label: 'Download people template', icon: ICON.view, onSelect: () => downloadTemplate('people') };
+              const items = orgTab === 'teams' ? [addTeam, impTeams, tplTeams]
+                : orgTab === 'people' ? [addPeople, impPeople, tplPeople]
+                : [
+                    { label: 'Add', icon: ICON.edit, submenu: [addProject, addTeam, addPeople] },
+                    { label: 'Import', icon: ICON.copy, submenu: [impProject, impTeams, impPeople] },
+                    { label: 'Templates', icon: ICON.view, submenu: [tplProject, tplTeams, tplPeople] },
+                  ];
+              return openRowMenu(t, null, items);
+            }
             if (d.exportProject) return doExport('project', d.exportProject);
             if (d.exportTeam) return doExport('team', d.exportTeam);
 
@@ -3860,9 +3989,16 @@
          * project. Narrowing beats disabling here: a team already in the project is not a choice you
          * got wrong, it is one there is nothing to do about, and listing it greyed out would fill the
          * dialog with rows that answer a question nobody asked. */
-        const all = (orgData.teams || []).map((t) => t.name).filter(Boolean)
-          .filter((nm) => !opts.only || opts.only.includes(nm))
-          .sort((a, b) => a.localeCompare(b));
+        /* `items` lets the same dialog pick PROJECTS — a team being created outside any project has
+         * to say where it will work, and that is the same "tick from a list you cannot mistype"
+         * problem this was built for. Values and labels differ there (id vs name), so an item is a
+         * pair; the team case stays a plain list of names. */
+        const all = opts.items
+          ? opts.items.map((it) => ({ value: it.value, label: it.label || it.value }))
+          : (orgData.teams || []).map((t) => t.name).filter(Boolean)
+              .filter((nm) => !opts.only || opts.only.includes(nm))
+              .sort((a, b) => a.localeCompare(b))
+              .map((nm) => ({ value: nm, label: nm }));
         const chosen = new Set(opts.chosen || []);
         const el = document.createElement('div'); el.className = 'pk-reopen';
         const esc2 = (x) => esc(x);
@@ -3871,13 +4007,13 @@
             `<h2 class="pk-reopen-title">${esc2(opts.title)}</h2>` +
             (opts.sub ? `<p class="pk-reopen-sub">${esc2(opts.sub)}</p>` : '') +
             (all.length
-              ? `<div class="pk-teampick">` + all.map((t) => {
-                  const on = chosen.has(t);
-                  const dis = opts.exclude === t;
+              ? `<div class="pk-teampick">` + all.map((it) => {
+                  const on = chosen.has(it.value);
+                  const dis = opts.exclude === it.value;
                   return `<label class="pk-teampick-i${dis ? ' is-off' : ''}">` +
-                    `<input type="${opts.multi ? 'checkbox' : 'radio'}" name="pk-tp" value="${esc2(t)}"` +
+                    `<input type="${opts.multi ? 'checkbox' : 'radio'}" name="pk-tp" value="${esc2(it.value)}"` +
                       `${on ? ' checked' : ''}${dis ? ' disabled' : ''}>` +
-                    `<span>${esc2(t)}${dis ? ' · current team' : ''}</span></label>`;
+                    `<span>${esc2(it.label)}${dis ? ' · current team' : ''}</span></label>`;
                 }).join('') + `</div>`
               : `<p class="pk-reopen-sub">${esc2(opts.emptyText || 'There are no teams yet. Create one first.')}</p>`) +
             `<div class="pk-reopen-err" hidden></div>` +
@@ -3904,8 +4040,13 @@
         });
       }
 
-      /** Add a team, into the project currently open. */
-      function openAddTeam() {
+      /* Add a team — into the project currently open, or, from the Teams list where there is no
+       * project in context, into whichever projects you then pick.
+       *
+       * A team has to be in at least one project: the Worker refuses to leave one in none, because
+       * a team no project reaches is unreachable rather than tidy. So creating one from the flat
+       * list asks the same question the project page answers implicitly by being open. */
+      function openAddTeam(askProjects) {
         openFormModal({
           title: 'Add a team',
           fields: [
@@ -3922,7 +4063,25 @@
               try { await store.teamProject(v.name, orgPath.project); } catch (e) { /* created regardless */ }
             }
             showOnce(v.name, key, 'Password');
-            fillOrg();
+            await fillOrg();
+            if (!askProjects) return;
+            /* Created first, placed second — the team exists either way, and a dialog that could
+             * fail half way through would otherwise lose the password that was just shown once. */
+            openTeamPicker({
+              title: 'Where does ' + v.name + ' work?',
+              sub: 'The projects this team reviews. It starts in Default until you choose, and can be added to more later.',
+              multi: true,
+              items: (orgData.projects || []).map((p) => ({ value: p.id, label: p.name || p.id })),
+              confirmLabel: 'Add',
+              cancelLabel: 'Leave in Default',
+              emptyText: 'There are no projects yet.',
+              onPick: async (list) => {
+                for (const pid of (list || [])) {
+                  try { await store.teamProjectLink(v.name, pid, false); } catch (e) { /* reported below */ }
+                }
+                fillOrg();
+              },
+            });
           },
         });
       }
@@ -4028,6 +4187,30 @@
         'Employee Name,Mail id,Team,One Name\n' +
         'EXAMPLE - delete this row,them@company.com,Marketing,Example\n';
 
+      /* ONE TEMPLATE PER THING YOU CAN IMPORT.
+       *
+       * A person needs an email and a team; a team needs a name and the projects it works on; a
+       * project needs a name. Sharing one sheet across all three would mean columns that are
+       * required in one row and meaningless in the next, which is how a spreadsheet turns into a
+       * form nobody fills in correctly. Each carries an EXAMPLE row the parsers drop by name, so
+       * the shape is demonstrated rather than described.
+       *
+       * CSV, because every spreadsheet opens it and none of them argue — and the same reader takes
+       * .xlsx back, so filling it in Excel and saving as either works. */
+      const TEMPLATES = {
+        people: ['proofkit-people-template.csv', peopleTemplateCsv],
+        teams: ['proofkit-teams-template.csv', () =>
+          'Team,Projects,Colour\n' +
+          'EXAMPLE - delete this row,"Alpha Site, Beta Site",#da291c\n'],
+        projects: ['proofkit-projects-template.csv', () =>
+          'Project,Teams\n' +
+          'EXAMPLE - delete this row,"Content, Design"\n'],
+      };
+      const downloadTemplate = (kind) => {
+        const [name, build] = TEMPLATES[kind] || TEMPLATES.people;
+        downloadBlob(build(), 'text/csv', name);
+      };
+
       /* The import preview, as a screen rather than an alert.
        *
        * It was a text blob in a confirm dialog: 49 lines of monospace-ish prose wrapping mid-email,
@@ -4090,12 +4273,29 @@
         });
       }
 
-      function openImport() {
+      /* ONE dialog, framed for what you came to import.
+       *
+       * The file decides what actually happens — a project export carries its teams and people, a
+       * people sheet carries neither — so there is one reader, one endpoint and one set of rules
+       * about what is skipped. `kind` only changes what the dialog SAYS, because "Import teams" and
+       * "Import people" are different intentions arriving at the same door, and a dialog that
+       * ignores which one you pressed makes you wonder whether it heard you.
+       *
+       * Worth knowing: an existing team named in a file is now ADDED to the target project rather
+       * than skipped, which is what makes importing a roster into a second project work at all. */
+      const IMPORT_COPY = {
+        projects: ['Import projects', 'The project template (.xlsx / .csv) — one project per row, with the teams that work on it — or a Proofkit project export (.json), which carries its teams, people and visibility rules.'],
+        teams: ['Import teams', 'The team template (.xlsx / .csv) — one team per row, with the projects it works on — or a Proofkit export (.json). A team that already exists is ADDED to those projects rather than duplicated.'],
+        people: ['Import people', 'The people template (.xlsx / .csv), or a Proofkit export (.json). People arrive without a way to sign in until you issue credentials.'],
+      };
+      function openImport(kind) {
+        const [title, sub] = IMPORT_COPY[kind] ||
+          ['Import', 'A Proofkit export, or a filled people template (.xlsx / .csv). Importing only ADDS — anything that already exists is skipped, never overwritten.'];
         const el = document.createElement('div'); el.className = 'pk-reopen';
         el.innerHTML =
-          `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="Import">` +
-            `<h2 class="pk-reopen-title">Import</h2>` +
-            `<p class="pk-reopen-sub">A Proofkit export, or a filled people template (.xlsx / .csv). Importing only ADDS — anything that already exists is skipped, never overwritten.</p>` +
+          `<div class="pk-reopen-card" role="dialog" aria-modal="true" aria-label="${esc(title)}">` +
+            `<h2 class="pk-reopen-title">${esc(title)}</h2>` +
+            `<p class="pk-reopen-sub">${esc(sub)}</p>` +
             `<div class="pk-reopen-field"><span class="pk-reopen-label">File</span>` +
               `<input type="file" accept=".json,.xlsx,.csv,application/json" class="pk-login-input pk-imp-file"></div>` +
             `<div class="pk-reopen-field"><span class="pk-reopen-label">Import as project id <span style="color:var(--pk-muted);font-weight:400">· optional</span></span>` +
@@ -4123,8 +4323,78 @@
              * what gets skipped — a second server route for "but from a sheet" would drift. */
             let payload;
             const nm = (f.name || '').toLowerCase();
-            if (nm.endsWith('.xlsx') || nm.endsWith('.csv')) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=d9a78aeb74');
+            const isSheet = nm.endsWith('.xlsx') || nm.endsWith('.csv');
+
+            /* The TEAMS and PROJECTS templates carry no people, so they take their own route to the
+             * same endpoint. A team names the projects it works on and a project names its teams —
+             * the same relationship written from either end — and both become `teams` + `project`
+             * in the payload the export path already produces. */
+            if (isSheet && (kind === 'teams' || kind === 'projects')) {
+              const sheet = await import('./sheet.js?v=d583e8b046');
+              const rows = await sheet.readSheet(f);
+              const targetPid = () => asId.value.trim() || orgPath.project || 'default';
+              if (kind === 'teams') {
+                const { teams, problems } = sheet.teamsFromRows(rows);
+                if (!teams.length) {
+                  throw new Error(problems.length ? 'Nothing importable. ' + problems.slice(0, 4).join(' ')
+                    : 'That sheet has no teams in it.');
+                }
+                /* Land them in the FIRST project the sheet names, not in whatever was open. A team
+                 * whose row says "Alpha Site, Beta Site" and then appears in Default as well has a
+                 * membership nobody asked for, and the reader has to work out where it came from. */
+                const named = teams.find((t) => t.projects.length);
+                const firstNamed = named && (orgData.projects || []).find((p) =>
+                  p.id === named.projects[0] || (p.name || '').toLowerCase() === named.projects[0].toLowerCase());
+                payload = {
+                  proofkitExport: 1,
+                  asProject: (firstNamed && firstNamed.id) || targetPid(),
+                  teams: teams.map((t) => ({ name: t.name, color: t.color || '' })),
+                };
+                /* A team that names several projects is created once and LINKED to each. The
+                 * import endpoint places it in the target project; the extra projects are the
+                 * memberships this whole feature exists for, so they are applied here. */
+                const rep0 = await store.importData(payload);
+                for (const t of teams) {
+                  for (const pname of t.projects) {
+                    const proj = (orgData.projects || []).find((p) =>
+                      p.id === pname || (p.name || '').toLowerCase() === pname.toLowerCase());
+                    if (proj) { try { await store.teamProjectLink(t.name, proj.id, false); } catch (e3) { /* reported below */ } }
+                  }
+                }
+                close();
+                await pkAlert({ title: 'Imported', message:
+                  `Teams: ${(rep0.teams || []).length}` +
+                  ((rep0.skipped || []).length ? `\n\nSkipped:\n` + rep0.skipped.slice(0, 12).join('\n') : '') +
+                  (problems.length ? `\n\nRows with problems:\n` + problems.slice(0, 8).join('\n') : '') });
+                fillOrg();
+                return;
+              }
+              const { projects, problems } = sheet.projectsFromRows(rows);
+              if (!projects.length) {
+                throw new Error(problems.length ? 'Nothing importable. ' + problems.slice(0, 4).join(' ')
+                  : 'That sheet has no projects in it.');
+              }
+              /* One project per row, each created and then given its teams. Existing teams are
+               * ADDED rather than duplicated — the same rule the roster import follows. */
+              let made = 0;
+              for (const pr of projects) {
+                const id = pr.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                try { await store.createProject(id, pr.name, 'owned'); made += 1; } catch (e3) { /* already exists */ }
+                for (const tn of pr.teams) {
+                  try { await store.teamProjectLink(tn, id, false); } catch (e3) { /* no such team */ }
+                }
+              }
+              close();
+              await pkAlert({ title: 'Imported', message:
+                `Projects: ${made} of ${projects.length}` +
+                (problems.length ? `\n\nRows with problems:\n` + problems.slice(0, 8).join('\n') : '') +
+                `\n\nA team named in a row that does not exist yet was skipped — create it first, or import teams before projects.` });
+              fillOrg();
+              return;
+            }
+
+            if (isSheet) {
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=d583e8b046');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -5040,9 +5310,14 @@ function memorablePin() {
        * `dir` the in-page segmented control sets, so the rail and that control can never disagree. */
       if (b.dataset.dir && b.dataset.dir !== dir) { dir = b.dataset.dir; teamFilter = ''; }
 
-      // Organisation is a view in its own right, so it needs none of the special-casing that
-      // pairing it with Settings used to require.
-      if (b.dataset.view === 'org') orgPath = { project: null, team: null, person: null };
+      /* Organisation is a view in its own right, so it needs none of the special-casing that
+       * pairing it with Settings used to require. Its three sub-items pick which LIST it opens on
+       * — and clicking any of them returns to the top of that list, since a sub-item is a
+       * destination, not a filter over wherever you happened to be. */
+      if (b.dataset.view === 'org') {
+        if (b.dataset.orgTab) orgTab = b.dataset.orgTab;
+        orgPath = { project: null, team: null, person: null };
+      }
       view = b.dataset.view; entryDetail = null;
       syncUrl();   // a nav click IS a navigation — this is what Back walks back through
       if (prefs.rememberView) { prefs.lastView = view; savePrefs(); }

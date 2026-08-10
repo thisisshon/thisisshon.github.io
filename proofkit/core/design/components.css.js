@@ -1158,27 +1158,36 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* align-items:stretch, so the button is exactly as tall as the trail-plus-title beside it and
    their top and bottom edges agree. Centred, it floated against a two-line block and lined up
    with neither line. The search takes the rest of the row. */
-.pk-org-head{display:flex;align-items:stretch;gap:var(--pk-space-4);min-width:0}
+/* CENTRED, not stretched. \`stretch\` made the back button as tall as the trail-plus-title beside it
+   and left that text hanging from the top of a tall box, so the two never sat on a shared axis.
+   The button is a fixed square now and everything in the row centres against it. */
+.pk-org-head{display:flex;align-items:center;gap:var(--pk-space-4);min-width:0}
 .pk-org-head-search{margin-left:auto;flex:0 1 320px;min-width:0;display:flex;align-items:center}
 .pk-org-head-search input{width:100%}
 @media (max-width:900px){.pk-org-head-search{display:none}}
 .pk-org-back{flex:none;display:flex;align-items:center;justify-content:center;
-  width:var(--pk-control-h-md);height:auto;align-self:stretch;padding:0;
+  width:var(--pk-control-h-md);height:var(--pk-control-h-md);align-self:center;padding:0;
   /* Square. A rounded corner on a 1px box reads as a broken stroke at this size — the arc renders
      across two or three pixels and the line looks like it stops short of the corner. */
   border:var(--pk-border-hair) solid var(--pk-hair);border-radius:0;
   background:var(--pk-input);color:var(--pk-ink);cursor:pointer;
-  transition:transform var(--pk-dur-base) var(--pk-ease),border-color var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease)}
+  transition:border-color var(--pk-dur-base) var(--pk-ease),background var(--pk-dur-base) var(--pk-ease),color var(--pk-dur-base) var(--pk-ease)}
+/* It STAYS PUT. Sliding left on hover was meant to echo the direction it navigates, but a control
+   that moves out from under the cursor as you approach it reads as instability, not as a hint —
+   and it is the one control on the screen you aim at without looking. Colour carries the state. */
 @media (min-width:1024px) and (hover:hover){
-  /* It moves the way it navigates — left. */
-  .pk-org-back:hover{transform:translateX(-2px);border-color:var(--pk-red);color:var(--pk-red)}}
-.pk-org-back:active{transform:translateX(-4px)}
+  .pk-org-back:hover{border-color:var(--pk-red);color:var(--pk-red)}}
+.pk-org-back:active{background:var(--pk-hover)}
 .pk-org-back:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:2px}
 .pk-org-head-t{min-width:0}
 .pk-org-crumb{padding:0;border:none;background:none;cursor:pointer;font:inherit;color:inherit;letter-spacing:inherit}
 @media (min-width:1024px) and (hover:hover){.pk-org-crumb:hover{color:var(--pk-red)}}
 .pk-org-crumb:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:2px}
 .pk-org-crumb-sep{margin:0 var(--pk-space-2);opacity:.6}
+/* One height for everything on the header strip: the search sets it (40px, the toolbar control
+   height every other screen uses) and the More button matches — see dashboard.css, which owns
+   .rvd-moreopts and would otherwise win on order. */
+.pk-org-head-search .pk-search{flex:1 1 auto}
 .pk-org-head-trail{display:block;font:600 var(--pk-text-xs)/1.4 var(--pk-font);letter-spacing:.08em;
   text-transform:uppercase;color:var(--pk-muted);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1407,7 +1416,24 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   text-align:left;color:var(--pk-body);font:600 var(--pk-text-md)/1.2 var(--pk-font);transition:color .15s,border-color .15s,background .15s}
 .pk-set-tab.is-active{border-left-color:var(--pk-red);color:var(--pk-ink);background:var(--pk-elev)}
 .pk-set-panel{display:flex;flex-direction:column;gap:var(--pk-space-4);min-width:0}
-.pk-set-card{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red)}
+/* A SETTINGS ROW IS ONE SENTENCE, AND IT HAS TO READ AS ONE.
+ *
+ * These rows are label-left / control-right across the card, so on a wide screen "Name" sat at one
+ * edge and "Rename" at the other with half a metre of nothing between them — two things you have to
+ * connect by eye rather than read together. The card had no measure, so it grew to whatever the
+ * window was.
+ *
+ * The cap is on the CARD rather than the row: everything inside inherits it, and a row left at full
+ * width inside a capped card would just move the problem. Content that genuinely wants width —
+ * tables you scan across, tile grids, the visibility matrix — opts out below rather than being
+ * squeezed into a column that was chosen for prose.
+ */
+.pk-set-card{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);
+  max-width:var(--pk-measure-set,56rem)}
+/* ONE measure, not one per card. Letting table and tile cards opt out gave the column a ragged
+   right edge — some cards to 900px, their neighbours to the window — which reads as broken layout
+   rather than as breathing room. Wide tables scroll inside their own .pk-tablewrap instead, which
+   is what that wrapper has always been for. */
 .pk-set-card-h{padding:var(--pk-space-4) var(--pk-space-4h) 0}
 .pk-set-card-h h3{margin:0;font:700 var(--pk-text-sm)/1 var(--pk-font);letter-spacing:.1em;text-transform:uppercase;color:var(--pk-ink)}
 .pk-set-card-h p{margin:var(--pk-space-3) 0 0;font:400 var(--pk-text-sm)/1.5 var(--pk-font);color:var(--pk-muted)}

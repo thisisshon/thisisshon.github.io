@@ -192,6 +192,10 @@
   .rvd .rvd-moreopts{width:var(--pk-control-h-sm);height:var(--pk-control-h-sm);padding:0;border-radius:0;border:1px solid var(--pk-hair);background:transparent;cursor:pointer;
     color:var(--pk-body);display:inline-flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s}
   .rvd .rvd-moreopts svg{display:block}
+  /* On the Organisation header it stands beside the search, so it takes the search's height. The
+     32px default is for row actions, where it sits inside a table row and a 40px square would
+     stretch it. Same component, two contexts, one line of difference. */
+  .rvd .pk-org-head-acts .rvd-moreopts{width:var(--pk-control-h-md);height:var(--pk-control-h-md)}
   /* fixed-position row action menu now uses global .pk-rowmenu (+ --rise animation) */
 
   /* ---- Edit-teams modal (re-route From/To) ---- */

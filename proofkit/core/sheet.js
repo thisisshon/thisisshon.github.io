@@ -162,3 +162,70 @@ export function rosterFromRows(rows) {
 
   return { people, teams, problems };
 }
+
+/* TEAMS and PROJECTS from a sheet — the other two templates.
+ *
+ * Same posture as rosterFromRows: find the header row by the column that MUST be there, report
+ * problems per row rather than throwing on the first one, and drop the template's own EXAMPLE row
+ * so a file that was downloaded and handed straight back imports as empty rather than as a team
+ * called "EXAMPLE - delete this row".
+ *
+ * A list cell ("Alpha Site, Beta Site") is split on commas and semicolons: people type both, and
+ * refusing one of them is a rule the sheet never told them about.
+ */
+const normHead = (s) => String(s || '').trim().toLowerCase().replace(/[^a-z]/g, '');
+const splitList = (s) => String(s || '').split(/[,;]/).map((x) => x.trim()).filter(Boolean);
+const isExample = (s) => /^example/i.test(String(s || '').trim());
+
+function headerRow(rows, want, whatFor) {
+  const at = rows.findIndex((r) => r.some((c) => want.includes(normHead(c))));
+  if (at < 0) throw new Error(`No header row found. It needs a column named ${whatFor}.`);
+  return at;
+}
+
+/** { teams:[{name, projects[], color}], problems[] } */
+export function teamsFromRows(rows) {
+  const NAME = ['team', 'teamname', 'name'];
+  const headAt = headerRow(rows, NAME, 'Team');
+  const head = rows[headAt].map(normHead);
+  const iName = head.findIndex((h) => NAME.includes(h));
+  const iProjects = head.findIndex((h) => ['projects', 'project', 'inprojects'].includes(h));
+  const iColour = head.findIndex((h) => ['colour', 'color', 'chipcolour', 'chipcolor'].includes(h));
+
+  const teams = [], problems = [], seen = new Set();
+  rows.slice(headAt + 1).forEach((r, i) => {
+    const at = headAt + i + 2;
+    const get = (ix) => (ix >= 0 ? String(r[ix] || '').trim() : '');
+    const name = get(iName);
+    if (!name) return;                                   // blank spacer row
+    if (isExample(name)) return;                         // the template's own sample
+    const key = name.toLowerCase();
+    if (seen.has(key)) { problems.push(`Row ${at}: ${name} appears more than once.`); return; }
+    seen.add(key);
+    teams.push({ name, projects: splitList(get(iProjects)), color: get(iColour) });
+  });
+  return { teams, problems };
+}
+
+/** { projects:[{name, teams[]}], problems[] } */
+export function projectsFromRows(rows) {
+  const NAME = ['project', 'projectname', 'name'];
+  const headAt = headerRow(rows, NAME, 'Project');
+  const head = rows[headAt].map(normHead);
+  const iName = head.findIndex((h) => NAME.includes(h));
+  const iTeams = head.findIndex((h) => ['teams', 'team'].includes(h));
+
+  const projects = [], problems = [], seen = new Set();
+  rows.slice(headAt + 1).forEach((r, i) => {
+    const at = headAt + i + 2;
+    const get = (ix) => (ix >= 0 ? String(r[ix] || '').trim() : '');
+    const name = get(iName);
+    if (!name) return;
+    if (isExample(name)) return;
+    const key = name.toLowerCase();
+    if (seen.has(key)) { problems.push(`Row ${at}: ${name} appears more than once.`); return; }
+    seen.add(key);
+    projects.push({ name, teams: splitList(get(iTeams)) });
+  });
+  return { projects, problems };
+}

@@ -6,18 +6,18 @@
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
     COMMENT_TYPES, TYPE_FIELDS, STATUS_COLORS, renderSummary, needsScreenshot,
     // Overlay-UI flag (global): 'new' HUD vs 'old' rectangle composer.
-    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=d9a78aeb74';
-  import { pkConfirm, pkAlert } from './modal.js?v=d9a78aeb74';
-  import { injectCss } from './inject-css.js?v=d9a78aeb74';
-  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=d9a78aeb74'; // New HUD path (overlayUi === 'new')
+    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=d583e8b046';
+  import { pkConfirm, pkAlert } from './modal.js?v=d583e8b046';
+  import { injectCss } from './inject-css.js?v=d583e8b046';
+  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=d583e8b046'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
   // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
   // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
   // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
   // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
-  import pkTokensCss from './design/tokens.css.js?v=d9a78aeb74';
-  import pkComponentsCss from './design/components.css.js?v=d9a78aeb74';
+  import pkTokensCss from './design/tokens.css.js?v=d583e8b046';
+  import pkComponentsCss from './design/components.css.js?v=d583e8b046';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
