@@ -32,6 +32,18 @@ export default `/* =============================================================
    =========================================================================== */
 
 /* ---- SKIN 1 · Red Moon (default dark) ---- */
+/* ---- side rail geometry ----
+   Not colour, so not part of either skin: these are the same in light and dark. They were
+   declared in dashboard.css, which only the Builder board loads — the team board renders the
+   same rail from the same markup and could see none of them, so its Collapse row had no
+   geometry at all and drew a 40px chevron in a full-width box. */
+:root {
+  --pk-rail-w: 208px;
+  --pk-rail-w-min: 64px;
+  --pk-rail-gutter: 23px;        /* (64 - 18) / 2 — an 18px icon reads centred when collapsed */
+  --pk-rail-row-h: 48px;
+}
+
 :root,
 :root[data-pk-theme="red-moon"] {
   color-scheme: dark;

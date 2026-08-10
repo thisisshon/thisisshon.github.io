@@ -1232,11 +1232,25 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-ptable--fixed{table-layout:fixed}
 .pk-ptable--fixed th,.pk-ptable--fixed td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk-c-pick{width:36px}
-.pk-c-name{width:26%}
-.pk-c-pref{width:16%}
-.pk-c-mail{width:34%}
-.pk-c-id{width:16%}
+/* Project reads first and Team second, because which teams are available is a question about the
+   project — so the narrowing column comes first. Both are narrow: they are for scanning down, not
+   for reading across. */
+.pk-c-proj{width:15%}
+.pk-c-team{width:15%}
+.pk-c-name{width:19%}
+.pk-c-pref{width:12%}
+.pk-c-mail{width:23%}
+.pk-c-id{width:12%}
 .pk-c-go{width:36px}
+
+/* Controls that live INSIDE a table cell. They sit in a fixed-layout row, so they take the cell's
+   width rather than their content's — a select sized to its longest option would push the column
+   out and undo the geometry above. */
+.pk-cellsel{width:100%;max-width:100%;padding:4px 8px;font-size:var(--pk-text-xs);height:auto;min-height:0}
+.pk-cellcta{width:100%;padding:4px 8px;font-size:var(--pk-text-xs);white-space:nowrap}
+/* An account with no team cannot sign in. That is not a styling preference, it is the one row on
+   the screen that represents something broken, so it carries a mark down its left edge. */
+.pk-ptable-row.is-unallocated>td:first-child{box-shadow:inset 3px 0 0 var(--pk-red)}
 
 /* Select mode on a people table. The whole ROW is the hit area — a 13px checkbox is a poor target
    and the row is already the thing being chosen — so the box shows state and takes no clicks. */
@@ -1397,6 +1411,40 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-tile{background:var(--pk-card);border:1px solid var(--pk-hair);border-left:2px solid var(--pk-red);padding:var(--pk-space-4h)}
 .pk-tile-val{font:600 var(--pk-text-4xl)/1 var(--pk-font);color:var(--pk-ink);font-variant-numeric:tabular-nums}
 .pk-tile-label{margin-top:var(--pk-space-3);font:700 var(--pk-text-2xs)/1.3 var(--pk-font);letter-spacing:var(--pk-track-1);text-transform:uppercase;color:var(--pk-muted)}
+
+/* ---- home tiles (BOTH boards) ---------------------------------------------------------------
+   Moved here from dashboard.css: the team board renders the same markup and could not see them.
+   These come AFTER the plain \`.pk-tile\` above deliberately — the Insights stat tiles pick up both
+   rule sets, exactly as they always have on the Builder board.
+   An index of what Builder mode can do. auto-fit rather than fixed columns so the grid reflows
+   sensibly from a laptop to a wide monitor without a media-query ladder. */
+.pk-tiles { display: grid; gap: var(--pk-space-3h); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: var(--pk-space-2); }
+.pk-tile {
+  display: flex; flex-direction: column; gap: var(--pk-space-2); text-align: left;
+  padding: var(--pk-space-4) var(--pk-space-4h); min-height: 8.5rem;
+  border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-lg);
+  background: var(--pk-card); color: var(--pk-ink); cursor: pointer;
+  transition: border-color .16s, background .16s;
+}
+@media (min-width:1024px) and (hover:hover){/* Stroke only — no lift. See .pk-card-tile for why. */
+.pk-tile:hover { border-color: var(--pk-red); }}
+.pk-tile:focus-visible { outline: 2px solid var(--pk-red); outline-offset: 2px; }
+/* The queue is the only tile that represents work waiting on you, so it leads. */
+.pk-tile.is-wide { grid-column: span 2; }
+.pk-tile.is-accent { background: linear-gradient(180deg, rgba(218,41,28,.10), transparent 70%); border-color: var(--pk-ring-red); }
+.pk-tile-head { display: flex; align-items: center; justify-content: space-between; gap: var(--pk-space-3); }
+.pk-tile-title { font: 650 var(--pk-text-md)/1.2 var(--pk-font); letter-spacing: .01em; }
+.pk-tile-badge {
+  font: 600 var(--pk-text-2xs)/1 var(--pk-font); letter-spacing: .04em; text-transform: uppercase;
+  padding: var(--pk-space-2) var(--pk-space-3); border-radius: var(--pk-radius-full);
+  background: var(--pk-red); color: var(--pk-on-accent); white-space: nowrap;
+}
+.pk-tile-stat { font: 700 var(--pk-text-5xl)/1.05 var(--pk-font); letter-spacing: -.02em; margin-top: var(--pk-space-3); }
+.pk-tile-sub { font-size:var(--pk-text-sm); color: var(--pk-body); }
+.pk-tile-desc { margin-top: auto; padding-top: var(--pk-space-3); font-size:var(--pk-text-sm); color: var(--pk-muted); line-height: 1.45; }
+@media (max-width: 40rem) { .pk-tile.is-wide { grid-column: span 1; } }
+@media (prefers-reduced-motion: reduce) { .pk-tile { transition: none } }
+
 .pk-bars{display:flex;flex-direction:column;gap:var(--pk-space-3h)}
 .pk-bar-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;gap:var(--pk-space-3h)}
 .pk-bar-key{font:600 var(--pk-text-sm)/1.3 var(--pk-font);color:var(--pk-body);

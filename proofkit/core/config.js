@@ -116,8 +116,11 @@ export const TEAM_BASE = BASE + '/team';
  * dashboards, the redirects and the docs cannot drift from each other. */
 export const VIEW_SEGMENTS = {
   dash: '',
-  // 7.4 — the Builder board's ROOT is the tiled Home, so its queue needs a segment of its own.
-  // Team boards never render 'queue' and keep their queue at the root, so this is Builder-only.
+  /* 7.4 — the Builder board's ROOT is the tiled Home, so its queue needs a segment of its own.
+   * The team board now has a Home of its own too and addresses it explicitly, keeping its queue
+   * reachable at the root so every link handed out before this still lands on the queue. */
+  home: 'home',
+  team: 'team',
   queue: 'queue',
   notifs: 'notifications',
   threads: 'threads',
@@ -432,19 +435,27 @@ export async function accessLogin(workerUrl, accessId) {
   return body;
 }
 
-/** Change your own Access ID. Requires a live session. */
-export async function accessChange(workerUrl, accessId) {
+/**
+ * Change your own Access Key. Requires a live session AND the key being replaced.
+ *
+ * The old key is not a formality. A session is a tab left open; the key is the thing that gets you
+ * back in tomorrow. Without the old one, anybody who walked past an unlocked screen could swap the
+ * credential for one its owner does not know — and the owner would find out at the next sign-in.
+ */
+export async function accessChange(workerUrl, accessId, currentAccessId) {
   const res = await fetch((workerUrl || WORKER_URL).replace(/\/$/, '') + '/auth/access/change', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify({ accessId }),
+    body: JSON.stringify({ accessId, currentAccessId }),
   });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.error || 'Could not change it.');
   return body;
 }
 
-/** Headers for an authenticated call: bearer token when signed in, else the legacy team key. */
+/* Headers for an authenticated call: the bearer token when somebody is signed in, else whatever
+ * key this browser is holding — which today means the Builder's admin key and nothing else, since
+ * teams no longer have one. */
 export function authHeaders() {
   const t = getAuthToken();
   if (t) return { Authorization: 'Bearer ' + t };
@@ -671,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=91ad58ff42'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=79522be9c7'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -679,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=91ad58ff42';
+} from './vocab.js?v=79522be9c7';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1452,8 +1463,8 @@ export function buildAccessLogin(opts) {
  * Its final caller was a fallback in the overlay that nothing reached any more — the overlay
  * became a single Login button that hands off to /proofkit/login. Removed rather than left
  * dormant: a screen kept "just in case" is a screen nobody maintains and everybody eventually
- * finds. The team key itself still authenticates at the Worker (X-Review-Pass) for older
- * deployments; there is simply no longer a door in the product that asks for one.
+ * finds. The team key has since been removed from the Worker too, so there is no door asking for
+ * one and nothing left behind it: a team is an allocation, and only a person can sign in.
  */
 
 export const PAGE_NAMES = {
@@ -1559,6 +1570,43 @@ export function pageHref(page) {
   const u = (page && page.url) || '';
   if (u) { try { return new URL(String(u)).href; } catch (e) { /* fall through */ } }
   return (page && page.path) || '/';
+}
+
+/**
+ * WHERE "OPEN PIN" ACTUALLY GOES.
+ *
+ * Every Open-pin link was built as `page.path + '?review=1#c=<id>'` — a PATH, which the browser
+ * resolves against whatever origin the board happens to be served from. That is right in exactly
+ * one deployment: the one where the board and the reviewed site are the same host. On a hosted
+ * board reviewing somebody else's site it opened `/thisis_shon` on the DASHBOARD's origin, which
+ * is a 404 with no overlay on it — and the pin it was supposed to show lives on behance.net.
+ *
+ * A record has carried its full `page.url` since pins became origin-aware, so the answer was
+ * already in the data; nothing was reading it. pageHref() prefers that url and falls back to the
+ * path, so a pre-origin record behaves exactly as it did.
+ *
+ * `#c=<id>` is what ARMS the overlay on arrival (see overlay.js) — the query is belt and braces.
+ * Built with the URL API rather than string concatenation so a page that already has a query
+ * string keeps it instead of growing a second `?`.
+ */
+export function pinHref(page, id, opts) {
+  const base = pageHref(page);
+  const absolute = /^https?:\/\//i.test(String(base));
+  // `edit=1` rides in the HASH, not the query — overlay.js reads it off DEEP_HASH with
+  // /[#&]edit=1(?:&|$)/, so moving it into the search string would silently stop opening the editor.
+  const hash = 'c=' + encodeURIComponent(String(id || '')) + (opts && opts.edit ? '&edit=1' : '');
+  // A record with no url is pre-origin: it only ever knew a path, so it stays RELATIVE and resolves
+  // against whatever the caller is on — exactly as it did before this helper existed. Inventing an
+  // origin for it would be worse than the bug this fixes.
+  if (!absolute) return String(base) + '?review=1#' + hash;
+  try {
+    const u = new URL(base);
+    u.searchParams.set('review', '1');
+    u.hash = hash;
+    return u.href;
+  } catch (e) {
+    return String(base) + '?review=1#' + hash;
+  }
 }
 
 /** The URL as text, without the scheme — the part worth reading in a list. */

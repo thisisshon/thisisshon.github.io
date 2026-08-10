@@ -1,4 +1,4 @@
-  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName, pageHref, pageUrlText,
+  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName, pageHref, pinHref, pageUrlText,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     BASE, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
     ADMIN_TEAM, buildAccessLogin, accessLogin, passkeyLoginDiscoverable, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=91ad58ff42';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=79522be9c7';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=91ad58ff42';
-  import { createCardRenderer } from './card.js?v=91ad58ff42';
-  import { ICON } from './icons.js?v=91ad58ff42';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=91ad58ff42';
+  import { PK_VERSION } from './version.js?v=79522be9c7';
+  import { createCardRenderer } from './card.js?v=79522be9c7';
+  import { ICON } from './icons.js?v=79522be9c7';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=79522be9c7';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -353,7 +353,7 @@
           trashArm: async () => { throw new Error('Needs the worker backend'); },
           trashPurge: async () => { throw new Error('Needs the worker backend'); },
           auditLog: async () => [],
-          policyGet: async () => ({ sessionHours: 12, lockAfter: 5, hardLockAfter: 15, requirePasskeyForBuilder: false, allowTeamKeys: true }),
+          policyGet: async () => ({ sessionHours: 12, lockAfter: 5, hardLockAfter: 15, requirePasskeyForBuilder: false }),
           policySet: async () => { throw new Error('Needs the worker backend'); },
           teamRename: async () => { throw new Error('Needs the worker backend'); },
           teamPermissions: async () => { throw new Error('Needs the worker backend'); },
@@ -366,12 +366,12 @@
           exportProject: async () => { throw new Error('Needs the worker backend'); },
           exportTeam: async () => { throw new Error('Needs the worker backend'); },
           importData: async () => { throw new Error('Needs the worker backend'); },
-          // Team management is worker-only: local-demo has no key store to manage.
+          // Team management is worker-only: local-demo has no team store to manage.
           teamsList: async () => [],
           teamCreate: async () => { throw new Error('Team management needs the worker backend'); },
           teamUpdate: async () => { throw new Error('Team management needs the worker backend'); },
-          teamRotate: async () => { throw new Error('Team management needs the worker backend'); },
           teamDelete: async () => { throw new Error('Team management needs the worker backend'); },
+          sessions: async () => ({ sessions: [] }),
           // Quick-questions reply (Feature 6) — no ticket, no status change.
           reply: async (root, text) => { await localGuard(); return localReply(root, text); },
           // Screenshot dataURL by id (Feature 4).
@@ -468,13 +468,13 @@
           // Phase 11: projects.
           projects: () => apiFetch('/projects'),
           createProject: (id, name, kind) => apiFetch('/projects/create', { method: 'POST', body: JSON.stringify({ id, name, kind }) }),
-          // Phase 4 team management (admin). Keys are SHA-256 hashed server-side and NEVER returned;
-          // a rotated/created key is shown to the admin once, here, and cannot be read back.
+          /* Team management (admin). A team has a name, a colour and the projects it works on —
+           * no credential of any kind, so there is nothing here to show once or rotate. */
           teamsList: () => apiFetch('/teams/list'),
-          teamCreate: (name, key, color) => apiFetch('/teams/create', { method: 'POST', body: JSON.stringify({ name, key, color }) }),
+          teamCreate: (name, color) => apiFetch('/teams/create', { method: 'POST', body: JSON.stringify({ name, color }) }),
           teamUpdate: (name, patch) => apiFetch('/teams/update', { method: 'POST', body: JSON.stringify({ name, ...patch }) }),
-          teamRotate: (name, key) => apiFetch('/teams/rotate', { method: 'POST', body: JSON.stringify({ name, key }) }),
-          teamDelete: (name) => apiFetch('/teams/delete', { method: 'POST', body: JSON.stringify({ name }) }),
+          teamDelete: (name, confirm) => apiFetch('/teams/delete', { method: 'POST', body: JSON.stringify({ name, confirm }) }),
+          sessions: (email) => apiFetch('/admin/sessions' + (email ? '?email=' + encodeURIComponent(email) : '')),
           // A reply is POST /comments with a parentId — the Worker skips the ticket/arrival
           // notif and fires a kind:'reply' notification to the other side (contract §4).
           reply: (root, text) => apiFetch('/comments', { method: 'POST', body: JSON.stringify({
@@ -1664,7 +1664,7 @@
         ? `<input type="checkbox" class="pkc-sel" data-id="${esc(root.id)}"${sel.has(root.id) ? ' checked' : ''} aria-label="Select">` : '',
       actionsSlot: (root) => {
         const id = esc(root.id);
-        return `<a class="pkc-btn" href="${esc(root.page.path)}?review=1#c=${id}" target="_blank" rel="noopener">Open Pin</a>` +
+        return `<a class="pkc-btn" href="${esc(pinHref(root.page, root.id))}" target="_blank" rel="noopener">Open Pin</a>` +
           fLifecycle(root) +
           `<button class="pkc-more" type="button" data-id="${id}" aria-label="More actions" aria-haspopup="menu">` +
             `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
@@ -1887,12 +1887,12 @@
       const s = teamStatusOf(root);
       const navigate = [
         { label: 'View details', icon: ICON.view, onSelect: () => setDetail(root.id) },
-        { label: 'Open pin', icon: ICON.pin, onSelect: () => window.open(root.page.path + '?review=1#c=' + encodeURIComponent(root.id), '_blank', 'noopener') },
+        { label: 'Open pin', icon: ICON.pin, onSelect: () => window.open(pinHref(root.page, root.id), '_blank', 'noopener') },
       ];
       // Edit the comment's CONTENT — opens the on-page overlay editor (new tab). Builder is admin,
       // so it may edit ANY comment at any status; the overlay + Worker snapshot the prior version.
       const edit = [{ label: 'Edit teams (From / To)', icon: ICON.teams, onSelect: () => openEditTeams(root) }];
-      if (!root.revoked) edit.push({ label: 'Edit comment', icon: ICON.edit, onSelect: () => window.open(root.page.path + '?review=1#c=' + encodeURIComponent(root.id) + '&edit=1', '_blank', 'noopener') });
+      if (!root.revoked) edit.push({ label: 'Edit comment', icon: ICON.edit, onSelect: () => window.open(pinHref(root.page, root.id, { edit: true }), '_blank', 'noopener') });
       edit.push({ label: root.assignee ? ('Reassign — ' + root.assignee) : 'Assign…', icon: ICON.teams, onSelect: () => assignPrompt(root) });
       const acts = [];
       if (s === 'needs_clarification') acts.push({ label: 'Resume (clarified)', icon: ICON.start, onSelect: () => doTeamAction(root, 'start') });
@@ -2278,7 +2278,7 @@
               // NOT --quiet: muted ink beside the lifecycle button read as disabled, and both of
               // these are live controls. They carry the same ink as Start; the outline, not the
               // text colour, is what marks them as secondary to it.
-              `<a class="pk-a" href="${esc(c.page.path)}?review=1#c=${esc(c.id)}" target="_blank" rel="noopener">Open pin ↗</a>` +
+              `<a class="pk-a" href="${esc(pinHref(c.page, c.id))}" target="_blank" rel="noopener">Open pin ↗</a>` +
               `<button class="pk-a pk-detail-more" type="button" id="pk-detail-more" aria-label="More actions" aria-haspopup="menu">` +
                 `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
               `</button>` +
@@ -2365,13 +2365,13 @@
           { divider: true },
           { label: 'Copy & share', icon: ICON.copy, submenu: [
             { label: 'AI prompt', icon: ICON.copy, onSelect: () => copyToClip(localPrompt(c), null) },
-            { label: 'Ticket link', icon: ICON.copy, onSelect: () => copyToClip(location.origin + c.page.path + '?review=1#c=' + c.id, null) },
+            { label: 'Ticket link', icon: ICON.copy, onSelect: () => copyToClip(pinHref(c.page, c.id), null) },
             { label: 'Ticket ID', icon: ICON.copy, onSelect: () => copyToClip(c.ticket || c.id, null) },
             ...(selector ? [{ label: 'Selector', icon: ICON.copy, onSelect: () => copyToClip(selector, null) }] : []),
             { label: 'As Markdown', icon: ICON.copy, onSelect: () => copyToClip(mdExport([c]), null) },
           ] },
           { header: 'Ticket' },
-          { label: 'Edit comment', icon: ICON.edit, onSelect: () => window.open(c.page.path + '?review=1#c=' + encodeURIComponent(c.id) + '&edit=1', '_blank', 'noopener') },
+          { label: 'Edit comment', icon: ICON.edit, onSelect: () => window.open(pinHref(c.page, c.id, { edit: true }), '_blank', 'noopener') },
           { label: 'Change directed team', icon: ICON.teams, onSelect: () => openEditTeams(c) },
           { label: 'Print ticket', icon: ICON.copy, onSelect: () => window.print() },
           { label: 'Export ticket (JSON)', icon: ICON.copy, onSelect: () => downloadBlob(JSON.stringify(chainMembers(c), null, 2), 'application/json', 'ticket-' + (c.ticket || c.id).toString().slice(0, 24) + '.json') },
@@ -2513,7 +2513,7 @@
         chip = `<span class="pk-status-chip deployed">Update</span>`;
       }
       const openPin = n.commentId
-        ? `<a class="pk-openpin" href="${esc(n.path)}?review=1#c=${esc(n.commentId)}" target="_blank" rel="noopener">Open Pin</a>` : '';
+        ? `<a class="pk-openpin" href="${esc(pinHref({ path: n.path, url: n.url }, n.commentId))}" target="_blank" rel="noopener">Open Pin</a>` : '';
       // The whole card opens the ticket's detail (its chain root) when it carries one.
       const chain = n.chainId || '';
       const clickable = chain ? ` data-chain="${esc(chain)}" tabindex="0" role="button" aria-label="View ticket details"` : '';
@@ -2651,7 +2651,7 @@
                  sub: d && d.lockedAccounts ? `${d.lockedAccounts} locked out` : '',
                  desc: 'Accounts, PIN resets and lockouts.' }) +
           tile({ title: 'Teams', attr: go('org'), stat: n(d && d.teams),
-                 desc: 'Create teams, set passwords, move them between projects.' }) +
+                 desc: 'Create teams, move them between projects, and see who is in each.' }) +
           tile({ title: 'Visibility', attr: go('org'),
                  sub: d && d.projects && d.projects[0] ? `Mode: ${d.projects[0].visibilityMode}` : '',
                  desc: 'Who sees whose work, and grants across projects.' }) +
@@ -2690,15 +2690,15 @@
       }
     }
 
-    /* Your own Access ID, and changing it. Only meaningful with an account session — a team key
-     * is not a person, so there is no code to show. */
+    /* Your own Access Key, and changing it. Only meaningful with an account session — the admin
+     * key is not a person, so there is no code to show behind it. */
     async function wireMyAccess() {
       const host = $('#pk-my-access'); if (!host) return;
       const acct = getAccount();
       if (!getAuthToken() || !acct) {
         host.innerHTML = `<div class="pk-set-row"><div class="pk-set-row-main">` +
           `<div class="pk-set-row-label">Sign in with your account</div>` +
-          `<div class="pk-set-row-desc">An Access ID belongs to a person, and this board is open on a team key.</div>` +
+          `<div class="pk-set-row-desc">An Access Key belongs to a person, and this board is open on the admin key.</div>` +
           `</div></div>`;
         return;
       }
@@ -2723,15 +2723,27 @@
       const copyBtn = $('#pk-my-access-copy');
       if (copyBtn) copyBtn.addEventListener('click', (e) => copyToClip(mine, e.currentTarget, 'Copied ✓'));
       $('#pk-my-access-change').addEventListener('click', async () => {
+        /* The OLD key first, then the new one.
+         *
+         * A signed-in tab is not proof of who is at the keyboard — it is proof that somebody signed
+         * in on this machine at some point today. Swapping the credential is exactly what a person
+         * who found that tab would do, and its owner would not discover it until the next morning.
+         * Asking for the key being replaced makes the change cost what it should. */
+        const current = await pkPrompt({
+          title: 'Change your Access Key',
+          message: 'Enter the Access Key you use now.',
+          value: '', confirmLabel: 'Continue',
+        });
+        if (current === null || !current.trim()) return;
         const next = await pkPrompt({
-          title: 'Change your Access ID',
-          message: 'Two letters, then six digits — like AB123456. The old one stops working immediately.',
+          title: 'Your new Access Key',
+          message: 'Two letters, then six digits — like AB123456. Leave it blank to have one drawn for you.\n\nThe old one stops working immediately.',
           value: '', confirmLabel: 'Change',
         });
-        if (next === null || !next.trim()) return;
+        if (next === null) return;
         try {
-          const res = await accessChange(WORKER_URL, next.trim());
-          await pkAlert({ title: 'Changed', message: 'Your Access ID is now ' + res.accessId + '.' });
+          const res = await accessChange(WORKER_URL, next.trim() || genAccessKey(), current.trim());
+          await pkAlert({ title: 'Changed', message: 'Your Access Key is now ' + res.accessId + '. Nothing else about your account changed.' });
           wireMyAccess();
         } catch (e) { pkAlert({ title: 'Could not change it', message: e.message }); }
       });
@@ -2741,7 +2753,7 @@
      * Three honest states, because "Enrol" on a machine that cannot enrol is the failure this
      * screen exists to avoid:
      *   no sensor      — say so plainly, offer nothing
-     *   not signed in  — a passkey attaches to an account, and a team key is not one
+     *   not signed in  — a passkey attaches to an account, and the Builder key is not one
      *   ready          — one button
      */
     async function wirePasskeys() {
@@ -2761,12 +2773,12 @@
         return;
       }
       if (!getAuthToken()) {
-        // This board's own login panel takes a TEAM KEY, which is not a person — so telling someone
-        // to "sign in with your email and PIN" here pointed at a field that does not exist on this
+        // This board is open on the BUILDER KEY, which is not a person — so telling someone to
+        // "sign in with your email and PIN" here pointed at a field that does not exist on this
         // screen. The account session can only be created on the auth page, so send them there and
         // bring them straight back to this tab, where the token will be waiting.
         stateEl.innerHTML = rowMain('Sign in with your account first',
-          'A passkey attaches to a person, and this board is currently open on a team key. '
+          'A passkey attaches to a person, and this board is currently open on the Builder key. '
           + 'Signing in takes one step and returns you here.',
           `<button class="pk-a pk-a--primary" type="button" id="pk-pk-signin">Sign in to enrol</button>`);
         $('#pk-pk-signin').addEventListener('click', () => {
@@ -3091,6 +3103,7 @@
           card('Export', '',
             row(`${n(all.length, 'record')}`, '', actBtn('export-json', 'JSON', 'pk-a--quiet') + ' ' + actBtn('export-csv', 'CSV', 'pk-a--quiet') + ' ' + actBtn('export-md', 'Markdown', 'pk-a--quiet'))) +
           card('Policy', '', `<div id="pk-policy">${emptyRow('Loading…')}</div>`) +
+          card('Sign-ins', 'When each person signed in, and how long they stayed.', `<div id="pk-sessions">${emptyRow('Loading…')}</div>`) +
           card('Recent changes', '', `<div id="pk-auditlog">${emptyRow('Loading…')}</div>`) +
           card('About', '',
             row('Version', '', pill('v' + PK_VERSION)) +
@@ -3113,7 +3126,7 @@
         }
       }
       if (settingsSection === 'trash') fillTrash();
-      if (settingsSection === 'system') { fillPolicy(); fillAuditLog(); }
+      if (settingsSection === 'system') { fillPolicy(); fillSessions(); fillAuditLog(); }
 
       // Pending PIN resets mean somebody is locked out RIGHT NOW. That is a queue, not a setting,
       // so it is badged on the tab and surfaced above everything else until it is cleared.
@@ -3127,12 +3140,16 @@
       })();
 
       // ---- shared helpers for the Organisation screens ---------------------------------------
-      const genKey = () => {
-        const a = 'abcdefghijkmnopqrstuvwxyz23456789';   // no l/1/0/o — these get read aloud
-        return Array.from(crypto.getRandomValues(new Uint8Array(14)), (b) => a[b % a.length]).join('');
-      };
       const showOnce = (who, secret, what) => pkAlert(
         `${what} for ${who}:\n\n${secret}\n\nCopy it now — it is stored hashed and cannot be shown again.`);
+      /* The pair a new person needs, and NOT a show-once: the Access Key stays readable in the
+       * people table and on their page, deliberately, because the Builder is the one who reads it
+       * back to them when they lose it. Only the PIN is hashed and gone after this. */
+      const showSignIn = (who, accessKey, pin) => pkAlert(
+        `Sign-in details for ${who}:\n\n` +
+        `Access Key   ${accessKey || '(being issued)'}\n` +
+        `PIN          ${pin}\n\n` +
+        `The Access Key is on their page whenever you need it again. The PIN is stored hashed — hand it over now.`);
       const askPin = async (title) => {
         const v = await pkPrompt({ title, message: '6–12 digits. Not a repeated digit or a run (e.g. 123456).', value: '', confirmLabel: 'Set PIN' });
         return v === null ? null : String(v).trim();
@@ -3154,14 +3171,50 @@
           num('sessionHours', 'Session length', 'Hours before a tab asks for the PIN again.', [4, 8, 12, 24]) +
           num('lockAfter', 'Lock after', 'Failed attempts before a cool-off.', [3, 5, 10]) +
           num('hardLockAfter', 'Hard lock after', 'Failed attempts before only you can clear it.', [10, 15, 25]) +
-          sw('requirePasskeyForBuilder', 'Builders must use a passkey', 'PIN sign-in is refused for Builder accounts.') +
-          sw('allowTeamKeys', 'Allow shared team keys', 'The legacy login. Off means accounts only.');
+          /* No "allow shared team keys" switch. There is no shared team key to allow — it was
+           * removed rather than made optional, which is the only version of "off" that cannot be
+           * switched back on by somebody who does not know what it did. */
+          sw('requirePasskeyForBuilder', 'Builders must use a passkey', 'PIN sign-in is refused for Builder accounts.');
         holder.querySelectorAll('[data-policy]').forEach((b) => b.addEventListener('click', async () => {
           const raw = b.dataset.pval;
           const v = raw === 'true' ? true : raw === 'false' ? false : Number(raw);
           try { await store.policySet({ [b.dataset.policy]: v }); fillPolicy(); }
           catch (e) { pkAlert('Could not save — ' + e.message); }
         }));
+      }
+
+      /* Sign-in history. The live session table cannot answer this — it deletes the row when the
+       * session ends, which is precisely when the duration becomes knowable — so the server keeps
+       * an append-only copy and works the duration out there. Nothing is computed here beyond
+       * formatting, so this screen cannot disagree with the API about how long anyone was on. */
+      async function fillSessions() {
+        const holder = $('#pk-sessions'); if (!holder) return;
+        let rows;
+        try { rows = (await store.sessions()).sessions || []; }
+        catch (e) { holder.innerHTML = emptyRow('Could not load — ' + esc(e.message)); return; }
+        if (!rows.length) { holder.innerHTML = emptyRow('No sign-ins recorded yet.'); return; }
+
+        // Rounded, not precise. "4h 20m" is what somebody reads this for; seconds would be noise.
+        const dur = (ms) => {
+          const mins = Math.round(ms / 60000);
+          if (mins < 1) return 'under a minute';
+          if (mins < 60) return mins + 'm';
+          const h = Math.floor(mins / 60), m = mins % 60;
+          return m ? `${h}h ${m}m` : `${h}h`;
+        };
+        const when = (iso) => new Date(iso).toLocaleString(undefined,
+          { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+        /* Why it ended, in words. 'expired' and 'signout' are ordinary; the rest happened TO the
+         * person — their account was switched off, their PIN was reset — and reading "ended:
+         * disabled" beside a short session is often the actual answer to why they called. */
+        const REASON = {
+          signout: 'signed out', expired: 'expired', 'pin-change': 'PIN changed',
+          disabled: 'account disabled', deleted: 'account deleted', revoked: 'revoked',
+        };
+        holder.innerHTML = rows.slice(0, 50).map((s) => row(
+          esc(s.email) + (s.team ? ' · ' + esc(s.team) : ''),
+          when(s.startedAt) + ' · ' + (s.live ? 'still signed in' : dur(s.durationMs) + ' · ' + esc(REASON[s.endedReason] || s.endedReason || 'ended')),
+          s.live ? pill('live') : pill(dur(s.durationMs)))).join('');
       }
 
       /* Who changed what. account_audit only ever covered accounts, so "who deleted this team"
@@ -3202,7 +3255,13 @@
         holder.innerHTML =
           card('Recycle bin', 'Deleted items keep their history. Access already ended.',
             items.map((it) => {
-              const stage = !it.purgeArmedAt
+              /* A PROJECT IS ONE STEP. It is the Builder's own container, deleted by the person who
+               * made it, so the day's wait bought nothing but a bin full of already-made decisions.
+               * The password is still asked for, and what it destroyed is written into the log.
+               * A team or a person still takes two visits: they carry other people's work. */
+              const stage = it.oneStep
+                ? `<button class="pk-a danger" type="button" data-trash-purge="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Delete permanently</button>`
+                : !it.purgeArmedAt
                 ? `<button class="pk-a danger" type="button" data-trash-arm="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Delete permanently</button>`
                 : it.canPurgeNow
                   ? `<button class="pk-a danger" type="button" data-trash-purge="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Confirm deletion</button>`
@@ -3215,7 +3274,8 @@
                 `</span>`);
             }).join('')) +
           card('How permanent deletion works', '',
-            emptyRow('It takes the Builder password twice, at least a day apart. Nothing here can be destroyed in one sitting.'));
+            emptyRow('A team or a person takes the Builder password twice, at least a day apart — they carry work other people rely on. ' +
+              'A project takes it once: it is yours, and what it held is recorded in the audit log when it goes.'));
 
         holder.querySelectorAll('[data-trash-restore],[data-trash-arm],[data-trash-purge]').forEach((b) => {
           b.addEventListener('click', async () => {
@@ -3224,16 +3284,25 @@
               if (d.trashRestore) { await store.trashRestore(d.trashRestore, d.trashRef); return fillTrash(); }
               const kind = d.trashArm || d.trashPurge;
               const first = !!d.trashArm;
+              // A project never arms, so its purge IS the first and only prompt. Say what will be
+              // recorded rather than only what will be lost — the log line is the thing that
+              // answers "where did that project go" once the id is gone from every list.
+              const oneStep = !first && kind === 'project';
               const pw = await pkPrompt({
-                title: first ? 'Start permanent deletion' : 'Confirm permanent deletion',
+                title: first ? 'Start permanent deletion' : 'Delete permanently',
                 message: first
                   ? `Enter the Builder password to begin deleting “${d.trashRef}”. It can be confirmed after a day — until then it stays here and can still be restored.`
+                  : oneStep
+                  ? `Enter the Builder password to destroy “${d.trashRef}” now. This cannot be undone.\n\nWhat it held — teams, tickets, and who binned it — is written to the audit log as it goes.`
                   : `Enter the Builder password to destroy “${d.trashRef}”. This cannot be undone.`,
                 value: '', confirmLabel: first ? 'Start' : 'Delete for good',
               });
               if (pw === null || !pw) return;
               if (first) await store.trashArm(kind, d.trashRef, pw);
-              else await store.trashPurge(kind, d.trashRef, pw);
+              else {
+                const res = await store.trashPurge(kind, d.trashRef, pw);
+                if (res && res.detail) await pkAlert({ title: 'Deleted', message: `“${d.trashRef}” is gone.\n\nRecorded in the audit log:\n${res.detail}` });
+              }
               fillTrash();
             } catch (err) { pkAlert(err.message); }
           });
@@ -3543,15 +3612,17 @@
                   ? `<button class="pk-a" type="button" data-team-unlink="${esc(t.name)}" data-team-unlink-project="${esc(orgPath.project)}">Remove from this project</button>`
                   : '') +
               row('Board', '', `<button class="pk-a" type="button" data-team-view="${esc(t.name)}">Open board</button>`) +
-              row('Export', 'Structure, people and work. No passwords or PINs travel.', `<button class="pk-a" type="button" data-export-team="${esc(t.name)}">Export team</button>`) +
-              row('Password', 'Replacing it signs the team out immediately.', `<button class="pk-a" type="button" data-team-rotate="${esc(t.name)}">Change password</button>`)) +
+              /* No password row. A team has no credential to change — the people in it each have
+               * their own Access Key, and taking someone's access away means moving them off the
+               * team or disabling their account, both of which are on their own page. */
+              row('Export', 'Structure, people and work. No Access Keys or PINs travel.', `<button class="pk-a" type="button" data-export-team="${esc(t.name)}">Export team</button>`)) +
             dangerCard(
               row(t.enabled ? 'Disable team' : 'Enable team',
-                t.enabled ? 'Blocks sign-in. Tickets and history are kept.' : 'Restores sign-in.',
+                t.enabled ? 'Nobody on it can sign in. Tickets and history are kept.' : 'Its people can sign in again.',
                 `<button class="pk-a danger" type="button" data-team-toggle="${esc(t.name)}" data-team-enabled="${t.enabled ? '1' : '0'}">${t.enabled ? 'Disable' : 'Enable'}</button>`) +
               // No longer blocked by ticket count: deletion is recoverable now, so the reason for
               // that block (orphaning history forever) no longer applies.
-              row('Delete team', 'Moves it to the recycle bin. Its password stops working immediately; the record can be restored.',
+              row('Delete team', 'Moves it to the recycle bin. Its people are signed out immediately; the record can be restored.',
                 `<button class="pk-a danger" type="button" data-team-delete="${esc(t.name)}" data-team-used="${used}">Delete</button>`));
           return;
         }
@@ -3666,25 +3737,52 @@
            * has to guess which you meant from where you clicked, and gets it wrong often enough to
            * be worse than either. */
           const sel = peopleSelectMode;
-          /* GROUPED BY TEAM. 132 names in one alphabetical run answers "who exists" and nothing
-           * else — the question people actually arrive with is "who is on Content", and scanning a
-           * Team column for it is work the screen can do once. Each team is its own card with its
-           * own count, so the grouping is the structure rather than a sorted column you have to
-           * read carefully. Someone with no team is not hidden: they get a group of their own,
-           * because an account nobody owns is exactly the one worth noticing. */
-          const groups = new Map();
-          for (const u of shownP) {
-            const k = u.team || '';
-            if (!groups.has(k)) groups.set(k, []);
-            groups.get(k).push(u);
-          }
-          const orderedTeams = [...groups.keys()].sort((a, b) =>
-            (a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)));
+          /* ONE LIST, NOT A STACK OF TEAM CARDS.
+           *
+           * Grouping by team put the org chart first and the person second: finding somebody meant
+           * knowing their team, and the answer to "where is this person" was spread over eleven
+           * cards. The team is a COLUMN now — and an editable one, so the fix for a wrong team is
+           * on the row that shows it rather than three levels away on their page.
+           *
+           * PROJECT COMES FIRST because the team depends on it: which teams a person can be put on
+           * is a question about the project those teams work in, so the narrowing column is read
+           * first. It is derived and read-only — a person's project comes from their team, so
+           * showing it as editable would offer a choice the data model does not have. */
+          const teamsByName = new Map((teams || []).map((t) => [t.name, t]));
+          const projName = (id) => (projects.find((x) => x.id === id) || {}).name || id;
+          /* Every project this person's team works on. Their own `projectId` is the team's ORIGIN;
+           * the join table is where the team actually works, so a team on three sites shows three. */
+          const projectsOfPerson = (u) => {
+            const t = teamsByName.get(u.team);
+            const ids = t ? projectsOf(t) : (u.projectId ? [u.projectId] : []);
+            return [...new Set(ids)].map(projName).sort((a, b) => a.localeCompare(b));
+          };
+          const liveTeams = (teams || []).map((t) => t.name).sort((a, b) => a.localeCompare(b));
 
-          const personRow = (u) => `<tr class="pk-ptable-row${sel && peopleSel.has(u.email) ? ' is-picked' : ''}" ` +
+          const personRow = (u) => {
+            const ps = projectsOfPerson(u);
+            /* The Team cell is a live control, so the row must not also navigate: a click that
+             * opens the person AND drops a menu is a click that does the thing you did not mean.
+             * The cell stops the event; the rest of the row still opens them. */
+            /* A BUILDER IS NOT UNALLOCATED. They are exempt from needing a team — they are the
+             * ones who hand teams out — so offering them the fix for a problem they do not have
+             * would put a red call-to-action on the healthiest row on the screen. */
+            const exempt = u.role === 'builder';
+            const teamCell = u.team
+              ? `<select class="pk-login-input pk-cellsel" data-person-team="${esc(u.email)}" aria-label="Team for ${esc(u.email)}">` +
+                  liveTeams.map((t) => `<option value="${esc(t)}"${t === u.team ? ' selected' : ''}>${esc(t)}</option>`).join('') +
+                `</select>`
+              : exempt
+              ? `<span class="pk-set-pill">Builder</span>`
+              /* No team is not an empty cell. It is the one state that stops this person signing
+                 in, so it says so and offers the fix in place. */
+              : `<button class="pk-a pk-a--primary pk-cellcta" type="button" data-person-allocate="${esc(u.email)}">Allocate</button>`;
+            return `<tr class="pk-ptable-row${sel && peopleSel.has(u.email) ? ' is-picked' : ''}${u.team || exempt ? '' : ' is-unallocated'}" ` +
             (sel ? `data-person-pick="${esc(u.email)}"` : `data-person-open="${esc(u.email)}"`) + `>` +
             (sel ? `<td class="pk-ptable-pick"><input type="checkbox" class="pk-tsel-box" tabindex="-1"` +
               `${peopleSel.has(u.email) ? ' checked' : ''}></td>` : '') +
+            `<td>${ps.length ? esc(ps.join(', ')) : '<span class="pk-ptable-none">— none —</span>'}</td>` +
+            `<td data-cell="team">${teamCell}</td>` +
             `<td>${esc(u.name || '—')}</td>` +
             `<td>${esc(u.calledName || '—')}</td>` +
             `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
@@ -3692,6 +3790,14 @@
             `<td class="pk-ptable-more">${sel ? '' : `<span class="pk-set-go" aria-hidden="true">` +
               `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
             `</span>`}</td></tr>`;
+          };
+          /* Unallocated first. They are the only rows that represent something broken — an account
+           * that cannot sign in — so they are the ones worth seeing without scrolling. */
+          const stranded = (u) => !u.team && u.role !== 'builder';
+          const ordered = [...shownP].sort((a, b) =>
+            (stranded(a) ? 0 : 1) - (stranded(b) ? 0 : 1)
+            || (a.team || '').localeCompare(b.team || '')
+            || (a.name || a.email).localeCompare(b.name || b.email));
 
           /* ONE GEOMETRY FOR EVERY GROUP.
            *
@@ -3703,20 +3809,20 @@
            * Fixed layout means a long value has to be told what to do instead of stretching its
            * column: the cells ellipsize (see .pk-ptable--fixed in components.css). */
           const cols = (sel ? `<col class="pk-c-pick">` : '') +
-            `<col class="pk-c-name"><col class="pk-c-pref"><col class="pk-c-mail"><col class="pk-c-id"><col class="pk-c-go">`;
-          const teamTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable pk-ptable--fixed">` +
+            `<col class="pk-c-proj"><col class="pk-c-team"><col class="pk-c-name"><col class="pk-c-pref">` +
+            `<col class="pk-c-mail"><col class="pk-c-id"><col class="pk-c-go">`;
+          const peopleTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable pk-ptable--fixed">` +
             `<colgroup>${cols}</colgroup><thead><tr>` +
             (sel ? `<th class="pk-ptable-pick"></th>` : '') +
-            `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Access ID</th><th class="pk-ptable-more"></th>` +
+            `<th>Project</th><th>Team</th><th>Full name</th><th>Preferred name</th><th>Email</th>` +
+            `<th>Access ID</th><th class="pk-ptable-more"></th>` +
             `</tr></thead><tbody>` + list.map(personRow).join('') + `</tbody></table></div>`;
 
+          const homeless = shownP.filter((u) => !u.team && u.role !== 'builder').length;
           outer.innerHTML =
             (shownP.length
-              ? orderedTeams.map((team) => {
-                  const list = groups.get(team);
-                  // The team name is the heading and a way IN to that team, not just a label.
-                  return card(team || 'No team', n(list.length, 'person', 'people'), teamTable(list));
-                }).join('') +
+              ? card('', n(shownP.length, 'person', 'people') +
+                  (homeless ? ` · ${homeless} cannot sign in` : ''), peopleTable(ordered)) +
                 /* The bar sits under ALL the groups, because a selection spans them: ticking two
                  * people from Content and one from Design is one action, not three. */
                 (sel ? card('', '', row('', '', `<span class="pk-u-inlinerow">` +
@@ -3831,7 +3937,7 @@
             '[data-team-rotate],[data-team-toggle],[data-team-delete],[data-person-reset],[data-person-unlock],[data-tsel],[data-team-pick],' +
             '[data-person-toggle],[data-reset-approve],[data-reset-dismiss],[data-team-rename],[data-perm-team],' +
             '[data-project-rename],[data-project-delete],[data-person-delete],[data-person-move],[data-person-extra],[data-person-rename],' +
-            '[data-access-copy],[data-access-new],' +
+            '[data-access-copy],[data-access-new],[data-person-allocate],' +
             '[data-export-project],[data-export-team],[data-team-unlink],[data-org-tab],[data-psel],[data-person-pick],' +
             '#pk-proj-add,#pk-team-add,#pk-team-add-global,#pk-team-existing,#pk-person-add,#pk-person-bulk,' +
             '#pk-proj-import,#pk-team-import,#pk-proj-more,#pk-org-more');
@@ -4029,15 +4135,28 @@
               await store.teamProjectLink(d.teamUnlink, d.teamUnlinkProject, true, key.trim());
               return go({ team: null, person: null });
             }
-            if (d.teamRotate) {
-              const key = await pkPrompt({ title: 'Change password — ' + d.teamRotate, message: 'New password (leave blank to generate one):', value: '', confirmLabel: 'Set password' });
-              if (key === null) return;
-              const final = key.trim() || genKey();
-              await store.teamRotate(d.teamRotate, final);
-              showOnce(d.teamRotate, final, 'New password');
-              return fillOrg();
-            }
             if (d.teamToggle) { await store.teamUpdate(d.teamToggle, { enabled: d.teamEnabled !== '1' }); return fillOrg(); }
+            /* Allocate a team to somebody who has none, from the row that says they have none.
+             * The overlay lists every team rather than a free-text box: the name has to match a
+             * real team or the Worker refuses it, so offering typing would only offer a mistake. */
+            if (d.personAllocate) {
+              const list = (orgData.teams || []).filter((t) => t.enabled !== false);
+              if (!list.length) return pkAlert({ title: 'No teams yet', message: 'Create a team first — there is nothing to allocate anybody to.' });
+              return openTeamPicker({
+                title: 'Allocate a team',
+                sub: `Which team does ${d.personAllocate} work on? Until they have one they cannot sign in.`,
+                items: list.map((t) => ({ value: t.name, label: t.name })),
+                confirmLabel: 'Allocate',
+                emptyText: 'There are no teams yet.',
+                onPick: async (choice) => {
+                  const nameT = Array.isArray(choice) ? choice[0] : choice;
+                  if (!nameT) return;
+                  try { await store.userUpdate({ email: d.personAllocate, team: nameT }); }
+                  catch (e2) { return pkAlert({ title: 'Could not allocate', message: e2.message }); }
+                  fillOrg();
+                },
+              });
+            }
             if (d.teamPick !== undefined) {
               teamSel.has(d.teamPick) ? teamSel.delete(d.teamPick) : teamSel.add(d.teamPick);
               return fillOrg();
@@ -4145,15 +4264,30 @@
                 return;
               }
             }
+            /* Two steps, and they ask different questions. The first is "did you mean to click
+             * this" — a plain yes/no, which is all a mis-aimed click needs to be caught by. The
+             * second is "who is doing it", answered with an Access Key, because the log entry is
+             * about to name somebody and a shared Builder tab would otherwise name the tab. Any
+             * active account's key is accepted; it is an attribution, not a second permission. */
             if (d.teamDelete) {
               const held = +d.teamUsed;
               if (!(await pkConfirm({
                 title: 'Delete team',
-                message: `Move “${d.teamDelete}” to the recycle bin? Its password stops working immediately`
+                message: `Move “${d.teamDelete}” to the recycle bin? Its people lose the board`
                   + (held ? `, and its ${n(held, 'ticket')} ${held === 1 ? 'goes' : 'go'} with it` : '')
                   + '. Nothing is destroyed — you can restore it.',
                 confirmLabel: 'Delete', danger: true }))) return;
-              await store.teamDelete(d.teamDelete);
+              const key = await pkPrompt({
+                title: 'Who is deleting ' + d.teamDelete + '?',
+                message: 'Enter your Access Key. It is recorded against this deletion, so the log '
+                  + 'names a person rather than whichever session the tab is holding.',
+                value: '', confirmLabel: 'Delete',
+              });
+              if (key === null || !key.trim()) return;
+              const res = await store.teamDelete(d.teamDelete, key.trim());
+              // Said back, because the whole point was attribution: you should see which name went
+              // into the log, especially if you typed somebody else's key by mistake.
+              if (res && res.by) await pkAlert({ title: 'Deleted ' + d.teamDelete, message: 'Recorded against ' + res.by + '. It is in the recycle bin and can be restored.' });
               return go({ team: null, person: null });
             }
 
@@ -4196,6 +4330,35 @@
         };
         panel.addEventListener('click', onOrgClick);
         const headEl = $('#pk-org-head'); if (headEl) headEl.addEventListener('click', onOrgClick);
+
+        /* The Team column is a control INSIDE a row that navigates. Without this, choosing a team
+         * also opens the person — the click reaches the row on its way up and both things happen,
+         * which reads as the dropdown having thrown you somewhere. */
+        panel.addEventListener('click', (e) => {
+          if (e.target.closest('[data-cell="team"]')) e.stopPropagation();
+        }, true);
+
+        /* Changing the team saves immediately. There is no Save button on a table of 132 rows —
+         * a change here is one field with one obvious meaning, and a pending state nobody
+         * committed is how a roster ends up disagreeing with itself. */
+        panel.addEventListener('change', async (e) => {
+          const selEl = e.target.closest('[data-person-team]');
+          if (!selEl) return;
+          const email = selEl.dataset.personTeam;
+          const to = selEl.value;
+          const before = (orgData.users.find((u) => u.email === email) || {}).team || '';
+          if (!to || to === before) return;
+          selEl.disabled = true;
+          try {
+            await store.userUpdate({ email, team: to });
+            await fillOrg();
+          } catch (err) {
+            // Put the old value back: a select left showing a team the server refused is a lie.
+            selEl.value = before;
+            selEl.disabled = false;
+            pkAlert({ title: 'Could not move them', message: err.message });
+          }
+        });
 
       }
 
@@ -4276,22 +4439,21 @@
           title: 'Add a team',
           fields: [
             { key: 'name', label: 'Team name', placeholder: 'e.g. Compliance' },
-            { key: 'key', label: 'Password', placeholder: 'Leave blank to generate one', generate: true },
             { key: 'color', label: 'Chip colour', placeholder: '#da291c — optional', optional: true },
           ],
           confirmLabel: 'Add team',
           onSubmit: async (v) => {
             if (!v.name) throw new Error('A team name is required.');
-            const key = v.key || genKey();
-            await store.teamCreate(v.name, key, v.color);
+            // A name and a colour. There is no password to set or hand out: a team is reached by
+            // being put in it, and the people you add next each bring their own Access Key.
+            await store.teamCreate(v.name, v.color);
             if (orgPath.project && orgPath.project !== 'default') {
               try { await store.teamProject(v.name, orgPath.project); } catch (e) { /* created regardless */ }
             }
-            showOnce(v.name, key, 'Password');
             await fillOrg();
             if (!askProjects) return;
-            /* Created first, placed second — the team exists either way, and a dialog that could
-             * fail half way through would otherwise lose the password that was just shown once. */
+            // Created first, placed second — the team exists either way, and a dialog that fails
+            // half way through should not take the team down with it.
             openTeamPicker({
               title: 'Where does ' + v.name + ' work?',
               sub: 'The projects this team reviews. It starts in Default until you choose, and can be added to more later.',
@@ -4390,7 +4552,7 @@
        * copy-project button, because the useful case is moving a shape between deployments —
        * staging to production, one client's setup as the template for the next.
        *
-       * Nothing secret travels: PIN hashes, team keys and sessions all stay behind, so an
+       * Nothing secret travels: PIN hashes, Access Keys and sessions all stay behind, so an
        * imported team arrives disabled and imported people arrive unable to sign in until the
        * Builder gives them credentials. That is the correct default for a file that will end up
        * in an inbox. */
@@ -4401,7 +4563,7 @@
           downloadBlob(JSON.stringify(data, null, 2), 'application/json', name);
           pkAlert({ title: 'Exported', message:
             `${name}\n\n${data.counts ? `${n(data.counts.teams, 'team')}, ${n(data.counts.people, 'person', 'people')}, ${n(data.counts.tickets, 'ticket')}.` : ''}` +
-            `\n\nNo passwords or PINs are in this file — people and teams arrive without a way to sign in, and you assign credentials after importing.` });
+            `\n\nNo Access Keys or PINs are in this file. Imported people are issued their own on arrival, and you hand those out from their pages.` });
         } catch (e) { pkAlert('Could not export — ' + e.message); }
       }
 
@@ -4555,7 +4717,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=91ad58ff42');
+              const sheet = await import('./sheet.js?v=79522be9c7');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4630,13 +4792,13 @@
                 `Projects: ${made} of ${projects.length}` +
                 (teamReport.length ? `\nTeams: ${teamReport.length}\n  ` + teamReport.slice(0, 10).join('\n  ') : '') +
                 (problems.length ? `\n\nRows with problems:\n` + problems.slice(0, 8).join('\n') : '') +
-                `\n\nTeams created this way arrive without a password — people sign in with their own Access ID.` });
+                `\n\nA team has no password of its own — people reach it by being put in it, using their own Access Key.` });
               fillOrg();
               return;
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=91ad58ff42');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=79522be9c7');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -4663,7 +4825,7 @@
               ((rep.projects || []).length ? `\nProjects: ${rep.projects.length}` : '') +
               (rep.tickets ? `\nTickets: ${rep.tickets}` : '') +
               ((rep.skipped || []).length ? `\n\nSkipped (already existed):\n` + rep.skipped.slice(0, 12).join('\n') : '') +
-              `\n\nImported teams arrive disabled and imported people cannot sign in until you assign passwords and PINs.` });
+              `\n\nImported people arrive with their own Access Key, readable on each person’s page. Anyone the file left without a team cannot sign in until you allocate one.` });
             fillOrg();
           } catch (e2) {
             goB.disabled = false; goB.textContent = 'Import';
@@ -4697,15 +4859,18 @@
             `<td><input class="pk-login-input" data-k="calledName" placeholder="Preferred" data-letters="1" autocomplete="off"></td>` +
             `<td><input class="pk-login-input" data-k="email" placeholder="them@company.com" autocomplete="off"></td>` +
             `<td><select class="pk-login-input" data-k="team">${teamOpts(orgPath.team || '')}</select></td>` +
+            /* Blank means "draw me one", which is what almost every row wants. It is here at all
+             * because somebody handing out pre-printed cards needs to be able to type theirs. */
+            `<td><input class="pk-login-input" data-k="accessKey" placeholder="auto" autocomplete="off" spellcheck="false"></td>` +
             `<td class="pk-bulk-x"><button type="button" class="pk-a pk-bulk-del" aria-label="Remove row">✕</button></td>` +
           `</tr>`;
         el.innerHTML =
           `<div class="pk-reopen-card pk-bulk-card" role="dialog" aria-modal="true" aria-label="Add many people">` +
             `<h2 class="pk-reopen-title">Add many people</h2>` +
-            `<p class="pk-reopen-sub">A PIN is generated for each. You will see them once, here.</p>` +
+            `<p class="pk-reopen-sub">An Access Key and a PIN are generated for each. Leave a key blank to have one drawn.</p>` +
             (teams.length
               ? `<div class="pk-tablewrap"><table class="pk-bulk-tbl"><thead><tr>` +
-                  `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team</th><th></th>` +
+                  `<th>Full name</th><th>Preferred name</th><th>Email</th><th>Team</th><th>Access Key</th><th></th>` +
                 `</tr></thead><tbody class="pk-bulk-body">${rowHtml()}${rowHtml()}</tbody></table></div>` +
                 `<div class="pk-u-inlinerow pk-bulk-tools">` +
                   `<button type="button" class="pk-a pk-bulk-more">Add another person</button>` +
@@ -4747,7 +4912,8 @@
           const rows = [...body.querySelectorAll('.pk-bulk-row')].map((tr) => {
             const g = (k) => (tr.querySelector(`[data-k="${k}"]`) || {}).value || '';
             return { name: g('name').trim(), calledName: g('calledName').trim(),
-                     email: g('email').trim().toLowerCase(), team: g('team') };
+                     email: g('email').trim().toLowerCase(), team: g('team'),
+                     accessKey: g('accessKey').trim().toUpperCase() };
           }).filter((r) => r.name || r.email);
           if (!rows.length) { err.textContent = 'Fill in at least one person.'; err.hidden = false; return; }
           const bad = rows.find((r) => !r.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(r.email))
@@ -4762,17 +4928,17 @@
           for (const r of rows) {
             const pin = memorablePin();
             try {
-              await store.userCreate({ email: r.email, name: r.name, calledName: r.calledName,
-                team: r.team, pin, role: 'member' });
-              done.push({ ...r, pin });
+              const made = await store.userCreate({ email: r.email, name: r.name, calledName: r.calledName,
+                team: r.team, pin, role: 'member', accessId: r.accessKey });
+              done.push({ ...r, pin, accessKey: (made && made.accessId) || r.accessKey });
             } catch (e2) { failed.push({ ...r, error: e2.message }); }
           }
           close();
           await pkAlert({ title: done.length ? `Added ${done.length}` : 'Nobody was added',
             message:
               (done.length
-                ? done.map((r) => `${r.name}  ${r.email}  ${r.pin}`).join('\n') +
-                  '\n\nHand these PINs over now — they are stored hashed and cannot be shown again.'
+                ? done.map((r) => `${r.name}  ${r.email}  ${r.accessKey}  ${r.pin}`).join('\n') +
+                  '\n\nHand the PINs over now — those are stored hashed. The Access Keys stay readable on each person’s page.'
                 : '') +
               (failed.length ? `\n\nSkipped ${failed.length}:\n` + failed.map((r) => `${r.email} — ${r.error}`).join('\n') : '') });
           fillOrg();
@@ -4780,14 +4946,33 @@
         body.querySelector('input')?.focus();
       }
 
-      /** Add a person, into the team currently open. */
+      /* Add a person, into the team currently open — or, from the People list where no team is in
+       * context, into whichever team is chosen here.
+       *
+       * THE TEAM IS NOT OPTIONAL. It is what a person's sign-in opens; without one the account is
+       * created and then refused at the door, which is a worse outcome than a required field.
+       *
+       * The Access Key can be typed or drawn. Left blank, the Worker draws one — either way it is
+       * shown on the way out and stays readable in the people table, because the Builder is the
+       * one who reads it out to whoever it belongs to. */
       function openAddPerson() {
+        const teams = (orgData.teams || []).filter((t) => t.enabled !== false).map((t) => ({ value: t.name, label: t.name }));
         openFormModal({
           title: 'Add a person',
           fields: [
             { key: 'name', label: 'Full Name', placeholder: 'Their name as it is written', letters: true },
             { key: 'calledName', label: 'Preferred To Be Called', placeholder: 'What people actually call them', letters: true, optional: true },
             { key: 'email', label: 'Email', placeholder: 'them@company.com' },
+            /* Outside a team, both questions have to be asked. The role used to be decided by
+             * WHERE the dialog was opened from — a person added from the People list silently
+             * became a Builder — which was never visible to whoever was filling the form in. */
+            ...(orgPath.team ? [] : [
+              { key: 'role', label: 'Role', options: [{ value: 'member', label: 'Member' }, { value: 'builder', label: 'Builder' }], value: 'member' },
+              { key: 'team', label: 'Team', options: teams, placeholder: 'Choose a team…',
+                hint: 'Where they land when they sign in. A Member without one cannot sign in at all.' },
+            ]),
+            { key: 'accessKey', label: 'Access Key', placeholder: 'Leave blank to generate one', generate: true, gen: genAccessKey,
+              hint: 'Two letters, then six digits. This is all they type to sign in.', optional: true },
             { key: 'pin', label: 'PIN', placeholder: '6–12 digits', generate: true, gen: memorablePin },
           ],
           confirmLabel: 'Add person',
@@ -4795,9 +4980,12 @@
             if (!v.name) throw new Error('A full name is required.');
             if (!v.email) throw new Error('An email address is required.');
             if (!v.pin) throw new Error('A PIN is required.');
-            await store.userCreate({ email: v.email, name: v.name, calledName: v.calledName || '',
-              team: orgPath.team || '', pin: v.pin, role: orgPath.team ? 'member' : 'builder' });
-            showOnce(v.email, v.pin, 'Initial PIN');
+            const role = orgPath.team ? 'member' : (v.role || 'member');
+            const team = orgPath.team || v.team || '';
+            if (!team && role !== 'builder') throw new Error('Choose a team — a Member with no team cannot sign in.');
+            const made = await store.userCreate({ email: v.email, name: v.name, calledName: v.calledName || '',
+              team, pin: v.pin, role, accessId: (v.accessKey || '').toUpperCase() });
+            showSignIn(v.email, (made && made.accessId) || (v.accessKey || '').toUpperCase(), v.pin);
             fillOrg();
           },
         });
@@ -4902,6 +5090,31 @@ function memorablePin() {
   return String(100000 + Math.floor(Math.random() * 899999));   // never hand back nothing
 }
 
+/* An Access Key: two letters, then six digits — AB123456.
+ *
+ * Mirrors the Worker's own rules rather than trusting it to correct us, because this runs in a
+ * dialog where the Builder is looking at the value: a code that comes back rejected after they
+ * have read it out is worse than one that was never offered. I and O are absent from the letters
+ * for the same reason they are absent server-side — I/1 and O/0 are what people get wrong when a
+ * code is read aloud or copied off a screen.
+ */
+function genAccessKey() {
+  const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const pick = (n) => {
+    const b = new Uint8Array(1);
+    const limit = 256 - (256 % n);
+    do { crypto.getRandomValues(b); } while (b[0] >= limit);   // no modulo bias
+    return b[0] % n;
+  };
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const digits = Array.from({ length: 6 }, () => pick(10)).join('');
+    if (/^(\d)\1{5}$/.test(digits)) continue;                            // 000000 and friends
+    if ('0123456789'.includes(digits) || '9876543210'.includes(digits)) continue;   // a run
+    return ALPHA[pick(ALPHA.length)] + ALPHA[pick(ALPHA.length)] + digits;
+  }
+  return '';   // let the server draw one instead of handing back something it would refuse
+}
+
     function openFormModal(opts) {
       const el = document.createElement('div'); el.className = 'pk-reopen';
       const esc2 = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -4911,11 +5124,21 @@ function memorablePin() {
           opts.fields.map((f) =>
             `<div class="pk-reopen-field"><span class="pk-reopen-label">${esc2(f.label)}` +
               (f.optional ? ` <span style="color:var(--pk-muted);font-weight:400">· optional</span>` : '') + `</span>` +
-              (f.generate
+              /* Three shapes: a list to choose from, a value with a Generate button beside it, and
+               * a plain box. `options` exists because some fields are a choice from what already
+               * exists — a team, above all — and typing a name that has to match one is a way to
+               * get it wrong rather than a way to be flexible. */
+              (f.options
+                ? `<select class="pk-login-input" data-f="${esc2(f.key)}">` +
+                    (f.placeholder ? `<option value="">${esc2(f.placeholder)}</option>` : '') +
+                    f.options.map((o) => `<option value="${esc2(o.value)}"${o.value === f.value ? ' selected' : ''}>${esc2(o.label)}</option>`).join('') +
+                  `</select>`
+                : f.generate
                 ? `<div style="display:flex;gap:8px;align-items:center">` +
                     `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" value="${esc2(f.value || '')}" autocomplete="off" style="flex:1">` +
                     `<button type="button" class="pk-a" data-gen="${esc2(f.key)}">Generate</button></div>`
                 : `<input class="pk-login-input" data-f="${esc2(f.key)}" placeholder="${esc2(f.placeholder || '')}" value="${esc2(f.value || '')}" autocomplete="off"${f.letters ? ' data-letters="1"' : ''}>`) +
+              (f.hint ? `<div class="pk-set-row-desc">${esc2(f.hint)}</div>` : '') +
             `</div>`).join('') +
           `<div class="pk-reopen-err" hidden></div>` +
           `<div class="pk-reopen-actions">` +
@@ -4930,12 +5153,15 @@ function memorablePin() {
       document.addEventListener('keydown', onEsc);
       el.addEventListener('click', (e2) => { if (e2.target === el) close(); });
       el.querySelector('.pk-fm-cancel').addEventListener('click', close);
+      /* A Generate button needs a generator that knows what shape the value has to be. The old
+       * default here was a 14-character string — the shape of the team password, the one field
+       * that no longer exists — and it would now quietly fill an Access Key or a PIN box with
+       * something the server refuses. A field that asks for Generate has to say how. */
       el.querySelectorAll('[data-gen]').forEach((b) => b.addEventListener('click', () => {
         const f = opts.fields.find((x) => x.key === b.dataset.gen);
-        const a = 'abcdefghijkmnopqrstuvwxyz23456789';
-        const v = f && f.gen ? f.gen() : Array.from(crypto.getRandomValues(new Uint8Array(14)), (n2) => a[n2 % a.length]).join('');
+        if (!f || !f.gen) return;
         const input = el.querySelector(`[data-f="${b.dataset.gen}"]`);
-        input.value = v; input.focus();
+        input.value = f.gen(); input.focus();
       }));
       const submit = async () => {
         const v = {};
@@ -5292,7 +5518,7 @@ function memorablePin() {
           `<div class="pk-tiles">` +
             `<div class="pk-tile"><div class="pk-tile-val">${reqs}</div><div class="pk-tile-label">Requests</div></div>` +
             `<div class="pk-tile"><div class="pk-tile-val">${polls}</div><div class="pk-tile-label">Poll requests</div></div>` +
-            `<div class="pk-tile"><div class="pk-tile-val">${teams.size}</div><div class="pk-tile-label">Active team keys</div></div>` +
+            `<div class="pk-tile"><div class="pk-tile-val">${teams.size}</div><div class="pk-tile-label">Active teams</div></div>` +
           `</div>`;
       }
       host.innerHTML = tiles + teamTbl +

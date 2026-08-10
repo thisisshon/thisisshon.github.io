@@ -14,10 +14,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 <!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
 <style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=91ad58ff42">
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=91ad58ff42">
-<link rel="stylesheet" href="/proofkit/core/card.css?v=91ad58ff42">
-<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=91ad58ff42">
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=79522be9c7">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=79522be9c7">
+<link rel="stylesheet" href="/proofkit/core/card.css?v=79522be9c7">
+<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=79522be9c7">
 <script>(function(){try{
   var base="/proofkit/builder";
   var p=location.pathname;
@@ -93,15 +93,19 @@
           <span class="pk-side-word">Proofkit</span>
           <span class="pk-side-tag" data-pk-project-short hidden></span>
         </div>
-        <button class="pk-nav is-active" data-view="queue"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>My Tickets</button>
+        <button class="pk-nav is-active" data-view="home"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Home</button>
+        <button class="pk-nav" data-view="queue"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>My Tickets</button>
         <button class="pk-nav" data-view="threads"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comments<span class="pk-navbadge pk-navbadge--alert" id="tmd-badge-threads" hidden>0</span></button>
         <button class="pk-nav" data-view="notifs"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
           Notifications
           <span class="pk-navbadge pk-navbadge--alert" id="tmd-navbadge" hidden>0</span>
         </button>
+        <button class="pk-nav" data-view="insights"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Insights</button>
+        <button class="pk-nav" data-view="team"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>My Team</button>
         <button class="pk-nav" data-view="settings"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
         <!-- Grows to push the rail actions to the rail's foot; on short viewports it collapses
              to its 40px floor and the rail scrolls instead. -->
+        <button class="pk-side-collapse" type="button" data-pk-collapse aria-label="Collapse sidebar" title="Collapse sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg><span class="pk-nav-txt">Collapse Menu</span></button>
         <div class="pk-side-spacer" aria-hidden="true"></div>
         <!-- Rail actions: colour mode, then Log out — the same pair, and the same box, as Builder's. -->
         <div class="tmd-sideactions">
@@ -139,7 +143,7 @@
           </div>
           <!-- Status filter chips (built by teamdash.js): Needs you · Open · lifecycle · overflow -->
           <div class="pk-statuschips" id="pk-statuschips" role="tablist" aria-label="Status filter"></div>
-          <!-- Saved "Team views" quick-select chips (Feature 11) — shared per team key -->
+          <!-- Saved "Team views" quick-select chips (Feature 11) — shared per team -->
           <div class="pk-views" id="tmd-views" hidden></div>
           <!-- Legacy status-tab bar (retired; kept hidden for the dormant per-view renderers) + team picker -->
           <div class="pk-tabsrow">
@@ -150,6 +154,9 @@
         </div>
 
         <!-- Team Queue: everything still open (default landing) -->
+        <div id="tmd-view-home" hidden></div>
+        <div id="tmd-view-insights" hidden></div>
+        <div id="tmd-view-team" hidden></div>
         <div id="tmd-view-queue" hidden></div>
         <!-- Completed: everything submitted, with its live status -->
         <div id="tmd-view-comments"><div id="tmd-list"></div></div>
@@ -185,6 +192,6 @@
     </footer>
   </div>
 </section>
-<script type="module" src="/proofkit/core/teamdash.js?v=91ad58ff42"></script>
+<script type="module" src="/proofkit/core/teamdash.js?v=79522be9c7"></script>
 </body>
 </html>

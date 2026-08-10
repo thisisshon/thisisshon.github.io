@@ -352,35 +352,10 @@
 /* An explicit choice is ringed, so "pinned open/shut" reads differently from "inherited". */
 .pk-vis-cell.is-set { box-shadow: 0 0 0 2px var(--pk-canvas), 0 0 0 3px currentColor; }
 
-/* ---- 7.4: Builder home tiles ---------------------------------------------------------------
-   An index of what Builder mode can do. auto-fit rather than fixed columns so the grid reflows
-   sensibly from a laptop to a wide monitor without a media-query ladder. */
-.pk-tiles { display: grid; gap: var(--pk-space-3h); grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: var(--pk-space-2); }
-.pk-tile {
-  display: flex; flex-direction: column; gap: var(--pk-space-2); text-align: left;
-  padding: var(--pk-space-4) var(--pk-space-4h); min-height: 8.5rem;
-  border: 1px solid var(--pk-hair); border-radius: var(--pk-radius-lg);
-  background: var(--pk-card); color: var(--pk-ink); cursor: pointer;
-  transition: border-color .16s, background .16s;
-}
-@media (min-width:1024px) and (hover:hover){/* Stroke only — no lift. See .pk-card-tile for why. */
-.pk-tile:hover { border-color: var(--pk-red); }}
-.pk-tile:focus-visible { outline: 2px solid var(--pk-red); outline-offset: 2px; }
-/* The queue is the only tile that represents work waiting on you, so it leads. */
-.pk-tile.is-wide { grid-column: span 2; }
-.pk-tile.is-accent { background: linear-gradient(180deg, rgba(218,41,28,.10), transparent 70%); border-color: var(--pk-ring-red); }
-.pk-tile-head { display: flex; align-items: center; justify-content: space-between; gap: var(--pk-space-3); }
-.pk-tile-title { font: 650 var(--pk-text-md)/1.2 var(--pk-font); letter-spacing: .01em; }
-.pk-tile-badge {
-  font: 600 var(--pk-text-2xs)/1 var(--pk-font); letter-spacing: .04em; text-transform: uppercase;
-  padding: var(--pk-space-2) var(--pk-space-3); border-radius: var(--pk-radius-full);
-  background: var(--pk-red); color: var(--pk-on-accent); white-space: nowrap;
-}
-.pk-tile-stat { font: 700 var(--pk-text-5xl)/1.05 var(--pk-font); letter-spacing: -.02em; margin-top: var(--pk-space-3); }
-.pk-tile-sub { font-size:var(--pk-text-sm); color: var(--pk-body); }
-.pk-tile-desc { margin-top: auto; padding-top: var(--pk-space-3); font-size:var(--pk-text-sm); color: var(--pk-muted); line-height: 1.45; }
-@media (max-width: 40rem) { .pk-tile.is-wide { grid-column: span 1; } }
-@media (prefers-reduced-motion: reduce) { .pk-tile { transition: none } }
+/* The home-tile rules moved to design/components.css — the team board renders the same tiles
+   from the same markup and does not load this file, so its Home came out as centred text with no
+   geometry at all. They are a shared component, not a Builder one. */
+
 
 /* ================================================================================================
  * THE RAIL — sidebar nav, footer controls, and the collapse behaviour.
@@ -412,12 +387,8 @@
  *   4. The popup menu is excluded from every rail rule. It has its own layout.
  * ============================================================================================== */
 
-:root {
-  --pk-rail-w: 208px;
-  --pk-rail-w-min: 64px;
-  --pk-rail-gutter: 23px;        /* (64 - 18) / 2 — an 18px icon reads centred when collapsed */
-  --pk-rail-row-h: 48px;
-}
+/* The four rail measurements moved to design/tokens.css — the team board renders the same
+   rail and could not see them here, so its Collapse row had no geometry at all. */
 
 /* ---- the rail itself ------------------------------------------------------------------------ */
 .pk-side { overflow: hidden; transition: width .26s cubic-bezier(.4, 0, .2, 1); }

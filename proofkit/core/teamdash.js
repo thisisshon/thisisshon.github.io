@@ -1,9 +1,9 @@
-  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pageUrlText, ADMIN_TEAM,
+  import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    buildAccessLogin, accessLogin, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=91ad58ff42';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=79522be9c7';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=91ad58ff42';
-  import { createCardRenderer } from './card.js?v=91ad58ff42';
-  import { ICON } from './icons.js?v=91ad58ff42';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=91ad58ff42';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=91ad58ff42';
+  import { PK_VERSION } from './version.js?v=79522be9c7';
+  import { createCardRenderer } from './card.js?v=79522be9c7';
+  import { ICON } from './icons.js?v=79522be9c7';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=79522be9c7';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=79522be9c7';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -52,8 +52,20 @@
       } catch { return ''; }
     })();
 
-    // The effective team: the admin-chosen override, else the signed-in team (config).
-    const team = () => OVERRIDE || getSession().team;
+    /* WHICH TEAM THIS BOARD IS.
+     *
+     * The ACCOUNT is asked before the session, because the account is the authoritative answer and
+     * the session is a mirror of it kept in this browser. Two ways that mirror goes wrong:
+     *
+     *   - setAccountSession() only writes pkTeam when the person HAS a team, so signing in on the
+     *     hosted /auth page — which is the normal route in from the extension — could leave the
+     *     board with a live token and no team recorded. The header then read a bare "Team".
+     *   - the Builder moving somebody to another team changes the account, not the copy sitting in
+     *     their browser, so the old name would sit in the heading until they signed out.
+     *
+     * OVERRIDE still wins: a Builder previewing a team board is deliberately not on their own team.
+     */
+    const team = () => OVERRIDE || (getAccount() || {}).team || getSession().team;
 
     /* WHICH PROJECT'S BOARD THIS IS.
      *
@@ -749,6 +761,53 @@
     // Density persists per browser (teamdash has no full prefs store — a single key suffices).
     const DENSITY_KEY = 'tmdDensity';
     const saveDensity = () => { try { localStorage.setItem(DENSITY_KEY, density); } catch {} };
+
+    /* Notification preferences, the team-side twin of Builder's. Three keys, not the Builder's
+     * whole pref store: a chime, an OS notification, and whether the nav carries unread counts.
+     * Saved to THIS browser — a preference about being interrupted belongs to the person being
+     * interrupted, not to their team. */
+    /* The signed-in person's own Access Key. Read from /auth/me rather than kept in the account
+     * blob, because the blob is written at sign-in and the key can change after it. '' until the
+     * Account section is opened — nothing else on the board needs it. */
+    let myAccessId = '';
+
+    const NOTIFPREF_KEY = 'pkTeamNotifPrefs';
+    const notifPrefs = { sound: false, desktopNotif: false, notifBadges: true };
+    try { Object.assign(notifPrefs, JSON.parse(localStorage.getItem(NOTIFPREF_KEY) || '{}')); } catch {}
+    const saveNotifPrefs = () => { try { localStorage.setItem(NOTIFPREF_KEY, JSON.stringify(notifPrefs)); } catch {} };
+
+    function playChime() {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return;
+        const ctx = new Ctx(); const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+        o.start(); o.stop(ctx.currentTime + 0.36);
+        o.onended = () => { try { ctx.close(); } catch {} };
+      } catch {}
+    }
+    /* Primed on the FIRST load rather than firing on it: arriving at a board with nine unread
+     * items is not nine new things happening, and a chime that greets every page load is a
+     * setting people switch off once and never trust again. */
+    let notifPrimed = false, lastUnread = 0;
+    function maybeNotifyNewActivity() {
+      const unread = unreadNotes().length;
+      if (notifPrimed && unread > lastUnread && (notifPrefs.sound || notifPrefs.desktopNotif)) {
+        const delta = unread - lastUnread;
+        if (notifPrefs.sound) playChime();
+        if (notifPrefs.desktopNotif && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          try {
+            const n = new Notification('Proofkit — ' + delta + ' new update' + (delta > 1 ? 's' : ''), {
+              body: 'New activity on your board.', tag: 'proofkit-team-activity', silent: !notifPrefs.sound,
+            });
+            n.onclick = () => { try { window.focus(); setView('notifs'); render(); } catch {} };
+          } catch {}
+        }
+      }
+      lastUnread = unread; notifPrimed = true;
+    }
     try { const d = localStorage.getItem(DENSITY_KEY); if (d === 'cards' || d === 'table') density = d; } catch {}
     // Detail-view: which collapsible side cards are folded (per browser), mirroring the builder's.
     const DCOL_KEY = 'tmdDetailCollapsed';
@@ -1023,6 +1082,7 @@
       if (landed && sig === lastSig) return;
       lastSig = sig;
       renderHeader(); counts();   // counts() → updateActiveBadge() toggles the Active tab's visibility
+      maybeNotifyNewActivity();   // chime / OS notification, if this browser asked for them
       // Land on the first VISIBLE tab on first load; thereafter only re-home if the
       // current tab has just been hidden (e.g. Active after its last item is resubmitted).
       const cur = document.querySelector('.pk-nav[data-view="' + view + '"]');
@@ -1090,7 +1150,211 @@
       });
       const badge = $('#tmd-navbadge');
       const u = unreadNotes().length;
-      if (badge) { badge.textContent = u; badge.hidden = u === 0; }
+      if (badge) { badge.textContent = u; badge.hidden = u === 0 || !notifPrefs.notifBadges; }
+    }
+
+    /** Your own Access Key, from /auth/me. Silent on failure — the row shows a dash. */
+    async function loadMyAccessId() {
+      try {
+        const res = await fetch(WORKER_URL.replace(/\/$/, '') + '/auth/me', { headers: authHeaders() });
+        if (!res.ok) return;
+        const body = await res.json();
+        myAccessId = body.accessId || '';
+        const el = $('#tmd-my-access');
+        if (el) el.textContent = myAccessId || '—';
+      } catch (e) { /* the row already reads '—'; a settings pane must not error over it */ }
+    }
+
+    /* Where you are signed in. `force` re-reads after a revoke, when the list has genuinely
+     * changed; otherwise the cached answer is used, so switching tabs does not re-fetch. */
+    let sessionsCache = null;
+    async function loadSessions(force) {
+      const host = $('#tmd-sessions');
+      if (!host) return;
+      if (force) sessionsCache = null;
+      if (!sessionsCache) {
+        try {
+          const res = await fetch(WORKER_URL.replace(/\/$/, '') + '/auth/sessions', { headers: authHeaders() });
+          if (!res.ok) throw new Error('Could not read your sessions.');
+          sessionsCache = (await res.json()).sessions || [];
+        } catch (e) {
+          host.innerHTML = `<p class="pk-set-row-desc">${esc(e.message)}</p>`;
+          return;
+        }
+      }
+      const when = (iso) => { try { return new Date(iso).toLocaleString(); } catch { return iso || ''; } };
+      const dur = (ms) => {
+        const m = Math.round(ms / 60000);
+        if (m < 60) return m + ' min';
+        const h = Math.floor(m / 60);
+        return h < 24 ? `${h}h ${m % 60}m` : `${Math.floor(h / 24)}d ${h % 24}h`;
+      };
+      const live = sessionsCache.filter((x) => x.live);
+      host.innerHTML = live.length
+        ? live.map((x) =>
+            `<div class="pk-set-row"><div class="pk-set-row-main">` +
+              `<div class="pk-set-row-label">${x.current ? 'This browser' : 'Signed in elsewhere'}</div>` +
+              `<div class="pk-set-row-desc">Started ${esc(when(x.startedAt))} · open ${esc(dur(x.durationMs))}` +
+                `${x.lastSeenAt ? ' · last seen ' + esc(when(x.lastSeenAt)) : ''}</div>` +
+            `</div><div class="pk-set-ctl">` +
+              (x.current
+                ? `<span class="pk-set-pill">you are here</span>`
+                : `<button class="pk-a danger" type="button" data-act="session-end" data-sid="${esc(x.id)}">End</button>`) +
+            `</div></div>`).join('')
+        : `<p class="pk-set-row-desc">No other sessions — this browser is the only one.</p>`;
+    }
+
+    /* ---- Home ------------------------------------------------------------------------------
+     *
+     * The Builder board opens on a tiled overview rather than straight into a list, and the team
+     * board opened straight into its queue. Same tiles, same shapes, one board's worth of scope:
+     * every number here is this team's own, computed from data already loaded for the queue, so
+     * Home costs no extra request and can never disagree with the list underneath it.
+     */
+    function renderHome() {
+      const host = $('#tmd-view-home');
+      if (!host) return;
+      const tile = (o) => {
+        const badge = o.badge ? `<span class="pk-tile-badge">${esc(String(o.badge))}</span>` : '';
+        const stat = o.stat != null ? `<div class="pk-tile-stat">${esc(String(o.stat))}</div>` : '';
+        const sub = o.sub ? `<div class="pk-tile-sub">${esc(o.sub)}</div>` : '';
+        return `<button class="pk-tile${o.wide ? ' is-wide' : ''}${o.accent ? ' is-accent' : ''}" type="button" data-home-view="${esc(o.go)}">` +
+          `<div class="pk-tile-head"><span class="pk-tile-title">${esc(o.title)}</span>${badge}</div>` +
+          stat + sub + `<div class="pk-tile-desc">${esc(o.desc)}</div></button>`;
+      };
+      const rs = statRoots().filter((c) => !c.revoked);
+      const st = (s) => rs.filter((c) => teamStatusOf(c) === s).length;
+      const withBuilder = rs.filter((c) => (c.toTeam || ADMIN_TEAM) === ADMIN_TEAM
+        && (teamStatusOf(c) === 'to_be_initiated' || teamStatusOf(c) === 'in_progress')).length;
+      const pending = rs.filter(isPendingMine).length;
+      const unread = unreadNotes().length;
+      const nm = team() || 'your team';
+
+      host.innerHTML =
+        `<div class="rvd-notifhead"><div><h2>${esc(nm)}</h2>` +
+          `<p class="rvd-deploy-explain">Everything on this board, at a glance. Every number is <b>${esc(nm)}</b>’s own.</p></div></div>` +
+        `<div class="pk-tiles">` +
+          tile({ title: 'My Tickets', go: 'queue', accent: true, wide: true,
+                 stat: withBuilder + st('reopened'),
+                 badge: st('reopened') ? st('reopened') + ' reopened' : '',
+                 sub: `${st('to_be_initiated')} to start · ${st('in_progress')} in progress · ${st('reopened')} reopened`,
+                 desc: 'Everything you raised, and everything raised to you.' }) +
+          tile({ title: 'Pending sign-off', go: 'queue', stat: pending,
+                 desc: 'Deployed fixes waiting for you to confirm them.' }) +
+          tile({ title: 'Deployed live', go: 'queue', stat: st('deployed_live'),
+                 desc: 'Done and live. Kept for the record.' }) +
+          tile({ title: 'Notifications', go: 'notifs', badge: unread ? String(unread) : '',
+                 desc: 'Status pushes, arrivals and replies.' }) +
+          tile({ title: 'Comments', go: 'threads', desc: 'Every thread you are part of, including replies.' }) +
+          tile({ title: 'Insights', go: 'insights', stat: rs.length,
+                 sub: `${st('deployed_live')} deployed all-time`, desc: 'How this team’s work has moved.' }) +
+          tile({ title: 'My Team', go: 'team', desc: 'Who else is on this board.' }) +
+          tile({ title: 'Settings', go: 'settings', desc: 'Your Access Key, PIN, sessions and preferences.' }) +
+        `</div>`;
+      host.querySelectorAll('[data-home-view]').forEach((b) => b.addEventListener('click', () => {
+        setView(b.dataset.homeView); render();
+      }));
+    }
+
+    /* ---- Insights ---------------------------------------------------------------------------
+     *
+     * The Builder's analytics, pinned to one team. The Worker does the pinning, not this screen:
+     * GET /insights refuses a `team` that is not the caller's own, so a team asking for another's
+     * numbers is a 401 rather than a filter this file could get wrong.
+     */
+    let insightsCache = null;
+    async function renderInsights() {
+      const host = $('#tmd-view-insights');
+      if (!host) return;
+      const nm = team() || '';
+      const head = `<div class="rvd-notifhead"><div><h2>Insights</h2>` +
+        `<p class="rvd-deploy-explain">${esc(nm)}’s own numbers. Nobody else’s work is counted here.</p></div></div>`;
+      if (!insightsCache) {
+        host.innerHTML = head + `<p class="pk-empty">Loading…</p>`;
+        try {
+          const res = await fetch(WORKER_URL.replace(/\/$/, '') + '/insights?team=' + encodeURIComponent(nm), { headers: authHeaders() });
+          if (!res.ok) throw new Error(res.status === 401 ? 'This board cannot read those numbers.' : 'Could not load insights.');
+          insightsCache = await res.json();
+        } catch (e) {
+          host.innerHTML = head + `<p class="pk-empty">${esc(e.message)}</p>`;
+          return;
+        }
+      }
+      const d = insightsCache || {};
+      /* Two sources, deliberately. The STATUS counts come from the tickets this board already has
+       * loaded, so they cannot disagree with the list under My Tickets; the QUALITY metrics come
+       * from the endpoint, because they need history this board never holds. */
+      const rs = statRoots().filter((c) => !c.revoked);
+      const st = (x) => rs.filter((c) => teamStatusOf(c) === x).length;
+      const statTile = (val, label) =>
+        `<div class="pk-tile"><div class="pk-tile-val">${esc(String(val))}</div><div class="pk-tile-label">${esc(label)}</div></div>`;
+      const entries = (o) => Object.keys(o || {}).map((k) => [k, o[k]]).filter((r) => r[1]).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      /* The same bar the Builder's Insights draws. Widths ride on a data attribute rather than a
+       * style attribute: the host CSP drops inline styles, and paintDynamic() applies them through
+       * CSSOM after the markup lands. */
+      const bars = (title, rows, tone) => {
+        if (!rows.length) return '';
+        const max = Math.max(...rows.map((r) => Number(r[1]) || 0)) || 1;
+        return `<div class="rvd-ins-head pk-u-secgap"><h2>${esc(title)}</h2></div><div class="pk-bars">` +
+          rows.map(([k, v]) => `<div class="pk-bar-row"><span class="pk-bar-key">${esc(String(k).replace(/_/g, ' '))}</span>` +
+            `<span class="pk-bar-track"><span class="pk-bar-fill${tone ? ' pk-bar-fill--' + tone : ''}" data-pk-pct="${Math.round((Number(v) || 0) / max * 100)}"></span></span>` +
+            `<span class="pk-bar-val">${esc(String(v))}</span></div>`).join('') + `</div>`;
+      };
+      const ftf = Math.round((d.firstTimeFixRate || 0) * 100);
+      const tis = d.timeInState || {};
+      host.innerHTML = head +
+        `<div class="pk-tiles">` +
+          statTile(rs.length, 'Raised all-time') +
+          statTile(st('deployed_live'), 'Deployed live') +
+          statTile(st('to_be_initiated') + st('in_progress'), 'Still open') +
+          statTile(st('reopened'), 'Reopened') +
+        `</div>` +
+        `<div class="rvd-ins-head pk-u-secgap"><h2>Quality</h2></div>` +
+        `<div class="pk-tiles">` +
+          statTile(ftf + '%', 'First-time-fix rate') +
+          statTile(d.closedRoots || 0, 'Tickets closed') +
+        `</div>` +
+        bars('Reopens · by reason', entries((d.reopenBreakdown || {}).byReason).map((r) => [reopenReasonLabel(r[0]) || r[0], r[1]]), 'amber') +
+        bars('Reopens · by type', entries((d.reopenBreakdown || {}).byType), 'amber') +
+        bars('Median dwell (hrs) · by status', Object.keys(tis).map((k) => [k, tis[k] && tis[k].median]).filter((r) => r[1]), 'blue') +
+        bars('Raised per week', (d.defectInflow || []).map((x) => [x.week, x.opened]), 'green');
+      paintDynamic(host);
+    }
+
+    /* ---- My Team ----------------------------------------------------------------------------
+     *
+     * Who else is on this board. Names and addresses only — GET /team/people carries no Access
+     * Key, no PIN state and no role, so this cannot quietly become the Builder's people table.
+     */
+    let rosterCache = null;
+    async function renderRoster() {
+      const host = $('#tmd-view-team');
+      if (!host) return;
+      const nm = team() || '';
+      if (!rosterCache) {
+        host.innerHTML = `<div class="rvd-notifhead"><div><h2>My Team</h2></div></div><p class="pk-empty">Loading…</p>`;
+        try {
+          const res = await fetch(WORKER_URL.replace(/\/$/, '') + '/team/people', { headers: authHeaders() });
+          if (!res.ok) throw new Error('Could not load the roster.');
+          rosterCache = await res.json();
+        } catch (e) {
+          host.innerHTML = `<div class="rvd-notifhead"><div><h2>My Team</h2></div></div><p class="pk-empty">${esc(e.message)}</p>`;
+          return;
+        }
+      }
+      const people = (rosterCache && rosterCache.people) || [];
+      host.innerHTML =
+        `<div class="rvd-notifhead"><div><h2>My Team</h2>` +
+          `<p class="rvd-deploy-explain">Everyone on <b>${esc(nm)}</b>. Only the Builder can change who is here.</p></div></div>` +
+        (people.length
+          ? `<div class="pk-tablewrap"><table class="pk-ptable"><thead><tr>` +
+              `<th>Name</th><th>Goes by</th><th>Email</th></tr></thead><tbody>` +
+              people.map((p) => `<tr${p.you ? ' class="is-you"' : ''}>` +
+                `<td>${esc(p.name || '—')}${p.you ? ' <span class="pk-set-pill">you</span>' : ''}</td>` +
+                `<td>${esc(p.calledName || '—')}</td>` +
+                `<td>${esc(p.email)}</td></tr>`).join('') +
+            `</tbody></table></div>`
+          : `<p class="pk-empty">Nobody else is on this team yet.</p>`);
     }
 
     // ---- Settings (team member) ------------------------------------------------
@@ -1101,7 +1365,12 @@
     function renderSettings() {
       const host = $('#tmd-view-settings');
       if (!host) return;
-      const SECTIONS = [{ k: 'appearance', label: 'Appearance' }, { k: 'about', label: 'About' }];
+      const SECTIONS = [
+        { k: 'appearance', label: 'Appearance' },
+        { k: 'notifications', label: 'Notifications' },
+        { k: 'account', label: 'Account' },
+        { k: 'about', label: 'About' },
+      ];
       if (!SECTIONS.some((s) => s.k === settingsSection)) settingsSection = 'appearance';
 
       // shared row/card builders (mirror Builder's, minus the pref-store plumbing)
@@ -1134,15 +1403,60 @@
                 `<button class="pk-set-segbtn${density === 'cards' ? ' is-active' : ''}" type="button" data-set-den="cards">Cards</button>` +
                 `<button class="pk-set-segbtn${density === 'table' ? ' is-active' : ''}" type="button" data-set-den="table">Table</button>` +
               `</div>`));
+      } else if (settingsSection === 'notifications') {
+        const sw = (k, label, desc) =>
+          row(label, desc, `<button class="pk-set-switch" type="button" role="switch" aria-checked="${!!notifPrefs[k]}" data-notifpref="${k}"><span class="pk-set-switch-thumb"></span></button>`);
+        const denied = typeof Notification !== 'undefined' && Notification.permission === 'denied';
+        panel =
+          card('Being told', 'What happens when something lands on your board. Saved to this browser.',
+            sw('notifBadges', 'Unread counts on the nav', 'The number beside Notifications and Comments.') +
+            sw('sound', 'Play a sound', 'A short chime when new activity arrives while this tab is open.') +
+            sw('desktopNotif', 'Desktop notifications',
+              denied
+                ? 'Blocked for this site in your browser settings — turn it back on there first.'
+                : 'An OS notification, so you do not have to keep this tab in view.'));
+      } else if (settingsSection === 'account') {
+        /* THE THINGS THAT ARE YOURS. All three lived only on the Builder board, which meant a
+         * person could not read the credential they sign in with, change their own PIN, or see
+         * where they were signed in — while the Builder could do all three for everybody. */
+        const acct = getAccount() || {};
+        panel =
+          card('Access Key', 'Two letters, then six digits. This is all you type to sign in.',
+            row('Your key', 'Readable here whenever you need it — the Builder can see it too.',
+              `<span class="pk-u-inlinerow"><code class="pk-set-kbd pk-accesscode" id="tmd-my-access">${esc(myAccessId || '—')}</code>` +
+              `<button class="pk-a" type="button" data-act="access-copy">Copy</button>` +
+              `<button class="pk-a" type="button" data-act="access-change">Change</button></span>`)) +
+          card('PIN', 'Your backup way in, if you lose your Access Key.',
+            row('Change PIN', '6–12 digits. You will need the one you use now.', actBtn('pin-change', 'Change PIN'))) +
+          card('Sessions', 'Where you are signed in. Ending one signs that browser out immediately.',
+            `<div id="tmd-sessions"><p class="pk-set-row-desc">Loading…</p></div>` +
+            row('End every other session', 'Leaves this one alone. Use it if you signed in somewhere you should not have.',
+              actBtn('sessions-others', 'End the others', 'danger')));
       } else {
         /* No Teams card here. It listed every team in the project and which were switched off —
          * which is the Builder's business, not a reviewer's. It told a member of one team nothing
          * they could act on, and told them the shape of the whole organisation to do it. It lives
          * on the Builder board, where the person reading it is the person who sets it. */
+        /* WHO IS SIGNED IN — a person, with a name.
+         *
+         * This card used to be one "Signed in as" row showing the TEAM. That was true when a team
+         * was the credential and a board could not tell who had opened it. A person signs in now,
+         * so the board knows, and the answer to "whose session is this" should be their name — the
+         * one they asked to be called, since that is the one they answer to. The team is a second
+         * row rather than the only one. */
+        const me = getAccount() || {};
+        const called = (me.calledName || '').trim();
+        const full = (me.name || '').trim();
+        // publicUser() already decides what a UI should print, falling back through preferred name
+        // to full name to the local part of the email — so this does not get to disagree with it.
+        const who = (me.displayName || called || full || me.email || '').trim();
         panel =
+          card('You', 'The account this board is open on.',
+            (who ? row('Name', called && full && called !== full ? `Full name ${esc(full)}.` : '', `<span class="pk-set-pill">${esc(who)}</span>`) : '') +
+            (me.email ? row('Email', 'Your sign-in address, and where the Builder finds you.', `<span class="pk-set-pill">${esc(me.email)}</span>`) : '') +
+            row('Team', 'The board you land on. Only the Builder can change it.', `<span class="pk-set-pill">${esc(team() || '— none —')}</span>`)) +
           card('Proofkit', 'Portable content-review tooling.',
-            row('Version', 'This dashboard build.', `<span class="pk-set-pill">v${PK_VERSION}</span>`) +
-            row('Signed in as', 'Your current team session.', `<span class="pk-set-pill">${esc(team() || 'team')}</span>`)) +
+            row('Version', 'This dashboard build.', `<span class="pk-set-pill">v${PK_VERSION}</span>`)) +
           card('Keyboard shortcuts', 'While a ticket detail or reply box is open.',
             row('Post reply / question', 'Send without reaching for the mouse.', `${kbd('⌘/Ctrl')} ${kbd('Enter')}`) +
             row('Close / dismiss', 'Back out of a detail or overlay.', kbd('Esc'))) +
@@ -1162,6 +1476,14 @@
       // Wire the theme toggle into its slot (guards against a double-mount internally).
       mountThemeToggle('[data-pk-set-theme]');
 
+      /* The Account section's two live pieces. Fetched only when that section is on screen, and
+       * only once per visit — neither answer changes on its own, and a settings pane that polls is
+       * a settings pane that fights whatever you are typing into it. */
+      if (settingsSection === 'account') {
+        if (!myAccessId) loadMyAccessId();
+        loadSessions(false);
+      }
+
       // Delegated click handler — attach ONCE (the host element persists across re-renders).
       if (!host.dataset.wired) {
         host.dataset.wired = '1';
@@ -1176,6 +1498,83 @@
           if (ov) { setOverlayUiOverride(ov.dataset.overlayui === 'new' ? 'new' : 'old'); renderSettings(); return; }
           const act = e.target.closest('[data-act]');
           if (act && act.dataset.act === 'overlayui-default') { setOverlayUiOverride(''); renderSettings(); return; }
+          const np = e.target.closest('[data-notifpref]');
+          if (np) {
+            const k = np.dataset.notifpref;
+            notifPrefs[k] = !notifPrefs[k];
+            saveNotifPrefs();
+            // Ask for the OS permission at the moment it is switched on — a browser only grants it
+            // in response to a click, and asking on load is how sites get permanently blocked.
+            if (k === 'desktopNotif' && notifPrefs[k] && typeof Notification !== 'undefined') {
+              try { if (Notification.permission === 'default') await Notification.requestPermission(); } catch {}
+              if (Notification.permission !== 'granted') {
+                notifPrefs[k] = false; saveNotifPrefs();
+                await pkAlert({ title: 'Not allowed', message: 'Your browser is blocking notifications for this site. Turn them on in its site settings, then try again.' });
+              }
+            }
+            if (k === 'sound' && notifPrefs[k]) playChime();
+            if (k === 'notifBadges') { counts(); renderHeader(); }
+            renderSettings();
+            return;
+          }
+          if (act && act.dataset.act === 'access-copy') {
+            if (!myAccessId) return;
+            copyToClip(myAccessId, act, 'Copied ✓');
+            return;
+          }
+          if (act && act.dataset.act === 'access-change') {
+            /* The old key first. A signed-in tab proves somebody signed in on this machine today,
+             * not who is at the keyboard now — and swapping the credential is exactly what a person
+             * who found that tab would do. */
+            const current = await pkPrompt({ title: 'Change your Access Key', message: 'Enter the Access Key you use now.', value: '', confirmLabel: 'Continue' });
+            if (current === null || !current.trim()) return;
+            const next = await pkPrompt({ title: 'Your new Access Key', message: 'Two letters, then six digits — like AB123456.\n\nThe old one stops working immediately.', value: '', confirmLabel: 'Change' });
+            if (next === null || !next.trim()) return;
+            try {
+              const res = await accessChange(WORKER_URL, next.trim(), current.trim());
+              myAccessId = res.accessId || '';
+              await pkAlert({ title: 'Changed', message: 'Your Access Key is now ' + myAccessId + '. Nothing else about your account changed.' });
+              renderSettings();
+            } catch (e2) { await pkAlert({ title: 'Could not change it', message: e2.message }); }
+            return;
+          }
+          if (act && act.dataset.act === 'pin-change') {
+            const cur = await pkPrompt({ title: 'Change your PIN', message: 'Enter the PIN you use now.', value: '', confirmLabel: 'Continue' });
+            if (cur === null || !cur.trim()) return;
+            const next = await pkPrompt({ title: 'Your new PIN', message: '6–12 digits. Not a repeated digit or a run (e.g. 123456).', value: '', confirmLabel: 'Change' });
+            if (next === null || !next.trim()) return;
+            try {
+              const res = await fetch(WORKER_URL.replace(/\/$/, '') + '/auth/change-pin', {
+                method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify({ currentPin: cur.trim(), newPin: next.trim() }),
+              });
+              const body = await res.json().catch(() => ({}));
+              if (!res.ok) throw new Error(body.error || 'Could not change your PIN.');
+              await pkAlert({ title: 'Changed', message: 'Your PIN has been updated. Your Access Key is unchanged.' });
+            } catch (e2) { await pkAlert({ title: 'Could not change it', message: e2.message }); }
+            return;
+          }
+          if (act && (act.dataset.act === 'sessions-others' || act.dataset.act === 'session-end')) {
+            const others = act.dataset.act === 'sessions-others';
+            const ok = await pkConfirm({
+              title: others ? 'End every other session' : 'End this session',
+              message: others
+                ? 'Every browser you are signed in on except this one will be signed out immediately.'
+                : 'That browser will be signed out immediately.',
+              confirmLabel: 'End', danger: true,
+            });
+            if (!ok) return;
+            try {
+              const res = await fetch(WORKER_URL.replace(/\/$/, '') + '/auth/sessions/revoke', {
+                method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                body: JSON.stringify(others ? { others: true } : { id: act.dataset.sid }),
+              });
+              const body = await res.json().catch(() => ({}));
+              if (!res.ok) throw new Error(body.error || 'Could not end it.');
+              await loadSessions(true);
+            } catch (e2) { await pkAlert({ title: 'Could not end it', message: e2.message }); }
+            return;
+          }
           if (act && act.dataset.act === 'logout') {
             if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out' }))) return;
             stopLiveUpdates();   // the SSE socket is authenticated — it goes with the session
@@ -1222,7 +1621,8 @@
     function updateThreadsBadge() {
       const n = threadCount();
       const b = $('#tmd-badge-threads');
-      if (b) { b.textContent = n; b.hidden = n === 0; }
+      // Switching unread counts off hides the number, not the tab — the work is still there.
+      if (b) { b.textContent = n; b.hidden = n === 0 || !notifPrefs.notifBadges; }
     }
     // The Active (bounceback) category only exists when Builder has reopened something.
     // Hide the whole nav tab — indication and all — when the queue is empty; show it
@@ -1301,7 +1701,7 @@
           : `<button type="button" class="pkc-btn" data-viewdetails="${id}">View details</button>`;
         // When the raiser can confirm, they can also REOPEN (reject) the deployed fix — the 3rd CTA.
         const reopenBtn = canConfirm ? `<button type="button" class="pkc-btn pkc-btn-reopen" data-reopenfix="${id}">Reopen</button>` : '';
-        return `<a class="pkc-btn" href="${esc(root.page.path)}?review=1#c=${id}" target="_blank" rel="noopener">Open Pin</a>` +
+        return `<a class="pkc-btn" href="${esc(pinHref(root.page, root.id))}" target="_blank" rel="noopener">Open Pin</a>` +
           primaryBtn + reopenBtn +
           ((canRevoke || amReceiver) ? `<button class="pkc-more" type="button" data-more="${id}" aria-label="More actions" aria-haspopup="menu">` +
             `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8" cy="13" r="1.5"/></svg>` +
@@ -1315,7 +1715,7 @@
     // with &edit=1 so the overlay opens the composer straight onto it. The overlay re-checks the
     // TBI + ownership gate before allowing the save.
     function openEditPin(root) {
-      const url = root.page.path + '?review=1#c=' + encodeURIComponent(root.id) + '&edit=1';
+      const url = pinHref(root.page, root.id, { edit: true });
       window.open(url, '_blank', 'noopener');
     }
     // ---- card ⋮ menu — the team's Revoke action (soft delete of a comment it raised) ----
@@ -1382,7 +1782,7 @@
         // Copy — teams get everything EXCEPT the AI prompt (builder-only, per the action model).
         const util = [
           { label: 'Copy ticket ID', icon: ICON.copy, onSelect: () => copyToClip(root.ticket || root.id, null) },
-          { label: 'Copy pin link', icon: ICON.copy, onSelect: () => copyToClip(location.origin + root.page.path + '?review=1#c=' + root.id, null) },
+          { label: 'Copy pin link', icon: ICON.copy, onSelect: () => copyToClip(pinHref(root.page, root.id), null) },
         ];
         if (root.anchor && root.anchor.selector) util.push({ label: 'Copy selector', icon: ICON.copy, onSelect: () => copyToClip(root.anchor.selector, null) });
         const danger = [];
@@ -1610,7 +2010,7 @@
             `</div>` +
             `<div class="pk-detail-bar-r">` +
               // same ink as the admin detail bar's Open pin — a live control, not a disabled one
-              `<a class="pk-a" href="${esc(c.page.path)}?review=1#c=${esc(c.id)}" target="_blank" rel="noopener">Open pin ↗</a>` +
+              `<a class="pk-a" href="${esc(pinHref(c.page, c.id))}" target="_blank" rel="noopener">Open pin ↗</a>` +
             `</div>` +
           `</div>` +
           `<article class="pk-detail">` +
@@ -1938,7 +2338,7 @@
             `<a class="pk-slug" href="${esc(n.path || '/')}" target="_blank" rel="noopener">${esc(pageName(n.path || '/'))}</a>` +
             `<span class="tmd-time">${esc(fmt(n.updatedAt || n.createdAt))}</span>` +
             chip +
-            (n.commentId ? `<a class="pk-openpin" href="${esc(n.path || '/')}?review=1#c=${esc(n.commentId)}" target="_blank" rel="noopener">Open Pin</a>` : '') +
+            (n.commentId ? `<a class="pk-openpin" href="${esc(pinHref({ path: n.path || '/', url: n.url }, n.commentId))}" target="_blank" rel="noopener">Open Pin</a>` : '') +
           `</div>` +
         `</div>` +
         `<button class="tmd-note-toggle" type="button" data-id="${esc(n.id)}" data-read="${unread ? '1' : '0'}">` +
@@ -2346,6 +2746,9 @@
         el.style.borderBottomColor = el.dataset.pkFg; el.style.color = el.dataset.pkFg;
       });
       r.querySelectorAll('[data-pk-bg]').forEach((el) => { el.style.background = el.dataset.pkBg; });
+      // Bar widths, for Insights. Same hook the Builder board uses — a CSP that drops `style=`
+      // attributes means the percentage has to arrive as data and be applied through CSSOM.
+      r.querySelectorAll('[data-pk-pct]').forEach((el) => el.style.setProperty('--pct', el.dataset.pkPct + '%'));
     }
 
     function render() {
@@ -2358,12 +2761,20 @@
       const cv = $('#tmd-view-clarify'); if (cv) cv.hidden = true; // retired — Needs Clarification chip
       const tv = $('#tmd-view-threads'); if (tv) tv.hidden = detail || view !== 'threads';
       const sv = $('#tmd-view-settings'); if (sv) sv.hidden = detail || view !== 'settings';
+      /* The three screens migrated from the Builder board. Each is self-contained — no queue
+       * toolbar above it — so they are handled together and return before the queue path. */
+      const hv = $('#tmd-view-home'); if (hv) hv.hidden = detail || view !== 'home';
+      const iv = $('#tmd-view-insights'); if (iv) iv.hidden = detail || view !== 'insights';
+      const pv = $('#tmd-view-team'); if (pv) pv.hidden = detail || view !== 'team';
       $('#tmd-empty').hidden = true;
       renderViewChips();   // Feature 11: keep the saved "Team views" chips in sync
       const ctrl = $('#tmd-controls');
       if (detail) { if (ctrl) ctrl.hidden = true; renderDetail(); renderHeader(); return; }
       // Settings is a self-contained preferences pane — no queue controls above it.
       if (view === 'settings') { if (ctrl) ctrl.hidden = true; renderSettings(); renderHeader(); return; }
+      if (view === 'home') { if (ctrl) ctrl.hidden = true; renderHome(); renderHeader(); return; }
+      if (view === 'insights') { if (ctrl) ctrl.hidden = true; renderInsights(); renderHeader(); return; }
+      if (view === 'team') { if (ctrl) ctrl.hidden = true; renderRoster(); renderHeader(); return; }
       if (ctrl) ctrl.hidden = false;
       const bulkBar = $('#tmd-bulk');
       if (view === 'notifs') { if (bulkBar) bulkBar.hidden = true; renderNotes(); }
@@ -2558,7 +2969,13 @@
       // session whose team was disabled). Admin override previewing a parked team also
       // lands here — that team's board genuinely isn't available.
       if (s.key && team() && !isTeamEnabled(team())) { showBlocked(); return; }
-      if (s.key && (s.team || OVERRIDE)) {
+      /* A BEARER TOKEN IS A SESSION. This used to require `pkKey`, the local mirror that
+       * setAccountSession() writes — and it only writes it when the person has a team recorded at
+       * that moment. Sign in on the hosted /auth page (the route the extension uses) and the board
+       * would show its sign-in panel to somebody who had just signed in, or render with no team
+       * name in the heading because it had none to render. The token and the account are what
+       * being signed in actually means; the mirror is a convenience. */
+      if ((s.key || getAuthToken()) && (team() || OVERRIDE)) {
         loadData().then(() => { openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }).catch((e) => {
           if (e.message === 'unauthorized') { clearSession(); showLogin(); }
           else { $('#tmd-empty').hidden = false; $('#tmd-empty').textContent = 'Could not load — ' + e.message; }
