@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=613d82bdd2';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=5726f06327';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=613d82bdd2';
-  import { createCardRenderer } from './card.js?v=613d82bdd2';
-  import { ICON } from './icons.js?v=613d82bdd2';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=613d82bdd2';
+  import { PK_VERSION } from './version.js?v=5726f06327';
+  import { createCardRenderer } from './card.js?v=5726f06327';
+  import { ICON } from './icons.js?v=5726f06327';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=5726f06327';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2676,7 +2676,10 @@
              * was to go to Projects and find it again by name. */
             d.projects.map((p) => `<button class="pk-set-row pk-set-row--go" type="button" ` +
               `data-home-project="${esc(p.id)}"><div class="pk-set-row-main">` +
-              `<div class="pk-set-row-label">${esc(p.name)}</div>` +
+              /* A binned project that still holds work is listed and SAID to be binned. Silently
+                 dropping it would take its tickets out of this breakdown while leaving them in the
+                 totals above — one discrepancy traded for a quieter one. */
+              `<div class="pk-set-row-label">${esc(p.name)}${p.deleted ? ` <span class="pk-set-pill">in the recycle bin</span>` : ''}</div>` +
               `<div class="pk-set-row-desc">${p.tbi} to start · ${p.inProgress} in progress · ${p.reopened} reopened · ${p.deployed} deployed</div>` +
             `</div><div class="pk-set-ctl"><span class="pk-set-pill">${p.total} total</span>` +
               `<span class="pk-set-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>` +
@@ -3252,58 +3255,87 @@
           const days = Math.ceil(hrs / 24);
           return hrs > 24 ? 'in ' + days + (days === 1 ? ' day' : ' days') : 'in ' + hrs + 'h';
         };
+        /* SELECTION LIVES HERE, not in a mode. The bin is a list you came to clear out, so the
+         * checkbox is on every row from the moment you arrive rather than behind a "Select" button
+         * — the People table hides selection because browsing is what you mostly do there, and the
+         * opposite is true here. */
+        const selectable = items.map((it) => it.kind + ':' + it.ref);
+        for (const k of [...trashSel]) if (!selectable.includes(k)) trashSel.delete(k);   // drop stale picks
+        const allPicked = selectable.length > 0 && trashSel.size === selectable.length;
+
         holder.innerHTML =
           card('Recycle bin', 'Deleted items keep their history. Access already ended.',
+            (items.length
+              ? `<div class="pk-set-row pk-trash-bar"><div class="pk-set-row-main">` +
+                  `<label class="pk-u-inlinerow"><input type="checkbox" class="pk-tsel-box" data-trash-all${allPicked ? ' checked' : ''}>` +
+                  `<span class="pk-set-row-label">${trashSel.size ? trashSel.size + ' selected' : 'Select all'}</span></label>` +
+                `</div><div class="pk-set-ctl">` +
+                  (trashSel.size
+                    ? `<button class="pk-a danger" type="button" data-trash-purge-batch>Delete ${trashSel.size} permanently</button>`
+                    : '') +
+                `</div></div>`
+              : '') +
             items.map((it) => {
-              /* A PROJECT IS ONE STEP. It is the Builder's own container, deleted by the person who
-               * made it, so the day's wait bought nothing but a bin full of already-made decisions.
-               * The password is still asked for, and what it destroyed is written into the log.
-               * A team or a person still takes two visits: they carry other people's work. */
-              const stage = it.oneStep
-                ? `<button class="pk-a danger" type="button" data-trash-purge="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Delete permanently</button>`
-                : !it.purgeArmedAt
-                ? `<button class="pk-a danger" type="button" data-trash-arm="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Delete permanently</button>`
-                : it.canPurgeNow
-                  ? `<button class="pk-a danger" type="button" data-trash-purge="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Confirm deletion</button>`
-                  : `<span class="pk-set-pill">deletable ${esc(waitLabel(it.purgeReadyAt))}</span>`;
-              return row(esc(it.name || it.ref),
+              const key = it.kind + ':' + it.ref;
+              return row(
+                `<label class="pk-u-inlinerow"><input type="checkbox" class="pk-tsel-box" data-trash-pick="${esc(key)}"` +
+                  `${trashSel.has(key) ? ' checked' : ''}> ${esc(it.name || it.ref)}</label>`,
                 `${esc(it.kind)} · deleted ${esc(when(it.deletedAt))}${it.deletedBy ? ' by ' + esc(it.deletedBy) : ''}`,
                 `<span class="pk-u-inlinerow">` +
                   `<button class="pk-a pk-a--primary" type="button" data-trash-restore="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Restore</button>` +
-                  stage +
+                  `<button class="pk-a danger" type="button" data-trash-purge="${esc(it.kind)}" data-trash-ref="${esc(it.ref)}">Delete permanently</button>` +
                 `</span>`);
-            }).join('')) +
+            }).join('') || emptyRow('Nothing in the bin.')) +
           card('How permanent deletion works', '',
-            emptyRow('A team or a person takes the Builder password twice, at least a day apart — they carry work other people rely on. ' +
-              'A project takes it once: it is yours, and what it held is recorded in the audit log when it goes.'));
+            emptyRow('One Builder password, and it is gone — a project, a team or a person, singly or as many as you select at once. ' +
+              'What each one held is written to the audit log before it is destroyed, because once the record is gone there is nowhere left to look it up.'));
 
-        holder.querySelectorAll('[data-trash-restore],[data-trash-arm],[data-trash-purge]').forEach((b) => {
+        /* One password for the whole batch, asked once. The list is spelled out IN the prompt:
+         * a count is not a confirmation — "delete 12 items" tells you nothing about whether the
+         * twelfth is the one you meant to keep. */
+        const purge = async (list) => {
+          if (!list.length) return;
+          const names = list.map((x) => `  · ${x.kind} — ${x.name}`).join('\n');
+          const pw = await pkPrompt({
+            title: list.length === 1 ? 'Delete permanently' : `Delete ${list.length} permanently`,
+            message: `This cannot be undone.\n\n${names}\n\nWhat each one held is recorded in the audit log as it goes.\n\nEnter the Builder password.`,
+            value: '', confirmLabel: 'Delete for good',
+          });
+          if (pw === null || !pw) return;
+          const res = await store.trashPurge(list.map((x) => ({ kind: x.kind, ref: x.ref })), pw);
+          trashSel.clear();
+          const failed = (res && res.failed) || [];
+          if (failed.length) {
+            await pkAlert({ title: `Deleted ${res.deleted} of ${list.length}`,
+              message: 'These were not deleted:\n' + failed.map((f) => `  · ${f.kind} ${f.ref} — ${f.error}`).join('\n') });
+          } else if (res && res.done && res.done.length === 1) {
+            await pkAlert({ title: 'Deleted', message: `Recorded in the audit log:\n${res.done[0].detail}` });
+          }
+          fillTrash();
+        };
+
+        holder.querySelectorAll('[data-trash-pick]').forEach((b) => b.addEventListener('change', () => {
+          const k = b.dataset.trashPick;
+          b.checked ? trashSel.add(k) : trashSel.delete(k);
+          fillTrash();
+        }));
+        holder.querySelector('[data-trash-all]')?.addEventListener('change', (e) => {
+          trashSel.clear();
+          if (e.target.checked) selectable.forEach((k) => trashSel.add(k));
+          fillTrash();
+        });
+        holder.querySelector('[data-trash-purge-batch]')?.addEventListener('click', async () => {
+          const picked = items.filter((it) => trashSel.has(it.kind + ':' + it.ref))
+                              .map((it) => ({ kind: it.kind, ref: it.ref, name: it.name || it.ref }));
+          try { await purge(picked); } catch (err) { pkAlert(err.message); }
+        });
+        holder.querySelectorAll('[data-trash-restore],[data-trash-purge]').forEach((b) => {
           b.addEventListener('click', async () => {
             const d = b.dataset;
             try {
               if (d.trashRestore) { await store.trashRestore(d.trashRestore, d.trashRef); return fillTrash(); }
-              const kind = d.trashArm || d.trashPurge;
-              const first = !!d.trashArm;
-              // A project never arms, so its purge IS the first and only prompt. Say what will be
-              // recorded rather than only what will be lost — the log line is the thing that
-              // answers "where did that project go" once the id is gone from every list.
-              const oneStep = !first && kind === 'project';
-              const pw = await pkPrompt({
-                title: first ? 'Start permanent deletion' : 'Delete permanently',
-                message: first
-                  ? `Enter the Builder password to begin deleting “${d.trashRef}”. It can be confirmed after a day — until then it stays here and can still be restored.`
-                  : oneStep
-                  ? `Enter the Builder password to destroy “${d.trashRef}” now. This cannot be undone.\n\nWhat it held — teams, tickets, and who binned it — is written to the audit log as it goes.`
-                  : `Enter the Builder password to destroy “${d.trashRef}”. This cannot be undone.`,
-                value: '', confirmLabel: first ? 'Start' : 'Delete for good',
-              });
-              if (pw === null || !pw) return;
-              if (first) await store.trashArm(kind, d.trashRef, pw);
-              else {
-                const res = await store.trashPurge(kind, d.trashRef, pw);
-                if (res && res.detail) await pkAlert({ title: 'Deleted', message: `“${d.trashRef}” is gone.\n\nRecorded in the audit log:\n${res.detail}` });
-              }
-              fillTrash();
+              const it = items.find((x) => x.kind === d.trashPurge && x.ref === d.trashRef);
+              await purge([{ kind: d.trashPurge, ref: d.trashRef, name: (it && it.name) || d.trashRef }]);
             } catch (err) { pkAlert(err.message); }
           });
         });
@@ -3781,16 +3813,37 @@
             (sel ? `data-person-pick="${esc(u.email)}"` : `data-person-open="${esc(u.email)}"`) + `>` +
             (sel ? `<td class="pk-ptable-pick"><input type="checkbox" class="pk-tsel-box" tabindex="-1"` +
               `${peopleSel.has(u.email) ? ' checked' : ''}></td>` : '') +
-            `<td>${ps.length ? esc(ps.join(', ')) : '<span class="pk-ptable-none">— none —</span>'}</td>` +
+            /* PREFERRED NAME, and only that. The full name was the first column and the preferred
+               one sat beside it repeating most of it — two columns to say who somebody is, when the
+               name people actually use is the one you scan for. The full name is on their page. */
+            `<td>${esc(u.calledName || u.name || '—')}</td>` +
             `<td data-cell="team">${teamCell}</td>` +
-            `<td>${esc(u.name || '—')}</td>` +
-            `<td>${esc(u.calledName || '—')}</td>` +
+            /* ONE project, named. A person can reach several; listing them all made the widest
+               column on the table out of the least-read value. The rest are on their page. */
+            `<td>${ps.length ? esc(projLabel(ps[0])) + (ps.length > 1 ? `<span class="pk-ptable-none"> +${ps.length - 1}</span>` : '') : '<span class="pk-ptable-none">— none —</span>'}</td>` +
             `<td class="pk-ptable-mail">${esc(u.email)}</td>` +
-            `<td>${u.accessId ? `<code class="pk-accesscode">${esc(u.accessId)}</code>` : '<span class="pk-ptable-none">— none —</span>'}</td>` +
+            /* Copy in the LISTING. Reading a code back to somebody meant opening their page first;
+               the code is right here, so the button that hands it over should be too. */
+            `<td>${u.accessId
+              ? `<span class="pk-u-inlinerow"><code class="pk-accesscode">${esc(u.accessId)}</code>` +
+                `<button class="pk-a pk-copyid" type="button" data-copy-id="${esc(u.accessId)}" aria-label="Copy ${esc(u.accessId)}" title="Copy">${ICON.copy}</button></span>`
+              : '<span class="pk-ptable-none">— none —</span>'}</td>` +
             `<td class="pk-ptable-more">${sel ? '' : `<span class="pk-set-go" aria-hidden="true">` +
               `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>` +
             `</span>`}</td></tr>`;
           };
+          /* THE PROJECT'S OWN NAME, not the organisation's.
+           *
+           * Projects here are named "Shriram Credit | Website Revamp", and every row in the column
+           * repeated the same six characters before saying anything that distinguished it. The
+           * segment after the last separator is the part that varies, which is the part worth
+           * reading in a column. The full name is unchanged everywhere else — this is a label for
+           * a narrow cell, not a rename. */
+          const projLabel = (name) => {
+            const parts = String(name || '').split(/\s*[|·–—]\s*/).filter(Boolean);
+            return parts.length > 1 ? parts[parts.length - 1] : String(name || '');
+          };
+
           /* Unallocated first. They are the only rows that represent something broken — an account
            * that cannot sign in — so they are the ones worth seeing without scrolling. */
           const stranded = (u) => !u.team && u.role !== 'builder';
@@ -3809,14 +3862,42 @@
            * Fixed layout means a long value has to be told what to do instead of stretching its
            * column: the cells ellipsize (see .pk-ptable--fixed in components.css). */
           const cols = (sel ? `<col class="pk-c-pick">` : '') +
-            `<col class="pk-c-proj"><col class="pk-c-team"><col class="pk-c-name"><col class="pk-c-pref">` +
+            `<col class="pk-c-pref"><col class="pk-c-team"><col class="pk-c-proj">` +
             `<col class="pk-c-mail"><col class="pk-c-id"><col class="pk-c-go">`;
-          const peopleTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable pk-ptable--fixed">` +
+          /* WIDTHS ARE A DEFAULT, NOT A RULING. Every column that carries a value can be dragged
+           * by its right edge and is remembered afterwards — see applyColWidths(), which re-applies
+           * the remembered pixels after each of the many innerHTML writes this function makes.
+           *
+           * The grip names its own <col> class rather than counting on position, because the pick
+           * column comes and goes with select mode and an index would slide by one the moment it
+           * did. The pick and chevron columns get no grip at all: they are 36px of furniture, and
+           * a resize handle on them offers a choice with nothing on either side of it. */
+          const grip = (c) => `<span class="pk-colgrip" data-colgrip="${c}" aria-hidden="true" ` +
+            `title="Drag to resize · double-click to reset"></span>`;
+          const peopleTable = (list) => `<div class="pk-tablewrap"><table class="pk-ptable pk-ptable--fixed pk-ptable--resize">` +
             `<colgroup>${cols}</colgroup><thead><tr>` +
             (sel ? `<th class="pk-ptable-pick"></th>` : '') +
-            `<th>Project</th><th>Team</th><th>Full name</th><th>Preferred name</th><th>Email</th>` +
-            `<th>Access ID</th><th class="pk-ptable-more"></th>` +
-            `</tr></thead><tbody>` + list.map(personRow).join('') + `</tbody></table></div>`;
+            `<th>Name${grip('pk-c-pref')}</th><th>Team${grip('pk-c-team')}</th>` +
+            `<th>Project${grip('pk-c-proj')}</th><th>Email${grip('pk-c-mail')}</th>` +
+            `<th>Access ID${grip('pk-c-id')}</th><th class="pk-ptable-more"></th>` +
+            `</tr></thead><tbody>` + withGaps(list) + `</tbody></table></div>`;
+
+          /* A ROW OF SPACE BETWEEN TEAMS.
+           *
+           * The list is one table so every column lines up — that was the whole point of flattening
+           * it — but 36 unbroken rows read as one undifferentiated block, and the Team column alone
+           * is not enough to see where one ends and the next begins. A blank row is the cheapest
+           * possible divider: it needs no heading, no border and no collapsing behaviour, and it
+           * cannot fall out of step with the sort because it is derived from it.
+           *
+           * Not before the first group, and not after the last — a gap at either end is padding
+           * pretending to be structure. */
+          const withGaps = (list) => list.map((u, i) => {
+            const key = (x) => (x.team || (x.role === 'builder' ? '\u0000builder' : ''));
+            const gap = i > 0 && key(list[i - 1]) !== key(u)
+              ? `<tr class="pk-ptable-gap" aria-hidden="true"><td colspan="${sel ? 7 : 6}"></td></tr>` : '';
+            return gap + personRow(u);
+          }).join('');
 
           const homeless = shownP.filter((u) => !u.team && u.role !== 'builder').length;
           outer.innerHTML =
@@ -3835,6 +3916,12 @@
                   `<button class="pk-a danger" type="button" data-psel="delete">Delete</button>` +
                   `<button class="pk-a" type="button" data-psel="done">Done</button></span>`)) : '')
               : card('', '', emptyRow(q ? 'No matches.' : 'No people yet.')));
+          /* This is a render point like any other, and it is the one that rewrites this table.
+           * Everything the CSP forbids in markup — the remembered column widths, the enhanced
+           * dropdowns in the Team cells — is applied by paintDynamic, and fillOrg is asynchronous:
+           * the paint renderSettings() schedules for the next tick has already come and gone by the
+           * time this HTML lands, so waiting for it means waiting forever. */
+          paintDynamic(outer);
           return;
         }
 
@@ -4341,6 +4428,15 @@
         /* Changing the team saves immediately. There is no Save button on a table of 132 rows —
          * a change here is one field with one obvious meaning, and a pending state nobody
          * committed is how a roster ends up disagreeing with itself. */
+        /* Copy the Access ID from the row. Stops the event, or the click that copies also opens
+         * the person — a control inside a clickable row has to say it handled it. */
+        panel.addEventListener('click', (e) => {
+          const cp = e.target.closest('[data-copy-id]');
+          if (!cp) return;
+          e.stopPropagation(); e.preventDefault();
+          copyToClip(cp.dataset.copyId, cp, 'Copied ✓');
+        });
+
         panel.addEventListener('change', async (e) => {
           const selEl = e.target.closest('[data-person-team]');
           if (!selEl) return;
@@ -4353,9 +4449,12 @@
             await store.userUpdate({ email, team: to });
             await fillOrg();
           } catch (err) {
-            // Put the old value back: a select left showing a team the server refused is a lie.
+            // Put the old value back: a control left showing a team the server refused is a lie.
+            // `pk-sync` tells the visible dropdown to follow the hidden select back — without it
+            // the two disagree and the screen claims a move that never happened.
             selEl.value = before;
             selEl.disabled = false;
+            selEl.dispatchEvent(new Event('pk-sync'));
             pkAlert({ title: 'Could not move them', message: err.message });
           }
         });
@@ -4717,7 +4816,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=613d82bdd2');
+              const sheet = await import('./sheet.js?v=5726f06327');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4798,7 +4897,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=613d82bdd2');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=5726f06327');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -4893,6 +4992,7 @@
         el.querySelector('.pk-bulk-sheet')?.addEventListener('click', () => { close(); openImport(); });
         el.querySelector('.pk-bulk-more')?.addEventListener('click', () => {
           body.insertAdjacentHTML('beforeend', rowHtml());
+          enhanceSelects(body.lastElementChild);   // a row added later needs it too
           body.lastElementChild.querySelector('input').focus();
         });
         // Never leave zero rows — an empty grid gives you nothing to type into.
@@ -4943,6 +5043,7 @@
               (failed.length ? `\n\nSkipped ${failed.length}:\n` + failed.map((r) => `${r.email} — ${r.error}`).join('\n') : '') });
           fillOrg();
         });
+        enhanceSelects(el);
         body.querySelector('input')?.focus();
       }
 
@@ -5179,6 +5280,7 @@ function genAccessKey() {
       };
       goBtn.addEventListener('click', submit);
       el.addEventListener('keydown', (e2) => { if (e2.key === 'Enter' && e2.target.tagName === 'INPUT') { e2.preventDefault(); submit(); } });
+      enhanceSelects(el);
       const first = el.querySelector('[data-f]'); if (first) first.focus();
     }
     // ---- CSP-safe dynamic styling ----
@@ -5186,8 +5288,172 @@ function genAccessKey() {
     // that can't be enumerated as CSS classes (team colours, accent swatches, bar percentages)
     // are emitted as data-attributes and applied here through CSSOM — `el.style.*` is scripted
     // CSSOM, not markup, so CSP does not police it. Call after any innerHTML write.
+    /* NATIVE <select> IS THE ONE CONTROL THE DESIGN SYSTEM CANNOT REACH.
+     *
+     * Its closed state can be styled; its OPEN list is drawn by the operating system and ignores
+     * every token — so a screen built entirely from pk-* components still dropped into Chrome's own
+     * menu the moment somebody picked a team, which is exactly the moment they are looking at it.
+     *
+     * ENHANCED, NOT REPLACED. The <select> stays in the DOM as the source of truth and is merely
+     * hidden: its value is what form code reads, and the pk-dropdown writes back to it and fires the
+     * same `change` event. So every existing handler — the delegated save on the People table, the
+     * value collection in openFormModal, the bulk grid — keeps working untouched, and a browser
+     * where this never ran still has a usable native control rather than nothing.
+     */
+    function enhanceSelects(scope) {
+      (scope || document).querySelectorAll('select:not([data-pk-enhanced])').forEach((sel) => {
+        sel.dataset.pkEnhanced = '1';
+        const build = () => buildDropdown({
+          items: [...sel.options].map((o) => ({ value: o.value, label: o.textContent })),
+          value: sel.value,
+          placeholder: sel.getAttribute('data-placeholder') || '',
+          block: true,
+          small: sel.classList.contains('pk-cellsel'),
+          onSelect: (v) => {
+            if (sel.value === v) return;
+            sel.value = v;
+            // bubbles, because every consumer listens on a container rather than the control.
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          },
+        });
+        const dd = build();
+        if (sel.getAttribute('aria-label')) dd.el.setAttribute('aria-label', sel.getAttribute('aria-label'));
+        // display:none via CSSOM, not a style attribute — the host enforces `style-src 'self'`.
+        sel.style.display = 'none';
+        sel.insertAdjacentElement('afterend', dd.el);
+        /* The handler that saves a team change disables the <select> while the request is in
+         * flight and restores its value if the server refuses. Mirror both onto the visible
+         * control, or a refused move leaves the dropdown showing a team the server rejected. */
+        sel.addEventListener('pk-sync', () => dd.setValue(sel.value));
+      });
+    }
+
+    /* ---- Columns the reader re-cuts, on the People table ---------------------------------------
+     *
+     * WHY THE STYLESHEET CANNOT FINISH THIS JOB. The widths in components.css are percentages,
+     * which is the right default — the table should fill its card at any window size — but a
+     * percentage is a guess about the data, and the guess is wrong in both directions depending on
+     * whose instance it is. The reader is the only one who knows which column they came here to
+     * read, so the split is theirs to set and ours to remember.
+     *
+     * PIXELS FOR WHAT WAS DRAGGED, PERCENTAGES FOR THE REST. Freezing all six columns the first
+     * time one is dragged would be the easy implementation and the wrong behaviour: the table would
+     * stop responding to the window forever because somebody once widened Email by 40px. Only the
+     * dragged column is remembered. The others are measured at their CSS width on each paint and
+     * pinned for the life of that paint, which is what makes the drag track the pointer one-to-one
+     * — `table-layout:fixed` hands leftover space back to whichever columns are still elastic, so
+     * without pinning the lot the edge follows the cursor at whatever fraction it decided to keep.
+     *
+     * The table then declares its total in pixels instead of 100%, so the widths always sum to
+     * exactly the table width and a widened column pushes the table past the card rather than
+     * stealing from its neighbours. `.pk-tablewrap` already scrolls sideways, so that is a scroll
+     * and not a clipping.
+     */
+    const COLW_KEY = 'reviewPeopleColWidths';
+    /* Room for the heading and its ellipsis. The number that matters is that it is not zero: a
+     * column dragged to nothing has no edge left to take hold of, so it could never be dragged
+     * back — an unrecoverable state reached by one careless flick of the wrist. */
+    const COLW_MIN = 64;
+    const loadColW = () => { try { return JSON.parse(localStorage.getItem(COLW_KEY) || '{}') || {}; } catch { return {}; } };
+    const saveColW = (m) => { try { localStorage.setItem(COLW_KEY, JSON.stringify(m)); } catch {} };
+    // The <col>'s own pk-c-* class is the column's identity — stable across select mode, which adds
+    // and removes a leading column and would slide any positional key by one.
+    const colKeyOf = (col) => [...col.classList].find((c) => c.startsWith('pk-c-')) || '';
+    /* The chevron column absorbs the slack. A table narrower than the card it sits in reads as
+     * broken — a ruled block stopping short of the edge every other element lines up with — and the
+     * last column is the only place the spare room costs nothing, because all it holds is an 18px
+     * chevron already pinned to its right. */
+    const layoutCols = (table, cols, w) => {
+      const room = table.parentElement ? table.parentElement.clientWidth : 0;
+      const total = w.reduce((a, b) => a + b, 0);
+      const slack = room && total < room ? room - total : 0;
+      const last = cols.length - 1;
+      cols.forEach((c, k) => { c.style.width = (w[k] + (k === last ? slack : 0)) + 'px'; });
+      table.style.width = (total + slack) + 'px';
+    };
+    function applyColWidths(table) {
+      const cols = [...table.querySelectorAll('colgroup > col')];
+      const ths = [...table.querySelectorAll('thead th')];
+      if (!cols.length || cols.length !== ths.length) return;
+      /* Clear first, ALWAYS — including on the path that then returns. This runs after every
+       * render, but it also runs after a drag and after a double-click reset on markup that is
+       * still carrying the pixels the last pass wrote, and measuring those would make each pass
+       * inherit the previous one's answer instead of the stylesheet's. */
+      table.style.width = '';
+      cols.forEach((c) => { c.style.width = ''; });
+      const saved = loadColW();
+      if (!Object.keys(saved).length) return;   // nothing remembered: the percentages are the answer
+      const nat = ths.map((th) => th.getBoundingClientRect().width);
+      // A hidden view measures as zero. Pinning zeros would be worse than doing nothing, and the
+      // next render of a visible table will call this again anyway.
+      if (nat.some((x) => !x)) return;
+      // A stored value below the minimum is not ours — a hand-edited or half-written localStorage
+      // entry should fall back to the default rather than reinstate the unrecoverable state.
+      const w = cols.map((c, i) => {
+        const s = saved[colKeyOf(c)];
+        return typeof s === 'number' && s >= COLW_MIN ? s : nat[i];
+      });
+      layoutCols(table, cols, w);
+    }
+    function wireColGrips(scope) {
+      (scope || document).querySelectorAll('.pk-colgrip:not([data-pk-grip])').forEach((g) => {
+        g.dataset.pkGrip = '1';
+        /* NOTHING BELOW CALLS preventDefault ON pointerdown. It is the obvious way to stop the
+         * drag selecting the heading text, and it also suppresses the compatibility mouse events
+         * — which takes the double-click reset with it. Selection is killed in CSS instead
+         * (`.is-colresize`), and the events are stopped from travelling rather than cancelled. */
+        const stop = (e) => e.stopPropagation();
+        /* The grip sits in a <th>, which nothing navigates from — but the Organisation pane listens
+         * for clicks at the top and matches data-attributes anywhere beneath it, and the click that
+         * ends a drag is exactly the kind of stray event that finds a handler it was never meant
+         * for. It stops here, at every stage of the gesture. */
+        g.addEventListener('mousedown', stop);
+        g.addEventListener('click', stop);
+        g.addEventListener('pointerdown', (e) => {
+          if (e.button) return;
+          e.stopPropagation();
+          const table = g.closest('table'); if (!table) return;
+          const cols = [...table.querySelectorAll('colgroup > col')];
+          const ths = [...table.querySelectorAll('thead th')];
+          const i = cols.findIndex((c) => colKeyOf(c) === g.dataset.colgrip);
+          if (i < 0 || cols.length !== ths.length) return;
+          const w = ths.map((th) => Math.round(th.getBoundingClientRect().width));
+          layoutCols(table, cols, w);   // pin the lot, so the dragged edge is the only thing moving
+          const x0 = e.clientX, w0 = w[i];
+          table.classList.add('is-colresize');
+          // The pointer leaves a 9px strip in the first frame of any real drag; capture is what
+          // keeps the move and up events coming to the grip instead of to whatever is under them.
+          try { g.setPointerCapture(e.pointerId); } catch {}
+          const move = (ev) => { w[i] = Math.max(COLW_MIN, w0 + (ev.clientX - x0)); layoutCols(table, cols, w); };
+          const done = () => {
+            g.removeEventListener('pointermove', move);
+            g.removeEventListener('pointerup', done);
+            g.removeEventListener('pointercancel', done);
+            table.classList.remove('is-colresize');
+            // Only a drag that actually moved something is worth remembering. A plain click — and
+            // the two of them a double-click is made of — must leave no trace, or resetting a
+            // column would store the very width it was meant to forget.
+            if (w[i] !== w0) { const m = loadColW(); m[g.dataset.colgrip] = w[i]; saveColW(m); }
+            applyColWidths(table);   // re-derive from storage, so the DOM and the record agree
+          };
+          g.addEventListener('pointermove', move);
+          g.addEventListener('pointerup', done);
+          g.addEventListener('pointercancel', done);
+        });
+        /* Reset FORGETS the column rather than storing its default. The default is a share of
+         * whatever the window is now, so writing today's pixel measurement back would pin the
+         * column to today's window and call it the default from then on. */
+        g.addEventListener('dblclick', (e) => {
+          e.stopPropagation(); e.preventDefault();
+          const m = loadColW(); delete m[g.dataset.colgrip]; saveColW(m);
+          const table = g.closest('table'); if (table) applyColWidths(table);
+        });
+      });
+    }
+
     function paintDynamic(scope) {
       const r = scope || document;
+      enhanceSelects(r);
       r.querySelectorAll('[data-pk-accent]').forEach((el) => {
         const a = el.dataset.pkAccent;
         el.style.background = a; el.style.border = '1.5px solid ' + a; el.style.color = 'var(--pk-on-accent)';
@@ -5198,6 +5464,12 @@ function genAccessKey() {
       r.querySelectorAll('[data-pk-sw]').forEach((el) => el.style.setProperty('--sw', el.dataset.pkSw));
       r.querySelectorAll('[data-pk-pct]').forEach((el) => el.style.setProperty('--pct', el.dataset.pkPct + '%'));
       r.querySelectorAll('[data-pk-bg]').forEach((el) => { el.style.background = el.dataset.pkBg; });
+      /* Column widths belong here for the same reason the colours do: a `style=` attribute in the
+       * markup is dropped by the host CSP, and `col.style.width` from script is not. Last, because
+       * the widths are measured off the laid-out header and the passes above can still change what
+       * a cell contains. */
+      r.querySelectorAll('table.pk-ptable--resize').forEach(applyColWidths);
+      wireColGrips(r);
     }
 
     function render() {

@@ -1230,16 +1230,58 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 .pk-ptable--fixed{table-layout:fixed}
 .pk-ptable--fixed th,.pk-ptable--fixed td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pk-c-pick{width:36px}
-/* Project reads first and Team second, because which teams are available is a question about the
-   project — so the narrowing column comes first. Both are narrow: they are for scanning down, not
-   for reading across. */
-.pk-c-proj{width:15%}
-.pk-c-team{width:15%}
-.pk-c-name{width:19%}
-.pk-c-pref{width:12%}
-.pk-c-mail{width:23%}
-.pk-c-id{width:12%}
+/* Name first — the preferred one, which is what people scan for; the full name lives on the
+   person's page rather than taking a column to repeat most of it. Team and Project are narrow
+   because they are read DOWN the list, not across it. */
+.pk-c-pref{width:20%}
+.pk-c-team{width:16%}
+.pk-c-proj{width:18%}
+.pk-c-mail{width:26%}
+.pk-c-id{width:20%}
+.pk-c-name{width:19%}   /* still used by the team-level people table */
 .pk-c-go{width:36px}
+
+/* COLUMNS THE READER CAN RE-CUT.
+   The percentages above are the split that suits the data we imagined, and the data an instance
+   actually holds argues with them: thirty-character access codes want a wider column than a table
+   of six-character ones, and an org whose team names are two words does not need the room an org
+   with departments does. Nobody can pick one set of numbers that is right for both, so the person
+   reading the column gets to say how much of the table it takes.
+
+   NO VISIBLE DIVIDERS AT REST. Five vertical rules down a table whose whole argument is that it is
+   quiet would be a heavy price for an affordance most readers use once and never again — the grip
+   is a nine-pixel strip over the column's right edge that only draws itself under the pointer.
+   Nine, not three: a hairline is a target you have to aim at, and this one is being aimed at with
+   a mouse in the middle of reading. */
+.pk-ptable--resize th{position:relative}
+/* `overflow:hidden` on the cells is what makes them ellipsize, and it clips this too — so the grip
+   sits just INSIDE the column edge rather than straddling it the way a native table divider would.
+   `touch-action:none` because this is a pointer gesture: without it a touch drag scrolls
+   `.pk-tablewrap` sideways and the column never moves. */
+.pk-colgrip{position:absolute;top:0;right:0;bottom:0;width:9px;cursor:col-resize;
+  touch-action:none;user-select:none;-webkit-user-select:none}
+.pk-colgrip::after{content:"";position:absolute;top:15%;bottom:15%;right:0;width:2px;
+  background:var(--pk-hair);opacity:0;transition:opacity var(--pk-dur-fast) var(--pk-ease)}
+@media (min-width:1024px) and (hover:hover){.pk-colgrip:hover::after{opacity:1;background:var(--pk-red)}}
+/* While a drag runs the pointer is captured by a 9px strip it left in the first frame, so the
+   cursor and the highlight have to be claimed by the whole table or they flick back to default the
+   moment the pointer crosses a heading. Selection is off for the same span: dragging across text
+   selects it, and a resize that leaves three column headings highlighted looks like a misfire. */
+.pk-ptable--resize.is-colresize{cursor:col-resize;user-select:none;-webkit-user-select:none}
+.pk-ptable--resize.is-colresize .pk-colgrip::after{opacity:1;background:var(--pk-red)}
+@media (prefers-reduced-motion:reduce){.pk-colgrip::after{transition:none}}
+
+/* A ROW OF SPACE BETWEEN TEAMS. One blank row, the height of a real one, so the eye gets the
+   grouping without a heading, a rule or anything that could disagree with the sort. It carries no
+   border: the divider IS the emptiness. */
+.pk-ptable-gap td{height:var(--pk-row-h,42px);border:0;padding:0;background:transparent}
+.pk-ptable-gap:hover td{background:transparent}
+
+/* Copy, inside the Access ID cell. Quiet until the row is under the pointer — a button repeated on
+   every row of a long table is noise if it is always at full strength. */
+.pk-copyid{padding:2px 6px;line-height:0;opacity:.45;transition:opacity .12s ease}
+.pk-copyid svg{width:14px;height:14px}
+.pk-ptable-row:hover .pk-copyid,.pk-copyid:focus-visible{opacity:1}
 
 /* Controls that live INSIDE a table cell. They sit in a fixed-layout row, so they take the cell's
    width rather than their content's — a select sized to its longest option would push the column

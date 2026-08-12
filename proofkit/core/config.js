@@ -682,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=613d82bdd2'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=5726f06327'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=613d82bdd2';
+} from './vocab.js?v=5726f06327';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1420,6 +1420,18 @@ export function buildAccessLogin(opts) {
     // Submit the moment the eighth character lands. There is nothing left to confirm, and asking
     // for a button press after that is a step that exists only to be clicked.
     onComplete: (code) => { setError(''); opts.onSubmit && opts.onSubmit(code); },
+    /* ENTER submits a PART-FILLED row, which is how the Builder's three-character short code is
+     * sent — the row cannot auto-submit at three, because every full key passes through a
+     * three-character state on its way to eight and would be fired off half-typed.
+     *
+     * Nothing on this screen mentions the short code, deliberately. The copy still reads "two
+     * letters, then six digits", which is what the field wants from everyone who is not the
+     * Builder; a hint here would advertise a 6,760-wide door to every person who opens the page. */
+    onSubmit: (code) => {
+      if (!code || code.length >= ACCESS_ID_SHAPE.length) return;   // 8 already went via onComplete
+      setError('');
+      opts.onSubmit && opts.onSubmit(code);
+    },
     onChange: () => setError(''),
   });
   q('.pk-access-slot').appendChild(entry.el);

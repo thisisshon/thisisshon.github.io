@@ -14,10 +14,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 <!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
 <style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=613d82bdd2">
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=613d82bdd2">
-<link rel="stylesheet" href="/proofkit/core/card.css?v=613d82bdd2">
-<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=613d82bdd2">
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=5726f06327">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=5726f06327">
+<link rel="stylesheet" href="/proofkit/core/card.css?v=5726f06327">
+<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=5726f06327">
 <script>(function(){try{
   var base="/proofkit/builder";
   var p=location.pathname;
@@ -81,32 +81,34 @@
       </div>
     </header>
 
-    <!-- Stat tiles -->
-    <div class="pk-bar">
-      <div class="pk-counts" id="tmd-counts"></div>
-    </div>
+    <!-- Stat tiles: they moved INTO the content column (below), where the Builder board keeps
+         them. Above the shell they were page-wide chrome that pushed the rail down by their own
+         height, so the nav started a third of the way down the screen while Builder's started at
+         the top edge. -->
 
     <div class="pk-shell">
+      <!-- The rail carries no wordmark. The Builder's does not either: under [data-pk-newui] the
+           header's .pk-brand is hidden and nothing replaced it, so a brand block here was the one
+           thing standing between the nav and the top of the page. -->
       <aside class="pk-side">
-        <div class="pk-side-brand">
-          <span class="pk-side-mark" aria-hidden="true"></span>
-          <span class="pk-side-word">Proofkit</span>
-          <span class="pk-side-tag" data-pk-project-short hidden></span>
-        </div>
-        <button class="pk-nav is-active" data-view="home"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Home</button>
-        <button class="pk-nav" data-view="queue"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>My Tickets</button>
-        <button class="pk-nav" data-view="threads"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Comments<span class="pk-navbadge pk-navbadge--alert" id="tmd-badge-threads" hidden>0</span></button>
-        <button class="pk-nav" data-view="notifs"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-          Notifications
-          <span class="pk-navbadge pk-navbadge--alert" id="tmd-navbadge" hidden>0</span>
-        </button>
-        <button class="pk-nav" data-view="insights"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Insights</button>
-        <button class="pk-nav" data-view="team"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>My Team</button>
-        <button class="pk-nav" data-view="settings"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</button>
-        <!-- Grows to push the rail actions to the rail's foot; on short viewports it collapses
-             to its 40px floor and the rail scrolls instead. -->
-        <button class="pk-side-collapse" type="button" data-pk-collapse aria-label="Collapse sidebar" title="Collapse sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg><span class="pk-nav-txt">Collapse Menu</span></button>
+        <button class="pk-nav is-active" data-view="home"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span class="pk-nav-txt">Home</span></button>
+        <!-- QUEUE — a group, exactly as on the Builder board. Inbound and Outbound were a
+             segmented control in the toolbar; they are two PAGES now, because a direction you
+             cannot link to or come Back to is a hidden mode, not a place. Comments, Patterns and
+             Insights join them: all five read the same queue, they only look at it differently.
+             Notifications, My Team and Settings deliberately stay OUTSIDE — they are not views of
+             the queue, and folding them in would leave the rail with a single top-level item. -->
+        <button class="pk-nav pk-nav--group" data-view="queue" data-group="queue" aria-expanded="false"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span class="pk-nav-txt">Queue</span><svg class="pk-nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <div class="pk-subnav" data-subnav="queue"><div><span class="pk-subnav-marker" aria-hidden="true"></span><button class="pk-nav pk-nav--sub" data-view="queue" data-dir="inbound"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/><path d="M12 3v10"/><path d="m8 9 4 4 4-4"/></svg><span class="pk-nav-txt">Inbound</span></button><button class="pk-nav pk-nav--sub" data-view="queue" data-dir="outbound"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/><path d="M12 14V4"/><path d="m8 8 4-4 4 4"/></svg><span class="pk-nav-txt">Outbound</span></button><button class="pk-nav pk-nav--sub" data-view="threads"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="pk-nav-txt">Comments</span><span class="pk-navbadge pk-navbadge--alert" id="tmd-badge-threads" hidden>0</span></button><button class="pk-nav pk-nav--sub" data-view="patterns"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span class="pk-nav-txt">Patterns</span></button><button class="pk-nav pk-nav--sub" data-view="insights"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="pk-nav-txt">Insights</span></button></div></div>
+        <button class="pk-nav" data-view="notifs"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="pk-nav-txt">Notifications</span><span class="pk-navbadge pk-navbadge--alert" id="tmd-navbadge" hidden>0</span></button>
+        <button class="pk-nav" data-view="team"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg><span class="pk-nav-txt">My Team</span></button>
+        <button class="pk-nav" data-view="settings"><svg class="pk-nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="pk-nav-txt">Settings</span></button>
+        <!-- Grows to push the rail's foot group down; on short viewports it collapses to its 40px
+             floor and the rail scrolls instead. It sits ABOVE the Collapse row, as on Builder, so
+             that row travels with the hairline underneath it rather than staying pinned under the
+             nav — where it read as a seventh destination. -->
         <div class="pk-side-spacer" aria-hidden="true"></div>
+        <button class="pk-side-collapse" type="button" data-pk-collapse aria-label="Collapse sidebar" title="Collapse sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg><span class="pk-nav-txt">Collapse Menu</span></button>
         <!-- Rail actions: colour mode, then Log out — the same pair, and the same box, as Builder's. -->
         <div class="tmd-sideactions">
           <span class="tmd-sidetheme" data-pk-sidetheme></span>
@@ -123,13 +125,16 @@
       </aside>
 
       <div class="pk-content">
+        <!-- Queue metrics: part of the CONTENT column, not chrome above the rail. -->
+        <div class="pk-bar">
+          <div class="pk-counts" id="tmd-counts"></div>
+        </div>
         <!-- Shared control bar — Search · Sort · By Page · primary — same position on ALL three tabs -->
         <div id="tmd-controls">
           <div class="pk-toolbar">
-            <div class="pk-seg" id="tmd-dirtoggle" role="tablist" aria-label="Direction">
-              <button class="pk-segbtn" type="button" data-dir="inbound" role="tab" aria-selected="false">Inbound</button>
-              <button class="pk-segbtn is-active" type="button" data-dir="outbound" role="tab" aria-selected="true">Outbound</button>
-            </div>
+            <!-- The in-page Inbound/Outbound segmented control is gone. Direction is chosen in the
+                 rail now, where the two are pages; carrying the same switch twice invited the pair
+                 to disagree about which one you were on. -->
             <input id="tmd-search" class="pk-search" type="search" placeholder="Search comments, pages, reviewers…" autocomplete="off" spellcheck="false" />
             <div id="tmd-sort-mount"></div>
             <button class="pk-tbtn" id="tmd-bypage" type="button">By Page</button>
@@ -155,6 +160,7 @@
 
         <!-- Team Queue: everything still open (default landing) -->
         <div id="tmd-view-home" hidden></div>
+        <div id="tmd-view-patterns" hidden></div>
         <div id="tmd-view-insights" hidden></div>
         <div id="tmd-view-team" hidden></div>
         <div id="tmd-view-queue" hidden></div>
@@ -192,6 +198,6 @@
     </footer>
   </div>
 </section>
-<script type="module" src="/proofkit/core/teamdash.js?v=613d82bdd2"></script>
+<script type="module" src="/proofkit/core/teamdash.js?v=5726f06327"></script>
 </body>
 </html>

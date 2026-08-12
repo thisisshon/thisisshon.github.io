@@ -2,8 +2,8 @@
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
-    getOverlayUi, getOverlayUiOverride, setOverlayUiOverride, syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=613d82bdd2';
+    syncOverlayUi, startScopeStream,
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=5726f06327';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=613d82bdd2';
-  import { createCardRenderer } from './card.js?v=613d82bdd2';
-  import { ICON } from './icons.js?v=613d82bdd2';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=613d82bdd2';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=613d82bdd2';
+  import { PK_VERSION } from './version.js?v=5726f06327';
+  import { createCardRenderer } from './card.js?v=5726f06327';
+  import { ICON } from './icons.js?v=5726f06327';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=5726f06327';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=5726f06327';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -819,7 +819,15 @@
     /* ---- URL as state: real paths under /proofkit/team ------------------------------------
      *   /proofkit/team                    the queue (home)
      *   /proofkit/team/tickets/<number>   a ticket, by its HUMAN ticket number
-     *   /proofkit/team/notifications · /threads · /settings
+     *   /proofkit/team/notifications · /threads · /patterns · /insights · /settings
+     *   /proofkit/team/queue/inbound · /queue/outbound   the queue's two directions
+     *
+     * DIRECTION IS IN THE PATH, which is the one place this board goes further than the Builder's.
+     * Inbound and Outbound stopped being a toggle on one screen and became two rail pages, and a
+     * page you cannot reload onto, link to, or reach with Back is not a page. `/queue` with no
+     * direction is still accepted — every link handed out before this points at it — and is
+     * normalised to the default direction with replaceState, so the old address resolves rather
+     * than 404s and no phantom history entry appears.
      *
      * Mirrors the Builder exactly, one level down. The admin's `?team=` preview override is a
      * QUERY param and is deliberately preserved on every write — it selects whose board this is,
@@ -846,6 +854,14 @@
       if (legacy) return { view: '', ticket: legacy };
       if (!rest.length) return { view: '', ticket: '' };
       if (rest[0] === 'tickets') return { view: '', ticket: rest[1] || '' };
+      /* The queue's second segment is the direction. An unrecognised one (or none at all, which is
+       * every pre-existing /queue link) reports no direction, and applyUrl leaves `dir` on whatever
+       * it already was — the default on load. Returning 'outbound' here instead would silently
+       * rewrite a typo'd address into a page the person did not ask for. */
+      if (rest[0] === VIEW_SEGMENTS.queue) {
+        const d = rest[1] === 'inbound' || rest[1] === 'outbound' ? rest[1] : '';
+        return { view: 'queue', ticket: '', dir: d };
+      }
       return { view: SEGMENT_VIEWS[rest[0]] || '', ticket: '' };
     }
     /** The identity segment currently in the address bar ('' if none). */
@@ -863,6 +879,9 @@
     function pathFor(v, detailId) {
       if (detailId) return myBase() + '/tickets/' + encodeURIComponent(ticketNoOf(detailId));
       const seg = VIEW_SEGMENTS[v];
+      // The queue always writes its direction, so the address bar names the page you are actually
+      // looking at and copying it hands somebody the same one.
+      if (v === 'queue') return myBase() + '/' + seg + '/' + dir;
       return seg ? myBase() + '/' + seg : myBase();
     }
     function syncUrl(replace) {
@@ -1246,6 +1265,7 @@
           tile({ title: 'Notifications', go: 'notifs', badge: unread ? String(unread) : '',
                  desc: 'Status pushes, arrivals and replies.' }) +
           tile({ title: 'Comments', go: 'threads', desc: 'Every thread you are part of, including replies.' }) +
+          tile({ title: 'Patterns', go: 'patterns', desc: 'The same finding raised more than once, and the spots that keep coming back.' }) +
           tile({ title: 'Insights', go: 'insights', stat: rs.length,
                  sub: `${st('deployed_live')} deployed all-time`, desc: 'How this team’s work has moved.' }) +
           tile({ title: 'My Team', go: 'team', desc: 'Who else is on this board.' }) +
@@ -1254,6 +1274,125 @@
       host.querySelectorAll('[data-home-view]').forEach((b) => b.addEventListener('click', () => {
         setView(b.dataset.homeView); render();
       }));
+    }
+
+    /* ---- Patterns ---------------------------------------------------------------------------
+     *
+     * The same finding raised more than once, and the spots that keep coming back.
+     *
+     * The Builder's Patterns screen asks the Worker — GET /patterns and GET /fragile, which cluster
+     * in D1 across the whole instance. Both of those endpoints answer `deny()` to anything that is
+     * not an admin key, so a team board calling them gets a 401 rather than a smaller answer. This
+     * computes the same two things in the browser from the tickets already loaded for the queue,
+     * which is also the right scope: a team's patterns are its own, and it is not entitled to
+     * anybody else's.
+     *
+     * The clustering is a port of the Worker's clusterTickets() — exact normalised selector first,
+     * then same change-type with a trigram-similar summary — kept deliberately identical so the two
+     * screens cannot drift on what counts as a duplicate.
+     *
+     * Two deliberate differences from the Builder's:
+     *   - the minimum cluster is 2, not 3. One team raises a fraction of the instance's tickets, so
+     *     a threshold tuned for all of them reports nothing on every real team board.
+     *   - no "Fix at source". That raises an umbrella ticket (POST /umbrella, admin only), and a
+     *     button whose only possible outcome is a 401 is worse than no button.
+     */
+    const normText = (s) => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    function trigrams(s) {
+      const t = normText(s).replace(/[^a-z0-9]+/g, ' ').trim();
+      const g = new Set(); const str = ' ' + t + ' ';
+      for (let i = 0; i < str.length - 2; i++) g.add(str.slice(i, i + 3));
+      return g;
+    }
+    const jaccard = (a, b) => {
+      if (!a.size || !b.size) return 0;
+      let inter = 0; for (const x of a) if (b.has(x)) inter++;
+      return inter / (a.size + b.size - inter);
+    };
+    const selectorOf = (c) => ((c && c.anchor) || {}).selector || '';
+    function patternClusters(rows, minSize) {
+      const clusters = [], used = new Set(), bySel = {};
+      for (const r of rows) { const s = normText(selectorOf(r)); if (!s) continue; (bySel[s] || (bySel[s] = [])).push(r); }
+      for (const s of Object.keys(bySel)) {
+        const members = bySel[s];
+        if (members.length < minSize) continue;
+        members.forEach((m) => used.add(m.id));
+        clusters.push({ type: 'selector', selector: selectorOf(members[0]), size: members.length, members });
+      }
+      // Anything already claimed by a selector cluster is skipped: one ticket in two clusters reads
+      // as two separate problems and inflates both counts.
+      const byType = {};
+      for (const r of rows) {
+        if (used.has(r.id)) continue;
+        const t = r.commentType || 'general';
+        (byType[t] || (byType[t] = [])).push({ r, g: trigrams(r.summary || r.comment || '') });
+      }
+      for (const type of Object.keys(byType)) {
+        const items = byType[type], seen = new Set();
+        for (let i = 0; i < items.length; i++) {
+          if (seen.has(items[i].r.id)) continue;
+          const group = [items[i].r]; seen.add(items[i].r.id);
+          for (let j = i + 1; j < items.length; j++) {
+            if (seen.has(items[j].r.id)) continue;
+            if (jaccard(items[i].g, items[j].g) >= 0.5) { group.push(items[j].r); seen.add(items[j].r.id); }
+          }
+          if (group.length >= minSize) clusters.push({ type: 'text', commentType: type, size: group.length, members: group });
+        }
+      }
+      return clusters.sort((a, b) => b.size - a.size);
+    }
+    /* Fragile areas: the (page, element) pairs this team has had to reopen more than once. Counted
+     * over EVERY record, not just the live head of each chain — a reopen is recorded on the
+     * iteration it happened to, so counting heads alone would find at most one per ticket. */
+    function fragileAreas() {
+      const by = new Map();
+      for (const c of comments) {
+        if (isReply(c)) continue;
+        const sel = selectorOf(c); if (!sel) continue;
+        const reopens = (c.history || []).filter((h) => h.event === 'team-reopen' || h.event === 'raiser-reopen').length;
+        if (!reopens) continue;
+        const key = pageGroupKey(c.page) + '|' + sel;
+        const prev = by.get(key) || { page: c.page, selector: sel, reopens: 0 };
+        prev.reopens += reopens;
+        by.set(key, prev);
+      }
+      return [...by.values()].filter((x) => x.reopens >= 2).sort((a, b) => b.reopens - a.reopens);
+    }
+    function renderPatterns() {
+      const host = $('#tmd-view-patterns'); if (!host) return;
+      const nm = team() || 'this team';
+      const head = `<div class="rvd-notifhead"><div><h2>Patterns</h2>` +
+        `<p class="rvd-deploy-explain">The same issue raised on more than one spot, plus the places <b>${esc(nm)}</b> has had to reopen. Worked out from this board's own tickets — nobody else's are counted.</p></div></div>`;
+      // The set the Builder clusters over: live root tickets that are still work. A deployed or
+      // disregarded ticket is a finished thing, and a "pattern" made of finished things is history.
+      const open = roots().filter((c) => !c.revoked
+        && teamStatusOf(c) !== 'deployed_live' && teamStatusOf(c) !== 'disregarded');
+      const clusters = patternClusters(open, 2);
+      const fragile = fragileAreas();
+      if (!clusters.length && !fragile.length) {
+        host.innerHTML = head + `<p class="pk-empty--inline">No repeat findings yet — nothing has been raised twice on the same element, and nothing has been reopened more than once.</p>`;
+        return;
+      }
+      let html = '';
+      if (clusters.length) {
+        html += `<h3 class="pk-h3 pk-u-h3dup">Raised more than once</h3>`;
+        html += clusters.map((cl) => {
+          const label = cl.type === 'selector'
+            ? `Same element <code>${esc(cl.selector)}</code>`
+            : `Same ${esc(cl.commentType || 'general')} issue`;
+          const members = cl.members.map((m) =>
+            `<li>${esc(m.ticket ? '#' + m.ticket : m.id)} · <span class="pk-slug">${esc(pageLabelFull(m.page))}</span> — ${esc((m.summary || m.comment || '').slice(0, 80))}</li>`).join('');
+          return `<div class="pk-tile pk-u-duptile"><div class="pk-u-duprow">` +
+            `<b>${label} — ${cl.size} tickets</b></div>` +
+            `<ul class="pk-u-list">${members}</ul></div>`;
+        }).join('');
+      }
+      if (fragile.length) {
+        html += `<h3 class="pk-h3 pk-u-h3frag">Keeps coming back (≥2 reopens)</h3><ul class="pk-u-list-flush">` +
+          fragile.map((f) => `<li><span class="pk-slug">${esc(pageLabelFull(f.page))}</span> · <code>${esc(f.selector)}</code> — <b>${f.reopens}</b> reopens</li>`).join('') +
+          `</ul>`;
+      }
+      host.innerHTML = head + html;
     }
 
     /* ---- Insights ---------------------------------------------------------------------------
@@ -1385,18 +1524,13 @@
         // Overlay style, the team-side twin of Builder's card. Builder sets the shared
         // default for everyone; this picks the overlay THIS browser reviews in, so a team
         // switching never moves anyone else's page (the worker write stays admin-only).
-        const ovMine = getOverlayUiOverride();
-        const ovNew = getOverlayUi() === 'new';
         panel =
           card('Theme', 'Light or dark — your own preference, saved to this browser.',
             row('Color mode', `Currently <b>${light ? 'Light' : 'Dark'}</b>. Switches your skin only — no other team sees it.`, `<span data-pk-set-theme></span>`)) +
-          card('Overlay UI', 'The on-page review overlay ONLY — your board is unaffected. Saved to this browser, so only the pages YOU review change.',
-            row('Overlay style', `Currently <b>${ovNew ? 'New (HUD)' : 'Old (box)'}</b>${ovMine ? '' : ', following the team default'}. New is the full-screen review HUD; Old is the classic pop-up box on the live page.`,
-              `<div class="pk-set-seg" role="group">` +
-                `<button class="pk-set-segbtn${ovNew ? '' : ' is-active'}" type="button" data-overlayui="old">Old</button>` +
-                `<button class="pk-set-segbtn${ovNew ? ' is-active' : ''}" type="button" data-overlayui="new">New</button>` +
-              `</div>` +
-              (ovMine ? ' ' + actBtn('overlayui-default', 'Use default', 'pk-a--quiet') : ''))) +
+          /* NO OVERLAY CARD HERE. The Builder decides which overlay the teams review in — it is a
+           * property of the deployment, not a personal preference, and offering it per-reviewer
+           * meant two people looking at the same page could be looking at two different tools. The
+           * shared control lives on the Builder board. */
           card('Layout', 'How your ticket list is shown.',
             row('Default density', 'Cards is roomy; Table is the full ledger. Also on the My Tickets toolbar.',
               `<div class="pk-set-seg" role="group">` +
@@ -1494,10 +1628,7 @@
           if (den) { if (density !== den.dataset.setDen) { density = den.dataset.setDen; saveDensity(); syncDensToggle(); } renderSettings(); return; }
           // Overlay style: this browser's own pick (or back to the shared default). Local
           // only — the overlay reads it the next time this user arms review mode.
-          const ov = e.target.closest('[data-overlayui]');
-          if (ov) { setOverlayUiOverride(ov.dataset.overlayui === 'new' ? 'new' : 'old'); renderSettings(); return; }
           const act = e.target.closest('[data-act]');
-          if (act && act.dataset.act === 'overlayui-default') { setOverlayUiOverride(''); renderSettings(); return; }
           const np = e.target.closest('[data-notifpref]');
           if (np) {
             const k = np.dataset.notifpref;
@@ -2691,9 +2822,10 @@
       const isQ = view === 'queue';
       const cardMode = isQ && density === 'cards'; // the card-only filters don't apply to the full-ledger table
       const oldFilters = $('#tmd-filters'); if (oldFilters) oldFilters.hidden = true; // retired
-      // Direction toggle + status chips + team chips + By Page apply to CARD mode only; the density
-      // toggle stays visible in both so you can switch back.
-      ['#tmd-dirtoggle', '#pk-statuschips', '#tmd-teamchips'].forEach((sel) => { const el = $(sel); if (el) el.hidden = !cardMode; });
+      // Status chips + team chips + By Page apply to CARD mode only; the density toggle stays
+      // visible in both so you can switch back. (Direction is no longer a toolbar control — it is
+      // the rail's Inbound/Outbound pair, which the table density has no say over.)
+      ['#pk-statuschips', '#tmd-teamchips'].forEach((sel) => { const el = $(sel); if (el) el.hidden = !cardMode; });
       const dens = $('#tmd-denstoggle'); if (dens) dens.hidden = !isQ;
       const bp = $('#tmd-bypage'); if (bp) bp.hidden = !cardMode;
       const tr = document.querySelector('.pk-tabsrow'); if (tr) tr.hidden = !cardMode; // its only live child is the team picker
@@ -2717,13 +2849,65 @@
       }
     }
 
+    /* Which views live under which group in the rail. Comments, Patterns and Insights are ways of
+     * LOOKING at the queue, not separate destinations, so they sit under it rather than beside it —
+     * the same grouping, and the same reasoning, as the Builder board's. */
+    const NAV_GROUPS = { queue: ['queue', 'threads', 'patterns', 'insights'] };
+
+    /* Slide the submenu's active marker to whichever sub-item is lit. Driven from JS because the
+     * distance is a layout fact — it depends on how many items the group has and how tall each row
+     * is — and a CSS-only version would have to hard-code offsets that break the moment an item is
+     * added. Uses transform so the movement is composited rather than laying out every frame. */
+    function positionSubnavMarker() {
+      document.querySelectorAll('.pk-subnav').forEach((panel) => {
+        const marker = panel.querySelector('.pk-subnav-marker');
+        if (!marker) return;
+        const active = panel.querySelector('.pk-nav--sub.is-active');
+        if (!active) { marker.classList.remove('is-on'); return; }
+        // Centre the 14px bar against the row, whatever the row height is.
+        const y = active.offsetTop + (active.offsetHeight - marker.offsetHeight) / 2;
+        marker.style.setProperty('--pk-marker-y', y + 'px');
+        // Reveal only AFTER it has a position, so the first appearance is a fade rather than a
+        // slide down from the top of the list.
+        if (!marker.classList.contains('is-on')) requestAnimationFrame(() => marker.classList.add('is-on'));
+      });
+    }
+
+    /* The rail's highlight, groups included. One implementation, called from every place that can
+     * change `view` or `dir` — a nav click, a Home tile, a saved view, Back. It used to be a single
+     * `dataset.view === v` toggle inline in setView(), which cannot express either of the two
+     * things this rail now needs. */
+    function syncNav() {
+      document.querySelectorAll('.pk-nav').forEach((n) => {
+        // The group header highlights for any of its children, so the rail still shows where you
+        // are when the group is collapsed shut.
+        const g = n.dataset.group;
+        const inGroup = g && (NAV_GROUPS[g] || []).includes(view);
+        /* Inbound and Outbound share data-view="queue" and differ only by direction, so matching on
+         * the view alone would light both at once. */
+        const onView = n.dataset.view === view && (!n.dataset.dir || n.dataset.dir === dir);
+        n.classList.toggle('is-active', onView || !!inGroup);
+      });
+      positionSubnavMarker();
+      /* Follow the view: open the group you are inside, close the ones you are not. Only opening
+       * left the submenu hanging open on Home, which reads as five top-level items again. */
+      Object.keys(NAV_GROUPS).forEach((key) => {
+        const inside = NAV_GROUPS[key].includes(view);
+        const head = document.querySelector(`.pk-nav--group[data-group="${key}"]`);
+        const panel = document.querySelector(`.pk-subnav[data-subnav="${key}"]`);
+        if (!head || !panel) return;
+        head.setAttribute('aria-expanded', inside ? 'true' : 'false');
+        panel.classList.toggle('is-open', inside);
+      });
+    }
+
     // Point `view` at a nav tab and sync the highlight (does not render).
     function setView(v, replace) {
       view = v; entryDetail = null;
       // A view change IS a navigation — this is what Back walks back through. `replace` is for
       // landing on the first visible tab at load, which the user did not choose.
       syncUrl(replace);
-      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n.dataset.view === v));
+      syncNav();
     }
     // The first nav tab that's actually visible — the landing target on load, and the
     // fallback when the current tab (e.g. Active) gets hidden out from under us.
@@ -2753,7 +2937,17 @@
 
     function render() {
       const detail = !!entryDetail; // a drilled-in ticket detail renders in the shared comments host
-      const isQueue = view === 'queue'; // the single "My Tickets" view; direction is a control
+      const isQueue = view === 'queue'; // the queue; Inbound/Outbound choose which half of it
+      // Keep the rail on whatever is actually rendered. It is set from the URL and from clicks, but
+      // a render can also follow a Home tile or a saved view, and those change `view` directly.
+      syncNav();
+      /* The With-builder / Deployed / Pending-signoff strip belongs to the QUEUE: it counts what is
+       * in the queue. Above the tiles on Home it repeated numbers those tiles already carry, and on
+       * Settings it was chrome about a screen you were not looking at. Hiding the .pk-bar wrapper
+       * rather than #tmd-counts is deliberate — the strip's own `display:grid` out-ranks the UA
+       * `[hidden]` rule, so hiding the strip itself would need an !important to land. */
+      const barEl = document.querySelector('.tmd .pk-bar');
+      if (barEl) barEl.hidden = detail || !isQueue;
       $('#tmd-view-comments').hidden = !detail;               // host reused for the detail drill-in
       $('#tmd-view-queue').hidden = detail || !isQueue;
       $('#tmd-view-notifs').hidden = detail || view !== 'notifs';
@@ -2764,6 +2958,7 @@
       /* The three screens migrated from the Builder board. Each is self-contained — no queue
        * toolbar above it — so they are handled together and return before the queue path. */
       const hv = $('#tmd-view-home'); if (hv) hv.hidden = detail || view !== 'home';
+      const ptv = $('#tmd-view-patterns'); if (ptv) ptv.hidden = detail || view !== 'patterns';
       const iv = $('#tmd-view-insights'); if (iv) iv.hidden = detail || view !== 'insights';
       const pv = $('#tmd-view-team'); if (pv) pv.hidden = detail || view !== 'team';
       $('#tmd-empty').hidden = true;
@@ -2773,6 +2968,7 @@
       // Settings is a self-contained preferences pane — no queue controls above it.
       if (view === 'settings') { if (ctrl) ctrl.hidden = true; renderSettings(); renderHeader(); return; }
       if (view === 'home') { if (ctrl) ctrl.hidden = true; renderHome(); renderHeader(); return; }
+      if (view === 'patterns') { if (ctrl) ctrl.hidden = true; renderPatterns(); renderHeader(); return; }
       if (view === 'insights') { if (ctrl) ctrl.hidden = true; renderInsights(); renderHeader(); return; }
       if (view === 'team') { if (ctrl) ctrl.hidden = true; renderRoster(); renderHeader(); return; }
       if (ctrl) ctrl.hidden = false;
@@ -2803,14 +2999,17 @@
       $('#tmd-search').value = '';
       sortDD.setValue('new');
       $('#tmd-bypage').classList.remove('is-active');
+      // Direction is part of the address now, and resetting it to Outbound moves the page you are
+      // on. Replace rather than push: clearing filters is not a destination you should be able to
+      // walk back INTO one filter at a time.
+      syncUrl(true);
       render();
     }
-    // Keep the Inbound/Outbound + Cards/Table segmented controls in step with state.
-    function syncDirToggle() {
-      document.querySelectorAll('#tmd-dirtoggle .pk-segbtn').forEach((b) => {
-        const on = b.dataset.dir === dir; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-    }
+    /* The in-page Inbound/Outbound control is gone — direction is chosen in the rail, where the two
+     * are pages rather than a filter on one, so showing the same switch twice invited them to
+     * disagree. Kept as a named no-op because several call sites pair it with the density toggle
+     * and the chips; syncNav() is what lights the rail now. */
+    function syncDirToggle() {}
     function syncDensToggle() {
       document.querySelectorAll('#tmd-denstoggle .pk-segbtn').forEach((b) => {
         const on = b.dataset.den === density; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
@@ -2936,6 +3135,10 @@
     let missingDetail = '';
     function applyUrl(replace) {
       const u = readUrl();
+      /* Direction BEFORE the view: setView() syncs the URL, and pathFor() reads `dir` while it
+       * does. Applying it afterwards would write /queue/outbound into the address bar on the way
+       * to /queue/inbound and only then correct itself. */
+      if (u.dir && u.dir !== dir) { dir = u.dir; fromFilter = ''; }
       if (u.view) setView(u.view, true);
       const id = u.ticket ? idOfTicketNo(u.ticket) : '';
       let absent = '';
@@ -3025,18 +3228,30 @@
     $('.pk-side').addEventListener('click', (e) => {
       const b = e.target.closest('.pk-nav'); if (!b) return;
       const prev = view;
+
+      /* A group header both NAVIGATES and EXPANDS. Making it expand-only would cost a second click
+       * to reach the view it is named after; making it navigate-only would leave no way to see what
+       * is underneath. Clicking it again while already there collapses it. */
+      if (b.dataset.group) {
+        const panel = document.querySelector(`.pk-subnav[data-subnav="${b.dataset.group}"]`);
+        const alreadyHere = (NAV_GROUPS[b.dataset.group] || []).includes(view);
+        const open = alreadyHere ? !panel.classList.contains('is-open') : true;
+        panel.classList.toggle('is-open', open);
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (alreadyHere && view === b.dataset.view) return;   // pure expand/collapse, no navigation
+      }
+
+      /* Inbound and Outbound are the queue in two directions. Switching direction drops the
+       * counterparty filter, because the chip it names is a team on the OTHER side of the arrow —
+       * carrying it across would filter the new list by a team that never appears in it. */
+      if (b.dataset.dir && b.dataset.dir !== dir) { dir = b.dataset.dir; fromFilter = ''; }
+
       view = b.dataset.view; entryDetail = null;
       syncUrl();   // a nav click IS a navigation — this is what Back walks back through
-      document.querySelectorAll('.pk-nav').forEach((n) => n.classList.toggle('is-active', n === b));
+      syncNav();
+      // The counterparty chips (From on Inbound, To on Outbound) are rebuilt by renderQueue(),
+      // which pkNavSwitch reaches through render() — no separate call to keep in step.
       pkNavSwitch(prev, view, () => render(), 'tmd-view-settings');
-    });
-    // Direction toggle (Inbound │ Outbound) — a control on My Tickets; flips From⇄To, resets the
-    // counterparty filter, re-renders in place (search/status/sort untouched).
-    const tmdDir = $('#tmd-dirtoggle');
-    if (tmdDir) tmdDir.addEventListener('click', (e) => {
-      const b = e.target.closest('.pk-segbtn'); if (!b || b.dataset.dir === dir) return;
-      dir = b.dataset.dir; fromFilter = '';
-      syncDirToggle(); render();
     });
     // Density toggle (Cards │ Table).
     const tmdDens = $('#tmd-denstoggle');
@@ -3058,8 +3273,10 @@
     const tmdCounts = $('#tmd-counts');
     if (tmdCounts) tmdCounts.addEventListener('click', (e) => {
       if (!e.target.closest('[data-goto-deployed]')) return;
+      // Direction first: setView() writes the URL, and the path now carries the direction, so
+      // setting it afterwards would push /queue/<wherever you were> and immediately correct it.
+      dir = 'outbound'; fromFilter = ''; statusFilter = 'deployed_live';
       setView('queue');
-      dir = 'outbound'; fromFilter = ''; statusFilter = 'deployed_live'; entryDetail = null; syncUrl(true);
       render();
     });
     // Resubmit + card-open detail (delegated across both card containers).
@@ -3297,6 +3514,38 @@
       const headOut = document.getElementById('tmd-logout');
       if (sideOut && headOut) sideOut.addEventListener('click', () => headOut.click());
     } catch (e) {}
+
+    /* Sidebar collapse — labels out, icons only. This board carried the button and the CSS for it
+     * but never the handler, so Collapse Menu did nothing at all here; only the Builder's rail
+     * actually collapsed. Same key and same root class as the Builder's, which is what teamdash.css
+     * already claims: it is one preference about one rail, not two.
+     *
+     * Persisted per browser because it is a working preference, not session state — someone who
+     * wants the room wants it every time. */
+    (function wireCollapse() {
+      const KEY = 'pkSideCollapsed';
+      const apply = (on) => {
+        document.documentElement.classList.toggle('pk-side-collapsed', !!on);
+        const b = document.querySelector('[data-pk-collapse]');
+        if (b) {
+          b.setAttribute('aria-label', on ? 'Expand sidebar' : 'Collapse sidebar');
+          b.setAttribute('title', on ? 'Expand sidebar' : 'Collapse sidebar');
+        }
+        /* The submenu's rows sit at a different indent when collapsed, so the marker's offset was
+         * measured against a layout that no longer exists. Re-measure after the width transition
+         * has settled — reading mid-animation just banks a second wrong number. */
+        setTimeout(positionSubnavMarker, 300);
+      };
+      let on = false;
+      try { on = localStorage.getItem(KEY) === '1'; } catch (e) {}
+      apply(on);
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-pk-collapse]')) return;
+        on = !on;
+        try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+        apply(on);
+      });
+    })();
 
     init();
   })();
