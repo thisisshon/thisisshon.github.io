@@ -26,8 +26,8 @@ import { pageName, getSession, ADMIN_TEAM, TEAM_COLORS, STATUS_COLORS, renderSum
   BASE, TEAM_BASE, boardBase, homeUrl,
   COMMENT_TYPES, TYPE_FIELDS, ENABLED_TEAMS, needsScreenshot,
   // light/dark: the HUD follows the reviewer's setting — see the SKIN block in mountHud
-  getTheme, isThemeKey, toggleTheme } from './config.js?v=5726f06327';
-import { injectCss, injectFont } from './inject-css.js?v=5726f06327';   // CSP-safe sheet mount (see mountHud)
+  getTheme, isThemeKey, toggleTheme } from './config.js?v=735118fd14';
+import { injectCss, injectFont } from './inject-css.js?v=735118fd14';   // CSP-safe sheet mount (see mountHud)
 
 /* The canvas iframe carries this window.name so overlay.js can bail before
  * arming a nested HUD inside it (see overlay.js top-of-module guard). */
@@ -207,6 +207,36 @@ const CSS = `
 #pkhud .rrail-seg{flex:none;display:flex;border-bottom:1px solid var(--pk-hair)}
 #pkhud .rseg{flex:1;height:var(--pk-control-h-md);border:none;background:transparent;cursor:pointer;color:var(--pk-muted);font:700 var(--pk-text-xs)/1 var(--pk-font);letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid transparent}
 #pkhud .rseg.is-active{color:var(--pk-ink);border-bottom-color:var(--pk-red)}
+#pkhud .rseg-n{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;margin-left:4px;border-radius:9999px;background:var(--pk-red);color:var(--pk-on-accent);font-size:var(--pk-text-2xs)}
+/* The display rule above beats the [hidden] default, so an empty batch painted a red 0 badge. */
+#pkhud .rseg-n[hidden]{display:none}
+/* One draft. Summary on top, what it is and where it is going underneath, actions on the right —
+   the same three facts the Old tray showed, because they are what tells two similar pins apart. */
+#pkhud .dft{display:flex;align-items:flex-start;gap:var(--pk-space-3);padding:var(--pk-space-3) var(--pk-space-4);border-bottom:1px solid var(--pk-line)}
+#pkhud .dft.is-failed{background:color-mix(in srgb,var(--pk-red) 8%,transparent)}
+#pkhud .dft-b{flex:1;min-width:0}
+/* Clamped to two lines. A copy-fix summary is "<the old text> → <the new text>", and pinning a
+   large element makes the old half the whole paragraph — one draft then fills the pane and the
+   list stops being scannable, which is the only thing it is for. The full text stays in the DOM
+   as a tooltip. */
+#pkhud .dft-s{font:600 var(--pk-text-sm)/1.4 var(--pk-font);color:var(--pk-ink);overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#pkhud .dft-m{margin-top:2px;font:500 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-muted)}
+#pkhud .dft.is-failed .dft-m{color:var(--pk-red)}
+#pkhud .dft-a{display:flex;gap:var(--pk-space-2);flex-shrink:0}
+#pkhud .dft-btn{height:var(--pk-control-h-sm);padding:0 var(--pk-space-3);border:1px solid var(--pk-line);border-radius:var(--pk-radius-sm);
+  background:transparent;color:var(--pk-ink);cursor:pointer;font:600 var(--pk-text-xs)/1 var(--pk-font)}
+#pkhud .dft-btn:hover{border-color:var(--pk-ink)}
+#pkhud .dft-btn.is-danger:hover{border-color:var(--pk-red);color:var(--pk-red)}
+#pkhud .dft-foot{display:flex;gap:var(--pk-space-2);padding:var(--pk-space-3) var(--pk-space-4)}
+/* The editing banner. The composer looks identical in all three modes, so without this there is
+   nothing on screen to say that Save will overwrite a submitted comment rather than add a pin. */
+#pkhud .cedit{display:flex;align-items:center;gap:var(--pk-space-3);margin-bottom:var(--pk-space-3);
+  padding:var(--pk-space-3) var(--pk-space-4);border-left:2px solid var(--pk-red);
+  background:color-mix(in srgb,var(--pk-red) 8%,transparent);
+  font:600 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-ink)}
+#pkhud .cedit button{margin-left:auto;border:none;background:transparent;color:var(--pk-muted);cursor:pointer;
+  font:600 var(--pk-text-xs)/1 var(--pk-font);text-decoration:underline}
 #pkhud .rrail-body{flex:1 1 auto;min-height:0;overflow-y:auto}
 #pkhud .rpane{display:none;flex-direction:column}
 #pkhud .rpane.is-active{display:flex}
@@ -261,6 +291,7 @@ const CSS = `
   letter-spacing:.08em;text-transform:uppercase}
 @media (min-width:1024px) and (hover:hover){#pkhud .clint-apply:hover{border-color:var(--pk-red);color:var(--pk-red-ink)}}
 #pkhud .csave{width:100%;justify-content:center}
+#pkhud .ccancel{margin-top:var(--pk-space-2)}
 #pkhud .cnote{font:500 var(--pk-text-xs)/1.4 var(--pk-font);color:var(--pk-muted)}
 /* ---- thread pane (parity: read + reply + confirm) ---- */
 /* NOTE: the container is .pkth, not .th. A host stylesheet is free to own a bare .th (this
@@ -434,10 +465,14 @@ function html() {
       <button class="rseg is-active" data-pane="pins" role="tab" aria-selected="true">Pins</button>
       <button class="rseg" data-pane="thread" role="tab" aria-selected="false">Thread</button>
       <button class="rseg" data-pane="compose" role="tab" aria-selected="false">Compose</button>
+      <!-- Drafts carries a count because it is the only pane whose emptiness matters: the number
+           is the thing a reviewer is tracking mid-batch, and it belongs next to the way in. -->
+      <button class="rseg" data-pane="drafts" role="tab" aria-selected="false">Drafts <span class="rseg-n" id="pkhud-draftn" hidden>0</span></button>
     </div>
     <div class="rrail-body">
       <div class="rpane is-active" data-pane="pins" role="tabpanel" tabindex="0"><div class="rpane-empty">Loading pins…</div></div>
       <div class="rpane" data-pane="thread" role="tabpanel" tabindex="0"><div class="rpane-empty">Select a pin to open its thread.</div></div>
+      <div class="rpane" data-pane="drafts" role="tabpanel" tabindex="0"><div class="rpane-empty">Nothing pending.</div></div>
       <div class="rpane" data-pane="compose" role="tabpanel" tabindex="0">
         <div class="cpane">
           <div class="fg"><span class="fl">Selected Element</span><div class="csel-el" id="pkhud-csel">Place a pin to select an element.</div></div>
@@ -450,6 +485,7 @@ function html() {
           <div class="clint" id="pkhud-clint" hidden></div>
           <div class="cerr" id="pkhud-cerr"></div>
           <button class="btool btool--primary csave" id="pkhud-csave">Save to batch</button>
+          <button class="btool csave ccancel" id="pkhud-ccancel" hidden>Cancel edit</button>
           <div class="cnote" id="pkhud-cnote">Place a pin on the canvas to start.</div>
         </div>
       </div>
@@ -931,6 +967,11 @@ export function mountHud(ctx = {}) {
           '<div class="cerr" data-th="err"></div>' +
           '<div class="th-acts">' +
             '<button class="btool" data-th="send">Post reply</button>' +
+            /* Edit is offered on the same rule the Old overlay uses and the Worker enforces:
+             * Builder at any status, the raising team only while Builder has not started it. When
+             * that is false there is no button at all rather than one that explains itself after
+             * the click — the answer is the same every time, so asking is theatre. */
+            ((ctx.canEditComment && ctx.canEditComment(rec)) ? '<button class="btool" data-th="edit">Edit</button>' : '') +
             (canConfirm ? '<button class="btool btool--primary" data-th="confirm">Confirm fix</button>' : '') +
           '</div>' +
         '</div>' +
@@ -952,6 +993,12 @@ export function mountHud(ctx = {}) {
       b.disabled = true;
       try { const res = await ctx.postReply(rec, txt); if (res) { comments.push(res); renderThread(rec); refreshPins(); } }
       catch (ex) { err.textContent = 'Could not post — ' + ((ex && ex.message) || 'error'); b.disabled = false; }
+      return;
+    }
+    if (act === 'edit') {
+      if (!ctx.updateComment) return;
+      if (!(await confirmLeaveComposer())) return;
+      loadIntoComposer(null, rec);
       return;
     }
     if (act === 'confirm') {
@@ -1077,6 +1124,25 @@ export function mountHud(ctx = {}) {
   let cType = (COMMENT_TYPES[0] && COMMENT_TYPES[0].value) || 'general', toTouched = false;
   toSel.addEventListener('change', () => { toTouched = true; });
   const setTo = (v) => { if ([...toSel.options].some((o) => o.value === v)) toSel.value = v; };
+
+  /* Select a team that may no longer be selectable.
+   *
+   * `setTo` silently does nothing when the value is not in the list, which is right for a NEW pin
+   * — it falls back to the default for the change type. It is dangerous when loading an existing
+   * comment: a team that has since been deleted, disabled or renamed is simply not among the
+   * options, so the dropdown keeps whatever was selected before and Save re-points the comment at
+   * a team nobody chose. Silently re-tagging a comment is the exact failure this whole feature
+   * exists to prevent, so the old value is re-added and named as gone instead. */
+  function setToPreserving(v) {
+    const want = v || ADMIN_TEAM;
+    if (![...toSel.options].some((o) => o.value === want)) {
+      const opt = document.createElement('option');
+      opt.value = want; opt.textContent = want + ' (no longer available)';
+      opt.dataset.stale = '1';
+      toSel.insertBefore(opt, toSel.firstChild);
+    }
+    toSel.value = want;
+  }
   setTo(defaultTeamFor(cType));
 
   // Comment-type chips
@@ -1180,11 +1246,145 @@ export function mountHud(ctx = {}) {
   window.addEventListener('paste', onPaste);
 
   function updateCNote() { $('cnote').textContent = draftAnchor ? ('Pinned to <' + draftAnchor.tag + '>') : 'Place a pin on the canvas to start.'; }
-  function updateDraftCount(n) { const el = $('draftcount'); el.hidden = !n; el.querySelector('b').textContent = String(n); }
+  function updateDraftCount(n) {
+    const el = $('draftcount'); el.hidden = !n; el.querySelector('b').textContent = String(n);
+    const tab = $('draftn'); if (tab) { tab.hidden = !n; tab.textContent = String(n); }
+    renderDrafts();
+  }
+
+  /* ---- Drafts pane ---------------------------------------------------------------------------
+   * Reads straight from overlay.js's draft array through ctx, so this list and the Old tray are
+   * two views of one batch rather than two batches. Edit PULLS a draft back into the composer
+   * (removing it from the batch); Remove drops it. */
+  function renderDrafts() {
+    const pane = root.querySelector('.rpane[data-pane="drafts"]');
+    if (!pane) return;
+    const list = (ctx.listDrafts && ctx.listDrafts()) || [];
+    if (!list.length) {
+      pane.innerHTML = '<div class="rpane-empty">Nothing pending. Saved pins wait here until you submit.</div>';
+      return;
+    }
+    const typeLabel = (v) => (COMMENT_TYPES.find((t) => t.value === v) || {}).label || 'General';
+    pane.innerHTML = list.map((d) =>
+      '<div class="dft' + (d.error ? ' is-failed' : '') + '">' +
+        '<div class="dft-b">' +
+          '<div class="dft-s" title="' + esc(d.summary || '') + '">' + esc(d.summary || ('Pin ' + d.n)) + '</div>' +
+          '<div class="dft-m">' + esc(d.error
+            ? 'Failed: ' + d.error
+            : typeLabel(d.commentType) + ' · to ' + (d.toTeam || ADMIN_TEAM) + (d.hasShot ? ' · shot' : '')) + '</div>' +
+        '</div>' +
+        '<div class="dft-a">' +
+          '<button type="button" class="dft-btn" data-df="edit" data-id="' + esc(d.draftId) + '">Edit</button>' +
+          '<button type="button" class="dft-btn is-danger" data-df="del" data-id="' + esc(d.draftId) + '">Remove</button>' +
+        '</div>' +
+      '</div>').join('') +
+      '<div class="dft-foot"><button type="button" class="dft-btn is-danger" data-df="clear">Discard all</button></div>';
+  }
+
+  root.querySelector('.rpane[data-pane="drafts"]').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-df]'); if (!b) return;
+    const act = b.dataset.df;
+    if (act === 'clear') {
+      const n = (ctx.draftCount && ctx.draftCount()) || 0;
+      if (!n) return;
+      if (!(await ask('Discard all ' + n + ' pending pin(s)? They have not been submitted.',
+        { title: 'Discard pending pins', confirmLabel: 'Discard', danger: true }))) return;
+      let left = n;
+      ((ctx.listDrafts && ctx.listDrafts()) || []).forEach((d) => { left = ctx.removeDraft ? ctx.removeDraft(d.draftId) : left; });
+      updateDraftCount(left);
+      return;
+    }
+    if (act === 'del') { updateDraftCount(ctx.removeDraft ? ctx.removeDraft(b.dataset.id) : 0); return; }
+    if (act === 'edit') {
+      if (!ctx.takeDraft) return;
+      if (!(await confirmLeaveComposer())) return;
+      const d = ctx.takeDraft(b.dataset.id);
+      if (!d) return;
+      updateDraftCount((ctx.draftCount && ctx.draftCount()) || 0);
+      loadIntoComposer(d, null);
+    }
+  });
   renderShotEmpty();
   updateCNote(); updateDraftCount((ctx.draftCount && ctx.draftCount()) || 0);
 
+  /* ---- composer modes -------------------------------------------------------------------------
+   * The composer serves three: a NEW pin, a draft pulled back out of the batch, and an EDIT of a
+   * comment that is already submitted. Only the last behaves differently on Save — it PUTs to
+   * /comments/update instead of adding to the batch — so `editing` is the whole of the difference
+   * and the banner is what tells the reviewer which one they are in.
+   */
+  let editing = null;          // the submitted record being edited, or null
+
+  /* Falls back to the browser's own confirm when the host did not supply one — the HUD also runs
+   * in the demo page, where there is no modal system to borrow. */
+  const ask = (msg, opts) => (ctx.ask ? ctx.ask(msg, opts) : Promise.resolve(window.confirm(msg)));
+
+  /** Warn before blowing away composer content that is not saved anywhere. */
+  async function confirmLeaveComposer() {
+    const dirty = editing || draftAnchor || String($('ccomment').value || '').trim();
+    if (!dirty) return true;
+    return editing
+      ? ask('Discard the unsaved changes to this comment?', { title: 'Discard changes', confirmLabel: 'Discard', danger: true })
+      : ask('The composer still has a pin that has not been saved to the batch. Replace it?', { title: 'Replace draft', confirmLabel: 'Replace', danger: true });
+  }
+
+  /** Fill the composer from a draft (`d`) or a submitted record (`rec`). */
+  function loadIntoComposer(d, rec) {
+    const src = d || rec || {};
+    editing = rec || null;
+    draftAnchor = src.anchor || null;
+    draftEl = null;
+    draftImage = (d && d.imageDataUrl) || '';
+    draftText = (src.templateFields && src.templateFields.currentText) || '';
+    cType = src.commentType || cType;
+    toTouched = true;                       // an explicit team came with it; do not re-default it
+    $('ctypes').querySelectorAll('.ctype').forEach((x) => x.classList.toggle('is-active', x.dataset.t === cType));
+    renderCFields();
+    const tf = src.templateFields || {};
+    $('cfields').querySelectorAll('.cinp').forEach((i) => { i.value = tf[i.dataset.k] || ''; });
+    $('ccomment').value = src.comment || '';
+    setToPreserving(src.toTeam);
+    if ($('ctest')) $('ctest').checked = !!src.isTest;
+    renderSelected(); updateCNote(); renderEditBanner();
+    /* A DRAFT still carries its pasted dataURL, so it can be shown again. A SUBMITTED comment
+     * carries only an imageId — the bytes live on the Worker — and re-fetching them to fill a box
+     * the reviewer is not editing would be a download per Edit click. Say what is attached
+     * instead, and leave it attached: `updateComment` passes the existing ids straight through. */
+    if (draftImage) shotBox.innerHTML = '<img src="' + draftImage + '" alt="">';
+    else if (rec && rec.imageId) { shotBox.classList.remove('is-req'); shotBox.textContent = 'Screenshot attached — paste to replace it.'; }
+    else renderShotEmpty();
+    showCompose();
+  }
+
+  function renderEditBanner() {
+    const pane = root.querySelector('.rpane[data-pane="compose"]');
+    let bar = pane.querySelector('.cedit');
+    $('csave').textContent = editing ? 'Save changes' : 'Save to batch';
+    $('ccancel').hidden = !editing;
+    if (!editing) { if (bar) bar.remove(); return; }
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'cedit';
+      pane.insertBefore(bar, pane.firstChild);
+    }
+    bar.innerHTML = 'Editing a submitted comment — saving replaces it.' +
+      '<button type="button" data-ce="cancel">Cancel</button>';
+  }
+  root.querySelector('.rpane[data-pane="compose"]').addEventListener('click', async (e) => {
+    if (!e.target.closest('[data-ce="cancel"]')) return;
+    if (!(await confirmLeaveComposer())) return;
+    resetComposer();
+  });
+  $('ccancel').addEventListener('click', async () => {
+    if (!(await confirmLeaveComposer())) return;
+    resetComposer();
+  });
+
   function resetComposer() {
+    editing = null; renderEditBanner();
+    // Drop any "no longer available" team carried in for an edit — it belongs to that record, not
+    // to the next pin, and leaving it would offer a dead team on a fresh comment.
+    toSel.querySelectorAll('option[data-stale]').forEach((o) => o.remove());
     draftAnchor = null; draftEl = null; draftImage = ''; draftText = '';
     renderShotEmpty();
     $('ccomment').value = ''; if ($('ctest')) $('ctest').checked = false; renderCFields(); renderSelected(); updateCNote();
@@ -1248,7 +1448,7 @@ export function mountHud(ctx = {}) {
   $('cfields').addEventListener('input', scheduleLint);
 
   // Save to batch → hand a draft to overlay.js (same shape the Old tray/submitAll consumes)
-  $('csave').addEventListener('click', () => {
+  $('csave').addEventListener('click', async () => {
     const err = $('cerr'); err.textContent = '';
     if (!draftAnchor) { err.textContent = 'Place a pin on the canvas first.'; return; }
     const tf = {};
@@ -1262,8 +1462,39 @@ export function mountHud(ctx = {}) {
     // MANDATORY SCREENSHOT for everything that is not a content swap (SCREENSHOT_TYPES in
     // vocab.js). The same gate runs in the Old composer's saveDraft - both UIs raise the
     // same records, so the rule cannot hold in only one of them.
-    if (needsScreenshot(cType) && !draftImage) {
+    /* The screenshot requirement is satisfied by one that is ALREADY ATTACHED. When editing a
+     * submitted comment the bytes live on the Worker and `draftImage` is empty by design — asking
+     * for a fresh paste to fix a typo would mean re-screenshotting a page that may have changed
+     * since, which is how an edit quietly replaces evidence. */
+    if (needsScreenshot(cType) && !draftImage && !(editing && editing.imageId)) {
       err.textContent = 'A screenshot is required for this change type — paste one (⌘V) to continue.';
+      return;
+    }
+    /* EDITING a submitted comment: straight to /comments/update, never into the batch. The batch
+     * is for pins that do not exist yet; a comment that is already raised has an id, a thread and
+     * possibly a Builder working on it, and queueing an edit behind "Submit all" would leave the
+     * two silently out of step until somebody remembered to press it. */
+    if (editing) {
+      const btn = $('csave'); btn.disabled = true;
+      try {
+        const upd = await ctx.updateComment(editing, {
+          comment, commentType: cType, templateFields: tf, toTeam: toSel.value || ADMIN_TEAM,
+        });
+        if (upd) {
+          const i = comments.findIndex((c) => c.id === upd.id);
+          if (i >= 0) comments[i] = upd; else comments.push(upd);
+          const id = upd.id;
+          resetComposer(); refreshPins();
+          selectPin(id);                      // land back on the thread that was just changed
+        }
+      } catch (ex) {
+        // The Worker enforces the same gate again, so "already started" can come back even though
+        // the button was offered — the status can change while the composer is open.
+        err.textContent = (ex && ex.message) === 'already started'
+          ? 'Builder has already started this one, so it can no longer be edited.'
+          : 'Could not save — ' + ((ex && ex.message) || 'error');
+      }
+      btn.disabled = false;
       return;
     }
     const draft = { anchor: draftAnchor, commentType: cType, templateFields: tf, comment,
@@ -1282,7 +1513,13 @@ export function mountHud(ctx = {}) {
       const res = await ctx.submitAll();
       if (res && res.comments) { comments.length = 0; res.comments.forEach((c) => comments.push(c)); refreshPins(); }
       updateDraftCount((ctx.draftCount && ctx.draftCount()) || 0);
-      if (res && res.failed) showSubmitError(res.failed + ' draft(s) failed — still pending.');
+      // The reason first, the count second — "1 draft failed" is a fact the reviewer cannot use.
+      if (res && res.failed) {
+        showSubmitError(res.error
+          ? res.error + (res.failed > 1 ? ' (' + res.failed + ' drafts still pending.)' : ' Still pending.')
+          : res.failed + ' draft(s) failed — still pending.');
+        renderDrafts();
+      }
     } catch (e) { showSubmitError('Submit failed — ' + ((e && e.message) || 'error')); }
     btn.disabled = false;
   });

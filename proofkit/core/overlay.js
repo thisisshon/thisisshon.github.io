@@ -6,18 +6,18 @@
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
     COMMENT_TYPES, TYPE_FIELDS, STATUS_COLORS, renderSummary, needsScreenshot,
     // Overlay-UI flag (global): 'new' HUD vs 'old' rectangle composer.
-    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=5726f06327';
-  import { pkConfirm, pkAlert } from './modal.js?v=5726f06327';
-  import { injectCss, injectFont } from './inject-css.js?v=5726f06327';
-  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=5726f06327'; // New HUD path (overlayUi === 'new')
+    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=735118fd14';
+  import { pkConfirm, pkAlert } from './modal.js?v=735118fd14';
+  import { injectCss, injectFont } from './inject-css.js?v=735118fd14';
+  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=735118fd14'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
   // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
   // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
   // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
   // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
-  import pkTokensCss from './design/tokens.css.js?v=5726f06327';
-  import pkComponentsCss from './design/components.css.js?v=5726f06327';
+  import pkTokensCss from './design/tokens.css.js?v=735118fd14';
+  import pkComponentsCss from './design/components.css.js?v=735118fd14';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
@@ -905,6 +905,75 @@
         },
         // Phase 5: the HUD hands over a draft; we store the SAME draft shape/id the Old tray uses.
         saveDraft: (d) => { drafts.push(Object.assign({ draftId: uuid() }, d)); return drafts.length; },
+
+        /* ---- draft management (the Old tray has always had this; the HUD had a counter) --------
+         *
+         * The Old dock floats a "Pending pins" tray that lists each draft with Edit and Remove.
+         * The HUD replaced that whole dock and kept only the number, so a batch became
+         * all-or-nothing: submit every draft or discard every draft by leaving review. Five pins in
+         * and one wrong meant losing the other four.
+         *
+         * These are the same three operations against the same `drafts` array — the HUD renders its
+         * own list from them, so both UIs manage one set of drafts rather than each keeping its own.
+         */
+        listDrafts: () => drafts.map((d, i) => ({
+          draftId: d.draftId,
+          n: i + 1,
+          summary: renderSummary(d.commentType, d.templateFields, d.comment),
+          commentType: d.commentType,
+          toTeam: d.toTeam || '',
+          hasShot: !!(d.imageDataUrl || d.imageId),
+          error: d.error || '',
+        })),
+        removeDraft: (id) => { removeDraft(id); return drafts.length; },
+        /* Editing a draft PULLS IT OUT of the batch and hands its values back, so the composer is
+         * filled with them and the count drops by one. It is the same object the reviewer saved, so
+         * a re-save is a new draft rather than a mutation of one still sitting in the tray —
+         * abandoning the edit loses it, which is why the HUD warns before replacing a loaded one. */
+        takeDraft: (id) => {
+          const d = drafts.find((x) => x.draftId === id);
+          if (!d) return null;
+          drafts = drafts.filter((x) => x.draftId !== id);
+          renderDraftPins(); renderTray();
+          return d;
+        },
+
+        /* ---- editing a SUBMITTED comment ------------------------------------------------------
+         *
+         * Same story: the Old overlay puts an Edit button on a thread (overlay.js `canEditComment`
+         * + `/comments/update`), the HUD's thread pane offers only reply and confirm. So a comment
+         * aimed at the wrong team could be raised from the page but never corrected from it.
+         *
+         * The permission RULE is not re-implemented here — canEditComment() is the one the Old path
+         * uses, and the Worker enforces the same gate again on /comments/update. The button only
+         * decides whether to offer the action.
+         */
+        canEditComment: (rec) => canEditComment(rec),
+        updateComment: async (rec, patch) => {
+          const payload = {
+            id: rec.id,
+            path: (rec.page && rec.page.path) || pagePath(),
+            url: (rec.page && rec.page.url) || location.href,
+            comment: patch.comment,
+            commentType: patch.commentType,
+            templateFields: patch.templateFields || {},
+            expectedOutcome: patch.expectedOutcome || rec.expectedOutcome || '',
+            toTeam: patch.toTeam || ADMIN_TEAM,
+            visibility: rec.visibility || '',
+            // The anchor is carried through UNCHANGED. An edit is about what the comment says and
+            // who it is for; moving the pin is a different act, and silently re-anchoring to
+            // whatever the page looks like now is how a comment ends up pointing at the wrong thing.
+            anchor: rec.anchor,
+            imageId: rec.imageId || '', viewportImageId: rec.viewportImageId || '',
+            display: rec.display,
+            summary: renderSummary(patch.commentType, patch.templateFields || {}, patch.comment),
+            page: rec.page,
+          };
+          const updated = await store.update(payload);
+          const i = comments.findIndex((c) => c.id === (updated && updated.id));
+          if (i >= 0 && updated) comments[i] = updated;
+          return updated;
+        },
         // Phase 5: reuse the PROVEN persist path — upload screenshots, then ONE batch POST built by
         // draftToRecord (identical record shape + server-parity summary to the Old composer).
         submitAll: async () => {
@@ -926,11 +995,20 @@
             const resp = await store.addBatch(pending.map((d) => draftToRecord(d, batchId)));
             results = (resp && resp.results) || [];
           } catch (e) { return { comments, failed: pending.length }; }
+          /* Keep the REASON, not just the count. A failed draft used to come back as a number, so
+           * the tray said "1 draft failed" and the reviewer had nothing to act on — and the most
+           * likely reason now is a refusal they can actually fix ("choose which project this is
+           * filed under"). The message is stamped on the draft, which is what the tray and the
+           * Drafts pane already render as "Failed: …". */
           const failedDrafts = [];
-          results.forEach((r, i) => { if (!(r && r.ok)) failedDrafts.push(pending[i]); });
+          results.forEach((r, i) => {
+            if (r && r.ok) return;
+            pending[i].error = (r && r.error) || 'save failed';
+            failedDrafts.push(pending[i]);
+          });
           drafts = failedDrafts;                       // retry-failed-only, same as the Old tray
           try { comments = await store.list(pagePath()); } catch (e) {}
-          return { comments, failed: failedDrafts.length };
+          return { comments, failed: failedDrafts.length, error: (failedDrafts[0] || {}).error || '' };
         },
         // Phase 5.2: composer quality check. POST /lint scores a draft BEFORE it is saved
         // ({score:'ok'|'vague'|'missing', issues:[], suggestedRewrite?}). Purely advisory — it is
@@ -951,6 +1029,15 @@
         // identity and re-show the sign-in panel (the HUD tears itself down + disarms review first).
         onLogout: () => { clearSession(); showLogin(); },
         confirm: (msg) => pkConfirm({ title: 'Log out', message: msg, confirmLabel: 'Log out', danger: true }),
+        /* A GENERAL yes/no, because the one above is the logout dialog wearing a generic name —
+         * it hardcodes the "Log out" title and button, so asking "discard these drafts?" through it
+         * produces a box that says Log out twice and answers a question nobody asked. */
+        ask: (msg, opts) => pkConfirm({
+          title: (opts && opts.title) || 'Are you sure?',
+          message: msg,
+          confirmLabel: (opts && opts.confirmLabel) || 'Continue',
+          danger: !!(opts && opts.danger),
+        }),
       };
       // A throw inside mountHud used to be swallowed by this async caller: review armed, nothing
       // on screen, no error anywhere. Surface it instead, and leave a way back in.

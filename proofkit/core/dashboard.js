@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=5726f06327';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=735118fd14';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=5726f06327';
-  import { createCardRenderer } from './card.js?v=5726f06327';
-  import { ICON } from './icons.js?v=5726f06327';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=5726f06327';
+  import { PK_VERSION } from './version.js?v=735118fd14';
+  import { createCardRenderer } from './card.js?v=735118fd14';
+  import { ICON } from './icons.js?v=735118fd14';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=735118fd14';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -4816,7 +4816,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=5726f06327');
+              const sheet = await import('./sheet.js?v=735118fd14');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4897,7 +4897,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=5726f06327');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=735118fd14');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
