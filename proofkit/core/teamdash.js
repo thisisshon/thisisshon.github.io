@@ -1,9 +1,9 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, buildThemeToggle, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=735118fd14';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=0ecc9df86d';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=735118fd14';
-  import { createCardRenderer } from './card.js?v=735118fd14';
-  import { ICON } from './icons.js?v=735118fd14';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=735118fd14';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=735118fd14';
+  import { PK_VERSION } from './version.js?v=0ecc9df86d';
+  import { createCardRenderer } from './card.js?v=0ecc9df86d';
+  import { ICON } from './icons.js?v=0ecc9df86d';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=0ecc9df86d';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=0ecc9df86d';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -3501,11 +3501,14 @@
       goBuilder();
     });
 
-    // Colour mode in the rail, above Log out — the same labelled row Builder's rail carries, and
-    // the same control Settings → Appearance mounts (one preference, several entry points).
+    /* Colour mode in the rail, above Log out — now literally the Builder's control, from the shared
+     * builder in config.js, rather than the switch this board used to mount. The switch was the one
+     * row in the rail that was not a rail row: a 46px track in a 64px collapsed rail clipped into a
+     * red smear, and next to Log out it read as a different kind of component.
+     * Settings → Appearance still mounts the SWITCH — that is a settings screen, where a switch is
+     * the right control. One preference, two presentations, each suited to where it sits. */
     try {
-      const sideTheme = document.querySelector('[data-pk-sidetheme]');
-      if (sideTheme && !sideTheme.firstChild) sideTheme.appendChild(buildThemeToggle({ row: true }));
+      mountThemeRailButton('[data-pk-sidetheme]');
     } catch (e) {}
 
     // Side-rail logout mirrors the header control — same confirm + teardown, one implementation.

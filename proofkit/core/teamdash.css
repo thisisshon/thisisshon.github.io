@@ -167,31 +167,16 @@
     display:flex;flex-direction:column;gap:var(--pk-space-3)}
   .tmd .tmd-sidetheme{display:block}
 
-  /* ---- Collapse Menu ----
-     The markup is the same button the Builder's rail carries, but the rules that shape it live in
-     dashboard.css, which this board does not load — so it arrived as a full-width box around a
-     40px chevron. Restated here rather than moved: that block is a single ordered cascade whose
-     own comment asks not to be broken up, and the four rows it dresses do not all exist here. */
-  .tmd .pk-side-collapse{display:flex;align-items:center;gap:var(--pk-space-3h);width:100%;
-    box-sizing:border-box;height:var(--pk-rail-row-h);padding:0 var(--pk-space-3h);
-    color:var(--pk-body);background:var(--pk-card);border:1px solid var(--pk-hair);
-    border-radius:var(--pk-radius-md);font:500 var(--pk-text-md)/1 var(--pk-font);cursor:pointer;
-    white-space:nowrap;overflow:hidden;text-align:left;
-    transition:color .14s,border-color .14s,background .14s}
-  .tmd .pk-side-collapse>svg{flex:none;width:18px;height:18px;stroke-width:1.8;
-    transition:transform .18s}
-
-  /* Collapsed: the rail keeps the icons and drops every label. Driven by the same root class and
-     the same localStorage key as Builder's, so a person who collapses one finds the other
-     collapsed too — it is one preference about one rail, not two. */
-  :root.pk-side-collapsed .tmd .pk-side{width:var(--pk-rail-w-min);min-width:var(--pk-rail-w-min)}
-  :root.pk-side-collapsed .tmd .pk-nav-txt,
-  :root.pk-side-collapsed .tmd .pk-side-word,
-  :root.pk-side-collapsed .tmd .pk-side-tag,
-  :root.pk-side-collapsed .tmd .pk-side-logout--row>span{display:none}
-  :root.pk-side-collapsed .tmd .pk-nav,
-  :root.pk-side-collapsed .tmd .pk-side-collapse{justify-content:center;padding-left:0;padding-right:0}
-  :root.pk-side-collapsed .tmd .pk-side-collapse>svg{transform:rotate(180deg)}
+  /* ---- the rail, including Collapse Menu, is in design/components.css ----
+     These rules used to be restated here, because the rail's cascade lived in dashboard.css and
+     this board does not load it. It is shared now, so the restatements are gone.
+     They were verified inert before removal rather than assumed to be: the shared rules carry
+     `!important`, so in the collapsed state this board already reported the SHARED geometry
+     (justify-content:flex-start, padding-left:23px, icons at the same x in both states) and not the
+     centred, zero-padding version written here. The only rule that still applied was
+     `display:none` on the labels, which the shared block does with opacity — same result on screen,
+     and the opacity version is what animates.
+     Anything about .pk-side / .pk-nav / .pk-subnav belongs in components.css. */
 
   /* ---- app shell (desktop) ---- mirrors Builder: the board fills the viewport and the PAGE
      never scrolls, .pk-content is the only scroller. That is what holds the foot group on the

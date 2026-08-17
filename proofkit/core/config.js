@@ -682,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=735118fd14'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=0ecc9df86d'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=735118fd14';
+} from './vocab.js?v=0ecc9df86d';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -977,6 +977,57 @@ export function buildThemeToggle(opts) {
   document.addEventListener('pk:themechange', sync);
   sync();
   return btn;
+}
+
+/* The RAIL's colour-mode control — a button, not a switch.
+ *
+ * A switch needs a track, a knob and a sense of "on", and none of the three survive a 64px
+ * collapsed rail: the track is 46px and the gutter is 23px, so it arrived clipped. It also read as
+ * a different kind of component from Log out sitting directly beneath it, which is the one thing a
+ * stack of rail rows must not do.
+ *
+ * A button says what pressing it DOES — in dark mode it shows a sun and reads "Light Mode" —
+ * which is also the only thing the collapsed icon can convey on its own.
+ *
+ * This lived inline in dashboard.js, so the team board mounted the switch instead and its rail foot
+ * did not match. It is here now because both boards need the same control: one implementation, two
+ * entry points, like every other shared piece.
+ */
+const THEME_ICONS = {
+  // Shown when you are in DARK mode — pressing it takes you to light, so it shows a sun.
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+};
+
+/** Build the rail's colour-mode button (a wired DOM node). */
+export function buildThemeRailButton() {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'pk-side-theme-btn';
+  const paint = () => {
+    const dark = getTheme() !== LIGHT_THEME;
+    btn.innerHTML = (dark ? THEME_ICONS.sun : THEME_ICONS.moon) +
+      '<span class="pk-nav-txt">' + (dark ? 'Light' : 'Dark') + ' Mode</span>';
+    const label = btn.textContent.trim();
+    btn.setAttribute('aria-label', label);
+    btn.title = label;
+  };
+  paint();
+  btn.addEventListener('click', () => { toggleTheme(); paint(); });
+  /* Two listeners, two different events. `pk:themechange` catches the switch in Settings flipping
+   * the same preference on THIS page; `storage` catches another tab doing it. Builder had only the
+   * second, so changing the mode in Settings left the rail button showing the old label until a
+   * reload. */
+  document.addEventListener('pk:themechange', paint);
+  window.addEventListener('storage', paint);
+  return btn;
+}
+
+/** Mount the rail's colour-mode button into a `[data-pk-sidetheme]` slot, once. */
+export function mountThemeRailButton(selector) {
+  document.querySelectorAll(selector || '[data-pk-sidetheme]').forEach((slot) => {
+    if (!slot.firstChild) slot.appendChild(buildThemeRailButton());
+  });
 }
 
 /** Fill every `[data-pk-toggle]` slot on the page with a toggle control. */

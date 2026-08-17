@@ -2,12 +2,12 @@
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     BASE, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
     ADMIN_TEAM, buildAccessLogin, accessLogin, passkeyLoginDiscoverable, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
-    initTheme, buildThemeToggle, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
+    initTheme, mountThemeRailButton, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=735118fd14';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=0ecc9df86d';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=735118fd14';
-  import { createCardRenderer } from './card.js?v=735118fd14';
-  import { ICON } from './icons.js?v=735118fd14';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=735118fd14';
+  import { PK_VERSION } from './version.js?v=0ecc9df86d';
+  import { createCardRenderer } from './card.js?v=0ecc9df86d';
+  import { ICON } from './icons.js?v=0ecc9df86d';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=0ecc9df86d';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -423,7 +423,10 @@
           trashList: () => apiFetch('/admin/trash'),
           trashRestore: (kind, ref) => apiFetch('/admin/trash/restore', { method: 'POST', body: JSON.stringify({ kind, ref }) }),
           trashArm: (kind, ref, password) => apiFetch('/admin/trash/arm', { method: 'POST', body: JSON.stringify({ kind, ref, password }) }),
-          trashPurge: (kind, ref, password) => apiFetch('/admin/trash/purge', { method: 'POST', body: JSON.stringify({ kind, ref, password }) }),
+          /* One shape for one and for many: the caller always passes a LIST, and the Worker takes
+           * `items` for a batch. Keeping the old (kind, ref) signature beside it would have meant
+           * two call paths into the one endpoint that destroys things. */
+          trashPurge: (items, password) => apiFetch('/admin/trash/purge', { method: 'POST', body: JSON.stringify({ items, password }) }),
           auditLog: (kind, ref) => apiFetch('/admin/audit-log' + (kind && ref ? '?kind=' + encodeURIComponent(kind) + '&ref=' + encodeURIComponent(ref) : '')),
           policyGet: () => apiFetch('/admin/settings'),
           policySet: (patch) => apiFetch('/admin/settings', { method: 'POST', body: JSON.stringify(patch) }),
@@ -1118,6 +1121,11 @@
      * instance-wide, so a selection cannot follow a rename or point at two accounts. */
     let peopleSelectMode = false;
     const peopleSel = new Set();
+    /* The recycle bin's picks, as "<kind>:<ref>" — a ref alone is not unique across kinds, and a
+     * team called the same thing as a project would have shared a checkbox. No select MODE here,
+     * unlike teams and people: clearing out is what you come to the bin to do, so the boxes are
+     * always on. */
+    const trashSel = new Set();
     let orgData = { projects: [], teams: [], users: [] };   // last load, for the delegated handlers
     /* What a team may do. Everyone used to have identical powers: anyone who could see a ticket
      * could resolve or reopen it. Order is least-to-most consequential. */
@@ -4816,7 +4824,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=735118fd14');
+              const sheet = await import('./sheet.js?v=0ecc9df86d');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4897,7 +4905,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=735118fd14');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=0ecc9df86d');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -6440,34 +6448,12 @@ function genAccessKey() {
 
     // Colour mode in the rail, right under the team picker — the same personal light/dark
     // switch Settings mounts (one control, two entry points), in its labelled row form.
+    /* 7.9: the rail's theme control is a plain button, not a switch — see buildThemeRailButton() in
+     * config.js for why. It was built inline here, which is exactly why the team board mounted the
+     * switch instead: there was nothing to share. It is shared now, and this board is one of its two
+     * callers rather than its owner. */
     try {
-      // 7.9: the rail's theme control is a plain button, not a switch. A switch needs a track, a
-      // knob and a sense of "on", none of which survive the collapsed rail — and it read as a
-      // different component from Log out sitting right beneath it. A button says what pressing it
-      // does, which is also what the collapsed icon has to convey on its own.
-      const sideTheme = document.querySelector('[data-pk-sidetheme]');
-      if (sideTheme && !sideTheme.firstChild) {
-        const ICONS = {
-          // Shown when you are in DARK mode — pressing it takes you to light, so it shows a sun.
-          sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-          moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
-        };
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'pk-side-theme-btn';
-        const paint = () => {
-          const dark = getTheme() !== LIGHT_THEME;
-          btn.innerHTML = (dark ? ICONS.sun : ICONS.moon) +
-            '<span class="pk-nav-txt">' + (dark ? 'Light' : 'Dark') + ' Mode</span>';
-          btn.setAttribute('aria-label', btn.textContent.trim());
-          btn.title = btn.textContent.trim();
-        };
-        paint();
-        btn.addEventListener('click', () => { toggleTheme(); paint(); });
-        // Another tab flipping the shared theme must update this label too.
-        window.addEventListener('storage', paint);
-        sideTheme.appendChild(btn);
-      }
+      mountThemeRailButton('[data-pk-sidetheme]');
     } catch (e) {}
 
     // Side-rail logout calls the shared implementation directly. It used to forward a click to

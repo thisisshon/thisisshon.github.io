@@ -25,7 +25,7 @@
 import {
   WORKER_URL, accountLogin, accessLogin, buildAccessLogin,
   passkeyLoginDiscoverable, hasPlatformAuthenticator, getAccount, getAuthToken, PK_MARK,
-} from './config.js?v=735118fd14';
+} from './config.js?v=0ecc9df86d';
 
 const $ = (s) => document.querySelector(s);
 const workerUrl = window.PROOFKIT_WORKER_URL || WORKER_URL;
