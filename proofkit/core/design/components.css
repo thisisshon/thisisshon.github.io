@@ -2064,7 +2064,26 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
  * ============================================================================================== */
 
 /* ---- the rail itself ------------------------------------------------------------------------ */
-.pk-side { overflow: hidden; transition: width .26s cubic-bezier(.4, 0, .2, 1); }
+/* `overflow-x: hidden` is what clips the labels as the rail narrows — that clip IS the collapse
+   animation. But writing it as the shorthand `overflow: hidden` also set overflow-y, which
+   overrode the `overflow-y: auto` this rule sits below and took the rail's scrolling away. With
+   nowhere to scroll, a short viewport had only one way to fit the rows: squash them. Hence a nav
+   whose items were crushed together while the foot group sat in open space.
+   Split per-axis: x clips for the animation, y scrolls when the rows do not fit. */
+.pk-side { overflow-x: hidden; overflow-y: auto; transition: width .26s cubic-bezier(.4, 0, .2, 1); }
+
+/* NOTHING IN THE RAIL SHRINKS. Every row declares a height, but in a flex column a declared
+   height is only a hint — `flex-shrink` defaults to 1, so the rows gave up their height before the
+   container ever considered scrolling. `.pk-side-spacer` is the single element allowed to give
+   (flex: 1 1 40px), which is what pins the foot to the bottom on a tall viewport and collapses
+   first on a short one. Past that floor the rail scrolls, and the rows keep their size. */
+.pk-side > .pk-nav,
+.pk-side > .pk-subnav,
+.pk-side > .pk-side-collapse,
+.pk-side .rvd-sideactions,
+.pk-side .tmd-sideactions,
+.pk-side .rvd-teamview,
+.pk-side .pk-side-brand { flex: none; }
 :root.pk-side-collapsed .pk-side { width: var(--pk-rail-w-min) !important; min-width: var(--pk-rail-w-min); }
 /* `overflow: hidden` is what reveals labels by clipping them — but it would also clip the team
    popup. Lift it only while that menu is open. */
