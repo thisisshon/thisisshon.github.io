@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=e9a2659055';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=cb655fa246';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=e9a2659055';
-  import { createCardRenderer } from './card.js?v=e9a2659055';
-  import { ICON } from './icons.js?v=e9a2659055';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=e9a2659055';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=e9a2659055';
+  import { PK_VERSION } from './version.js?v=cb655fa246';
+  import { createCardRenderer } from './card.js?v=cb655fa246';
+  import { ICON } from './icons.js?v=cb655fa246';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=cb655fa246';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=cb655fa246';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -1264,8 +1264,13 @@
                  desc: 'Done and live. Kept for the record.' }) +
           tile({ title: 'Notifications', go: 'notifs', badge: unread ? String(unread) : '',
                  desc: 'Status pushes, arrivals and replies.' }) +
-          tile({ title: 'Comments', go: 'threads', desc: 'Every thread you are part of, including replies.' }) +
-          tile({ title: 'Patterns', go: 'patterns', desc: 'The same finding raised more than once, and the spots that keep coming back.' }) +
+          /* These carry their own counts now. A tile that shows a number when there is work and
+             nothing at all when there is none reads as broken rather than as empty — the reader
+             cannot tell "none" from "not loaded". Zero is an answer; blank is not. */
+          tile({ title: 'Comments', go: 'threads', stat: threadCount(),
+                 desc: 'Every thread you are part of, including replies.' }) +
+          tile({ title: 'Patterns', go: 'patterns', stat: patternClusters(rs, 2).length,
+                 desc: 'The same finding raised more than once, and the spots that keep coming back.' }) +
           tile({ title: 'Insights', go: 'insights', stat: rs.length,
                  sub: `${st('deployed_live')} deployed all-time`, desc: 'How this team’s work has moved.' }) +
           tile({ title: 'My Team', go: 'team', desc: 'Who else is on this board.' }) +

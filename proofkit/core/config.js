@@ -682,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=e9a2659055'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=cb655fa246'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=e9a2659055';
+} from './vocab.js?v=cb655fa246';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1056,34 +1056,73 @@ export function animateRailReflow(mutate, opts) {
   let nodes = [];
   try { nodes = [].slice.call(document.querySelectorAll(o.selector || REFLOW_SELECTOR), 0, 150); }
   catch (e) { nodes = []; }
-  const first = new Map();
-  nodes.forEach((n) => first.set(n, n.getBoundingClientRect()));
+  if (!nodes.length || typeof nodes[0].animate !== 'function') { mutate(); return; }
+
+  /* WHY THIS IS NOT A PLAIN FLIP.
+   *
+   * A textbook FLIP reads every position, mutates, then reads again on the next frame and plays the
+   * difference. That assumes the layout moves in ONE step. Here it does not: `.pk-side` transitions
+   * its own width over 260ms, so one frame after the class toggle the cards have shifted by a pixel
+   * or two and nothing looks like it moved yet. Measured against the "before" rects the deltas are
+   * below any sane threshold, every card is skipped, and the animation appears to do nothing —
+   * which is exactly what it did.
+   *
+   * The jump does not happen at the toggle. It happens somewhere in the MIDDLE of that 260ms, at
+   * the single frame where the grid's `auto-fit` column count changes and the cards re-wrap.
+   *
+   * So watch the whole transition and compare each frame against the one before it. A card drifting
+   * with the rail moves a few pixels per frame; a card re-wrapping moves a long way in one frame.
+   * Only the second is a jump, and only the second gets animated — from where it just was, back to
+   * where it now is.
+   */
+  const prev = new Map();
+  nodes.forEach((n) => prev.set(n, n.getBoundingClientRect()));
 
   mutate();
 
-  if (!nodes.length) return;
-  requestAnimationFrame(() => {
-    const moved = [];
+  const JUMP = 8;        // px in a single frame; drift stays well under this, a re-wrap far over
+  const WATCH = 480;     // ms — the rail's 260ms transition with room either side
+  const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+
+  /* A card being animated is SKIPPED until its animation finishes.
+   *
+   * getBoundingClientRect() reports the RENDERED box, transform included. So a card part-way
+   * through its own catch-up animation measures far from where the layout puts it, the next frame
+   * reads that as another jump, and starts another animation against it — which moves it again.
+   * Left alone this feeds back on itself: nine cards produced a hundred and seventy-four
+   * overlapping animations, and the last of them were still running long after the rail had
+   * settled. Skipping the busy ones breaks the loop, and re-baselining on finish means the next
+   * genuine jump is still measured from the truth. */
+  const busy = new WeakSet();
+
+  const tick = (now) => {
     nodes.forEach((n) => {
-      const a = first.get(n); if (!a) return;
+      if (busy.has(n)) return;
+      const a = prev.get(n); if (!a) return;
       const b = n.getBoundingClientRect();
+      if (!b.width && !b.height) return;              // hidden or removed — nothing to animate
       const dx = a.left - b.left, dy = a.top - b.top;
-      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;   // it did not move; leave it alone
-      n.style.transition = 'none';
-      n.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-      moved.push(n);
+      if (Math.abs(dx) > JUMP || Math.abs(dy) > JUMP) {
+        busy.add(n);
+        let anim;
+        try {
+          anim = n.animate(
+            [{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }],
+            { duration: 300, easing: 'cubic-bezier(.4,0,.2,1)' },
+          );
+        } catch (e) { busy.delete(n); return; }
+        const release = () => { busy.delete(n); prev.set(n, n.getBoundingClientRect()); };
+        if (anim.finished && anim.finished.then) anim.finished.then(release, release);
+        else anim.onfinish = release;
+        return;                                       // leave `prev` alone while it plays
+      }
+      prev.set(n, b);
     });
-    if (!moved.length) return;
-    requestAnimationFrame(() => {
-      moved.forEach((n) => {
-        n.style.transition = 'transform .34s cubic-bezier(.4,0,.2,1)';
-        n.style.transform = '';
-      });
-      /* Clean the inline styles off once it has played. Left behind, the transition would also
-         catch every unrelated transform later in the page's life. */
-      setTimeout(() => { moved.forEach((n) => { n.style.transition = ''; n.style.transform = ''; }); }, 400);
-    });
-  });
+    /* Web Animations rather than inline styles: nothing to clean up afterwards, and the animation
+       owns the transform for its lifetime instead of fighting a CSS transition. */
+    if ((now - t0) < WATCH) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 
 /** Mount the rail's colour-mode button into a `[data-pk-sidetheme]` slot, once. */

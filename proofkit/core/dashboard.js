@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=e9a2659055';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=cb655fa246';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=e9a2659055';
-  import { createCardRenderer } from './card.js?v=e9a2659055';
-  import { ICON } from './icons.js?v=e9a2659055';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=e9a2659055';
+  import { PK_VERSION } from './version.js?v=cb655fa246';
+  import { createCardRenderer } from './card.js?v=cb655fa246';
+  import { ICON } from './icons.js?v=cb655fa246';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=cb655fa246';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2668,7 +2668,13 @@
           tile({ title: 'Notifications', attr: go('notifs'),
                  badge: d && d.unreadNotifications ? String(d.unreadNotifications) : '',
                  desc: 'Status pushes, arrivals and replies.' }) +
-          tile({ title: 'Comments', attr: go('threads'), desc: 'Every thread, including replies.' }) +
+          /* Comments carries its count. A tile that shows a number when there is work and nothing
+             at all when there is none reads as broken rather than empty — zero is an answer, blank
+             is not. Patterns deliberately does NOT: this board gets patterns from GET /patterns,
+             which the home view has not called, so any number here would be invented rather than
+             counted. An honest blank beats a confident wrong number. */
+          tile({ title: 'Comments', attr: go('threads'), stat: threadRoots().length,
+                 desc: 'Every thread, including replies.' }) +
           tile({ title: 'Patterns', attr: go('patterns'), desc: 'Repeat findings and fragile elements.' }) +
           tile({ title: 'Concerns from teams', attr: go('dash'),
                  stat: t ? (t.reopened + t.clarify) : '—',
@@ -4824,7 +4830,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=e9a2659055');
+              const sheet = await import('./sheet.js?v=cb655fa246');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4905,7 +4911,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=e9a2659055');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=cb655fa246');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
