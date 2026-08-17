@@ -1,9 +1,9 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=9ad1aa41ba';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=e9a2659055';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=9ad1aa41ba';
-  import { createCardRenderer } from './card.js?v=9ad1aa41ba';
-  import { ICON } from './icons.js?v=9ad1aa41ba';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=9ad1aa41ba';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=9ad1aa41ba';
+  import { PK_VERSION } from './version.js?v=e9a2659055';
+  import { createCardRenderer } from './card.js?v=e9a2659055';
+  import { ICON } from './icons.js?v=e9a2659055';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=e9a2659055';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=e9a2659055';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -3527,7 +3527,10 @@
      * wants the room wants it every time. */
     (function wireCollapse() {
       const KEY = 'pkSideCollapsed';
-      const apply = (on) => {
+      /* `animate` is false on the first paint — there is no previous layout worth honouring — and
+         true for every real toggle, where the content's cards travel to their new columns instead
+         of teleporting. See animateRailReflow() in config.js. */
+      const apply = (on, animate) => animateRailReflow(() => {
         document.documentElement.classList.toggle('pk-side-collapsed', !!on);
         const b = document.querySelector('[data-pk-collapse]');
         if (b) {
@@ -3538,7 +3541,7 @@
          * measured against a layout that no longer exists. Re-measure after the width transition
          * has settled — reading mid-animation just banks a second wrong number. */
         setTimeout(positionSubnavMarker, 300);
-      };
+      }, { animate: !!animate });
       let on = false;
       try { on = localStorage.getItem(KEY) === '1'; } catch (e) {}
       apply(on);
@@ -3546,7 +3549,7 @@
         if (!e.target.closest('[data-pk-collapse]')) return;
         on = !on;
         try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
-        apply(on);
+        apply(on, true);
       });
     })();
 

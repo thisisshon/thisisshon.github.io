@@ -682,7 +682,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=9ad1aa41ba'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=e9a2659055'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +690,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=9ad1aa41ba';
+} from './vocab.js?v=e9a2659055';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1021,6 +1021,69 @@ export function buildThemeRailButton() {
   document.addEventListener('pk:themechange', paint);
   window.addEventListener('storage', paint);
   return btn;
+}
+
+/* Animate the CONTENT when the rail changes width.
+ *
+ * The rail animates its own width, and the content beside it is a flex sibling, so its box already
+ * follows frame by frame. What jumps is everything INSIDE it: the card grids are
+ * `repeat(auto-fit, minmax(...))`, so at one particular width the column count changes and every
+ * card teleports to a new row in a single frame. Nothing is transitionable about that — it is a
+ * reflow, not a property change.
+ *
+ * So: FLIP. Read where every card is, let the layout change, then put each card back where it was
+ * with a transform and release it. The browser does the real reflow once, instantly, and the eye
+ * sees the cards travel to their new positions.
+ *
+ * Translate only, never scale — scaling a card distorts its text for the length of the animation,
+ * which looks worse than the jump it is fixing.
+ */
+const REFLOW_SELECTOR = [
+  '.pk-content .pkc',           // the shared ticket card
+  '.pk-content .pk-set-card',   // settings
+  '.pk-content .pk-m',          // metric tiles
+  '.pk-content .pk-dcard',      // detail cards
+  '.pk-content .pk-tile',       // board home tiles (.pk-tiles is an auto-fit grid — the reflow)
+].join(',');
+
+export function animateRailReflow(mutate, opts) {
+  const o = opts || {};
+  const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Not animating is always a valid outcome: on the first paint there is no "before" worth
+  // honouring, and reduced-motion means the reflow should simply happen.
+  if (reduce || !o.animate) { mutate(); return; }
+
+  let nodes = [];
+  try { nodes = [].slice.call(document.querySelectorAll(o.selector || REFLOW_SELECTOR), 0, 150); }
+  catch (e) { nodes = []; }
+  const first = new Map();
+  nodes.forEach((n) => first.set(n, n.getBoundingClientRect()));
+
+  mutate();
+
+  if (!nodes.length) return;
+  requestAnimationFrame(() => {
+    const moved = [];
+    nodes.forEach((n) => {
+      const a = first.get(n); if (!a) return;
+      const b = n.getBoundingClientRect();
+      const dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;   // it did not move; leave it alone
+      n.style.transition = 'none';
+      n.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      moved.push(n);
+    });
+    if (!moved.length) return;
+    requestAnimationFrame(() => {
+      moved.forEach((n) => {
+        n.style.transition = 'transform .34s cubic-bezier(.4,0,.2,1)';
+        n.style.transform = '';
+      });
+      /* Clean the inline styles off once it has played. Left behind, the transition would also
+         catch every unrelated transform later in the page's life. */
+      setTimeout(() => { moved.forEach((n) => { n.style.transition = ''; n.style.transform = ''; }); }, 400);
+    });
+  });
 }
 
 /** Mount the rail's colour-mode button into a `[data-pk-sidetheme]` slot, once. */
