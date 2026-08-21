@@ -14,10 +14,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
 <!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
 <style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=cb655fa246">
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=cb655fa246">
-<link rel="stylesheet" href="/proofkit/core/card.css?v=cb655fa246">
-<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=cb655fa246">
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=c909067c04">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=c909067c04">
+<link rel="stylesheet" href="/proofkit/core/card.css?v=c909067c04">
+<link rel="stylesheet" href="/proofkit/core/teamdash.css?v=c909067c04">
 <script>(function(){try{
   var base="/proofkit/builder";
   var p=location.pathname;
@@ -37,7 +37,7 @@
 (function () {
   // Hosted build: default to this deployment's Worker. ?worker=<url> still overrides and is
   // remembered; ?worker= (empty) falls back to the baked default rather than to demo mode.
-  var DEFAULT = "https://proofkit-api.shonydjjv.workers.dev";
+  var DEFAULT = "https://api.proofkit.in";
   var q = null;
   try { q = new URLSearchParams(location.search).get('worker'); } catch (e) {}
   if (q !== null) {
@@ -198,6 +198,6 @@
     </footer>
   </div>
 </section>
-<script type="module" src="/proofkit/core/teamdash.js?v=cb655fa246"></script>
+<script type="module" src="/proofkit/core/teamdash.js?v=c909067c04"></script>
 </body>
 </html>

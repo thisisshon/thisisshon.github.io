@@ -17,11 +17,11 @@
 <!-- Black before the first stylesheet lands. This page is a hard cut away from whatever site the
      user came from, and a white flash in the middle of that cut is the one thing it must not do. -->
 <style>html,body{margin:0;background:#000}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=cb655fa246">
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=c909067c04">
 <!-- The access-key screen is a design-system component (.pk-access*), so this page needs
      components.css. Without it the markup renders correctly and looks like nothing at all. -->
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=cb655fa246">
-<link rel="stylesheet" href="/proofkit/core/auth.css?v=cb655fa246">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=c909067c04">
+<link rel="stylesheet" href="/proofkit/core/auth.css?v=c909067c04">
 </head>
 <body>
 <!-- Worker base URL, same precedence as the other standalone entries: ?worker=<url> remembers it,
@@ -32,7 +32,7 @@
 (function () {
   // Hosted build: default to this deployment's Worker. ?worker=<url> still overrides and is
   // remembered; ?worker= (empty) falls back to the baked default rather than to demo mode.
-  var DEFAULT = "https://proofkit-api.shonydjjv.workers.dev";
+  var DEFAULT = "https://api.proofkit.in";
   var q = null;
   try { q = new URLSearchParams(location.search).get('worker'); } catch (e) {}
   if (q !== null) {
@@ -43,6 +43,6 @@
   window.PROOFKIT_WORKER_URL = u || DEFAULT;
 })();
 </script>
-<script type="module" src="/proofkit/core/auth.js?v=cb655fa246"></script>
+<script type="module" src="/proofkit/core/auth.js?v=c909067c04"></script>
 </body>
 </html>

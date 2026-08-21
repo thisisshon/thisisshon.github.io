@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=cb655fa246';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=c909067c04';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=cb655fa246';
-  import { createCardRenderer } from './card.js?v=cb655fa246';
-  import { ICON } from './icons.js?v=cb655fa246';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=cb655fa246';
+  import { PK_VERSION } from './version.js?v=c909067c04';
+  import { createCardRenderer } from './card.js?v=c909067c04';
+  import { ICON } from './icons.js?v=c909067c04';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=c909067c04';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2749,9 +2749,13 @@
         const current = await pkPrompt({
           title: 'Change your Access Key',
           message: 'Enter the Access Key you use now.',
-          value: '', confirmLabel: 'Continue',
+          value: '', confirmLabel: 'Continue', password: true,
         });
         if (current === null || !current.trim()) return;
+        /* NOT masked, deliberately — unlike the one above. This one is being CHOSEN, not proved:
+           you have to read what you typed to avoid setting a key you cannot reproduce, and the
+           product shows it back on the next screen anyway. Masking here would buy nothing and cost
+           typos. */
         const next = await pkPrompt({
           title: 'Your new Access Key',
           message: 'Two letters, then six digits — like AB123456. Leave it blank to have one drawn for you.\n\nThe old one stops working immediately.',
@@ -3281,7 +3285,7 @@
           card('Recycle bin', 'Deleted items keep their history. Access already ended.',
             (items.length
               ? `<div class="pk-set-row pk-trash-bar"><div class="pk-set-row-main">` +
-                  `<label class="pk-u-inlinerow"><input type="checkbox" class="pk-tsel-box" data-trash-all${allPicked ? ' checked' : ''}>` +
+                  `<label class="pk-u-inlinerow"><input type="checkbox" class="pk-tsel-inline" data-trash-all${allPicked ? ' checked' : ''}>` +
                   `<span class="pk-set-row-label">${trashSel.size ? trashSel.size + ' selected' : 'Select all'}</span></label>` +
                 `</div><div class="pk-set-ctl">` +
                   (trashSel.size
@@ -3292,7 +3296,7 @@
             items.map((it) => {
               const key = it.kind + ':' + it.ref;
               return row(
-                `<label class="pk-u-inlinerow"><input type="checkbox" class="pk-tsel-box" data-trash-pick="${esc(key)}"` +
+                `<label class="pk-u-inlinerow"><input type="checkbox" class="pk-tsel-inline" data-trash-pick="${esc(key)}"` +
                   `${trashSel.has(key) ? ' checked' : ''}> ${esc(it.name || it.ref)}</label>`,
                 `${esc(it.kind)} · deleted ${esc(when(it.deletedAt))}${it.deletedBy ? ' by ' + esc(it.deletedBy) : ''}`,
                 `<span class="pk-u-inlinerow">` +
@@ -3313,7 +3317,7 @@
           const pw = await pkPrompt({
             title: list.length === 1 ? 'Delete permanently' : `Delete ${list.length} permanently`,
             message: `This cannot be undone.\n\n${names}\n\nWhat each one held is recorded in the audit log as it goes.\n\nEnter the Builder password.`,
-            value: '', confirmLabel: 'Delete for good',
+            value: '', confirmLabel: 'Delete for good', password: true,
           });
           if (pw === null || !pw) return;
           const res = await store.trashPurge(list.map((x) => ({ kind: x.kind, ref: x.ref })), pw);
@@ -4230,7 +4234,7 @@
               const key = await pkPrompt({
                 title: 'Remove from this project',
                 message: `Take “${d.teamUnlink}” out of ${pname}? The team, its people and its tickets all stay — it simply is not worked with on this project any more.\n\nEnter your Access Key to confirm.`,
-                value: '', confirmLabel: 'Remove',
+                value: '', confirmLabel: 'Remove', password: true,
               });
               if (key === null || !key.trim()) return;
               await store.teamProjectLink(d.teamUnlink, d.teamUnlinkProject, true, key.trim());
@@ -4382,7 +4386,7 @@
                 title: 'Who is deleting ' + d.teamDelete + '?',
                 message: 'Enter your Access Key. It is recorded against this deletion, so the log '
                   + 'names a person rather than whichever session the tab is holding.',
-                value: '', confirmLabel: 'Delete',
+                value: '', confirmLabel: 'Delete', password: true,
               });
               if (key === null || !key.trim()) return;
               const res = await store.teamDelete(d.teamDelete, key.trim());
@@ -4830,7 +4834,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=cb655fa246');
+              const sheet = await import('./sheet.js?v=c909067c04');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4911,7 +4915,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=cb655fa246');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=c909067c04');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

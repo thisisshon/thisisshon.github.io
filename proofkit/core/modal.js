@@ -9,7 +9,7 @@
  * on-page overlay, which don't share a stylesheet). Colours bind to the --pk-* theme
  * tokens with literal fallbacks, so it renders even before a skin is applied.
  * ------------------------------------------------------------------------ */
-import { injectCss } from './inject-css.js?v=cb655fa246';
+import { injectCss } from './inject-css.js?v=c909067c04';
 
 let injected = false;
 function ensureStyles() {
@@ -58,7 +58,15 @@ function openModal({ title, message, buttons, input, cancelValue }) {
     if (input) {
       inputEl = document.createElement('input');
       inputEl.className = 'pk-modal-input';
-      inputEl.type = 'text';
+      /* Masked when the caller asks. A prompt that collects the Builder password showed it in
+         clear text in a modal that sits over a shared screen — the one field in the product that
+         must never be readable over a shoulder was the only one that was. */
+      inputEl.type = input.type === 'password' ? 'password' : 'text';
+      if (input.type === 'password') {
+        inputEl.autocomplete = 'current-password';
+        inputEl.spellcheck = false;
+        inputEl.setAttribute('autocapitalize', 'off');
+      }
       inputEl.placeholder = input.placeholder || '';
       inputEl.value = input.value || '';
       card.appendChild(inputEl);
@@ -126,7 +134,7 @@ export function pkPrompt(opts) {
   return openModal({
     title: o.title || '',
     message: o.message || '',
-    input: { placeholder: o.placeholder || '', value: o.value || '' },
+    input: { placeholder: o.placeholder || '', value: o.value || '', type: o.password ? 'password' : 'text' },
     cancelValue: null,
     buttons: [
       { label: 'Cancel', value: null },

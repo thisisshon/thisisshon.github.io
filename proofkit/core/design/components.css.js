@@ -2330,5 +2330,11 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   font-size:var(--pk-text-2xs); line-height:16px;
 }
 
-
+/* ---- a checkbox that sits IN a row, not on a card ---------------------------------------------
+   \`.pk-tsel-box\` is the CARD select: absolutely positioned so it can pin to a card's top-right
+   corner. The recycle bin reused it inside a settings row, where there is no positioned ancestor
+   to pin to — so every checkbox escaped its item and stacked in the corner of the panel, nowhere
+   near the thing it selected, and clicking one selected something else. In-flow variant for rows. */
+.pk-tsel-inline{position:static;flex:none;width:16px;height:16px;margin:0;accent-color:var(--pk-red);cursor:pointer}
+.pk-set-row .pk-u-inlinerow{align-items:center}
 `;
