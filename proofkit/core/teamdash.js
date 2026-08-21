@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, signOutUrl, onRemoteSignOut, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=84828f2899';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=38b8e8f22b';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=84828f2899';
-  import { createCardRenderer } from './card.js?v=84828f2899';
-  import { ICON } from './icons.js?v=84828f2899';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=84828f2899';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=84828f2899';
+  import { PK_VERSION } from './version.js?v=38b8e8f22b';
+  import { createCardRenderer } from './card.js?v=38b8e8f22b';
+  import { ICON } from './icons.js?v=38b8e8f22b';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=38b8e8f22b';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=38b8e8f22b';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -2470,7 +2470,7 @@
       // notification carries a chain id; keyboard-focusable when so.
       const chain = n.chainId || '';
       const clickable = chain ? ` data-chain="${esc(chain)}" tabindex="0" role="button" aria-label="View ticket details"` : '';
-      return `<article class="pk-notif${unread ? ' is-unread' : ''}${chain ? ' is-clickable' : ''}"${clickable}>` +
+      return `<article class="pk-notif${unread ? ' is-unread' : ''}${chain ? ' is-clickable' : ''}${wasFlipped(n.id) ? ' is-flipped' : ''}"${clickable}>` +
         `<span class="pk-notif-dot"></span>` +
         `<div class="pk-notif-body">` +
           `<div class="pk-notif-sum">${esc(n.summary || 'Your comment was updated.')}</div>` +
@@ -2945,6 +2945,12 @@
     }
 
     function render() {
+      /* Consume the just-toggled set: whatever this render draws gets the animation, and every
+       * render after it is still. Read at the top and cleared at the bottom, so the value cannot
+       * survive into a later redraw no matter which path called us. */
+      const flipping = pendingReadFlip;
+      pendingReadFlip = null;
+      const wasFlipped = (id) => !!(flipping && flipping.has(id));
       const detail = !!entryDetail; // a drilled-in ticket detail renders in the shared comments host
       const isQueue = view === 'queue'; // the queue; Inbound/Outbound choose which half of it
       // Keep the rail on whatever is actually rendered. It is set from the URL and from clicks, but
@@ -3026,15 +3032,27 @@
     }
 
     // Notifications primary: mark every unread item read.
+    /* Rows toggled by hand in the redraw that follows — see the note in dashboard.js. Cleared by
+     * the render, so a background poll redrawing this list animates nothing. */
+    let pendingReadFlip = null;
     async function markAllRead() {
       const ids = unreadNotes().map((n) => n.id);
       if (!ids.length) return;
-      const prim = $('#tmd-primary'); prim.disabled = true;
+      /* OPTIMISTIC. Read/unread is per-person, reversible by clicking again, and costs nobody
+       * anything if it is briefly wrong — so the screen changes now and the server is told after.
+       * Waiting on the round trip first meant the dots sat there while the request flew. */
+      const before = new Map(notes.filter((n) => ids.includes(n.id)).map((n) => [n.id, n.readTeam]));
+      notes.forEach((n) => { if (ids.includes(n.id)) n.readTeam = true; });
+      pendingReadFlip = new Set(ids);
+      counts(); render(); lastSig = dataSig();
       try {
         await store.markRead(ids, true);
-        notes.forEach((n) => { if (ids.includes(n.id)) n.readTeam = true; });
+      } catch (err) {
+        notes.forEach((n) => { if (before.has(n.id)) n.readTeam = before.get(n.id); });
+        pendingReadFlip = new Set(ids);
         counts(); render(); lastSig = dataSig();
-      } catch (err) { prim.disabled = false; pkAlert('Could not update — ' + err.message); }
+        pkAlert('Could not update — ' + err.message);
+      }
     }
 
     // ---- login (the shared common login — Team + Key) ----
@@ -3371,13 +3389,19 @@
       if (b) {
         const id = b.dataset.id;
         const read = b.dataset.read === '1';
-        b.disabled = true;
+        const n = notes.find((x) => x.id === id);
+        const was = n ? n.readTeam : undefined;
+        if (n) n.readTeam = read;
+        pendingReadFlip = new Set([id]);
+        counts(); render(); lastSig = dataSig();
         try {
           await store.markRead([id], read);
-          const n = notes.find((x) => x.id === id);
-          if (n) n.readTeam = read;
+        } catch (err) {
+          if (n) n.readTeam = was;
+          pendingReadFlip = new Set([id]);
           counts(); render(); lastSig = dataSig();
-        } catch (err) { b.disabled = false; pkAlert('Could not update — ' + err.message); }
+          pkAlert('Could not update — ' + err.message);
+        }
         return;
       }
       // Card click → open the notification's ticket detail (its chain root). Links/buttons

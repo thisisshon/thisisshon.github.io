@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=84828f2899';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=38b8e8f22b';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=84828f2899';
-  import { createCardRenderer } from './card.js?v=84828f2899';
-  import { ICON } from './icons.js?v=84828f2899';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=84828f2899';
+  import { PK_VERSION } from './version.js?v=38b8e8f22b';
+  import { createCardRenderer } from './card.js?v=38b8e8f22b';
+  import { ICON } from './icons.js?v=38b8e8f22b';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=38b8e8f22b';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -2434,6 +2434,9 @@
     }
 
     // ---- Notifications (admin: all), newest first, unread flagged ----
+    /* Which rows were just toggled by hand. Set immediately before a redraw and cleared by it, so
+     * exactly one render animates and every later one is still. */
+    let pendingReadFlip = null;
     function renderNotifs() {
       $('#rvd-empty').hidden = true;
       // Settings → Notifications filters which event kinds surface here (display-only; nothing
@@ -2476,19 +2479,47 @@
           },
         }]);
       });
+      /* OPTIMISTIC, because read/unread is the one change where waiting is pure cost.
+       *
+       * This used to await the POST and then await loadData() — a full reload of every ticket and
+       * notification on the board — before a single dot changed colour. Two round trips for a
+       * boolean, and the second one fetches everything. That is the second you could feel.
+       *
+       * Flipping a read flag is the safest write in the tool: it is per-person, it is reversible by
+       * clicking again, and being briefly wrong costs nobody anything. So the screen changes now
+       * and the server is told afterwards. If the server refuses, the flip is put back exactly as
+       * it was and the error is shown — the only state that can result is one of the two the person
+       * was already choosing between.
+       *
+       * No loadData() either. The local list IS the thing that changed; re-fetching the whole board
+       * to learn one boolean we just set ourselves is work with no answer in it. The next poll
+       * reconciles like it does for everything else. */
+      async function setNotifRead(ids, read) {
+        const want = new Set(ids);
+        if (!want.size) return;
+        const before = new Map((notifs || []).filter((n) => want.has(n.id)).map((n) => [n.id, n.readAdmin]));
+        (notifs || []).forEach((n) => { if (want.has(n.id)) n.readAdmin = read; });
+        pendingReadFlip = new Set(ids);          // the redraw animates just these rows
+        renderNotifs();
+        updateBadges();
+        try {
+          await store.markRead(ids, read);
+        } catch (e) {
+          (notifs || []).forEach((n) => { if (before.has(n.id)) n.readAdmin = before.get(n.id); });
+          pendingReadFlip = new Set(ids);
+          renderNotifs();
+          updateBadges();
+          pkAlert('Could not update — ' + e.message);
+        }
+      }
+
       const rb = $('#rvd-notif-read');
-      if (rb) rb.addEventListener('click', async () => {
-        rb.disabled = true;
-        try { await store.markRead(unread.map((n) => n.id), true); await loadData(); }
-        catch (e) { rb.disabled = false; pkAlert('Could not update — ' + e.message); }
-      });
+      if (rb) rb.addEventListener('click', () => setNotifRead(unread.map((n) => n.id), true));
       $('#rvd-view-notifs').querySelectorAll('.rvd-notif-toggle').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          btn.disabled = true;
-          try { await store.markRead([btn.dataset.id], btn.dataset.read === 'true'); await loadData(); }
-          catch (e) { btn.disabled = false; pkAlert('Could not update — ' + e.message); }
-        });
+        btn.addEventListener('click', () => setNotifRead([btn.dataset.id], btn.dataset.read === 'true'));
       });
+      // Consumed. The next redraw — a poll, a filter change — is still.
+      pendingReadFlip = null;
     }
     // A small speech-bubble glyph marks a Quick-questions reply notification.
     const REPLY_ICO = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
@@ -2513,7 +2544,11 @@
       // The whole card opens the ticket's detail (its chain root) when it carries one.
       const chain = n.chainId || '';
       const clickable = chain ? ` data-chain="${esc(chain)}" tabindex="0" role="button" aria-label="View ticket details"` : '';
-      return `<div class="pk-notif${unread ? ' is-unread' : ''}${chain ? ' is-clickable' : ''}"${clickable}>` +
+      /* `is-flipped` is set for one redraw on the rows the person just toggled, so the change is
+       * animated where they are looking and nowhere else. A poll that happens to redraw the list
+       * must not make every row flash. */
+      const flipped = pendingReadFlip && pendingReadFlip.has(n.id) ? ' is-flipped' : '';
+      return `<div class="pk-notif${unread ? ' is-unread' : ''}${chain ? ' is-clickable' : ''}${flipped}"${clickable}>` +
         `<span class="pk-notif-dot"></span>` +
         `<div class="pk-notif-body">` +
           `<div class="pk-notif-sum">${esc(n.summary || '')}</div>` +
@@ -4802,7 +4837,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=84828f2899');
+              const sheet = await import('./sheet.js?v=38b8e8f22b');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4883,7 +4918,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=84828f2899');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=38b8e8f22b');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

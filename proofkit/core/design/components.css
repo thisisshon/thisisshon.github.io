@@ -620,6 +620,42 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
   border-left:var(--pk-border-strong) solid var(--pk-hair);transition:border-color .15s,background .15s}
 .pk-notif.is-unread{border-left-color:var(--pk-red);background:var(--pk-elev)}
 .pk-notif.is-clickable{cursor:pointer}
+
+/* READ / UNREAD, ANIMATED. The state change is instant now — the row is redrawn from local data
+   before the server is even told — so the only thing left to communicate is WHICH row moved. The
+   colour and the dot cross-fade rather than snapping, and a row the person just toggled gets one
+   short settle so the eye follows it.
+
+   .is-flipped is applied for a single redraw and only to rows toggled by hand: a background poll
+   that happens to redraw the list must not make everything on screen flash. */
+.pk-notif{transition:background var(--pk-dur-med, .22s) ease, border-left-color var(--pk-dur-med, .22s) ease}
+.pk-notif-dot{transition:background var(--pk-dur-med, .22s) ease, transform var(--pk-dur-med, .22s) var(--pk-ease-rise, cubic-bezier(.2,.7,.3,1))}
+.pk-notif.is-flipped .pk-notif-dot{animation:pk-notif-dot-flip .34s var(--pk-ease-rise, cubic-bezier(.2,.7,.3,1))}
+.pk-notif.is-flipped{animation:pk-notif-settle .34s ease}
+.rvd-notif-toggle{transition:color .18s ease, border-color .18s ease, background .18s ease}
+.pk-notif.is-flipped .rvd-notif-toggle{animation:pk-notif-btn-flip .3s var(--pk-ease-rise, cubic-bezier(.2,.7,.3,1))}
+
+@keyframes pk-notif-dot-flip{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.9)}
+  100%{transform:scale(1)}
+}
+/* The label changes text as well as state, so it turns over rather than merely fading — the word
+   is different, and a cross-fade of two different words reads as a glitch. */
+@keyframes pk-notif-btn-flip{
+  0%{opacity:.35;transform:translateY(-3px)}
+  100%{opacity:1;transform:none}
+}
+@keyframes pk-notif-settle{
+  0%{background:color-mix(in srgb, var(--pk-red) 12%, transparent)}
+  100%{background:inherit}
+}
+/* Someone who has asked for less motion still gets the colour change; they just do not get moved. */
+@media (prefers-reduced-motion: reduce){
+  .pk-notif.is-flipped,
+  .pk-notif.is-flipped .pk-notif-dot,
+  .pk-notif.is-flipped .rvd-notif-toggle{animation:none}
+}
 .pk-notif.is-clickable:focus-visible{outline:none;border-left-color:var(--pk-red);background:var(--pk-elev)}
 /* The clickable notification row answers the pointer the same way the queue card does — surface
    up, hairline firmed. This row starts on --pk-card (a step above the card's well), so it lifts
