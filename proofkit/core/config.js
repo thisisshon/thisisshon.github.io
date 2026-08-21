@@ -430,10 +430,6 @@ export function adoptHandoff() {
   return adopted;
 }
 
-/* Run on import, before any board reads getSession(). config.js is the one module every entry
- * point imports, which makes this the only place the adoption is guaranteed to happen exactly
- * once and early enough to matter. */
-try { adoptHandoff(); } catch (e) {}
 
 /** Does this browser have a built-in biometric authenticator we can actually use? */
 export async function hasPlatformAuthenticator() {
@@ -826,7 +822,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=63432d416e'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=95b69c5866'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -834,7 +830,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=63432d416e';
+} from './vocab.js?v=95b69c5866';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */
@@ -1950,4 +1946,28 @@ export function pageUrlText(page) {
 /** Grouping key for a page across origins — mirrors the Worker's pageId. */
 export function pageGroupKey(page) {
   return pageHost(page) + '|' + ((page && page.path) || '/');
+}
+
+/* --------------------------------------------------------------------------
+ * ADOPT A HANDED-OFF SESSION — LAST, AND FOR A REASON.
+ *
+ * This runs on import, before any board reads getSession(), because config.js is the one module
+ * every entry point imports. But it must run at the BOTTOM of the file, not next to the function
+ * it calls.
+ *
+ * It sat higher up, and half the adoption silently failed. setAccountSession() writes pkAccount and
+ * the token, then reads ACCOUNT_KEY_SENTINEL and ADMIN_TEAM to decide which board the session
+ * belongs to — and both are `const`, declared hundreds of lines further down. From up there they
+ * are in the temporal dead zone, so the read threw, setSession() was never reached, and the catch
+ * below swallowed it. The result was a session that knew WHO you were and not WHICH board: the
+ * chooser read an empty team, decided you were not the Builder, loaded the team board instead, and
+ * that board bounced on its own identity guard. Sign in, arrive, get sent back.
+ *
+ * The catch stays — a corrupt fragment must not stop the page loading — but it reports now. A
+ * silent catch is what let a ReferenceError look like a storage problem for an afternoon.
+ * ------------------------------------------------------------------------ */
+try {
+  adoptHandoff();
+} catch (e) {
+  try { console.error('[proofkit] session handoff failed to adopt:', e); } catch (_) {}
 }
