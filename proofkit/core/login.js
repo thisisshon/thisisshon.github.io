@@ -1,5 +1,5 @@
   import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=24f9058039';
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=89e3b1ea39';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -179,7 +179,15 @@
     // Already signed in? Skip the gate entirely — the account session is the whole credential now,
     // and it is the same one the extension seeds through bridge.js.
     async function init() {
-      if (getAccount()) { sessionStorage.setItem('reviewMode', '1'); location.replace(landing(getAccount())); return; }
+      /* Already signed in — go to the board, not to a sign-in form. handoffUrl rather than the
+       * bare path because on a split deploy this page is on the SIGN-IN host: the path would
+       * resolve to login.proofkit.in/builder/, which is this tree's copy of the board with no
+       * session behind it. Same origin, and it stays the plain path it always was. */
+      if (getAccount()) {
+        sessionStorage.setItem('reviewMode', '1');
+        location.replace(handoffUrl(landing(getAccount()), getAccount(), getAuthToken()));
+        return;
+      }
       showLogin();
     }
 
