@@ -1,5 +1,5 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=fa4642d9cc';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=895693305c';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -52,8 +52,24 @@
     }
 
     /** Where a signed-in user belongs: their own board. */
+    /* Where sign-in sends you. Normally your own board; but a board that bounced you here for a
+     * session it did not have passes ?return=, so a deep link — a ticket, a person — survives an
+     * expiry instead of dumping you on the board root having lost the thing you opened.
+     *
+     * ALLOWLISTED, not merely parsed. A login page that forwards to any URL it is handed is an
+     * open redirect, and this one is reached straight from the product page. */
+    function safeReturn(raw) {
+      try {
+        const u = new URL(String(raw || ''), location.href);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+        if (u.origin !== location.origin && u.origin !== SITE_ORIGIN) return '';
+        return u.href;
+      } catch (e) { return ''; }
+    }
+    const backTo = safeReturn(new URLSearchParams(location.search).get('return'));
+
     function landing(user) {
-      return boardBase((user && user.team) || getSession().team);
+      return backTo || boardBase((user && user.team) || getSession().team);
     }
 
     /* Who asked. `ext` names the extension to hand the finished session to; `return` is the tab

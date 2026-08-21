@@ -1,13 +1,13 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName, pageHref, pinHref, pageUrlText,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
-    BASE, loginUrl, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
-    ADMIN_TEAM, buildAccessLogin, accessLogin, passkeyLoginDiscoverable, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
+    BASE, loginUrl, signInUrl, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
+    ADMIN_TEAM, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
     initTheme, mountThemeRailButton, animateRailReflow, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fa4642d9cc';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=895693305c';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=fa4642d9cc';
-  import { createCardRenderer } from './card.js?v=fa4642d9cc';
-  import { ICON } from './icons.js?v=fa4642d9cc';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fa4642d9cc';
+  import { PK_VERSION } from './version.js?v=895693305c';
+  import { createCardRenderer } from './card.js?v=895693305c';
+  import { ICON } from './icons.js?v=895693305c';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=895693305c';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -597,55 +597,56 @@
 
     /* An account session has no team key — the sentinel opens the board locally while
      * authHeaders() authenticates every call with the bearer token. */
-    function afterAccount(user) {
-      const team = user.role === 'builder' ? ADMIN_TEAM : (user.team || ADMIN_TEAM);
-      setSession(team, ACCOUNT_KEY_SENTINEL);
-      if (team !== ADMIN_TEAM) { location.replace(boardBase(team)); return; }
-      loadData()
-        .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
-        .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });
-    }
 
+    /* SIGN-IN IS A PAGE, on its own host. This board used to draw its own copy of the access card
+     * whenever it had no session — a third implementation of one screen, on an origin where a
+     * passkey enrolled here would not work on the sign-in host and vice versa. Credentials belong
+     * to ONE origin now, and it is the one whose whole job is sign-in.
+     *
+     * ?return= carries where they were, so a session that expires on a ticket comes back to that
+     * ticket rather than to the board root.
+     *
+     * THE GUARD. A board that redirects on every missing session, plus a sign-in that hands the
+     * session back across origins, is two halves of a loop: if the handoff ever fails to take, the
+     * two hosts bounce forever and the page never renders anything a person can act on. So a
+     * second bounce inside a few seconds stops and shows the card in place instead. A form you can
+     * submit is a bad outcome; a loop you cannot escape is a worse one. */
+    const BOUNCE_KEY = 'pkSignInBounce';
+    function toSignIn() {
+      let last = 0;
+      try { last = Number(sessionStorage.getItem(BOUNCE_KEY) || 0); } catch (e) {}
+      const now = new Date().getTime();
+      if (last && now - last < 6000) { showLogin(); return; }   // came straight back — do not loop
+      try { sessionStorage.setItem(BOUNCE_KEY, String(now)); } catch (e) {}
+      location.replace(signInUrl() + '?return=' + encodeURIComponent(location.href));
+    }
+    /* Cleared on a session that works, so the next genuine expiry redirects rather than inheriting
+     * a stale mark and showing the fallback for no reason. */
+    function signInSettled() { try { sessionStorage.removeItem(BOUNCE_KEY); } catch (e) {} }
+
+    /* NO SIGN-IN ON THIS HOST. The boards are an authenticated surface at all times: every route
+     * that finds no session leaves for the sign-in origin. What is left here is not a sign-in — it
+     * is what the loop guard shows when LEAVING did not work.
+     *
+     * There used to be a full access-key card here, with its own submit, its own passkey route and
+     * its own error states: a third implementation of one screen, and a second origin for a
+     * credential to bind to. A passkey enrolled against this host would not work on the sign-in
+     * host, and neither screen could be changed without someone remembering the other. */
     function showLogin() {
       if (!login) {
-        /* The access key, same as everywhere else. It replaces a Team dropdown plus a shared team
-         * key — two questions where there is one, and a credential belonging to a team rather than
-         * to a person, so the board could not tell who had opened it. Biometrics are offered here
-         * because this board runs on the SAME origin the passkey was enrolled against; the in-page
-         * overlay deliberately cannot, since a credential is bound to its origin. */
-        login = buildAccessLogin({
-          title: 'Access Key',
-          sub: 'Two letters, then six digits.',
-          onSubmit: async (code) => {
-            login.setBusy(true);
-            try {
-              const body = await accessLogin(WORKER_URL, code);
-              login.setBusy(false); login.accept(); afterAccount(body.user);
-            } catch (e) {
-              login.setBusy(false);
-              login.reject(e && e.locked ? 'Too many attempts. Try again shortly.'
-                                         : 'Access denied. Please enter the correct access key.');
-            }
-          },
-          onBiometric: async () => {
-            login.setBusy(true);
-            try {
-              const body = await passkeyLoginDiscoverable(WORKER_URL);
-              login.setBusy(false); login.accept(); afterAccount(body.user);
-            } catch (e) {
-              login.setBusy(false);
-              login.setError('No passkey was used. Enter your access key instead.');
-            }
-          },
-          onEmail: () => { location.href = loginUrl('/login/'); },
-        });
+        const el = document.createElement('div');
+        el.className = 'pk-signin-stop';
+        el.innerHTML =
+          '<div class="pk-signin-stop-in">' +
+            '<h1 class="pk-signin-stop-h">Signing in did not stick</h1>' +
+            '<p class="pk-signin-stop-p">You were sent to sign in and came straight back, which ' +
+              'usually means the session could not be stored — most often a browser set to block ' +
+              'site data for this site.</p>' +
+            '<a class="pk-unlock-go pk-signin-stop-go" href="' + signInUrl() + '">Try again</a>' +
+          '</div>';
+        login = { el };
       }
-      login.setError('');
-      // No `?login=builder` prefill any more: there is no team to preselect. The key names the
-      // person, and the board they get follows from who that is.
       document.body.appendChild(login.el);
-      login.el.hidden = false;
-      login.focus();
     }
     function hideLogin() { login && login.el.remove(); }
 
@@ -658,30 +659,6 @@
       if (app) app.hidden = true;
     }
 
-    async function tryLogin() {
-      const key = login.keyInput.value.trim();
-      if (!key) { login.keyInput.focus(); return; }
-      /* No team chosen + a key ⇒ try it as the BUILDER key. The Builder does not belong to a team,
-       * so making them pick one from a list of teams they are not on was asking for an answer that
-       * does not exist. The key still decides: a team member who skips the picker and enters their
-       * own key is refused here and told to pick their team. */
-      const picked = login.getTeam();
-      const team = picked || ADMIN_TEAM;
-      setSession(team, key);
-      login.setBusy(true, 'Authenticating'); login.setError('');
-      if (team !== ADMIN_TEAM) { location.replace(boardBase(team)); return; }
-      try { await loadData(); hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }
-      catch (e) {
-        clearSession();
-        login.setBusy(false, 'Authenticate');
-        const wrong = e.message === 'unauthorized';
-        login.setError(!wrong ? ('Could not connect — ' + e.message)
-          : picked ? 'Incorrect key. Please try again.'
-                   // They left the picker empty, so name the likelier of the two mistakes.
-                   : 'That is not the Builder key. Choose your team if you are signing in as a team.');
-        login.keyInput.focus(); login.keyInput.select();
-      }
-    }
 
     // Deep-link: the on-page overlay's "View details" button lands here as `?detail=<id>` — open
     // that ticket's detail straight away (once data is loaded), then strip the param so a refresh
@@ -742,7 +719,7 @@
         // away the whole query — including the `ticket=` of a shared link the user is signing in
         // to open. The destination has to survive the login, so keep everything else.
         try { const u = new URL(location.href); u.searchParams.delete('builder'); history.replaceState(null, '', u.pathname + (u.search || '')); } catch (e) {}
-        showLogin(); return;
+        toSignIn(); return;
       }
       /* A team session asking for the BUILDER board. Unlike asking for another team's board —
        * which the team board silently resets, because it is just a typo — this is a coherent
@@ -774,11 +751,11 @@
       // is belt-and-braces rather than a path hit in normal operation.
       if (s.key && s.team && !isTeamEnabled(s.team)) { showBlocked(); return; }
       if (s.key && s.team === ADMIN_TEAM) {
-        loadData().then(() => { openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }).catch((e) => {
-          if (e.message === 'unauthorized') { clearSession(); showLogin(); }
+        loadData().then(() => { signInSettled(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }).catch((e) => {
+          if (e.message === 'unauthorized') { clearSession(); toSignIn(); }
           else { $('#rvd-empty').hidden = false; $('#rvd-empty').textContent = 'Could not load — ' + e.message; }
         });
-      } else showLogin();
+      } else toSignIn();
     }
 
     // Rebuild the Team Queue tab bar (the shell markup carries the retired lifecycle tabs).
@@ -4814,7 +4791,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=fa4642d9cc');
+              const sheet = await import('./sheet.js?v=895693305c');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4895,7 +4872,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=fa4642d9cc');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=895693305c');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -5119,7 +5096,7 @@
           if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out', danger: true }))) return;
           stopLiveUpdates();
           if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
-          clearSession(); clearAccount(); showLogin(); return;
+          clearSession(); clearAccount(); toSignIn(); return;
         }
       };
       panel.addEventListener('click', (e) => {
@@ -6259,7 +6236,11 @@ function genAccessKey() {
        * straight back on the next page load (see extension/bridge.js) and the logout undoes
        * itself. A no-op in a plain browser: nothing is listening. */
       try { window.dispatchEvent(new CustomEvent('proofkit-signout')); } catch (e) {}
-      showLogin();
+      /* Logging out lands on the sign-in page. No ?return=: they chose to leave, so sending
+       * them back to the screen they just left is not helpful. The bounce mark goes too —
+       * this redirect is deliberate, and must not look like the loop the guard watches for. */
+      signInSettled();
+      location.replace(signInUrl());
     }
     $('#rvd-logout') && $('#rvd-logout').addEventListener('click', doLogout);
     // ---- toolbar: search / sort / export / copy-all-prompts ----

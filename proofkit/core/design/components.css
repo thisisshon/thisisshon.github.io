@@ -1290,6 +1290,19 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
 /* The Team column reads rather than edits — see the note in dashboard.js. Plain text at the
    table's own weight, so the column stops advertising itself as a control. */
 .pk-cellteam{font-size:var(--pk-text-base);color:var(--pk-ink)}
+
+/* The boards are an authenticated surface at all times, so this is the ONLY thing either of them
+   renders to a person without a session — and it is not a sign-in. It appears when the redirect to
+   the sign-in host came straight back, which almost always means the browser refused to store the
+   session. Full-bleed, because the board behind it has no data in it and showing an empty shell
+   underneath would suggest the page half-worked. */
+.pk-signin-stop{position:fixed;inset:0;z-index:var(--pk-z-gate);display:flex;align-items:center;justify-content:center;
+  padding:var(--pk-space-6);background:var(--pk-floor)}
+.pk-signin-stop-in{max-width:52ch;text-align:left}
+.pk-signin-stop-h{margin:0 0 var(--pk-space-4);font:600 var(--pk-text-4xl)/var(--pk-lh-heading) var(--pk-font);
+  letter-spacing:-.01em;color:var(--pk-ink)}
+.pk-signin-stop-p{margin:0 0 var(--pk-space-6);font:400 var(--pk-text-lg)/var(--pk-lh-body) var(--pk-font);color:var(--pk-muted)}
+.pk-signin-stop-go{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;width:auto;padding:0 var(--pk-space-6)}
 .pk-cellcta{width:100%;padding:4px 8px;font-size:var(--pk-text-xs);white-space:nowrap}
 /* An account with no team cannot sign in. That is not a styling preference, it is the one row on
    the screen that represents something broken, so it carries a mark down its left edge. */

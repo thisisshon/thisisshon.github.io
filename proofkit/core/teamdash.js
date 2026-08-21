@@ -1,9 +1,9 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    buildAccessLogin, accessLogin, accessChange, passkeyLoginDiscoverable, ACCOUNT_KEY_SENTINEL, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fa4642d9cc';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=895693305c';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=fa4642d9cc';
-  import { createCardRenderer } from './card.js?v=fa4642d9cc';
-  import { ICON } from './icons.js?v=fa4642d9cc';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fa4642d9cc';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=fa4642d9cc';
+  import { PK_VERSION } from './version.js?v=895693305c';
+  import { createCardRenderer } from './card.js?v=895693305c';
+  import { ICON } from './icons.js?v=895693305c';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=895693305c';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=895693305c';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -1715,7 +1715,7 @@
             if (!(await pkConfirm({ title: 'Log out', message: 'Log out of Proofkit?', confirmLabel: 'Log out' }))) return;
             stopLiveUpdates();   // the SSE socket is authenticated — it goes with the session
             if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }  // after: stopLiveUpdates re-arms the poll
-            clearSession(); showLogin();
+            clearSession(); toSignIn();
           }
         });
       }
@@ -3039,69 +3039,51 @@
      * authHeaders() authenticates every call with the bearer token. A key belonging to a PERSON
      * also means the board can send them to the right place: their own team's, not whichever one
      * they happened to pick from a dropdown. */
-    function afterAccount(user) {
-      /* A BUILDER who signs in on a team board is here to see THAT team. Sending them to the
-       * Builder board — which is what `role === 'builder' -> ADMIN_TEAM` did — answers a question
-       * they did not ask, and makes the team dropdown look broken: pick a team, get asked to sign
-       * in, end up back where you started.
-       *
-       * Their session team stays ADMIN_TEAM, because that is what OVERRIDE keys on to grant a
-       * Builder read of someone else's board. OVERRIDE is computed once at module load, before
-       * this sign-in happened, so a reload is what puts them in the team view — with the session
-       * already established, it comes straight up. */
-      const isBuilder = user.role === 'builder';
-      const slugTeam = teamFromSlug(slugInUrl());
-      if (isBuilder) {
-        setSession(ADMIN_TEAM, ACCOUNT_KEY_SENTINEL);
-        location.reload();
-        return;
-      }
-      const t = user.team || '';
-      if (!t) { login.setError('This account has no team assigned. Ask the Builder to add you to one.'); return; }
-      setSession(t, ACCOUNT_KEY_SENTINEL);
-      if (teamSlug(t) !== teamSlug(slugTeam || t)) { location.replace(boardBase(t)); return; }
-      loadData()
-        .then(() => { hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); })
-        .catch((e) => { clearSession(); clearAccount(); login.setError('Signed in, but the board would not load — ' + e.message); });
-    }
 
+    /* SIGN-IN IS A PAGE, on its own host. This board used to draw its own copy of the access card
+     * whenever it had no session — a third implementation of one screen, on an origin where a
+     * passkey enrolled here would not work on the sign-in host and vice versa. Credentials belong
+     * to ONE origin now, and it is the one whose whole job is sign-in.
+     *
+     * ?return= carries where they were, so a session that expires on a ticket comes back to that
+     * ticket rather than to the board root.
+     *
+     * THE GUARD. A board that redirects on every missing session, plus a sign-in that hands the
+     * session back across origins, is two halves of a loop: if the handoff ever fails to take, the
+     * two hosts bounce forever and the page never renders anything a person can act on. So a
+     * second bounce inside a few seconds stops and shows the card in place instead. A form you can
+     * submit is a bad outcome; a loop you cannot escape is a worse one. */
+    const BOUNCE_KEY = 'pkSignInBounce';
+    function toSignIn() {
+      let last = 0;
+      try { last = Number(sessionStorage.getItem(BOUNCE_KEY) || 0); } catch (e) {}
+      const now = new Date().getTime();
+      if (last && now - last < 6000) { showLogin(); return; }   // came straight back — do not loop
+      try { sessionStorage.setItem(BOUNCE_KEY, String(now)); } catch (e) {}
+      location.replace(signInUrl() + '?return=' + encodeURIComponent(location.href));
+    }
+    /* Cleared on a session that works, so the next genuine expiry redirects rather than inheriting
+     * a stale mark and showing the fallback for no reason. */
+    function signInSettled() { try { sessionStorage.removeItem(BOUNCE_KEY); } catch (e) {} }
+
+    /* NO SIGN-IN ON THIS HOST. The boards are an authenticated surface at all times: every route
+     * that finds no session leaves for the sign-in origin. What is left here is not a sign-in — it
+     * is what the loop guard shows when LEAVING did not work. See the same note in dashboard.js. */
     function showLogin() {
       if (!login) {
-        /* The access key, the same screen as everywhere else. It replaces a Team dropdown plus a
-         * shared team key: two questions where there is one, and a credential belonging to a team
-         * rather than to a person — so the board could not tell who had opened it, and anyone with
-         * the key could open any team they chose. */
-        login = buildAccessLogin({
-          title: 'Access Key',
-          sub: 'Two letters, then six digits.',
-          onSubmit: async (code) => {
-            login.setBusy(true);
-            try {
-              const body = await accessLogin(WORKER_URL, code);
-              login.setBusy(false); login.accept(); afterAccount(body.user);
-            } catch (e) {
-              login.setBusy(false);
-              login.reject(e && e.locked ? 'Too many attempts. Try again shortly.'
-                                         : 'Access denied. Please enter the correct access key.');
-            }
-          },
-          onBiometric: async () => {
-            login.setBusy(true);
-            try {
-              const body = await passkeyLoginDiscoverable(WORKER_URL);
-              login.setBusy(false); login.accept(); afterAccount(body.user);
-            } catch (e) {
-              login.setBusy(false);
-              login.setError('No passkey was used. Enter your access key instead.');
-            }
-          },
-          onEmail: () => { location.href = BASE + '/login/'; },
-        });
+        const el = document.createElement('div');
+        el.className = 'pk-signin-stop';
+        el.innerHTML =
+          '<div class="pk-signin-stop-in">' +
+            '<h1 class="pk-signin-stop-h">Signing in did not stick</h1>' +
+            '<p class="pk-signin-stop-p">You were sent to sign in and came straight back, which ' +
+              'usually means the session could not be stored — most often a browser set to block ' +
+              'site data for this site.</p>' +
+            '<a class="pk-unlock-go pk-signin-stop-go" href="' + signInUrl() + '">Try again</a>' +
+          '</div>';
+        login = { el };
       }
-      login.setError('');
       document.body.appendChild(login.el);
-      login.el.hidden = false;
-      login.focus();
     }
     function hideLogin() { login && login.el.remove(); }
 
@@ -3114,22 +3096,6 @@
       if (app) app.hidden = true;
     }
 
-    async function tryLogin() {
-      const t = login.getTeam();
-      const key = login.keyInput.value.trim();
-      if (!t) { login.focusTeam(); login.setError('Please choose your team.'); return; }
-      if (!key) { login.keyInput.focus(); return; }
-      setSession(t, key);
-      login.setBusy(true, 'Authenticating'); login.setError('');
-      if (t === ADMIN_TEAM && !OVERRIDE) { location.replace(boardBase(ADMIN_TEAM)); return; }
-      try { await loadData(); hideLogin(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }
-      catch (e) {
-        clearSession();
-        login.setBusy(false, 'Authenticate');
-        login.setError(e.message === 'unauthorized' ? 'Incorrect team or key.' : ('Could not connect — ' + e.message));
-        login.keyInput.focus(); login.keyInput.select();
-      }
-    }
 
     // Deep-link: the on-page overlay's "View details" button lands here as `?detail=<id>` — open
     // that ticket's detail straight away (once data is loaded), then strip the param (keeping any
@@ -3184,11 +3150,11 @@
        * name in the heading because it had none to render. The token and the account are what
        * being signed in actually means; the mirror is a convenience. */
       if ((s.key || getAuthToken()) && (team() || OVERRIDE)) {
-        loadData().then(() => { openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }).catch((e) => {
-          if (e.message === 'unauthorized') { clearSession(); showLogin(); }
+        loadData().then(() => { signInSettled(); openPendingDetail(); startAutoRefresh(); startLiveUpdates(); }).catch((e) => {
+          if (e.message === 'unauthorized') { clearSession(); toSignIn(); }
           else { $('#tmd-empty').hidden = false; $('#tmd-empty').textContent = 'Could not load — ' + e.message; }
         });
-      } else showLogin();
+      } else toSignIn();
     }
 
     // ---- events ----
@@ -3471,7 +3437,11 @@
       stopLiveUpdates();   // the SSE socket is authenticated — it goes with the session
       if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }  // after: stopLiveUpdates re-arms the poll
       clearSession();
-      showLogin();
+      /* Logging out lands on the sign-in page. No ?return=: they chose to leave, so sending
+       * them back to the screen they just left is not helpful. The bounce mark goes too —
+       * this redirect is deliberate, and must not look like the loop the guard watches for. */
+      signInSettled();
+      location.replace(signInUrl());
     });
 
     // Footer link. For a real team member it's the faded "Upgrade access to admin" (drops the

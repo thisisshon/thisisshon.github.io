@@ -76,6 +76,11 @@ export const loginUrl = (path) => {
   const p = String(path || '');
   return LOGIN_ORIGIN ? LOGIN_ORIGIN + p : BASE + p;
 };
+/* THE sign-in page. On its own host that is the root — login.proofkit.in, not
+ * login.proofkit.in/login/, which says the same word twice and reads like a section of a site
+ * rather than the whole of it. Sharing a domain it stays the /login/ route it has always been,
+ * because there the root belongs to something else. */
+export const signInUrl = () => (LOGIN_ORIGIN ? LOGIN_ORIGIN + '/' : BASE + '/login/');
 
 /* The FIRST segment after /proofkit is always WHOSE board it is — the login identity:
  *
@@ -761,7 +766,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=fa4642d9cc'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=895693305c'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -769,7 +774,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=fa4642d9cc';
+} from './vocab.js?v=895693305c';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

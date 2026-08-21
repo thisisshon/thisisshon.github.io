@@ -1,23 +1,23 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, HIDE_SELECTORS, PROOFKIT_ENABLED, ADMIN_TEAM, isTeamEnabled,
     BASE, TEAM_BASE, boardBase,
-    getSession, setSession, clearSession, homeUrl, SITE_ORIGIN, buildLoginHandoff, buildAccessLogin, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
+    getSession, setSession, clearSession, homeUrl, SITE_ORIGIN, buildLoginHandoff, accessLogin, ACCOUNT_KEY_SENTINEL, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, buildDropdown, nextLocalTicket, pageName,
     // v3 shared vocabulary (single source of truth in ./config.js — never re-declared here):
     // comment types + per-type template fields, teamStatus→token colours, the summary renderer,
     // and the expected-outcome gate. The composer (F1/F8), pin colours (F5) + demo store all read these.
     COMMENT_TYPES, TYPE_FIELDS, STATUS_COLORS, renderSummary, needsScreenshot,
     // Overlay-UI flag (global): 'new' HUD vs 'old' rectangle composer.
-    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=fa4642d9cc';
-  import { pkConfirm, pkAlert } from './modal.js?v=fa4642d9cc';
-  import { injectCss, injectFont } from './inject-css.js?v=fa4642d9cc';
-  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=fa4642d9cc'; // New HUD path (overlayUi === 'new')
+    getOverlayUi, syncOverlayUi, startOverlayUiStream } from './config.js?v=895693305c';
+  import { pkConfirm, pkAlert } from './modal.js?v=895693305c';
+  import { injectCss, injectFont } from './inject-css.js?v=895693305c';
+  import { mountHud, CANVAS_FRAME_NAME } from './overlay-hud.js?v=895693305c'; // New HUD path (overlayUi === 'new')
   // The design system, inlined — injected only when review mode arms (real visitors
   // download nothing), so the on-page login matches the dashboards (.pk-login).
   // Generated string modules (scripts/build-css-modules.mjs). These were `./x.css?inline`, which
   // is a VITE feature: outside the Astro build the browser refused to load a text/css file as an
   // ES module and overlay.js never evaluated at all — which is why the extension showed no overlay
   // on any site. Plain .js modules work in the browser, in Vite and in the extension alike.
-  import pkTokensCss from './design/tokens.css.js?v=fa4642d9cc';
-  import pkComponentsCss from './design/components.css.js?v=fa4642d9cc';
+  import pkTokensCss from './design/tokens.css.js?v=895693305c';
+  import pkComponentsCss from './design/components.css.js?v=895693305c';
   (() => {
     'use strict';
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts) - tool off => never loads
