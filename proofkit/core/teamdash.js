@@ -3,7 +3,7 @@
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
     accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d7e60b4810';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=1e381fed60';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=d7e60b4810';
-  import { createCardRenderer } from './card.js?v=d7e60b4810';
-  import { ICON } from './icons.js?v=d7e60b4810';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d7e60b4810';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=d7e60b4810';
+  import { PK_VERSION } from './version.js?v=1e381fed60';
+  import { createCardRenderer } from './card.js?v=1e381fed60';
+  import { ICON } from './icons.js?v=1e381fed60';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=1e381fed60';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=1e381fed60';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -94,9 +94,14 @@
       const s = getSession();
       if (!s.key || !s.team) return true;               // signed out: the login panel owns this
       if (s.team === ADMIN_TEAM) return true;           // admin may preview any board
-      const want = teamFromSlug(slugInUrl());
-      if (want === s.team) return true;                 // own board
-      location.replace(boardBase(s.team));              // hard reset — reload, not a soft rewrite
+      const slug = slugInUrl();
+      /* NO SLUG IS YOUR OWN BOARD. On a host with no identity in the path that is the normal case
+       * rather than a mismatch — and comparing '' against the session team made EVERY load a
+       * mismatch, so the board bounced to its own root, loaded again, bounced again, and settled
+       * on an empty page with nothing to say why. */
+      if (!slug) return true;
+      if (teamFromSlug(slug) === s.team) return true;    // own board, named explicitly
+      location.replace(boardHome(s.team));               // hard reset — reload, not a soft rewrite
       return false;
     }
 
@@ -870,7 +875,11 @@
      * /proofkit/content keeps writing /proofkit/content — the preview stays on the board it opened
      * instead of silently rewriting itself to the admin's own slug. guardBoardIdentity() below is
      * what makes that safe: a non-admin can never be on someone else's slug in the first place. */
-    const myBase = () => BASE + '/' + (slugInUrl() || teamSlug(team() || ''));
+    const myBase = () => (IDENTITY_IN_PATH
+      ? BASE + '/' + (slugInUrl() || teamSlug(team() || ''))
+      /* Nothing to follow when the path carries no identity: your own board is BASE, and a named
+       * one keeps the /board/<slug> prefix it was opened with. */
+      : (slugInUrl() ? boardBase(teamFromSlug(slugInUrl()) || team()) : BASE));
     function pathFor(v, detailId) {
       if (detailId) return myBase() + '/tickets/' + encodeURIComponent(ticketNoOf(detailId));
       const seg = VIEW_SEGMENTS[v];
@@ -1160,7 +1169,7 @@
       }
       const teamLink = document.getElementById('tmd-teamlink');
       if (teamLink) teamLink.addEventListener('click', () => {
-        location.href = boardBase(ADMIN_TEAM) + (OVERRIDE ? '' : '?builder=1');
+        location.href = boardHome(ADMIN_TEAM) + (OVERRIDE ? '' : '?builder=1');
       });
       const badge = $('#tmd-navbadge');
       const u = unreadNotes().length;
@@ -3132,7 +3141,7 @@
       // Before anything renders: a team on someone else's slug is bounced to its own board.
       if (!guardBoardIdentity()) return;
       // An admin who landed here WITHOUT a team slug wants the Builder board.
-      if (s.key && s.team === ADMIN_TEAM && !OVERRIDE) { location.replace(boardBase(ADMIN_TEAM)); return; }
+      if (s.key && s.team === ADMIN_TEAM && !OVERRIDE) { location.replace(boardHome(ADMIN_TEAM)); return; }
       // Team parked off via TEAM_ENABLED while still signed in: show the "no access"
       // stub instead of the app (login.js blocks new sign-ins; this catches a live
       // session whose team was disabled). Admin override previewing a parked team also
@@ -3456,9 +3465,9 @@
     // Jump to Builder Mode: an admin previewing a team board (OVERRIDE) keeps its session; a real
     // team member drops the team session and lands on the Builder login (authenticate as Builder).
     function goBuilder() {
-      if (OVERRIDE) { location.href = boardBase(ADMIN_TEAM); return; } // back to Builder Mode (session kept)
+      if (OVERRIDE) { location.href = boardHome(ADMIN_TEAM); return; } // back to Builder Mode (session kept)
       clearSession();
-      location.href = boardBase(ADMIN_TEAM) + '?login=builder';
+      location.href = boardHome(ADMIN_TEAM) + '?login=builder';
     }
 
     // Keyboard shortcut: press "B" on a team dashboard to jump to Builder Mode. Ignored while

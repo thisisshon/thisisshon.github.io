@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d7e60b4810';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=1e381fed60';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=d7e60b4810';
-  import { createCardRenderer } from './card.js?v=d7e60b4810';
-  import { ICON } from './icons.js?v=d7e60b4810';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d7e60b4810';
+  import { PK_VERSION } from './version.js?v=1e381fed60';
+  import { createCardRenderer } from './card.js?v=1e381fed60';
+  import { ICON } from './icons.js?v=1e381fed60';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=1e381fed60';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -732,7 +732,7 @@
       if (s.key && s.team && s.team !== ADMIN_TEAM) {
         let ticket = '';
         try { ticket = readUrl().ticket || ''; } catch (e) {}
-        const home = boardBase(s.team) + (ticket ? '/tickets/' + encodeURIComponent(ticket) : '');
+        const home = ticket ? boardBase(s.team) + '/tickets/' + encodeURIComponent(ticket) : boardHome(s.team);
         if (ticket) { location.replace(home); return; }
         pkConfirm({
           title: 'Builder access',
@@ -741,7 +741,7 @@
           confirmLabel: 'Sign in as Builder',
           cancelLabel: 'Back to my board',
         }).then((yes) => {
-          if (yes) { clearSession(); location.replace(boardBase(ADMIN_TEAM) + '?builder=1'); }
+          if (yes) { clearSession(); location.replace(boardHome(ADMIN_TEAM) + '?builder=1'); }
           else location.replace(home);
         }).catch(() => location.replace(home));
         return;
@@ -985,7 +985,7 @@
     const myBase = () => boardBase(ADMIN_TEAM);
     function pathFor(v, detailId) {
       if (detailId) return myBase() + '/tickets/' + encodeURIComponent(ticketNoOf(detailId));
-      if (v === 'home') return myBase();                 // the tiles are the board root
+      if (v === 'home') return myBase() || '/';          // the tiles are the board root ('' is not a url)
       if (v === 'dash') return myBase() + '/queue';      // …so the queue needs its own segment
       /* ORGANISATION IS A PATH, NOT A PAGE.
        *
@@ -1007,7 +1007,7 @@
         return myBase() + '/' + parts.map(encodeURIComponent).join('/');
       }
       const seg = VIEW_SEGMENTS[v];
-      return seg ? myBase() + '/' + seg : myBase();
+      return seg ? myBase() + '/' + seg : (myBase() || '/');
     }
     /* Write the current view + open ticket to the address bar. `replace` for state the user did
      * not navigate to (first paint, normalising a legacy link) so we never add a history entry
@@ -4192,7 +4192,7 @@
             }
 
             // team actions
-            if (d.teamView) { location.href = boardBase(d.teamView); return; }   // same tab: see Jump To Team
+            if (d.teamView) { location.href = boardHome(d.teamView); return; }   // same tab: see Jump To Team
             if (d.teamProject) {
               const next = await pkPrompt({ title: 'Move team', message: 'Everyone on this team moves with it, and their tickets become visible only inside the new project.', value: d.teamCurrent || 'default', confirmLabel: 'Move' });
               if (next === null) return;
@@ -4792,7 +4792,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=d7e60b4810');
+              const sheet = await import('./sheet.js?v=1e381fed60');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4873,7 +4873,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=d7e60b4810');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=1e381fed60');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -6414,7 +6414,7 @@ function genAccessKey() {
         items: names.length
           ? names.map((t) => ({
               value: t.name, label: t.name, disabled: !t.enabled,
-              onSelect: () => { location.href = boardBase(t.name); },
+              onSelect: () => { location.href = boardHome(t.name); },
             }))
           : [{ value: '', label: 'No teams yet', disabled: true }],
       });

@@ -67,6 +67,12 @@ export const BASE = "/proofkit";
 /** BASE as an absolute URL when the caller is on another origin; the plain path when it is not. */
 export const siteUrl = (path) => {
   const p = String(path || '');
+  /* ALREADY ABSOLUTE — hand it back untouched. Callers legitimately pass a full url: landing()
+   * returns the validated ?return= when a board bounced someone here, and handoffUrl() feeds
+   * whatever it is given straight through this. Prepending an origin to a url that already has
+   * one produced "https://dash.proofkit.inhttps://login.proofkit.in/" in the address bar — a
+   * string that is not a url at all, from two functions each doing something reasonable. */
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(p)) return p;
   try { if (location.origin === SITE_ORIGIN) return p; } catch (e) {}
   return SITE_ORIGIN + p;
 };
@@ -119,8 +125,10 @@ export function teamFromSlug(slug) {
  * ------------------------------------------------------------------------ */
 export const IDENTITY_IN_PATH = true;
 
-/** The explicit cross-board prefix, used only when the identity is NOT in every path. */
-export const TEAM_ROUTE = 'team';
+/* The explicit cross-board prefix, used only when the identity is NOT in every path.
+ * 'board' rather than 'team' because the Builder's board is reachable this way too, and
+ * /team/builder would be calling the one identity that is not a team a team. */
+export const BOARD_ROUTE = 'board';
 
 /** How many leading segments come before the view: BASE, plus the identity when it is in the path. */
 export const ROUTE_OFFSET = BASE.split('/').filter(Boolean).length + (IDENTITY_IN_PATH ? 1 : 0);
@@ -135,7 +143,7 @@ export const boardBase = (team) => {
   let mine = '';
   try { mine = (getSession() || {}).team || ''; } catch (e) {}
   if (mine && teamSlug(t) === teamSlug(mine)) return BASE;
-  return BASE + '/' + TEAM_ROUTE + '/' + teamSlug(t);
+  return BASE + '/' + BOARD_ROUTE + '/' + teamSlug(t);
 };
 
 /** boardBase for a bare navigation — never '', which location.replace() reads as "reload me". */
@@ -153,7 +161,7 @@ export function routeParts(pathname) {
   const after = segs.slice(baseLen);
   if (IDENTITY_IN_PATH) return { team: after[0] || '', rest: after.slice(1) };
   // Identity-less host: /team/<slug>/… names a board, anything else is your own.
-  if (after[0] === TEAM_ROUTE) return { team: after[1] || '', rest: after.slice(2) };
+  if (after[0] === BOARD_ROUTE) return { team: after[1] || '', rest: after.slice(2) };
   return { team: '', rest: after };
 }
 
@@ -178,9 +186,9 @@ export function routeParts(pathname) {
  */
 export function homeUrl() {
   const acct = getAccount();
-  if (acct && acct.role === 'builder') return siteUrl(boardBase(ADMIN_TEAM));
+  if (acct && acct.role === 'builder') return siteUrl(boardHome(ADMIN_TEAM));
   const team = (acct && acct.team) || getSession().team;
-  return siteUrl(team ? boardBase(team) : BASE + '/login/');
+  return team ? siteUrl(boardHome(team)) : signInUrl();
 }
 
 /** @deprecated pre-3.98 single team route; kept so old links still resolve. */
@@ -818,7 +826,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=d7e60b4810'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=1e381fed60'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -826,7 +834,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=d7e60b4810';
+} from './vocab.js?v=1e381fed60';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

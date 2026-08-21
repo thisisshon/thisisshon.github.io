@@ -1,5 +1,5 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=d7e60b4810';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=1e381fed60';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -69,7 +69,7 @@
     const backTo = safeReturn(new URLSearchParams(location.search).get('return'));
 
     function landing(user) {
-      return backTo || boardBase((user && user.team) || getSession().team);
+      return backTo || boardHome((user && user.team) || getSession().team);
     }
 
     /* Who asked. `ext` names the extension to hand the finished session to; `return` is the tab
