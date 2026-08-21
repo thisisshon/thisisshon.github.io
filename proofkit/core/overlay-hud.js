@@ -26,8 +26,8 @@ import { pageName, getSession, ADMIN_TEAM, TEAM_COLORS, STATUS_COLORS, renderSum
   BASE, TEAM_BASE, boardBase, homeUrl,
   COMMENT_TYPES, TYPE_FIELDS, ENABLED_TEAMS, needsScreenshot,
   // light/dark: the HUD follows the reviewer's setting — see the SKIN block in mountHud
-  getTheme, isThemeKey, toggleTheme } from './config.js?v=95b69c5866';
-import { injectCss, injectFont } from './inject-css.js?v=95b69c5866';   // CSP-safe sheet mount (see mountHud)
+  getTheme, isThemeKey, toggleTheme } from './config.js?v=f4733f050b';
+import { injectCss, injectFont } from './inject-css.js?v=f4733f050b';   // CSP-safe sheet mount (see mountHud)
 
 /* The canvas iframe carries this window.name so overlay.js can bail before
  * arming a nested HUD inside it (see overlay.js top-of-module guard). */

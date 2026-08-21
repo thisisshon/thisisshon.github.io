@@ -1,5 +1,5 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome, lockTab,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=95b69c5866';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome, lockTab, tellExtensionSignedIn, clearSession, clearAccount,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=f4733f050b';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -124,6 +124,10 @@
      */
     async function enterWith(body) {
       sessionStorage.setItem('reviewMode', '1');
+      /* The extension gets the session even when it did not open this page. handOff below only
+       * fires for ?ext=, which is the extension's own round trip; signing in on the website is the
+       * commoner case and used to leave the extension signed out. */
+      await tellExtensionSignedIn(body && body.user, body && body.token);
       const reply = await handOff({ user: body && body.user, token: body && body.token });
       const dest = handoffUrl(landing(body && body.user), body && body.user, (body && body.token) || getAuthToken());
       if (reply && reply.ok) { showReturning(dest); return; }
@@ -200,6 +204,35 @@
     // Already signed in? Skip the gate entirely — the account session is the whole credential now,
     // and it is the same one the extension seeds through bridge.js.
     async function init() {
+      /* ARRIVED FROM A LOGOUT. The boards can only clear their OWN origin, and signing in wrote the
+       * account, token and team here — so without this the sign-in page still held a complete,
+       * valid session, found it, verified it, and sent the person straight back to the board they
+       * had just left. That is the "logged out for a second, then logged back in" everybody saw.
+       *
+       * Two things happen, and the second is not redundant. The storage is cleared; and the
+       * auto-redirect is SKIPPED for this load no matter what. The extension's bridge seeds a
+       * session on page load too, so clearing alone is a race against it — one this page would
+       * sometimes lose, and losing it means signing the person back in. Refusing to redirect at
+       * all on a logout arrival cannot be raced. */
+      const params = new URLSearchParams(location.search);
+      const justSignedOut = params.get('signout') === '1';
+      if (justSignedOut) {
+        clearSession();
+        clearAccount();
+        lockTab();
+        // The boards' bounce mark lives on their origin, but this page keeps one of its own
+        // through the chooser; clear it so a later genuine expiry is not mistaken for a loop.
+        try { sessionStorage.removeItem('pkSignInBounce'); } catch (e) {}
+        /* Take it out of the address bar: it has been acted on, and a bookmark or a refresh should
+         * not keep re-signing somebody out for the rest of time. */
+        try {
+          params.delete('signout');
+          const q = params.toString();
+          history.replaceState(null, '', location.pathname + (q ? '?' + q : ''));
+        } catch (e) {}
+      }
+
+
       /* Already signed in — go to the board rather than ask again. handoffUrl rather than a bare
        * path because on a split deploy this page is on the SIGN-IN host, and the path would
        * resolve to this tree's own copy of the board with no session behind it.
@@ -215,7 +248,7 @@
        * nothing to hand over and nothing to fail. */
       const acct = getAccount();
       let token = getAuthToken();
-      if (acct) {
+      if (acct && !justSignedOut) {
         let dest = handoffUrl(landing(acct), acct, token);
         let crosses = false;
         try { crosses = new URL(dest, location.href).origin !== location.origin; } catch (e) {}

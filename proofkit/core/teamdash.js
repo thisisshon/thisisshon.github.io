@@ -1,9 +1,9 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, signOutUrl, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=95b69c5866';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=f4733f050b';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=95b69c5866';
-  import { createCardRenderer } from './card.js?v=95b69c5866';
-  import { ICON } from './icons.js?v=95b69c5866';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=95b69c5866';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=95b69c5866';
+  import { PK_VERSION } from './version.js?v=f4733f050b';
+  import { createCardRenderer } from './card.js?v=f4733f050b';
+  import { ICON } from './icons.js?v=f4733f050b';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=f4733f050b';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=f4733f050b';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -3441,11 +3441,29 @@
       stopLiveUpdates();   // the SSE socket is authenticated — it goes with the session
       if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }  // after: stopLiveUpdates re-arms the poll
       clearSession();
+      /* The ACCOUNT too. Clearing only the team key left an account session alive, which is its own
+       * way back in — the Builder's logout has always done both. */
+      clearAccount();
+      /* TELL THE EXTENSION, AND WAIT FOR IT. This board never told it at all; only the Builder's
+       * did. So a team member's logout left the extension holding their account and token, and its
+       * bridge seeded both back on the very next page load — signing them in again with nothing
+       * asked for. One session across three surfaces has to mean signing out of any one signs out
+       * of all, or it means nothing.
+       *
+       * Bounded: there may be no extension listening, and a logout that never finishes is worse
+       * than one that pauses for a moment. */
+      await new Promise((go) => {
+        let settled = false;
+        const finish = () => { if (settled) return; settled = true; clearTimeout(t); go(); };
+        const t = setTimeout(finish, 900);
+        try { window.addEventListener('proofkit-signout-done', finish, { once: true }); } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent('proofkit-signout')); } catch (e) { finish(); }
+      });
       /* Logging out lands on the sign-in page. No ?return=: they chose to leave, so sending
        * them back to the screen they just left is not helpful. The bounce mark goes too —
        * this redirect is deliberate, and must not look like the loop the guard watches for. */
       signInSettled();
-      location.replace(signInUrl());
+      location.replace(signOutUrl());   // tells the sign-in origin to forget too
     });
 
     // Footer link. For a real team member it's the faded "Upgrade access to admin" (drops the

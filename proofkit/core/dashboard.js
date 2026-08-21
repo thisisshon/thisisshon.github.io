@@ -1,13 +1,13 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, checkReviewPassword, pageName, pageHref, pinHref, pageUrlText,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
-    BASE, loginUrl, signInUrl, routeParts, boardHome, IDENTITY_IN_PATH, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
+    BASE, loginUrl, signInUrl, signOutUrl, routeParts, boardHome, IDENTITY_IN_PATH, VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase,
     ADMIN_TEAM, buildDropdown, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount,
     initTheme, mountThemeRailButton, animateRailReflow, getTheme, toggleTheme, DEFAULT_THEME, LIGHT_THEME, ENABLED_TEAMS,
     getGlobalOverlayUi, setGlobalOverlayUi, syncOverlayUi, startOverlayUiStream, startScopeStream,
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=95b69c5866';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=f4733f050b';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=95b69c5866';
-  import { createCardRenderer } from './card.js?v=95b69c5866';
-  import { ICON } from './icons.js?v=95b69c5866';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=95b69c5866';
+  import { PK_VERSION } from './version.js?v=f4733f050b';
+  import { createCardRenderer } from './card.js?v=f4733f050b';
+  import { ICON } from './icons.js?v=f4733f050b';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=f4733f050b';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -4792,7 +4792,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=95b69c5866');
+              const sheet = await import('./sheet.js?v=f4733f050b');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4873,7 +4873,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=95b69c5866');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=f4733f050b');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
@@ -6236,12 +6236,26 @@ function genAccessKey() {
        * any one of them signs out of all — otherwise the extension quietly hands the session
        * straight back on the next page load (see extension/bridge.js) and the logout undoes
        * itself. A no-op in a plain browser: nothing is listening. */
-      try { window.dispatchEvent(new CustomEvent('proofkit-signout')); } catch (e) {}
+      /* Tell the extension, and WAIT for it to say it is done. One session across three surfaces
+       * means signing out of any one signs out of all — but sendMessage is asynchronous, and the
+       * next line leaves this origin. Navigating first meant the extension still held the account
+       * and token when the sign-in page loaded, its bridge seeded them straight back, and the page
+       * signed the person in again without asking for anything.
+       *
+       * Bounded, because there may be no extension listening at all: after this it leaves regardless.
+       * A logout that pauses briefly is fine; one that never completes is not. */
+      await new Promise((go) => {
+        let settled = false;
+        const finish = () => { if (settled) return; settled = true; clearTimeout(t); go(); };
+        const t = setTimeout(finish, 900);
+        try { window.addEventListener('proofkit-signout-done', finish, { once: true }); } catch (e) {}
+        try { window.dispatchEvent(new CustomEvent('proofkit-signout')); } catch (e) { finish(); }
+      });
       /* Logging out lands on the sign-in page. No ?return=: they chose to leave, so sending
        * them back to the screen they just left is not helpful. The bounce mark goes too —
        * this redirect is deliberate, and must not look like the loop the guard watches for. */
       signInSettled();
-      location.replace(signInUrl());
+      location.replace(signOutUrl());   // tells the sign-in origin to forget too
     }
     $('#rvd-logout') && $('#rvd-logout').addEventListener('click', doLogout);
     // ---- toolbar: search / sort / export / copy-all-prompts ----

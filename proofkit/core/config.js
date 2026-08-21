@@ -88,6 +88,18 @@ export const loginUrl = (path) => {
  * because there the root belongs to something else. */
 export const signInUrl = () => (LOGIN_ORIGIN ? LOGIN_ORIGIN + '/' : BASE + '/login/');
 
+/* THE SIGN-IN PAGE, TOLD TO FORGET.
+ *
+ * Signing in happens on the sign-in origin, so setAccountSession() writes the account, the token
+ * and the team into THAT origin's storage. Logging out happens on the boards' origin and clears
+ * the boards' storage — and browser storage is per-origin, so the sign-in host was left holding a
+ * complete, valid session. Landing there after a logout, it found that session, verified it,
+ * and handed the person straight back to the board. A logout that signed you back in.
+ *
+ * The split put the session in two places; only one of them could be cleared from here. So the
+ * logout says so out loud in the URL, and the sign-in page forgets on arrival. */
+export const signOutUrl = () => signInUrl() + (signInUrl().includes('?') ? '&' : '?') + 'signout=1';
+
 /* The FIRST segment after /proofkit is always WHOSE board it is — the login identity:
  *
  *   /proofkit/builder/…      the Builder (admin) board
@@ -390,6 +402,31 @@ const bufToB64u = (buf) => {
  * On a single-origin deploy none of this runs: handoffUrl sees the same origin and returns a plain
  * path, exactly as before.
  * ------------------------------------------------------------------------ */
+
+/* Tell the extension a sign-in happened, and wait briefly for it to say it stored the session.
+ *
+ * The extension only ever learned about a session through its externally-connectable channel,
+ * which needs the page to know the extension's id — so it only happened when the EXTENSION had
+ * opened the sign-in page. Signing in on the website left it signed out, and the person had to do
+ * it again from the popup before they could review anything. Its content-script bridge is already
+ * on these hosts, so a CustomEvent reaches it without anybody knowing an id.
+ *
+ * The detail is a JSON string: content scripts run in an isolated world and a string is the one
+ * shape that crosses it with no structured-clone surprises. Bounded, because most visitors have no
+ * extension at all and a sign-in must never wait on an answer that is not coming.
+ */
+export function tellExtensionSignedIn(user, token) {
+  return new Promise((go) => {
+    if (!user || !token) return go();
+    let settled = false;
+    const finish = () => { if (settled) return; settled = true; clearTimeout(t); go(); };
+    const t = setTimeout(finish, 700);
+    try { window.addEventListener('proofkit-signin-done', finish, { once: true }); } catch (e) {}
+    try {
+      window.dispatchEvent(new CustomEvent('proofkit-signin', { detail: JSON.stringify({ user, token }) }));
+    } catch (e) { finish(); }
+  });
+}
 
 /** Attach this session to `url` when — and only when — following it leaves this origin. */
 export function withHandoff(url, user, token) {
@@ -822,7 +859,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=95b69c5866'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=f4733f050b'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -830,7 +867,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=95b69c5866';
+} from './vocab.js?v=f4733f050b';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

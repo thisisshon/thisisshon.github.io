@@ -23,9 +23,9 @@
  *   ?email=<addr>   pre-fill, e.g. when the popup already knows who is signed in
  */
 import {
-  WORKER_URL, accountLogin, accessLogin, buildAccessLogin, SITE_ORIGIN, withHandoff,
+  WORKER_URL, accountLogin, accessLogin, buildAccessLogin, SITE_ORIGIN, withHandoff, tellExtensionSignedIn,
   passkeyLoginDiscoverable, hasPlatformAuthenticator, getAccount, getAuthToken, PK_MARK,
-} from './config.js?v=95b69c5866';
+} from './config.js?v=f4733f050b';
 
 const $ = (s) => document.querySelector(s);
 const workerUrl = window.PROOFKIT_WORKER_URL || WORKER_URL;
@@ -84,6 +84,8 @@ async function handOff(body) {
 
 /** Signed in — hand off if asked, then go back where they came from. */
 async function finish(body) {
+  // Same as login.js: the extension learns about this sign-in whether or not it opened the page.
+  await tellExtensionSignedIn(body && body.user, body && body.token);
   const reply = await handOff(body);
   /* When the extension owns this tab it does the whole return trip: it arms the tab the user came
    * from, focuses it, and closes THIS one. Navigating as well would leave two tabs on the same
