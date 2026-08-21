@@ -1,5 +1,5 @@
   import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=89e3b1ea39';
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=fa4642d9cc';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -14,8 +14,19 @@
      */
     function showLogin() {
       if (!loginEl) {
-        loginEl = document.createElement('div');
-        loginEl.className = 'rvd-login';
+        /* The card mounts into the page's own slot. It used to build its own fixed, scrimmed
+         * layer with a close button and Escape-to-dismiss, because this file was a GATE thrown
+         * over a review in progress — dismissible on purpose, since you can read a page without
+         * reviewing it.
+         *
+         * On its own host that is backwards: sign-in is the destination, nothing is behind it, and
+         * offering to close the only thing on screen offers a blank page. */
+        loginEl = document.querySelector('.pk-lp-slot');
+        if (!loginEl) {                       // a host that laid out no page: make a slot
+          loginEl = document.createElement('div');
+          loginEl.className = 'pk-lp-slot';
+          document.body.appendChild(loginEl);
+        }
         screen = buildAccessLogin({
           title: 'Access Key',
           sub: 'Two letters, then six digits.',
@@ -30,24 +41,14 @@
         // Stashed so the signed-in state can rebuild the card without importing the icon again.
         screen.el.querySelector('.pk-access-card').dataset.mark =
           screen.el.querySelector('.pk-access-mark svg').outerHTML;
-
-        // Close (✕) — the gate is dismissible; you can read the page without reviewing it.
-        const close = document.createElement('button');
-        close.type = 'button'; close.className = 'rvd-login-close';
-        close.setAttribute('aria-label', 'Close');
-        close.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-        close.addEventListener('click', hideLogin);
-        screen.el.querySelector('.pk-access-card').appendChild(close);
-
-        loginEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideLogin(); });
-        loginEl.addEventListener('mousedown', (e) => { if (e.target === loginEl) hideLogin(); });
       }
-      document.body.appendChild(loginEl);
       screen.focus();
     }
 
+    /* Still called by the signed-in and returning states. It empties the slot rather than
+     * detaching a layer — there is no layer any more. */
     function hideLogin() {
-      if (loginEl && loginEl.parentNode) loginEl.parentNode.removeChild(loginEl);
+      if (loginEl) loginEl.textContent = '';
     }
 
     /** Where a signed-in user belongs: their own board. */

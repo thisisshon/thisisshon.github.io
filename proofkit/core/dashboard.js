@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=89e3b1ea39';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=fa4642d9cc';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=89e3b1ea39';
-  import { createCardRenderer } from './card.js?v=89e3b1ea39';
-  import { ICON } from './icons.js?v=89e3b1ea39';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=89e3b1ea39';
+  import { PK_VERSION } from './version.js?v=fa4642d9cc';
+  import { createCardRenderer } from './card.js?v=fa4642d9cc';
+  import { ICON } from './icons.js?v=fa4642d9cc';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=fa4642d9cc';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -3807,21 +3807,22 @@
             const ids = t ? projectsOf(t) : (u.projectId ? [u.projectId] : []);
             return [...new Set(ids)].map(projName).sort((a, b) => a.localeCompare(b));
           };
-          const liveTeams = (teams || []).map((t) => t.name).sort((a, b) => a.localeCompare(b));
 
           const personRow = (u) => {
             const ps = projectsOfPerson(u);
-            /* The Team cell is a live control, so the row must not also navigate: a click that
-             * opens the person AND drops a menu is a click that does the thing you did not mean.
-             * The cell stops the event; the rest of the row still opens them. */
-            /* A BUILDER IS NOT UNALLOCATED. They are exempt from needing a team — they are the
+            /* The Team cell READS. It was a live dropdown, which made this column the one place in
+             * the table where a click did something other than open the person — and it was a
+             * second way to do a thing the person's own page already does properly, with a pill
+             * and a Change button that explains what moving them costs. Two controls for one
+             * action means one of them is the wrong one to have used, and this was it: a menu that
+             * reassigns somebody's team on a mis-click, in a row you were trying to open.
+             *
+             * A BUILDER IS NOT UNALLOCATED. They are exempt from needing a team — they are the
              * ones who hand teams out — so offering them the fix for a problem they do not have
              * would put a red call-to-action on the healthiest row on the screen. */
             const exempt = u.role === 'builder';
             const teamCell = u.team
-              ? `<select class="pk-login-input pk-cellsel" data-person-team="${esc(u.email)}" aria-label="Team for ${esc(u.email)}">` +
-                  liveTeams.map((t) => `<option value="${esc(t)}"${t === u.team ? ' selected' : ''}>${esc(t)}</option>`).join('') +
-                `</select>`
+              ? `<span class="pk-cellteam">${esc(u.team)}</span>`
               : exempt
               ? `<span class="pk-set-pill">Builder</span>`
               /* No team is not an empty cell. It is the one state that stops this person signing
@@ -4455,27 +4456,6 @@
           copyToClip(cp.dataset.copyId, cp, 'Copied ✓');
         });
 
-        panel.addEventListener('change', async (e) => {
-          const selEl = e.target.closest('[data-person-team]');
-          if (!selEl) return;
-          const email = selEl.dataset.personTeam;
-          const to = selEl.value;
-          const before = (orgData.users.find((u) => u.email === email) || {}).team || '';
-          if (!to || to === before) return;
-          selEl.disabled = true;
-          try {
-            await store.userUpdate({ email, team: to });
-            await fillOrg();
-          } catch (err) {
-            // Put the old value back: a control left showing a team the server refused is a lie.
-            // `pk-sync` tells the visible dropdown to follow the hidden select back — without it
-            // the two disagree and the screen claims a move that never happened.
-            selEl.value = before;
-            selEl.disabled = false;
-            selEl.dispatchEvent(new Event('pk-sync'));
-            pkAlert({ title: 'Could not move them', message: err.message });
-          }
-        });
 
       }
 
@@ -4834,7 +4814,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=89e3b1ea39');
+              const sheet = await import('./sheet.js?v=fa4642d9cc');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4915,7 +4895,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=89e3b1ea39');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=fa4642d9cc');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length

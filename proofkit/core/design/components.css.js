@@ -1289,6 +1289,9 @@ button.pk-status-chip{font-family:var(--pk-font);cursor:pointer;border:1px solid
    width rather than their content's — a select sized to its longest option would push the column
    out and undo the geometry above. */
 .pk-cellsel{width:100%;max-width:100%;padding:4px 8px;font-size:var(--pk-text-xs);height:auto;min-height:0}
+/* The Team column reads rather than edits — see the note in dashboard.js. Plain text at the
+   table's own weight, so the column stops advertising itself as a control. */
+.pk-cellteam{font-size:var(--pk-text-base);color:var(--pk-ink)}
 .pk-cellcta{width:100%;padding:4px 8px;font-size:var(--pk-text-xs);white-space:nowrap}
 /* An account with no team cannot sign in. That is not a styling preference, it is the one row on
    the screen that represents something broken, so it carries a mark down its left edge. */

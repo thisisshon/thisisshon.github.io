@@ -41,7 +41,39 @@
   window.PROOFKIT_WORKER_URL = u || '';
 })();
 </script>
-<section class="section rvd-gate"><p class="rvd-gate-note">Content review is restricted. Sign in to continue.</p></section>
+<!-- A PAGE, not a gate. This was one line of text with a dismissible overlay floating over it,
+     which is the right shape when it guards a review already in progress. On its own host there is
+     nothing behind it to dismiss to, and a scrim over an empty page reads as a dialog someone
+     forgot to close.
+
+     Two columns, each the full height of the viewport: what you are signing in to on the left, the
+     key itself on the right. No header band and no footer band — they would cut the split in three
+     and neither had anything in it worth a stripe of its own. The brand sits at the top of the
+     left column and the small print at the bottom of it, which is where a reader looks anyway. -->
+<main class="pk-lp">
+  <section class="pk-lp-say">
+    <a class="pk-lp-brand" href="https://proofkit.in">Proof<b>kit</b></a>
+
+    <div class="pk-lp-mid">
+      <h1 class="pk-lp-h">Sign In</h1>
+      <p class="pk-lp-p">Your Access Key identifies you.</p>
+      <ul class="pk-lp-list">
+        <li>Comment on any page, and it becomes a tracked ticket.</li>
+        <li>Your board shows only the work your team owns.</li>
+        <li>Nothing closes until whoever raised it agrees it is fixed.</li>
+      </ul>
+    </div>
+
+    <p class="pk-lp-foot">
+      <span>Lost your key? Open <b>Advanced</b> and sign in with your email and PIN.</span>
+      <a href="https://proofkit.in">Back to proofkit.in</a>
+    </p>
+  </section>
+
+  <!-- login.js mounts the access card here. -->
+  <div class="pk-lp-slot"></div>
+</main>
+
 <script type="module" src="./login.js"></script>
 </body>
 </html>

@@ -1,30 +1,83 @@
-  .rvd-gate{min-height:60vh;display:flex;align-items:center;justify-content:center}
-  .rvd-gate-note{color:var(--pk-muted);font-size:var(--pk-text-base)}
+  /* ------------------------------------------------------------------------------------------
+     A SIGN-IN PAGE — full-bleed, two columns, each the height of the viewport.
 
-  /* The review-password gate. It is the SAME card as every other Proofkit sign-in — mark at the
-     top, title, subtitle, one full-width field, one full-width accent button, square corners —
-     so nothing here restates a shape that components.css already owns. What it used to be: a
-     rounded card, a rounded field, a right-aligned pill button and the wordmark as a footer,
-     which made the one screen most people see first the one screen that matched nothing else.
-     Only the scrim, the close affordance and the layout hooks live here now; everything the user
-     actually looks at comes from .pk-access-card and friends. */
-  /* Right-aligned. This is a full page, not a modal over something — centring a lone card in a
-     wide empty viewport reads as a dialog waiting to be dismissed. Held to the right it reads
-     as a panel, and it sits where a right-handed reader's attention already is. */
-  .rvd-login{position:fixed;inset:0;z-index:var(--pk-z-gate);display:flex;align-items:center;justify-content:flex-end;padding:var(--pk-space-4) clamp(var(--pk-space-4),7vw,var(--pk-space-9)) var(--pk-space-4) var(--pk-space-4);
-    background:var(--pk-scrim);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-  /* The access screen is normally a fixed, full-viewport centring layer — correct when it is an
-     overlay, wrong here: it re-centred the card inside itself and the alignment below had nothing
-     to act on. Flattened to a plain block so the CARD is the flex item and .rvd-login can place it. */
-  .rvd-login .pk-access-login{position:static;inset:auto;display:block;width:auto;padding:0;
+     What was here: .rvd-login, a fixed full-viewport layer with a scrim and a backdrop blur,
+     holding the card against the right edge, with a close button and Escape-to-dismiss. That is
+     the correct shape for a gate thrown over a review someone is in the middle of, and it was
+     written when this file WAS that gate.
+
+     On login.proofkit.in it is wrong in a way people can feel: nothing sits behind the scrim, so
+     the blur blurs an empty page, and a close button offers to dismiss the only thing on screen.
+     Sign-in is the destination here, not an interruption of one.
+     ------------------------------------------------------------------------------------------ */
+
+  /* The page owns the viewport. svh as well as vh because on mobile the two disagree, and vh alone
+     puts the bottom of the page behind the browser chrome. */
+  html,body{height:100%}
+  body{margin:0;min-height:100vh;min-height:100svh}
+
+  .pk-lp{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;min-height:100svh;
+    width:100%;max-width:none;margin:0;padding:0}
+
+  /* LEFT — brand at the top, the argument in the middle, small print at the bottom. Three rows so
+     the middle is optically centred rather than pushed down by whatever sits above it. */
+  .pk-lp-say{display:grid;grid-template-rows:auto 1fr auto;gap:var(--pk-space-6);
+    padding:clamp(var(--pk-space-5),4vw,var(--pk-space-7)) clamp(var(--pk-space-5),5vw,var(--pk-space-8));
+    min-width:0}
+  .pk-lp-brand{align-self:start;font-size:var(--pk-text-3xl);font-weight:800;letter-spacing:-.03em;
+    color:var(--pk-ink);text-decoration:none}
+  .pk-lp-brand b{color:var(--pk-red)}
+
+  .pk-lp-mid{align-self:center;max-width:52ch}
+  .pk-lp-h{margin:0 0 var(--pk-space-4);font-size:var(--pk-text-display);font-weight:700;
+    letter-spacing:-.025em;line-height:1.1;color:var(--pk-ink)}
+  .pk-lp-p{margin:0 0 var(--pk-space-5);font-size:var(--pk-text-xl);line-height:1.6;color:var(--pk-muted)}
+  .pk-lp-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:var(--pk-space-3)}
+  .pk-lp-list li{position:relative;padding-left:var(--pk-space-5);
+    font-size:var(--pk-text-lg);line-height:1.5;color:var(--pk-muted)}
+  /* The mark, at list scale — the same dot the wordmark uses, so the page has one idea in it. */
+  .pk-lp-list li::before{content:"";position:absolute;left:0;top:.55em;width:7px;height:7px;
+    border-radius:50%;background:var(--pk-red)}
+
+  .pk-lp-foot{align-self:end;display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--pk-space-4);
+    margin:0;font-size:var(--pk-text-md);color:var(--pk-muted)}
+  .pk-lp-foot b{color:var(--pk-ink);font-weight:600}
+  .pk-lp-foot a{margin-left:auto;color:var(--pk-muted);text-decoration:none}
+  .pk-lp-foot a:hover{color:var(--pk-ink)}
+
+  /* RIGHT — the key. A hair rule and a slightly lifted surface separate the halves; the card keeps
+     its own width from components.css and nothing here restates it. */
+  .pk-lp-slot{display:flex;align-items:center;justify-content:center;
+    padding:clamp(var(--pk-space-5),4vw,var(--pk-space-7));
+    background:var(--pk-card);border-left:var(--pk-border-hair) solid var(--pk-hair)}
+
+  /* The access screen defaults to a fixed, full-viewport centring layer — right when it is an
+     overlay, wrong when it is a column. Flattened so the card sits in the flow. */
+  .pk-lp-slot .pk-access-login{position:static;inset:auto;display:block;width:auto;padding:0;
     background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-  /* 460, the component's own width. Pinning it to 400 squeezed the key row: the boxes have to
-     span the text column, so a narrower card means narrower boxes for no reason. */
-  .rvd-login .pk-access-card{width:460px}
-  /* close button — top-right, padded away from the card edge and the title */
-  .rvd-login-close{position:absolute;top:var(--pk-space-3h);right:var(--pk-space-3h);display:flex;align-items:center;justify-content:center;
-    width:var(--pk-control-h-md);height:var(--pk-control-h-md);padding:0;border:none;border-radius:var(--pk-radius-md);background:transparent;color:var(--pk-muted);
-    cursor:pointer;line-height:0}
-  @media (min-width:1024px) and (hover:hover){.rvd-login-close:hover{background:var(--pk-input);color:var(--pk-ink)}}
-  .rvd-login-close:focus-visible{outline:var(--pk-border-strong) solid var(--pk-red);outline-offset:var(--pk-border-strong)}
-  @media (max-width:720px){.rvd-login{justify-content:center;padding:var(--pk-space-4)}}
+
+  /* NO CARD. components.css gives .pk-access-card a surface, a hair border, a red top rule and a
+     large shadow, because everywhere else it IS a card — something lifted above a page it does not
+     belong to. Here the right half of the screen is already its container; drawing a second edge
+     inside it boxes the form for no reason and the shadow falls on a surface nothing is above.
+     The type and the field keep their own styling; only the container is taken away. */
+  .pk-lp-slot .pk-access-card{width:100%;max-width:460px;padding:0;
+    background:none;border:none;box-shadow:none;animation:none}
+  /* The wordmark is already at the top of the left column. Repeating it inside the form states the
+     same thing twice on one screen — it earns its place on a card that might appear anywhere, not
+     on a page whose whole job is announced above it. */
+  .pk-lp-slot .pk-access-mark{display:none}
+
+  /* One column when there is no room for two. The KEY leads: someone who came here to sign in
+     should not scroll past an argument for the product to reach the field. Heights go auto — a
+     forced 100vh per column on a phone means two full screens of scrolling to see one form. */
+  @media (max-width:900px){
+    .pk-lp{grid-template-columns:minmax(0,1fr);min-height:0}
+    .pk-lp-slot{order:-1;border-left:none;border-bottom:var(--pk-border-hair) solid var(--pk-hair);
+      min-height:60svh}
+    .pk-lp-say{gap:var(--pk-space-5);padding-bottom:var(--pk-space-7)}
+    .pk-lp-mid{max-width:none}
+  }
+  @media (max-width:520px){
+    .pk-lp-foot a{margin-left:0}
+  }
