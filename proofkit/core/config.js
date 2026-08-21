@@ -403,6 +403,24 @@ const bufToB64u = (buf) => {
  * path, exactly as before.
  * ------------------------------------------------------------------------ */
 
+/* Listen for a sign-out that happened somewhere else — the extension popup, or another tab.
+ *
+ * The extension clearing its own copy used to be the whole of it, so a board open in another tab
+ * carried on as though signed in: that session lives in the PAGE's storage, which the extension
+ * cannot reach. This is the return leg, and `onRemote` decides what leaving means for the surface
+ * it is on, because a board and the sign-in page leave differently.
+ */
+export function onRemoteSignOut(handler) {
+  try {
+    window.addEventListener('proofkit-remote-signout', () => {
+      clearSession();
+      clearAccount();
+      lockTab();
+      try { handler(); } catch (e) {}
+    });
+  } catch (e) {}
+}
+
 /* Tell the extension a sign-in happened, and wait briefly for it to say it stored the session.
  *
  * The extension only ever learned about a session through its externally-connectable channel,
@@ -859,7 +877,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=f4733f050b'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=84828f2899'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -867,7 +885,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=f4733f050b';
+} from './vocab.js?v=84828f2899';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

@@ -1,5 +1,5 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome, lockTab, tellExtensionSignedIn, clearSession, clearAccount,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=f4733f050b';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome, lockTab, tellExtensionSignedIn, clearSession, clearAccount, onRemoteSignOut,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=84828f2899';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -203,6 +203,14 @@
 
     // Already signed in? Skip the gate entirely — the account session is the whole credential now,
     // and it is the same one the extension seeds through bridge.js.
+    /* Signed out somewhere else while this page sat open. Nowhere to navigate — this IS the
+     * sign-in page — so drop whatever was remembered and put the form back. */
+    onRemoteSignOut(() => {
+      try { sessionStorage.removeItem('pkSignInBounce'); } catch (e) {}
+      try { hideLogin(); } catch (e) {}
+      showLogin();
+    });
+
     async function init() {
       /* ARRIVED FROM A LOGOUT. The boards can only clear their OWN origin, and signing in wrote the
        * account, token and team here — so without this the sign-in page still held a complete,

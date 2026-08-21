@@ -1,9 +1,9 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, signOutUrl, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, signOutUrl, onRemoteSignOut, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=f4733f050b';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=84828f2899';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=f4733f050b';
-  import { createCardRenderer } from './card.js?v=f4733f050b';
-  import { ICON } from './icons.js?v=f4733f050b';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=f4733f050b';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=f4733f050b';
+  import { PK_VERSION } from './version.js?v=84828f2899';
+  import { createCardRenderer } from './card.js?v=84828f2899';
+  import { ICON } from './icons.js?v=84828f2899';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=84828f2899';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=84828f2899';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -3069,6 +3069,16 @@
     /* Cleared on a session that works, so the next genuine expiry redirects rather than inheriting
      * a stale mark and showing the fallback for no reason. */
     function signInSettled() { try { sessionStorage.removeItem(BOUNCE_KEY); } catch (e) {} }
+
+    /* Signed out somewhere else — the extension popup, or another tab. Leave the same way the
+     * Log out button does, via signOutUrl, so the SIGN-IN origin clears its copy as well.
+     * Reloading instead would land on a sign-in page still holding a valid session of its own,
+     * and be signed straight back in. */
+    onRemoteSignOut(() => {
+      try { stopLiveUpdates(); } catch (e) {}
+      signInSettled();
+      location.replace(signOutUrl());
+    });
 
     /* NO SIGN-IN ON THIS HOST. The boards are an authenticated surface at all times: every route
      * that finds no session leaves for the sign-in origin. What is left here is not a sign-in — it
