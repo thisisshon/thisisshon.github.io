@@ -11,15 +11,22 @@
 <title>Proofkit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
+<!-- The webfont must never be able to stop this page working. A stylesheet BLOCKS script
+     execution until it resolves, so a slow or unreachable fonts.googleapis.com does not just
+     delay the typeface — it stops the page's module from running at all, and the sign-in form
+     is never built. The page renders, the right-hand side stays empty, and nothing says why.
+     media="print" makes it non-blocking; onload promotes it once it has actually arrived. -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet"
+      media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet"></noscript>
 <!-- pre-paint floor mirrors --pk-floor (literal: paints before any stylesheet loads) -->
 <style>html,body{margin:0;background:#141414}body{font-family:Outfit,system-ui,-apple-system,sans-serif}</style>
-<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=1e381fed60">
+<link rel="stylesheet" href="/proofkit/core/design/tokens.css?v=43a0734204">
 <!-- The gate is built from the shared auth components (.pk-access-card, .pk-unlock-input,
      .pk-unlock-go), so components.css is not optional here — without it the card falls back
      to unstyled markup. login.css now only carries the scrim, the close button and layout. -->
-<link rel="stylesheet" href="/proofkit/core/design/components.css?v=1e381fed60">
-<link rel="stylesheet" href="/proofkit/core/login.css?v=1e381fed60">
+<link rel="stylesheet" href="/proofkit/core/design/components.css?v=43a0734204">
+<link rel="stylesheet" href="/proofkit/core/login.css?v=43a0734204">
 </head>
 <body>
 <!-- Non-Astro host: the Worker base URL. Precedence:
@@ -77,6 +84,6 @@
   <div class="pk-lp-slot"></div>
 </main>
 
-<script type="module" src="/proofkit/core/login.js?v=1e381fed60"></script>
+<script type="module" src="/proofkit/core/login.js?v=43a0734204"></script>
 </body>
 </html>

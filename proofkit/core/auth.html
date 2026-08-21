@@ -13,7 +13,14 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTMiIGZpbGw9IiNEQTI5MUMiIG9wYWNpdHk9Ii4yIi8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iNy41IiBmaWxsPSIjREEyOTFDIi8+PC9zdmc+">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet">
+<!-- The webfont must never be able to stop this page working. A stylesheet BLOCKS script
+     execution until it resolves, so a slow or unreachable fonts.googleapis.com does not just
+     delay the typeface — it stops the page's module from running at all, and the sign-in form
+     is never built. The page renders, the right-hand side stays empty, and nothing says why.
+     media="print" makes it non-blocking; onload promotes it once it has actually arrived. -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet"
+      media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..800&display=swap" rel="stylesheet"></noscript>
 <!-- Black before the first stylesheet lands. This page is a hard cut away from whatever site the
      user came from, and a white flash in the middle of that cut is the one thing it must not do. -->
 <style>html,body{margin:0;background:#000}</style>

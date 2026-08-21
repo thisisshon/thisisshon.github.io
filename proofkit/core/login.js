@@ -1,5 +1,5 @@
   import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=1e381fed60';
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=43a0734204';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -196,14 +196,31 @@
     // Already signed in? Skip the gate entirely — the account session is the whole credential now,
     // and it is the same one the extension seeds through bridge.js.
     async function init() {
-      /* Already signed in — go to the board, not to a sign-in form. handoffUrl rather than the
-       * bare path because on a split deploy this page is on the SIGN-IN host: the path would
-       * resolve to login.proofkit.in/builder/, which is this tree's copy of the board with no
-       * session behind it. Same origin, and it stays the plain path it always was. */
-      if (getAccount()) {
-        sessionStorage.setItem('reviewMode', '1');
-        location.replace(handoffUrl(landing(getAccount()), getAccount(), getAuthToken()));
-        return;
+      /* Already signed in — go to the board rather than ask again. handoffUrl rather than a bare
+       * path because on a split deploy this page is on the SIGN-IN host, and the path would
+       * resolve to this tree's own copy of the board with no session behind it.
+       *
+       * THE TOKEN IS THE CONDITION, not the account. pkAccount is durable and shared across tabs;
+       * the token lives in sessionStorage and is per-tab BY DESIGN, so a new tab knows who you are
+       * and cannot prove it. Redirecting on the account alone sent that tab to a board on another
+       * origin with nothing to hand over; the board found no session and bounced it straight back
+       * here; and this function returned before building the form — so the page sat there with an
+       * empty right-hand side, redirecting in a circle.
+       *
+       * Same origin is exempt: there the board reads the very storage this page wrote, so there is
+       * nothing to hand over and nothing to fail. */
+      const acct = getAccount();
+      const token = getAuthToken();
+      if (acct) {
+        const dest = handoffUrl(landing(acct), acct, token);
+        let crosses = false;
+        try { crosses = new URL(dest, location.href).origin !== location.origin; } catch (e) {}
+        if (token || !crosses) {
+          sessionStorage.setItem('reviewMode', '1');
+          location.replace(dest);
+          return;
+        }
+        /* Otherwise fall through to the form. We still know who they are. */
       }
       showLogin();
     }
