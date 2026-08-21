@@ -102,8 +102,60 @@ export function teamFromSlug(slug) {
   const s = teamSlug(slug);
   return [ADMIN_TEAM].concat(TEAMS).find((t) => teamSlug(t) === s) || '';
 }
-/** The board root for a login identity: /proofkit/<slug>. */
-export const boardBase = (team) => BASE + '/' + teamSlug(team || ADMIN_TEAM);
+/* --------------------------------------------------------------------------
+ * WHOSE BOARD, AND WHETHER THE URL SAYS SO
+ *
+ * The identity used to be the first segment of every board URL — /proofkit/builder/queue. On a
+ * host that exists only to serve boards to signed-in people, that segment is the one fact the URL
+ * already knows: you are looking at YOUR board, because there is no other kind you can open.
+ * So on a dedicated host it comes out, and /queue is your queue.
+ *
+ * It cannot come out entirely, because it is also how one board ADDRESSES another. The Builder
+ * opens a team's board to see what that team sees, and without a segment naming the team there is
+ * no URL that means it. So cross-board viewing keeps an explicit route — /team/<slug>/queue —
+ * which a normal user never sees, because a normal user only ever opens their own board.
+ *
+ * IDENTITY_IN_PATH is baked per host by site/build.mjs, like the origins above.
+ * ------------------------------------------------------------------------ */
+export const IDENTITY_IN_PATH = true;
+
+/** The explicit cross-board prefix, used only when the identity is NOT in every path. */
+export const TEAM_ROUTE = 'team';
+
+/** How many leading segments come before the view: BASE, plus the identity when it is in the path. */
+export const ROUTE_OFFSET = BASE.split('/').filter(Boolean).length + (IDENTITY_IN_PATH ? 1 : 0);
+
+/** The board root for a login identity. '/proofkit/<slug>', or '' when the host implies it. */
+export const boardBase = (team) => {
+  if (IDENTITY_IN_PATH) return BASE + '/' + teamSlug(team || ADMIN_TEAM);
+  const t = team || ADMIN_TEAM;
+  /* Your own board has no segment; anyone else's is named explicitly. "Own" is decided against the
+   * session rather than against ADMIN_TEAM, because a team member's own board is identity-less to
+   * THEM for exactly the same reason the Builder's is to the Builder. */
+  let mine = '';
+  try { mine = (getSession() || {}).team || ''; } catch (e) {}
+  if (mine && teamSlug(t) === teamSlug(mine)) return BASE;
+  return BASE + '/' + TEAM_ROUTE + '/' + teamSlug(t);
+};
+
+/** boardBase for a bare navigation — never '', which location.replace() reads as "reload me". */
+export const boardHome = (team) => boardBase(team) || '/';
+
+/**
+ * Split a pathname into the team it names (if any) and the view segments after it.
+ * ONE parser, because there were four copies of this arithmetic and each had its own idea of how
+ * many leading segments to drop.
+ */
+export function routeParts(pathname) {
+  let segs = [];
+  try { segs = String(pathname || '').replace(/\/+$/, '').split('/').filter(Boolean); } catch (e) { return { team: '', rest: [] }; }
+  const baseLen = BASE.split('/').filter(Boolean).length;
+  const after = segs.slice(baseLen);
+  if (IDENTITY_IN_PATH) return { team: after[0] || '', rest: after.slice(1) };
+  // Identity-less host: /team/<slug>/… names a board, anything else is your own.
+  if (after[0] === TEAM_ROUTE) return { team: after[1] || '', rest: after.slice(2) };
+  return { team: '', rest: after };
+}
 
 /**
  * HOME — the board the signed-in user belongs to. The single answer to "where does Go To Dashboard
@@ -766,7 +818,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=895693305c'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=d7e60b4810'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -774,7 +826,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=895693305c';
+} from './vocab.js?v=d7e60b4810';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

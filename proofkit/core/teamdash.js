@@ -1,9 +1,9 @@
   import { TEAMS, TEAM_COLORS, WORKER_URL, PROOFKIT_ENABLED, pageName, pageHref, pinHref, pageUrlText, ADMIN_TEAM,
     pageHost, pageLabel, pageLabelFull, pageGroupKey,
     VIEW_SEGMENTS, SEGMENT_VIEWS, teamSlug, teamFromSlug, boardBase, BASE,
-    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
+    accessChange, ACCOUNT_KEY_SENTINEL, buildDropdown, loginUrl, signInUrl, routeParts, boardHome, IDENTITY_IN_PATH, getSession, setSession, clearSession, authHeaders, getAccount, getAuthToken, accountLogin, lockTab, clearAccount, initTheme, mountThemeToggle, mountThemeRailButton, animateRailReflow, getTheme, LIGHT_THEME, ensureDemoReset, isTeamEnabled,
     syncOverlayUi, startScopeStream,
-    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=895693305c';
+    COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, reopenReasonLabel, renderSummary, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=d7e60b4810';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -12,11 +12,11 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=895693305c';
-  import { createCardRenderer } from './card.js?v=895693305c';
-  import { ICON } from './icons.js?v=895693305c';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=895693305c';
-  import { openReopenModal, openDisregardModal } from './action-modals.js?v=895693305c';
+  import { PK_VERSION } from './version.js?v=d7e60b4810';
+  import { createCardRenderer } from './card.js?v=d7e60b4810';
+  import { ICON } from './icons.js?v=d7e60b4810';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=d7e60b4810';
+  import { openReopenModal, openDisregardModal } from './action-modals.js?v=d7e60b4810';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is this
@@ -46,8 +46,7 @@
      * the Worker enforces it again on every read, so the slug is a label and never a key. */
     const OVERRIDE = (() => {
       try {
-        const segs = location.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
-        const t = teamFromSlug(segs[BASE.split('/').filter(Boolean).length] || '');
+        const t = teamFromSlug(routeParts(location.pathname).team);
         return t && TEAMS.includes(t) && getSession().team === ADMIN_TEAM ? t : '';
       } catch { return ''; }
     })();
@@ -845,9 +844,8 @@
       return byTicket ? byTicket.id : no;
     }
     function readUrl() {
-      let segs = [];
-      try { segs = location.pathname.replace(/\/+$/, '').split('/').filter(Boolean); } catch { return { view: '', ticket: '' }; }
-      const rest = segs.slice(BASE.split('/').filter(Boolean).length + 1);
+      let rest = [];
+      try { rest = routeParts(location.pathname).rest; } catch { return { view: '', ticket: '' }; }
       let q = null;
       try { q = new URLSearchParams(location.search); } catch {}
       const legacy = q ? (q.get('ticket') || q.get('detail') || '') : '';
@@ -866,10 +864,7 @@
     }
     /** The identity segment currently in the address bar ('' if none). */
     function slugInUrl() {
-      try {
-        const segs = location.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
-        return segs[BASE.split('/').filter(Boolean).length] || '';
-      } catch { return ''; }
+      try { return routeParts(location.pathname).team; } catch (e) { return ''; }
     }
     /* This board's root. It follows the URL's identity, not the session's, so an ADMIN previewing
      * /proofkit/content keeps writing /proofkit/content — the preview stays on the board it opened
