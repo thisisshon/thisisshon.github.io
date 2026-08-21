@@ -23,9 +23,9 @@
  *   ?email=<addr>   pre-fill, e.g. when the popup already knows who is signed in
  */
 import {
-  WORKER_URL, accountLogin, accessLogin, buildAccessLogin,
+  WORKER_URL, accountLogin, accessLogin, buildAccessLogin, SITE_ORIGIN, withHandoff,
   passkeyLoginDiscoverable, hasPlatformAuthenticator, getAccount, getAuthToken, PK_MARK,
-} from './config.js?v=c909067c04';
+} from './config.js?v=24f9058039';
 
 const $ = (s) => document.querySelector(s);
 const workerUrl = window.PROOFKIT_WORKER_URL || WORKER_URL;
@@ -38,6 +38,12 @@ function safeReturn(raw) {
   try {
     const u = new URL(String(raw || ''), location.href);
     if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+    /* An ALLOWLIST, because the protocol check alone was never the promise this function makes.
+     * `?return=https://evil.example` is https, so it passed — and this page would then redirect
+     * there itself, immediately after a real Proofkit sign-in, which is exactly the credible
+     * bounce the comment above says it exists to prevent. Only this origin and the boards' own
+     * origin are destinations; anything else falls back to '' and the user stays here. */
+    if (u.origin !== location.origin && u.origin !== SITE_ORIGIN) return '';
     // A return URL pointing back at THIS page is an infinite loop: sign in, come back here, get
     // prompted again, forever — and because the biometric state hides the form there is no way
     // out of it by hand. Refuse it outright rather than trusting the caller to get it right.
@@ -88,10 +94,10 @@ async function finish(body) {
     note.className = 'pka-note';
     note.textContent = 'Taking you back…';
     document.body.appendChild(note);
-    setTimeout(() => { if (returnTo) location.replace(returnTo); }, 3000);
+    setTimeout(() => { if (returnTo) location.replace(withHandoff(returnTo, body.user, body.token)); }, 3000);
     return;
   }
-  if (returnTo) { location.replace(returnTo); return; }
+  if (returnTo) { location.replace(withHandoff(returnTo, body.user, body.token)); return; }
   login.el.hidden = true;   // already dismissed on the access-key path; a no-op there
   if (fallback) fallback.hidden = true;
   const note = document.createElement('p');
@@ -238,7 +244,7 @@ function showEmailFallback() {
         done.className = 'pka-note';
         done.textContent = 'Already signed in as ' + (me.user.name || me.user.email) + '.';
         document.body.appendChild(done);
-        if (returnTo) { location.replace(returnTo); return; }
+        if (returnTo) { location.replace(withHandoff(returnTo, me.user, existing)); return; }
         done.textContent += ' You can close this tab.';
         return;
       }

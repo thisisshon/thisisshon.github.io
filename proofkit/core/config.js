@@ -46,17 +46,35 @@ export const PROOFKIT_ENABLED = true;
  * That is why "Go To Dashboard" failed from a review and worked from everywhere else.
  *
  * SITE_ORIGIN names the host the boards actually live on, so a link can be made absolute when it
- * has to cross an origin. Moving to a custom domain is a one-line change HERE — but the domain has
- * to resolve and GitHub Pages has to be told about it (a CNAME file in the Pages repo plus the DNS
- * records) BEFORE this changes, or every link in the tool breaks at once.
+ * has to cross an origin.
+ *
+ * THE THREE VALUES BELOW ARE BAKED AT BUILD TIME. site/build.mjs rewrites each one per host, which
+ * is what lets one copy of core/ serve a single-origin deploy and a split one without a fork. The
+ * literals here are the standalone defaults — open core/dashboard.html straight off disk and they
+ * are what you get. Do not read them as the deployed values; read site/deploy.config.json.
+ *
+ *   SITE_ORIGIN   where the BOARDS live      → https://dash.proofkit.in
+ *   LOGIN_ORIGIN  where SIGN-IN lives, or '' → https://login.proofkit.in ('' = same host as boards)
+ *   BASE          the path prefix            → '' on a dedicated host, '/proofkit' when sharing one
+ *
+ * They were a one-line edit before, and the edit was missed: SITE_ORIGIN still named the .github.io
+ * host after the boards moved to a custom domain, and every absolute link kept working only because
+ * GitHub happened to 301. Baking them means the build cannot disagree with where it deployed.
  */
-export const SITE_ORIGIN = 'https://thisisshon.github.io';
-export const BASE = '/proofkit';
+export const SITE_ORIGIN = "https://app.proofkit.in";
+export const LOGIN_ORIGIN = "";
+export const BASE = "/proofkit";
 /** BASE as an absolute URL when the caller is on another origin; the plain path when it is not. */
 export const siteUrl = (path) => {
   const p = String(path || '');
   try { if (location.origin === SITE_ORIGIN) return p; } catch (e) {}
   return SITE_ORIGIN + p;
+};
+/* Sign-in may be its own origin. When it is not, it is a path under BASE like every other route,
+ * so callers say loginUrl('/auth/') and stop caring which deploy they are in. */
+export const loginUrl = (path) => {
+  const p = String(path || '');
+  return LOGIN_ORIGIN ? LOGIN_ORIGIN + p : BASE + p;
 };
 
 /* The FIRST segment after /proofkit is always WHOSE board it is — the login identity:
@@ -290,6 +308,67 @@ const bufToB64u = (buf) => {
   for (let i = 0; i < b.length; i++) str += String.fromCharCode(b[i]);
   return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
+
+/* --------------------------------------------------------------------------
+ * CROSS-ORIGIN SESSION HANDOFF
+ *
+ * When sign-in has its own host, the session cannot simply be written and walked to. Every one of
+ * the three keys — pkAccount, pkAuthToken, pkTeam/pkKey — is scoped by the browser to the origin
+ * that wrote it, so a sign-in completed on login.proofkit.in is invisible on dash.proofkit.in and
+ * the board would bounce straight back to sign-in, forever.
+ *
+ * So the session travels in the URL FRAGMENT. Not the query string: fragments are never sent to
+ * the server, never written to an access log, and never leak through a Referer header — which
+ * matters, because what travels here is a live bearer token. The receiving side adopts it and
+ * erases it from the address bar with replaceState before anything can paint or be bookmarked.
+ *
+ * On a single-origin deploy none of this runs: handoffUrl sees the same origin and returns a plain
+ * path, exactly as before.
+ * ------------------------------------------------------------------------ */
+
+/** Attach this session to `url` when — and only when — following it leaves this origin. */
+export function withHandoff(url, user, token) {
+  const abs = String(url || '');
+  if (!abs || !token) return abs;
+  try {
+    // Same origin — the session is already where it is going, so send nothing.
+    if (new URL(abs, location.href).origin === location.origin) return abs;
+  } catch (e) { return abs; }
+  try {
+    const json = JSON.stringify({ u: user || null, t: String(token) });
+    return abs + (abs.includes('#') ? '&' : '#') + 'pk=' + bufToB64u(new TextEncoder().encode(json));
+  } catch (e) { return abs; }
+}
+
+/** A link to `path` on the boards, carrying this session when that means crossing an origin. */
+export function handoffUrl(path, user, token) {
+  return withHandoff(siteUrl(path), user, token);
+}
+
+/** Take a handed-off session out of the fragment, if one is there. Returns whether it adopted. */
+export function adoptHandoff() {
+  let hash = '';
+  try { hash = String(location.hash || ''); } catch (e) { return false; }
+  const m = /[#&]pk=([A-Za-z0-9\-_]+)/.exec(hash);
+  if (!m) return false;
+  let adopted = false;
+  try {
+    const body = JSON.parse(new TextDecoder().decode(b64uToBuf(m[1])));
+    if (body && body.t) { setAccountSession(body.u, body.t); adopted = true; }
+  } catch (e) { /* a corrupt fragment is a failed sign-in, not a crash */ }
+  /* Strip it either way. A token left in the address bar is one screenshot, one shared link or one
+   * synced history entry away from being somebody else's. */
+  try {
+    const rest = hash.replace(/[#&]pk=[A-Za-z0-9\-_]+/, '').replace(/^[#&]/, '');
+    history.replaceState(null, '', location.pathname + location.search + (rest ? '#' + rest : ''));
+  } catch (e) {}
+  return adopted;
+}
+
+/* Run on import, before any board reads getSession(). config.js is the one module every entry
+ * point imports, which makes this the only place the adoption is guaranteed to happen exactly
+ * once and early enough to matter. */
+try { adoptHandoff(); } catch (e) {}
 
 /** Does this browser have a built-in biometric authenticator we can actually use? */
 export async function hasPlatformAuthenticator() {
@@ -682,7 +761,7 @@ export const HIDE_SELECTORS = ['.to-top'];
  * COMMENT VOCABULARY — moved to ./vocab.js (the ONE framework-neutral source now
  * shared by BOTH the frontend AND the Cloudflare Worker, so a type/field/reason/
  * summary change is a single edit that can never drift across the client↔server
- * boundary). Re-exported here so every existing `import { … } from './config.js?v=c909067c04'`
+ * boundary). Re-exported here so every existing `import { … } from './config.js?v=24f9058039'`
  * (overlay composer, both dashboards, demo store) keeps working unchanged.
  * `STATUS_COLORS` below stays here — it is theming (--pk-* tokens), not vocabulary.
  * ------------------------------------------------------------------------ */
@@ -690,7 +769,7 @@ export {
   COMMENT_TYPES, TYPE_FIELDS, EXPECTED_OUTCOME_TYPES, needsExpectedOutcome,
   SCREENSHOT_TYPES, needsScreenshot,
   REOPEN_REASONS, reopenReasonLabel, renderSummary,
-} from './vocab.js?v=c909067c04';
+} from './vocab.js?v=24f9058039';
 
 /** teamStatus → the `--pk-*` token that colours pins/badges (Feature 5). The value
  *  is the token NAME (no `var()`) so both `var(<name>)` and `getPropertyValue` work. */

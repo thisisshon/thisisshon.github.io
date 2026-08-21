@@ -1,5 +1,5 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, boardBase } from './config.js?v=c909067c04';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=24f9058039';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -23,7 +23,7 @@
           onBiometric: () => viaPasskey(),
           // The email + password form lives on the hosted sign-in page. One implementation of it,
           // reached from here, rather than a second copy of the same three fields.
-          onEmail: () => { location.href = BASE + '/auth/'; },
+          onEmail: () => { location.href = loginUrl('/auth/'); },
         });
         loginEl.appendChild(screen.el);
         screen.el.hidden = false;
@@ -104,7 +104,7 @@
     async function enterWith(body) {
       sessionStorage.setItem('reviewMode', '1');
       const reply = await handOff({ user: body && body.user, token: body && body.token });
-      const dest = landing(body && body.user);
+      const dest = handoffUrl(landing(body && body.user), body && body.user, (body && body.token) || getAuthToken());
       if (reply && reply.ok) { showReturning(dest); return; }
       location.replace(dest);
     }
@@ -112,7 +112,7 @@
     async function enter(user) {
       sessionStorage.setItem('reviewMode', '1'); // arm the on-page Comment dock site-wide
       const reply = await handOff({ user, token: undefined });
-      const dest = landing(user);
+      const dest = handoffUrl(landing(user), user, getAuthToken());
       if (reply && reply.ok) { showReturning(dest); return; }
       // Nothing took the session — this page is the whole journey, so just go.
       location.replace(dest);
