@@ -1,5 +1,5 @@
-  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome,
-           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=43a0734204';
+  import { WORKER_URL, PROOFKIT_ENABLED, getSession, isTeamEnabled, BASE, homeUrl, loginUrl, handoffUrl, SITE_ORIGIN, boardHome, lockTab,
+           buildAccessLogin, accessLogin, passkeyLoginDiscoverable, getAccount, getAuthToken, boardBase } from './config.js?v=63432d416e';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     let loginEl = null;
@@ -63,6 +63,10 @@
         const u = new URL(String(raw || ''), location.href);
         if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
         if (u.origin !== location.origin && u.origin !== SITE_ORIGIN) return '';
+        /* A return aimed back at THIS page is a same-page reload loop: with an account present,
+         * init() replaces the location with itself, forever. auth.js refuses this for the same
+         * reason; the check arrived there first only because its ?return predates this one. */
+        if (u.origin === location.origin && u.pathname.replace(/\/+$/, '') === location.pathname.replace(/\/+$/, '')) return '';
         return u.href;
       } catch (e) { return ''; }
     }
@@ -210,11 +214,29 @@
        * Same origin is exempt: there the board reads the very storage this page wrote, so there is
        * nothing to hand over and nothing to fail. */
       const acct = getAccount();
-      const token = getAuthToken();
+      let token = getAuthToken();
       if (acct) {
-        const dest = handoffUrl(landing(acct), acct, token);
+        let dest = handoffUrl(landing(acct), acct, token);
         let crosses = false;
         try { crosses = new URL(dest, location.href).origin !== location.origin; } catch (e) {}
+        /* VERIFY THE TOKEN BEFORE TRUSTING IT ACROSS AN ORIGIN. A token can be present and dead —
+         * the server session expires or is swept, and nothing tells this page. Redirecting on mere
+         * existence built a loop with no exit: hand the dead token to the board, the board gets a
+         * 401 and bounces back here, and this page hands over the same dead token again, forever.
+         * auth.js has verified-not-trusted from the start; this page now does the same. A worker
+         * that cannot be reached counts as unverified, because the one screen that must always
+         * work is the form below — never a redirect built on an unprovable claim. */
+        if (crosses && token && WORKER_URL) {
+          try {
+            const ctl = new AbortController();
+            const t = setTimeout(() => ctl.abort(), 2500);
+            const r = await fetch(WORKER_URL.replace(/\/$/, '') + '/auth/me',
+              { headers: { Authorization: 'Bearer ' + token }, signal: ctl.signal });
+            clearTimeout(t);
+            if (!r.ok) { lockTab(); token = ''; }
+          } catch (e) { token = ''; }
+          dest = handoffUrl(landing(acct), acct, token);   // the fragment must not carry a dead token
+        }
         if (token || !crosses) {
           sessionStorage.setItem('reviewMode', '1');
           location.replace(dest);

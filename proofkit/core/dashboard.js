@@ -7,7 +7,7 @@
     ensureDemoReset, isTeamEnabled, ACCOUNT_KEY_SENTINEL, accessChange,
     hasPlatformAuthenticator, passkeyEnrol, passkeyList, passkeyRemove,
     COMMENT_TYPES, TYPE_FIELDS, REOPEN_REASONS, STATUS_COLORS, renderSummary,
-    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=43a0734204';
+    reopenReasonLabel, needsExpectedOutcome, PROJECT_SHORT } from './config.js?v=63432d416e';
 
   // Host-project tag (5.0): Proofkit ships unbranded, so the markup carries an empty, hidden
   // element and it is filled ONLY when PROJECT_SHORT is configured. Previously the host project's
@@ -16,10 +16,10 @@
     if (PROJECT_SHORT) { el.textContent = PROJECT_SHORT; el.hidden = false; }
   });
 
-  import { PK_VERSION } from './version.js?v=43a0734204';
-  import { createCardRenderer } from './card.js?v=43a0734204';
-  import { ICON } from './icons.js?v=43a0734204';
-  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=43a0734204';
+  import { PK_VERSION } from './version.js?v=63432d416e';
+  import { createCardRenderer } from './card.js?v=63432d416e';
+  import { ICON } from './icons.js?v=63432d416e';
+  import { pkConfirm, pkAlert, pkPrompt } from './modal.js?v=63432d416e';
   (() => {
     if (!PROOFKIT_ENABLED) return; // master switch (./config.ts)
     // Theme skins come from design/tokens.css (linked by the adapter). Colour mode is a
@@ -45,7 +45,7 @@
       // a browser with no account behaves exactly as before.
       const headers = { 'Content-Type': 'application/json', ...authHeaders() };
       const res = await fetch(WORKER_URL + path, { ...opts, headers });
-      if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
+      if (res.status === 401) { clearSession(); lockTab(); throw new Error('unauthorized'); }
       if (!res.ok) {
         /* The SERVER'S message, not the status code. Every refusal here is written for a person —
          * "Move or delete its 5 team(s) first." — and throwing 'HTTP 409' discarded it and showed a
@@ -397,7 +397,7 @@
             if (etag) headers['If-None-Match'] = etag;
             const res = await fetch(WORKER_URL + '/comments' + projectQuery(), { headers });
             if (res.status === 304) return { notModified: true };
-            if (res.status === 401) { clearSession(); throw new Error('unauthorized'); }
+            if (res.status === 401) { clearSession(); lockTab(); throw new Error('unauthorized'); }
             if (!res.ok) throw new Error('HTTP ' + res.status);
             return { data: await res.json(), etag: res.headers.get('ETag') || '' };
           },
@@ -4792,7 +4792,7 @@
              * the same relationship written from either end — and both become `teams` + `project`
              * in the payload the export path already produces. */
             if (isSheet && (kind === 'teams' || kind === 'projects')) {
-              const sheet = await import('./sheet.js?v=43a0734204');
+              const sheet = await import('./sheet.js?v=63432d416e');
               const rows = await sheet.readSheet(f);
               const targetPid = () => asId.value.trim() || orgPath.project || 'default';
               if (kind === 'teams') {
@@ -4873,7 +4873,7 @@
             }
 
             if (isSheet) {
-              const { readSheet, rosterFromRows } = await import('./sheet.js?v=43a0734204');
+              const { readSheet, rosterFromRows } = await import('./sheet.js?v=63432d416e');
               const roster = rosterFromRows(await readSheet(f));
               if (!roster.people.length) {
                 throw new Error(roster.problems.length
