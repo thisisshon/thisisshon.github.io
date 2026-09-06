@@ -1725,3 +1725,39 @@ details .det-body{overflow:hidden}
 .founders-photo{background:var(--pi-navy);border-radius:var(--r-card)}
 .founders-photo img{object-position:50% 12%}
 @media (min-width:760px){.founders{grid-template-columns:minmax(260px,.9fr) 1.4fr;align-items:center;gap:var(--sp-9)}}
+
+/* ============================================================
+   Why Trust 3Soul: one split card, from the original page
+   Left, six ruled reasons with a numeral-style icon circle.
+   Right, the founders full-bleed with the quote laid over the foot
+   of the photograph, which already fades to navy.
+   ============================================================ */
+.trust-split{display:grid;grid-template-columns:1fr;background:var(--fill-0);
+  border:1px solid var(--stroke);border-radius:var(--r-card);overflow:hidden;box-shadow:var(--e-raised)}
+.trust-list{padding:var(--card-pad)}
+.trust-list .h2{margin-bottom:var(--gap-item);padding-bottom:var(--gap-item);border-bottom:1px solid var(--stroke)}
+.reasons li{display:grid;grid-template-columns:44px 1fr;gap:var(--sp-4);align-items:start;
+  padding:var(--sp-5) 0;border-bottom:1px solid var(--stroke)}
+.reasons li:last-child{border-bottom:0}
+.reasons i{width:44px;height:44px;border-radius:var(--r-round);background:var(--fill-1);
+  display:flex;align-items:center;justify-content:center;font-style:normal;font-size:18px;color:var(--pi-navy)}
+.reasons h3{font-family:var(--s-display);font-size:20px;font-weight:600;color:var(--pi-navy-deep);margin-bottom:var(--sp-1)}
+.reasons p{font-size:14px;line-height:1.6;color:var(--pi-ink-2)}
+.trust-list .govt-line{margin-top:var(--gap-item);border-bottom:0}
+
+.trust-photo{position:relative;background:var(--pi-navy-deep);min-height:420px}
+.trust-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 10%}
+.trust-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:var(--card-pad);color:#fff;
+  background:linear-gradient(180deg,rgba(27,42,69,0) 0%,rgba(27,42,69,.82) 40%,rgba(27,42,69,.96) 100%)}
+.trust-photo .tq{display:block;font-family:var(--s-display);font-size:40px;line-height:.6;color:var(--on-brand);margin-bottom:var(--sp-3)}
+.trust-photo blockquote{font-family:var(--s-display);font-size:24px;line-height:1.35;color:#fff;margin-bottom:var(--gap-item)}
+.trust-photo blockquote em{color:var(--on-brand);font-style:italic}
+.trust-photo b{display:block;font-family:var(--s-ui);font-size:16px;font-weight:600;padding-left:var(--sp-8);position:relative}
+.trust-photo b::before{content:'';position:absolute;left:0;top:50%;width:24px;height:1px;background:var(--on-brand)}
+.trust-photo figcaption > span:last-child{display:block;padding-left:var(--sp-8);margin-top:var(--sp-1);
+  font-family:var(--s-ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--on-brand)}
+@media (min-width:1000px){
+  .trust-split{grid-template-columns:1fr 1fr}
+  .trust-photo{min-height:100%}
+  .trust-photo blockquote{font-size:28px}
+}
