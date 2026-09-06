@@ -1466,7 +1466,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
    ============================================================ */
 .hero-aside{display:none}
 @media (min-width:1000px){
-  .hero-copy{position:sticky;top:100px;align-self:start}
+  .hero-copy{position:sticky;top:var(--hd-h,100px);align-self:start}
   .hero-aside{display:block;margin-top:var(--gap-block);
     padding-top:var(--gap-group);border-top:1px solid var(--stroke)}
   .aside-kick{font-family:var(--s-ui);font-size:12px;font-weight:600;letter-spacing:.16em;
@@ -1547,7 +1547,7 @@ html,body{overflow-x:clip}
   .hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
     grid-template-areas:'copy upload';grid-template-rows:auto;
     gap:var(--sp-9);align-items:start}
-  .hero-copy{position:sticky;top:96px;align-self:start}
+  .hero-copy{position:sticky;top:var(--hd-h,96px);align-self:start}
 }
 /* the strip below the grid, full width, own rhythm */
 .hero .wrap + .wrap .stats{margin-top:var(--gap-block)}
@@ -1829,3 +1829,68 @@ details .det-body{overflow:hidden}
   .cases,.revs,.who-grid,.steps{grid-auto-columns:calc(100% - 32px)}
   .reels{grid-auto-columns:calc(60% - 8px)}   /* posters are portrait; two-up reads better */
 }
+
+
+/* ============================================================
+   Header, brought over from 3soul.in and made non-interactive.
+   Row one mirrors the shop bar: menu glyph, wordmark, the two
+   page links (Price It is current), search, account and cart.
+   Row two is the shop's side drawer laid flat: categories, the
+   help line and the socials. Nothing here is a link; the page
+   is a standalone estimator, so the bar reads as brand context
+   only. Phone keeps row one at 72px like the source; desktop
+   stacks the shelf underneath for 112px in total. --hd-h feeds
+   the hero's sticky offset so nothing hides under the bar.
+   ============================================================ */
+:root{--hd-h:96px}
+.hd{border-bottom:1px solid var(--pi-rule);user-select:none}
+.hd-in.hd-top{min-height:72px;gap:var(--sp-4)}
+.hd-glyph{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;
+  color:var(--pi-ink);flex:0 0 auto}
+.hd-glyph svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.hd-menu{flex-direction:column;justify-content:center;gap:5px;margin-left:calc(var(--sp-3) * -1)}
+.hd-menu i{display:block;width:18px;height:1.5px;background:currentColor;border-radius:1px}
+.hd-logo{flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  text-decoration:none;color:var(--pi-navy);min-height:44px}
+.hd-word{font-family:var(--s-display);font-size:20px;font-weight:600;letter-spacing:.26em;
+  line-height:1;white-space:nowrap;padding-left:.26em}
+.hd-line{font-family:var(--s-ui);font-size:8px;font-weight:500;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--pi-ink-3);line-height:1;white-space:nowrap;padding-left:.3em}
+.hd-links{display:flex;align-items:center;gap:var(--sp-2);margin-left:var(--sp-3)}
+.hd-links>span{display:inline-flex;align-items:center;min-height:44px;padding-inline:var(--sp-3);
+  font-family:var(--s-body);font-size:14px;color:var(--pi-ink-2);white-space:nowrap}
+.hd-links .hd-cur{color:var(--pi-navy);font-weight:500;position:relative}
+.hd-links .hd-cur::after{content:"";position:absolute;left:var(--sp-3);right:var(--sp-3);bottom:8px;
+  height:1px;background:var(--pi-tan)}
+.hd-tools{margin-left:auto;display:flex;align-items:center;gap:var(--sp-1);margin-right:calc(var(--sp-3) * -1)}
+.hd-shelf{display:none;min-height:40px;gap:var(--sp-5);border-top:1px solid var(--pi-rule)}
+.hd-cats{display:flex;align-items:center;gap:var(--sp-4);flex:0 0 auto}
+.hd-cats>span{display:inline-flex;align-items:center;gap:var(--sp-1);font-family:var(--s-body);
+  font-size:14px;color:var(--pi-ink-2);white-space:nowrap;line-height:40px}
+.hd-cats>span::after{content:"";width:6px;height:6px;border-right:1px solid var(--pi-ink-3);
+  border-bottom:1px solid var(--pi-ink-3);transform:translateY(-2px) rotate(45deg);margin-left:2px}
+.hd-help{margin-left:auto;display:flex;align-items:center;gap:var(--sp-3);white-space:nowrap;
+  font-family:var(--s-body);font-size:12px;letter-spacing:.02em;color:var(--pi-ink-3)}
+.hd-help-k{color:var(--pi-ink-2)}
+.hd-help>span+span::before{content:"";display:inline-block;width:1px;height:12px;background:var(--pi-rule);
+  margin-right:var(--sp-3);vertical-align:-1px}
+.hd-help>span{display:inline-flex;align-items:center}
+.hd-social{display:none;align-items:center;gap:var(--sp-3);color:var(--pi-ink-3);flex:0 0 auto;
+  margin-left:var(--sp-3);padding-left:var(--sp-5);border-left:1px solid var(--pi-rule);height:16px}
+.hd-social svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;
+  stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:999px){
+  .hd-in.hd-top{justify-content:space-between}
+  .hd-links,.hd-acct{display:none}
+  .hd-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+  .hd-in.hd-top{position:relative}
+}
+@media (min-width:1000px){
+  :root{--hd-h:136px}
+  .hd-shelf{display:flex}
+  .hd-social{display:flex}
+  .hd-menu{margin-left:0}
+}
+@media (max-width:1199px){.hd-help>span:last-child{display:none}}
+@media (max-width:1099px){.hd-help{display:none}}
