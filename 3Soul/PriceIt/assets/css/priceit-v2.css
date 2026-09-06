@@ -1798,3 +1798,34 @@ details .det-body{overflow:hidden}
   .proof-tabs .tab{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2;
     padding:var(--sp-2);display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px}
 }
+/* review "Google" links measured 43px wide; the floor is 44 */
+.rev-link{min-width:44px;justify-content:center}
+
+/* Founders photo on a phone: tall enough that the faces sit clear of
+   the caption. The pane is 680px, top-anchored, and the caption's
+   gradient only begins in the lower third. */
+@media (max-width:999px){
+  .trust-photo{min-height:680px}
+  .trust-photo img{object-position:50% 0%}
+  .trust-photo figcaption{padding-top:var(--sp-12);
+    background:linear-gradient(180deg,rgba(27,42,69,0) 0%,rgba(27,42,69,.72) 32%,rgba(27,42,69,.96) 100%)}
+}
+
+/* Rails keep the page gutter. The v1 trick pulled each rail to the
+   viewport edge with a negative margin so cards could bleed off both
+   sides; on a phone that put the first card hard against the screen.
+   Rails now sit inside the gutter like every other component, and
+   cards scroll off within the rail's own box. */
+@media (max-width:759px){
+  .cases,.revs,.who-grid,.steps,.reels{margin-inline:0;padding-inline:0;
+    scroll-padding-inline:0;padding-right:var(--gut)}
+  .cases > *:last-child,.revs > *:last-child,.who-grid > *:last-child,
+  .steps > *:last-child,.reels > *:last-child{margin-right:var(--gut)}
+}
+
+/* Rail cards on a phone fill the rail, less a 32px peek of the next
+   card so the swipe is still signposted. */
+@media (max-width:759px){
+  .cases,.revs,.who-grid,.steps{grid-auto-columns:calc(100% - 32px)}
+  .reels{grid-auto-columns:calc(60% - 8px)}   /* posters are portrait; two-up reads better */
+}

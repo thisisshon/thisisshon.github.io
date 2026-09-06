@@ -683,23 +683,46 @@
   if (calcGo && result) {
     calcGo.addEventListener('click', function () {
       var cfg = App.config(), first = !asked;
+      var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var EASE = 'cubic-bezier(.22,.61,.36,1)';
       if (!asked) {
         asked = true;
+        /* Reveal as a growth, not a jump: the result block opens from
+           zero height while it fades in, and the report fold follows a
+           beat later. The scroll begins once the block has started to
+           open, so the page moves towards something already appearing
+           rather than snapping to a wall of content. */
         result.hidden = false;
         if (reportFold) reportFold.hidden = false;
         [].forEach.call(result.querySelectorAll('.rv,.rv-group'), function (e) { e.classList.add('rv-on'); });
-        if (result.animate && !(w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-          result.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }],
-                         { duration: 420, easing: 'cubic-bezier(.22,.61,.36,1)' });
+        if (!reduce && result.animate) {
+          var h = result.getBoundingClientRect().height;
+          result.style.overflow = 'hidden';
+          var grow = result.animate(
+            [{ height: '0px', opacity: 0, transform: 'translateY(8px)' },
+             { height: h + 'px', opacity: 1, transform: 'none' }],
+            { duration: 640, easing: EASE });
+          var done = false, clear = function () { if (done) return; done = true; result.style.overflow = ''; result.style.height = ''; };
+          grow.finished.then(clear, clear); w.setTimeout(clear, 720);
+          if (reportFold) {
+            reportFold.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }],
+                               { duration: 420, easing: EASE, delay: 320, fill: 'backwards' });
+          }
         }
         calcGo.textContent = 'Update Estimate';
+      } else {
+        // a re-ask: nudge the figure so the change registers
+        if (!reduce && result.animate) result.animate([{ opacity: .6 }, { opacity: 1 }], { duration: 260, easing: EASE });
       }
-      // re-render from the current configuration and bring it into view
+      // re-render from the current configuration
       [].forEach.call(d.querySelectorAll('.conf input'), function (i) {
         i.dispatchEvent(new Event('input', { bubbles: true }));
       });
-      var top = result.getBoundingClientRect().top + (w.pageYOffset || 0) - 88;
-      w.scrollTo({ top: top, behavior: 'smooth' });
+      // travel after the reveal has begun, and only as far as needed
+      w.setTimeout(function () {
+        var top = result.getBoundingClientRect().top + (w.pageYOffset || 0) - 88;
+        if (Math.abs(top - (w.pageYOffset || 0)) > 24) w.scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
+      }, first ? 160 : 0);
       track('estimate_requested', { category: cfg.category, first: first });
     });
   }
