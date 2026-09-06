@@ -1717,3 +1717,11 @@ details .det-body{overflow:hidden}
 .calc-tab .grid-wrap{padding-inline:var(--card-pad)!important}
 .calc-tab .cmbs{margin-inline:0;padding-inline:0}
 .calc-tab .report-fold{padding-inline:var(--card-pad)}
+
+/* Founders portrait: the supplied photograph fades to navy at its foot,
+   so it sits in the navy panel without an edge. Top-anchored so the
+   faces survive the 4:5 crop; the panel returns to two columns. */
+.founders{grid-template-columns:1fr}
+.founders-photo{background:var(--pi-navy);border-radius:var(--r-card)}
+.founders-photo img{object-position:50% 12%}
+@media (min-width:760px){.founders{grid-template-columns:minmax(260px,.9fr) 1.4fr;align-items:center;gap:var(--sp-9)}}
