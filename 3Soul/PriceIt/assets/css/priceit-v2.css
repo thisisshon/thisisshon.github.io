@@ -1761,3 +1761,7 @@ details .det-body{overflow:hidden}
   .trust-photo{min-height:100%}
   .trust-photo blockquote{font-size:28px}
 }
+
+/* reason icons: line drawings, navy, centred in the circle */
+.reasons i{color:var(--pi-navy);font-size:0}
+.reasons i svg{display:block;width:20px;height:20px}
