@@ -1765,3 +1765,36 @@ details .det-body{overflow:hidden}
 /* reason icons: line drawings, navy, centred in the circle */
 .reasons i{color:var(--pi-navy);font-size:0}
 .reasons i svg{display:block;width:20px;height:20px}
+
+/* ============================================================
+   Proof tabs, made prominent
+
+   A filled track with the selected tab as a solid navy pill that
+   slides between positions (the same .ink element, restyled from a
+   hairline into the pill itself). Same construction as the
+   configurator's segments, so the two read as one family.
+   ============================================================ */
+.proof-tabs{display:flex;padding:4px;gap:4px;background:var(--fill-0);border:1px solid var(--stroke);
+  border-radius:var(--r-ctl);margin-bottom:var(--gap-group);position:relative;overflow:visible}
+.proof-tabs .tab{flex:1 1 0;min-width:0;min-height:48px;padding:0 var(--sp-4);border-radius:8px;
+  font-size:14px;letter-spacing:.08em;color:var(--pi-ink-2);position:relative;z-index:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proof-tabs .tab[aria-selected=true]{color:#fff}
+.proof-tabs .tab:hover{color:var(--pi-navy)}
+.proof-tabs .tab[aria-selected=true]:hover{color:#fff}
+.proof-tabs .ink{top:4px;bottom:4px;height:auto;border-radius:8px;background:var(--pi-navy);
+  z-index:0;box-shadow:var(--e-raised)}
+.proof-tabs .tab:focus-visible{outline:2px solid var(--pi-tan);outline-offset:2px}
+@media (max-width:480px){
+  .proof-tabs .tab{padding:0 var(--sp-2);font-size:12px;letter-spacing:.06em}
+}
+@media (min-width:760px){
+  .proof-tabs{display:inline-flex}
+  .proof-tabs .tab{flex:0 0 auto;padding:0 var(--sp-7);font-size:14px;min-height:52px}
+}
+/* on a phone the four labels share 350px: let a long one wrap to two
+   lines inside its pill rather than clip */
+@media (max-width:480px){
+  .proof-tabs .tab{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.2;
+    padding:var(--sp-2);display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px}
+}
