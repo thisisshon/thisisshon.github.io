@@ -805,6 +805,17 @@
     if (gridHost && !gridHost.querySelector('.cmx')) renderMatrix();
   }).observe(gridHost || d.body, { childList: true });
   renderMatrix();
+  /* pricing.js labels its rows with an em dash; the page does not use
+     them, so they are rewritten as they land */
+  var rowsHost = d.getElementById('eRows');
+  function tidyRows() {
+    if (!rowsHost) return;
+    [].forEach.call(rowsHost.querySelectorAll('.d'), function (el) {
+      if (el.textContent.indexOf('\u2014') > -1) el.textContent = el.textContent.replace(/\s*\u2014\s*/g, ', ');
+    });
+  }
+  new MutationObserver(tidyRows).observe(rowsHost || d.body, { childList: true });
+  tidyRows();
   if (gridHost) gridHost.addEventListener('click', function (e) {
     var b = e.target.closest('.cmx td button'); if (!b) return;
     ['pur', 'type', 'clar'].forEach(function (k) {
@@ -828,7 +839,7 @@
     var note = d.getElementById('clarNote');
     function clar() {
       var v = (d.querySelector('input[name="f-clar"]:checked') || {}).value;
-      var m = E.CLARITY[v]; if (note && m) note.textContent = m.label + ' — ' + m.note.charAt(0).toLowerCase() + m.note.slice(1) + '.';
+      var m = E.CLARITY[v]; if (note && m) note.textContent = m.label + ': ' + m.note.charAt(0).toLowerCase() + m.note.slice(1) + '.';
     }
     [].forEach.call(d.querySelectorAll('input[name="f-clar"]'), function (i) { i.addEventListener('change', clar); });
     clar();
