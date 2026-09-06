@@ -1,0 +1,130 @@
+/* ============================================================
+   3Soul — extracted design tokens
+   Measured from https://3soul.in/pages/diamond-cost-estimator
+   on 2026-08-28 via getComputedStyle. Source of truth for both
+   the page recreation and this deck's own interface.
+   ============================================================ */
+
+/* ---- typefaces: the four the live site actually uses ---- */
+@font-face{font-family:'Outfit';font-style:normal;font-weight:400 600;font-display:swap;
+  src:url(../fonts/outfit-var.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Baskervville';font-style:normal;font-weight:400;font-display:swap;
+  src:url(../fonts/baskervville-400.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:500 600;font-display:swap;
+  src:url(../fonts/cormorant-var.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Cormorant Garamond';font-style:italic;font-weight:500;font-display:swap;
+  src:url(../fonts/cormorant-var-italic.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/poppins-400.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url(../fonts/poppins-500.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url(../fonts/poppins-600.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  /* Pinned light: this also makes native UI — scrollbars, form controls,
+     the canvas behind the page — render light regardless of the OS setting. */
+  color-scheme: light;
+
+  /* ---- source families ---- */
+  --s-body:'Outfit',sans-serif;                  /* theme body */
+  --s-head:'Baskervville',serif;                 /* theme headings */
+  --s-display:'Cormorant Garamond',serif;        /* PriceIt display */
+  --s-ui:'Poppins',system-ui,sans-serif;         /* PriceIt interface */
+
+  /* ---- source colours ---- */
+  --s-navy:#21375C;          /* rgb(33,55,92)  buttons, footer, brand */
+  --s-navy-deep:#1B2A45;     /* rgb(27,42,69)  theme headings */
+  --s-navy-link:#102A4E;     /* rgb(16,42,78)  link + button token */
+  --s-navy-05:rgba(33,55,92,.05);
+  --s-navy-08:rgba(33,55,92,.08);
+  --s-ink:rgba(18,18,18,.75);
+  --s-ink-solid:#121212;
+  --s-tan:#B08D57;           /* rgb(176,141,87) accent text */
+  --s-tan-deep:#9A7B3F;      /* rgb(154,123,63) stat labels */
+  --s-label:#7A7464;         /* rgb(122,116,100) form labels */
+  --s-meta:#6B6456;          /* rgb(107,100,86)  card meta */
+  --s-cream:#F6EFE0;         /* rgb(246,239,224) dominant section bg */
+  --s-cream-2:#F3EFE6;
+  --s-peach:#EFCAA5;         /* rgb(239,202,165) card borders */
+  --s-gold:#C8A96E;          /* rgb(200,169,110) */
+  --s-wa:#25D366;
+  --s-white:#fff;
+
+  /* ---- source metrics ---- */
+  --s-body-size:15px; --s-body-lh:27px; --s-body-ls:.6px;
+  --s-h2-size:24px;   --s-h2-lh:31.2px;
+  --s-h3-size:15px;   --s-h3-lh:19.5px;
+  --s-r-btn:11px; --s-r-btn-lg:12px; --s-r-card:14px; --s-r-card-lg:18px;
+  --s-shadow-card:0 14px 36px rgba(33,55,92,.08);
+  --s-btn-pad:15px 28px;
+
+  /* ============================================================
+     Deck interface — colours derived from the tokens above.
+     TYPE IS DELIBERATELY DIFFERENT: the deck speaks in one voice,
+     Outfit only. The three other faces belong to 3Soul and appear
+     solely inside the page recreation (.pg) and the prototype
+     (#protoHost), so what is theirs stays visibly theirs.
+     ============================================================ */
+  --deck-font:'Outfit',sans-serif;
+  --bg:#FBF8F2;
+  --surface:var(--s-white);
+  --surface-2:var(--s-cream);
+  --line:#E6DCC9;
+  --line-2:var(--s-peach);
+  --ink:var(--s-navy-deep);
+  --ink-2:#4C5567;
+  /* --ink-3 and --accent-deep are darkened from 3Soul's own values so they
+     clear 4.5:1 on every deck background. The source tokens above keep the
+     original values, because the recreation must stay accurate. */
+  --ink-3:#636B78;          /* was #7A8494 — 3.57:1, failed */
+  --accent:var(--s-tan);    /* decorative only: rules, borders, focus rings */
+  --accent-deep:#806634;    /* was #9A7B3F — 3.75:1, failed */
+  --on-brand:#C8A96E;       /* accent used on the navy quote panel */
+  --brand:var(--s-navy);
+
+  --crit:#A32118; --crit-bg:#FBEBE9; --crit-line:#E0A69F;
+  --high:#875A05; --high-bg:#FBF1DF; --high-line:#E3C58C;
+  --med:#3F5285;  --med-bg:#EDF0F8;  --med-line:#BAC5E0;
+  --low:#3E6350;  --low-bg:#EBF2EE;  --low-line:#B2CabC;
+  --good:#2E6B4F;
+
+  --r-s:8px; --r-m:14px; --r-l:18px;
+  --shadow:var(--s-shadow-card);
+  --shadow-lg:0 2px 6px rgba(33,55,92,.07),0 24px 62px rgba(33,55,92,.14);
+  --rail-w:266px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+/* The pages ship pinned to light via data-theme="light" on <html>.
+   The dark palette is kept and stays correct — remove that attribute and the
+   pages follow the reader's system setting again. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --bg:#0C1524; --surface:#122036; --surface-2:#182B45; --line:#27384F; --line-2:#3A4C66;
+    --ink:#EDF2F8; --ink-2:#B2C0D1; --ink-3:#8593A6;
+    --accent:#D6B27C; --accent-deep:#C8A56B; --brand:#2E4870;
+    --on-brand:#CEB37F;     /* 4.56:1 on #2E4870 */
+    --crit:#FF9086; --crit-bg:#2E1512; --crit-line:#7E362E;
+    --high:#F2B75C; --high-bg:#2C2011; --high-line:#7B5C22;
+    --med:#AEBAE2;  --med-bg:#171F35;  --med-line:#38466C;
+    --low:#98C9AB;  --low-bg:#12241A;  --low-line:#2F4B39;
+    --good:#7FCBA3;
+    --shadow:0 14px 36px rgba(0,0,0,.45);
+    --shadow-lg:0 2px 6px rgba(0,0,0,.5),0 24px 62px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme=dark]{
+  --bg:#0C1524; --surface:#122036; --surface-2:#182B45; --line:#27384F; --line-2:#3A4C66;
+  --ink:#EDF2F8; --ink-2:#B2C0D1; --ink-3:#8593A6;
+  --accent:#D6B27C; --accent-deep:#C8A56B; --brand:#2E4870;
+  --on-brand:#CEB37F;       /* 4.56:1 on #2E4870 */
+  --crit:#FF9086; --crit-bg:#2E1512; --crit-line:#7E362E;
+  --high:#F2B75C; --high-bg:#2C2011; --high-line:#7B5C22;
+  --med:#AEBAE2;  --med-bg:#171F35;  --med-line:#38466C;
+  --low:#98C9AB;  --low-bg:#12241A;  --low-line:#2F4B39;
+  --good:#7FCBA3;
+  --shadow:0 14px 36px rgba(0,0,0,.45);
+  --shadow-lg:0 2px 6px rgba(0,0,0,.5),0 24px 62px rgba(0,0,0,.55);
+}
