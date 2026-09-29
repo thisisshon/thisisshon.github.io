@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Price It — audit &amp; rebuild proposal | 3Soul</title>
+<meta name="description" content="An audit of 3soul.in/pages/diamond-cost-estimator and three rebuild directions, with working prototypes.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="../../assets/css/tokens.css?v=1788730675">
+<link rel="stylesheet" href="../../assets/css/deck.css?v=1788730675">
+<link rel="stylesheet" href="../../assets/css/page.css?v=1788730675">
+<link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/cormorant-var.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/outfit-var.woff2" crossorigin>
+<script>window.ASSET_BASE="../../";</script>
+</head>
+<body>
+<a class="skip" href="#s1">Skip to content</a>
+
+<div class="app">
+
+<!-- ================= rail ================= -->
+<nav class="rail" aria-label="Sections">
+  <div class="rail-brand"><b>3 SŌ U L</b><span>Price It · audit</span></div>
+  <div class="dswitch" role="group" aria-label="Switch audit">
+    <a href="../home-audit/"><b>Homepage</b><span>3soul.in</span></a>
+    <a href="../audit/" aria-current="page"><b>Price It</b><span>Calculator</span></a>
+  </div>
+
+  <!-- Nav follows the page, top to bottom. The four focus pages keep their
+       numbers so the through-line stays visible without reordering anything. -->
+  <div class="rail-grp">
+    <a href="#s1" data-nav data-key="1" data-short="Summary" class="rail-top"><i>◆</i>Summary</a>
+    <a href="#s2" data-nav data-key="2" data-short="Current"><i>01</i>Current</a>
+    <a href="#s3" data-nav data-key="3" data-short="Flagged"><i>02</i>Flagged</a>
+    <a href="#s4" data-nav data-key="4" data-short="Evidence"><i>—</i>Evidence</a>
+    <a href="#s5" data-nav data-key="5" data-short="Rebuilt"><i>03</i>Rebuilt</a>
+    <a href="#s6" data-nav data-key="6" data-short="Approaches"><i>04</i>Approaches</a>
+    <a href="#s7" data-nav data-key="7" data-short="Recommendation"><i>—</i>Recommendation</a>
+    <a href="#s8" data-nav data-key="8" data-short="Measurement"><i>—</i>Measurement</a>
+  </div>
+
+  <div class="rail-grp">
+    <div class="rail-lbl">Detail</div>
+    <a href="../priceit-v1/" class="railout"><i>&#9670;</i>Rebuilt calculator</a>
+    <a href="../design-notes/" class="railout"><i>◆</i>UI &amp; UX improvements</a>
+  </div>
+
+  <div class="rail-foot">
+    <p class="rail-meta">Reviewed 29 Aug 2026</p>
+  </div>
+</nav>
+
+<!-- ================= mobile nav ================= -->
+<div class="mnav">
+  <div class="mnav-bar">
+    <b id="mnavTitle">Price It — audit</b>
+    <button class="mnav-tog" id="mnavTog" type="button" aria-expanded="false" aria-controls="mnavList">Menu</button>
+  </div>
+  <div class="dswitch" role="group" aria-label="Switch audit">
+    <a href="../home-audit/"><b>Homepage</b><span>3soul.in</span></a>
+    <a href="../audit/" aria-current="page"><b>Price It</b><span>Calculator</span></a>
+  </div>
+  <div class="mnav-list" id="mnavList">
+    <a href="#s1" data-nav data-short="Summary">Summary</a>
+    <a href="#s2" data-nav data-short="Current">01 · Current</a>
+    <a href="#s3" data-nav data-short="Flagged">02 · Flagged</a>
+    <a href="#s4" data-nav data-short="Evidence">Evidence</a>
+    <a href="#s5" data-nav data-short="Rebuilt">03 · Rebuilt</a>
+    <a href="#s6" data-nav data-short="Approaches">04 · Approaches</a>
+    <a href="#s7" data-nav data-short="Recommendation">Recommendation</a>
+    <a href="#s8" data-nav data-short="Measurement">Measurement</a>
+    <div class="rail-lbl">Detail</div>
+    <a href="../priceit-v1/">Rebuilt calculator</a>
+    <a href="../design-notes/">UI &amp; UX improvements →</a>
+  </div>
+</div>
+
+<main>
+
+<!-- ================= cover / verdict ================= -->
+<section class="cover" id="s1">
+  <div class="wrap">
+    <p class="eyebrow">3Soul · Price It</p>
+    <h1>Bringing the estimate <em>onto the page</em>.</h1>
+    <p class="sub">Price It draws the right traffic, and the service behind it is strong. The page doesn’t yet put
+      a figure on screen — the title, the search intent and the closing button all point to one, and the report
+      follows a day later. This is a review of the page as it stands, and a recommendation for where to take it.</p>
+
+    <div class="metarow">
+      <span class="chip">Audited 28 Aug · re-verified 29 Aug</span>
+      <span class="chip">Measured from source, not estimated</span>
+      <span class="chip">15 findings · 7 to start with</span>
+      <span class="chip">3 rebuild directions</span>
+    </div>
+    <p class="scopeline"><b>Scope:</b> one page — <code>/pages/diamond-cost-estimator</code>. Everything measured
+      here is from that page, except finding 12, where the sitemap and four sampled city pages were checked.</p>
+
+    <div class="stats">
+      <div class="stat bad"><b>425<span class="u">MB</span></b><span>Of video behind 18 embeds — posters and tap-to-play would recover most of it.</span><small>Measured 29 Aug</small></div>
+      <div class="stat bad"><b>53</b><span>Text elements sitting under 4.5:1 — the gold, a few steps darker, clears it.</span><small>Measured 29 Aug</small></div>
+      <div class="stat bad"><b>0</b><span>H1 and form labels on the page — both patterns already exist elsewhere in the theme.</span><small>Measured 29 Aug</small></div>
+    </div>
+
+    <div class="callout">
+      <p><strong>The recommendation, up front.</strong> Put a price on the page, then ask for details. Everything
+        else here supports that single change — and the improvements in <a href="#s5">Rebuilt</a> are worth making
+        whichever direction is chosen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. current ================= -->
+<section class="sec" id="s2">
+  <div class="wrap">
+    <div class="kick">Page one of four</div>
+    <h2>Current</h2>
+    <p class="lede">The live page, rebuilt here at its real type sizes, spacing and colours so it can be examined
+      closely without the video load. No commentary on this one — it’s the reference point for everything after.</p>
+
+    <div class="stickybar">
+      <div class="seg" data-viewseg="current">
+        <button type="button" data-view="phone" aria-pressed="true">Phone</button>
+        <button type="button" data-view="desk" aria-pressed="false">Desktop</button>
+      </div>
+      <span class="hint">Scroll inside the device. The bar on the right is the scrollbar at true scale.</span>
+    </div>
+
+    <div class="stage solo" id="stageCurrent">
+      <div class="devwrap">
+        <div class="device phone">
+          <div class="screen"></div>
+          <div class="meter" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="screens"></div>
+        <div class="deskpane" hidden>
+          <button class="dhandle" data-side="left" type="button" role="slider"
+                  aria-label="Preview width" aria-valuemin="1240" aria-valuemax="1920" aria-valuenow="1440"></button>
+          <button class="dhandle" data-side="right" type="button" role="slider"
+                  aria-label="Preview width" aria-valuemin="1240" aria-valuemax="1920" aria-valuenow="1440"></button>
+          <div class="deskbar"><span class="deskw">1440 px</span>
+            <span class="deskpresets"><button type="button" data-w="1240">1240</button><button type="button" data-w="1440">1440</button><button type="button" data-w="1920">1920</button></span>
+          </div>
+        </div>
+      </div>
+      <div id="upCurrent" class="uploadOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. flagged ================= -->
+<section class="sec" id="s3">
+  <div class="wrap">
+    <div class="kick">Page two of four</div>
+    <h2>Flagged</h2>
+    <p class="lede">The same page with the findings marked on it — fifteen in total, ordered by the difference
+      each would make. <strong>Deliberately not an exhaustive list.</strong> Six relate to
+      <strong>WCAG 2.2 AA</strong> and name the criterion. Acting on the first seven alone would already make this
+      a different page.</p>
+
+    <div class="legend">
+      <b><i style="background:#A32118"></i> Start here · 7</b>
+      <b><i style="background:#956408"></i> High impact · 5</b>
+      <b><i style="background:#3F5285"></i> Worth doing · 2</b>
+      <b><i style="background:#3E6350"></i> Housekeeping · 1</b>
+      <b><i style="background:transparent;border:2px solid var(--ink-3)"></i> Touches WCAG 2.2 AA · 6</b>
+    </div>
+
+    <div class="stickybar" style="margin-top:22px">
+      <div class="seg" data-viewseg="flagged">
+        <button type="button" data-view="phone" aria-pressed="true">Phone</button>
+        <button type="button" data-view="desk" aria-pressed="false">Desktop</button>
+      </div>
+      <div class="frow" id="sevFilter" role="group" aria-label="Filter by severity">
+        <button type="button" data-sev="all" aria-pressed="true">All 15</button>
+        <button type="button" data-sev="wcag" aria-pressed="false">WCAG</button>
+        <button type="button" data-sev="crit" aria-pressed="false">Start here</button>
+        <button type="button" data-sev="high" aria-pressed="false">High impact</button>
+        <button type="button" data-sev="med" aria-pressed="false">Worth doing</button>
+        <button type="button" data-sev="low" aria-pressed="false">Housekeeping</button>
+      </div>
+    </div>
+
+    <div class="stage" id="stageFlagged">
+      <div class="devwrap">
+        <div class="device phone">
+          <div class="screen"></div>
+          <div class="meter" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="screens"></div>
+        <div class="deskpane" hidden>
+          <button class="dhandle" data-side="left" type="button" role="slider"
+                  aria-label="Preview width" aria-valuemin="1240" aria-valuemax="1920" aria-valuenow="1440"></button>
+          <button class="dhandle" data-side="right" type="button" role="slider"
+                  aria-label="Preview width" aria-valuemin="1240" aria-valuemax="1920" aria-valuenow="1440"></button>
+          <div class="deskbar"><span class="deskw">1440 px</span>
+            <span class="deskpresets"><button type="button" data-w="1240">1240</button><button type="button" data-w="1440">1440</button><button type="button" data-w="1920">1920</button></span>
+          </div>
+        </div>
+      </div>
+      <div class="fpanel">
+        <div class="stepper" id="flagStepper">
+          <button type="button" data-step="-1" aria-label="Previous flag">↑</button>
+          <button type="button" data-step="1" aria-label="Next flag">↓</button>
+          <span class="stepLbl">12 flags</span>
+        </div>
+        <div class="flist" id="flagList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. evidence ================= -->
+<section class="sec" id="s4">
+  <div class="wrap">
+    <div class="kick">Supporting</div>
+    <h2>Evidence</h2>
+    <p class="lede">The measurements behind the flags. <span class="tag measured">Measured</span> means taken from
+      source on <b>29 August 2026</b> — file sizes from HTTP headers, counts from the served HTML, contrast from
+      computed styles. Nothing here is inferred.</p>
+
+    <div class="card">
+      <h3 style="font-size:23px;margin-bottom:6px">What the page is carrying</h3>
+      <p style="color:var(--ink-2)">Asset weight, taken from each file’s <code>Content-Length</code> rather than from
+        one page load — so neither cache nor scroll position can move it. Video is not a contributing factor here;
+        it is the page.</p>
+      <div class="bar">
+        <div style="width:97.3%;background:#A32118">Video · 425 MB</div>
+        <div style="width:1.5%;background:#3F5285"></div>
+        <div style="width:1.2%;background:#9A6708"></div>
+      </div>
+      <div class="barkey">
+        <b><i style="background:#A32118"></i> 10 video files, 425 MB — largest 79.5 MB</b>
+        <b><i style="background:#3F5285"></i> 39 images, 6.6 MB</b>
+        <b><i style="background:#9A6708"></i> 36 scripts, 5.1 MB — about 842 KB over the wire</b>
+      </div>
+      <p style="color:var(--ink-2);margin:18px 0 0">Browsers stream video rather than fetch it whole, so nobody pays
+        425 MB at once — they pay continuously, for as long as the page is open. Left alone without a single click,
+        transfer climbed from <b>3.2 MB to 9.9 MB</b> and requests from <b>265 to 381</b>. 121 of those fire after
+        load; 18 go to a session-recording script.</p>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="font-size:23px;margin-bottom:6px">Speed: the lab and the field disagree</h3>
+      <p style="color:var(--ink-2)">Our own paint timings were unusable — 2.13 s, 9.04 s and 39.02 s across three
+        loads of the same URL, which is the measuring environment rather than the page. So here is Lighthouse on a
+        defined connection instead, run <b>29 Aug 2026</b>, mobile, emulated Moto&nbsp;G Power on Slow 4G.
+        <b>This is the homepage</b>, <code>3soul.in</code> — the estimator carries more video, so it will not be
+        better.</p>
+
+      <div class="psi">
+        <div class="psi-col">
+          <h4>Lighthouse — one cold visit, mid-range Android</h4>
+          <div class="psi-scores">
+            <span class="psi-s bad"><b>47</b>Performance</span>
+            <span class="psi-s mid"><b>85</b>Accessibility</span>
+            <span class="psi-s mid"><b>73</b>Best practices</span>
+            <span class="psi-s good"><b>92</b>SEO</span>
+          </div>
+          <ul class="psi-m">
+            <li><span>Largest contentful paint</span><b class="bad">11.2 s</b></li>
+            <li><span>Speed index</span><b class="bad">7.6 s</b></li>
+            <li><span>First contentful paint</span><b class="mid">4.8 s</b></li>
+            <li><span>Total blocking time</span><b class="mid">460 ms</b></li>
+            <li><span>Cumulative layout shift</span><b class="good">0</b></li>
+            <li><span>Total payload</span><b class="bad">17,302 KiB</b></li>
+          </ul>
+        </div>
+        <div class="psi-col">
+          <h4>Real users — Chrome UX Report, 28 days</h4>
+          <div class="psi-scores"><span class="psi-s good" style="flex:1"><b>Passed</b>Core Web Vitals</span></div>
+          <ul class="psi-m">
+            <li><span>Largest contentful paint</span><b class="good">1.6 s</b></li>
+            <li><span>Interaction to next paint</span><b class="good">135 ms</b></li>
+            <li><span>Cumulative layout shift</span><b class="good">0</b></li>
+            <li><span>First contentful paint</span><b class="good">1.5 s</b></li>
+            <li><span>Time to first byte</span><b class="mid">0.8 s</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="color:var(--ink-2)"><b>Both are true.</b> Returning visitors on decent phones, with the video and
+        fonts already cached, get a fast page — which is why Core Web Vitals pass and why there is no ranking
+        penalty today. A first-time visitor on a mid-range Android over slow 4G waits <b>11.2 seconds</b> for the
+        main content. That is the visitor the estimator is meant to convert.</p>
+      <p style="color:var(--ink-2);margin:0">It also settles the earlier question: the spread in our own numbers
+        was cache, not noise. The field figure is the one to defend; the lab figure is the one to fix.</p>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="font-size:23px;margin-bottom:6px">What Lighthouse says to do, in order</h3>
+      <p style="color:var(--ink-2)">Its own diagnostics, ranked by what they would return. The first three are the
+        same video and script weight already covered in flags 2 and 8.</p>
+      <div class="tw"><table class="t">
+        <thead><tr><th>Action</th><th>Reported</th><th>Where it sits here</th></tr></thead>
+        <tbody>
+          <tr><td>Cut the network payload</td><td>17,302 KiB total</td><td>Flag 2 — posters and tap-to-play</td></tr>
+          <tr><td>Drop unused JavaScript</td><td>564 KiB</td><td>36 scripts, 12 third-party hosts</td></tr>
+          <tr><td>Shorten main-thread work</td><td>3.6 s, 10 long tasks</td><td>1.8 s of it is JS execution</td></tr>
+          <tr><td>Set longer cache lifetimes</td><td>321 KiB</td><td>Server config, no code change</td></tr>
+          <tr><td>Improve image delivery</td><td>77 KiB</td><td>Flag 15 — size to the slot</td></tr>
+          <tr><td>Add alt text</td><td>Fails accessibility <em>and</em> SEO</td><td>Flag 13 — 17 of 67 images</td></tr>
+          <tr><td>Fix colour contrast</td><td>Flagged by Lighthouse too</td><td>Flag 3 — 53 elements</td></tr>
+          <tr><td>Title the iframes</td><td>1 audit</td><td>Includes the sample-report frame, flag 7</td></tr>
+          <tr><td>Set <code>font-display</code></td><td>70 ms</td><td>One line per @font-face</td></tr>
+          <tr><td>Trim preconnects</td><td>More than 4 found</td><td>Keep only the origins that matter</td></tr>
+          <tr><td>Avoid non-composited animations</td><td>4 elements</td><td>Animate transform/opacity only</td></tr>
+          <tr><td>Security headers</td><td>CSP, HSTS, COOP absent</td><td>Best-practices score of 73</td></tr>
+        </tbody>
+      </table></div>
+      <p class="illus" style="margin-top:14px"><span class="tag measured">Measured</span>
+        PageSpeed Insights, 29 Aug 2026, mobile. Two accessibility findings — missing alt text and insufficient
+        contrast — were reached independently here and by Lighthouse.</p>
+    </div>
+
+    <div class="grid2" style="margin-top:16px">
+      <div class="card">
+        <h3 style="font-size:21px;margin-bottom:10px">The contact fields</h3>
+        <div class="tw"><table class="t">
+          <thead><tr><th>Field</th><th>As built</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td>All fields</td><td>No autocomplete — autofill off</td><td>Add autocomplete tokens</td></tr>
+            <tr><td>Phone</td><td>type=text, letter keyboard</td><td>type=tel, inputmode=numeric</td></tr>
+            <tr><td>Phone</td><td>Required</td><td>Optional, with a reason</td></tr>
+            <tr><td>Email</td><td>Not required</td><td>Required — it delivers the report</td></tr>
+            <tr><td>Last name</td><td>Required</td><td>Remove</td></tr>
+            <tr><td>Terms</td><td>Required, links nowhere</td><td>Link it, or drop the box</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:21px;margin-bottom:10px">Search markup</h3>
+        <div class="tw"><table class="t">
+          <thead><tr><th>Item</th><th>On the page</th></tr></thead>
+          <tbody>
+            <tr><td>H1</td><td>None — headline is a div</td></tr>
+            <tr><td>FAQPage</td><td>Missing, though 23 FAQs render</td></tr>
+            <tr><td>SoftwareApplication</td><td>Missing</td></tr>
+            <tr><td>BreadcrumbList</td><td>Missing, though a breadcrumb shows</td></tr>
+            <tr><td>AggregateRating</td><td>Missing, though “4.7 · 600+” shows</td></tr>
+            <tr><td>Organization</td><td>Present — the only one</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="font-size:23px;margin-bottom:6px">Everything printed twice</h3>
+      <p style="color:var(--ink-2)">Counted in the rendered page on 29 August.</p>
+      <div class="dupe">
+        <div class="card"><div class="who">Testimonials</div><div class="mt">cards on the page</div>
+          <div class="amt">12 → 6</div><div class="mt">six people, each shown twice</div></div>
+        <div class="card"><div class="who">Google reviews</div><div class="mt">review blocks</div>
+          <div class="amt">14 → 7</div><div class="mt">seven reviews, each shown twice</div></div>
+        <div class="card"><div class="who">Video players</div><div class="mt">embeds against files</div>
+          <div class="amt">18 → 10</div><div class="mt">ten files, eighteen players</div></div>
+      </div>
+      <p style="margin:16px 0 0;color:var(--ink-2)">Also live: Mihir’s kada story is Namrata’s ring story,
+        still reading “She’d been quoted a fortune”. A Nashik customer is filed under Nashua, New Hampshire.</p>
+      <p style="margin:12px 0 0;color:var(--ink-3)">On 28 August these duplicates also carried
+        <em>different savings figures for the same customer</em> — ₹18,016 and ₹84,100 for Namrata. That is no longer
+        true: the figures were reconciled between the two audits. The duplication itself was not fixed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. rebuilt ================= -->
+<section class="sec" id="s5">
+  <div class="wrap">
+    <div class="kick">Page three of four</div>
+    <h2>Rebuilt</h2>
+    <p class="lede">The same page with all fifteen addressed — same brand, same tokens, same content.
+      None of it depends on which direction is chosen in <a href="#s6">Approaches</a>;
+      <strong>this part is worth doing either way</strong>.</p>
+
+    <div class="stickybar">
+      <div class="seg" id="baSeg">
+        <button type="button" data-mode="fixed" aria-pressed="true">Rebuilt</button>
+        <button type="button" data-mode="current" aria-pressed="false">Current</button>
+      </div>
+      <div class="seg" data-viewseg="rebuilt">
+        <button type="button" data-view="phone" aria-pressed="true">Phone</button>
+        <button type="button" data-view="desk" aria-pressed="false">Desktop</button>
+      </div>
+      <span class="hint">Toggling holds your scroll position.</span>
+    </div>
+
+    <div class="stage" id="stageRebuilt">
+      <div class="devwrap">
+        <div class="device phone">
+          <div class="screen"></div>
+          <div class="meter" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="screens"></div>
+        <div class="deskpane" hidden>
+          <button class="dhandle" data-side="left" type="button" role="slider"
+                  aria-label="Preview width" aria-valuemin="1240" aria-valuemax="1920" aria-valuenow="1440"></button>
+          <button class="dhandle" data-side="right" type="button" role="slider"
+                  aria-label="Preview width" aria-valuemin="1240" aria-valuemax="1920" aria-valuenow="1440"></button>
+          <div class="deskbar"><span class="deskw">1440 px</span>
+            <span class="deskpresets"><button type="button" data-w="1240">1240</button><button type="button" data-w="1440">1440</button><button type="button" data-w="1920">1920</button></span>
+          </div>
+        </div>
+      </div>
+      <div class="fpanel">
+        <div id="upRebuilt" class="uploadOut" style="margin-top:0"></div>
+        <div class="card">
+          <h4 style="font-family:var(--deck-font);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px">What changed in this version</h4>
+          <ul class="clean fixlist" id="fixList"></ul>
+          <p class="hintline">Tap a number to jump to that finding.</p>
+          <p class="hintline"><a href="../design-notes/" class="deeplink">Interface changes in detail →</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. approaches ================= -->
+<section class="sec" id="s6">
+  <div class="wrap">
+    <div class="kick">Page four of four</div>
+    <h2>Approaches</h2>
+    <p class="lede">Three possible directions, all working. They share one pricing engine and one set of inputs —
+      change the configuration in any of them and the others keep it, so the comparison is like for like.</p>
+
+    <div class="stickybar">
+      <div class="seg" id="protoSeg">
+        <button type="button" data-p="a" aria-pressed="true">A · Price first</button>
+        <button type="button" data-p="b" aria-pressed="false">B · Friction removed</button>
+        <button type="button" data-p="c" aria-pressed="false">C · Unlock</button>
+      </div>
+      <span class="hint">Try them. The controls are live.</span>
+    </div>
+
+    <div class="pstage">
+      <div id="protoHost"></div>
+      <div class="pnote" id="protoNotes"></div>
+    </div>
+
+    <div class="card" style="margin-top:22px">
+      <h3 style="font-size:23px;margin-bottom:10px">Side by side</h3>
+      <div class="tw"><table class="t cmpTable">
+        <thead><tr><th></th><th>A · Price first</th><th>B · Friction removed</th><th>C · Unlock</th></tr></thead>
+        <tbody>
+          <tr><td>Keeps the title’s promise</td><td>Yes, on the page</td><td>No — still a 24h wait</td><td>Partly — after an email</td></tr>
+          <tr><td>Asks before it gives</td><td>No</td><td>Yes, but honestly</td><td>Yes, at the last moment</td></tr>
+          <tr><td>Build size</td><td>Largest</td><td>Smallest</td><td>Medium</td></tr>
+          <tr><td>Exposes pricing logic</td><td>Yes in phase 1, no in phase 2</td><td>No</td><td>Yes in phase 1</td></tr>
+          <tr><td>Trade-off to weigh</td><td>Rates need maintaining</td><td>Ceiling stays lower</td><td>Can read as bait-and-switch</td></tr>
+        </tbody>
+      </table></div>
+      <p class="illus"><span class="tag measured">Rates</span>
+        The prototypes price against real Indian market rates for August 2026 — gold at ₹16,000/g for 24K,
+        lab-grown at ₹45,000/ct, natural at ₹2,00,000/ct, GST at 3% on metal and stones and 5% on making.
+        They are a fixed snapshot, not a live feed.</p>
+      <p class="illus"><span class="tag modeled">Modeled</span>
+        No conversion percentages are quoted anywhere in this deck. None have been measured on this page,
+        and inventing them would undercut the argument being made.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. recommendation ================= -->
+<section class="sec" id="s7">
+  <div class="wrap">
+    <div class="kick">Supporting</div>
+    <h2>Recommendation</h2>
+    <p class="lede">We’d suggest Approach A, in two phases — with the Rebuilt fixes shipping regardless.</p>
+
+    <div class="verdict">
+      <h3>Give the price on the page, then ask.</h3>
+      <p style="color:var(--ink-2);margin-bottom:0;font-size:17px">It is the only option where the page does what
+        its own title says. Search intent, the headline and the button finally agree, and the contact request
+        stops being a toll gate and becomes an upgrade.</p>
+      <div class="phases">
+        <div class="phase">
+          <div class="p">Phase one</div>
+          <ul class="clean">
+            <li>Calculator runs in the page.</li>
+            <li>Rates in a table staff update weekly.</li>
+            <li>No new infrastructure. Ships fast.</li>
+            <li><strong>Accepted:</strong> rates drift between updates, and the formula is readable by anyone who looks.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="p">Phase two</div>
+          <ul class="clean">
+            <li>Pricing moves behind a small service — formula stays private.</li>
+            <li>Gold rate updates itself.</li>
+            <li>Leads land somewhere real, with a WhatsApp alert.</li>
+            <li><strong>Optional:</strong> phase one stands on its own if this never happens.</li>
+          </ul>
+        </div>
+        <div class="phase" style="border-color:var(--accent)">
+          <div class="p">Either way</div>
+          <ul class="clean">
+            <li>All fifteen from <a href="#s5">Rebuilt</a>.</li>
+            <li>None of them commit to a direction — they are improvements either way.</li>
+            <li>Best not held up by the A/B/C decision.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. measurement ================= -->
+<section class="sec" id="s8">
+  <div class="wrap">
+    <div class="kick">Supporting</div>
+    <h2>Measurement</h2>
+    <p class="lede">Worth instrumenting before anything changes, so the next version of this conversation has
+      real numbers in it rather than opinions.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3 style="font-size:21px;margin-bottom:10px">Events to add</h3>
+        <ul class="clean">
+          <li><strong>estimator_view</strong> — reached the tool at all.</li>
+          <li><strong>config_change</strong> — touched any control.</li>
+          <li><strong>estimate_shown</strong> — saw a number, and how long it took.</li>
+          <li><strong>gate_view</strong> — reached the contact ask.</li>
+          <li><strong>lead_submit</strong> — with which fields filled.</li>
+          <li><strong>whatsapp_click</strong> — the path that skips the form.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="font-size:21px;margin-bottom:10px">What we’d watch</h3>
+        <ul class="clean">
+          <li>Drop-off between <em>estimate_shown</em> and <em>gate_view</em> — the real test of Approach A.</li>
+          <li>Share of leads arriving by WhatsApp rather than the form.</li>
+          <li>Time from landing to first estimate.</li>
+          <li>Mobile against desktop, separately. They are different products today.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:23px;margin:36px 0 6px">This deck, measured the same way</h3>
+    <p style="color:var(--ink-2);max-width:64ch">Read live from your browser as you loaded this page, against the
+      verified figures for the page it is about. No paint timings on either side — for the reason given in
+      <a href="#s4">Evidence</a>.</p>
+    <div class="perfnow" id="selfPerf"></div>
+    <p style="color:var(--ink-3);margin-top:16px">Same brand, same four typefaces, more content
+      on one page than the original — and the video is the only thing missing.
+      On a repeat visit the transfer figure reads lower, because the fonts are already cached;
+      a first visit transfers about <b>174&nbsp;KB</b> across 15 files, gzipped.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="pager">
+  <button id="pPrev" type="button">← Previous</button>
+  <button id="pNext" type="button">Next →</button>
+</div>
+
+<div class="modal" id="kmodal" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+  <div class="card">
+    <h3 style="font-size:22px;margin-bottom:14px">Shortcuts</h3>
+    <table>
+      <tr><td><kbd>→</kbd></td><td>Next section</td></tr>
+      <tr><td><kbd>←</kbd></td><td>Previous section</td></tr>
+      <tr><td><kbd>1</kbd>–<kbd>8</kbd></td><td>Jump to a section</td></tr>
+      <tr><td><kbd>?</kbd></td><td>This panel</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Close</td></tr>
+    </table>
+    <button class="btn o" id="kclose" type="button" style="margin-top:18px">Close</button>
+  </div>
+</div>
+
+<script src="../../assets/js/pricing.js?v=1788730675"></script>
+<script src="../../assets/js/page.js?v=1788730675"></script>
+<script src="../../assets/js/prototypes.js?v=1788730675"></script>
+<script src="../../assets/js/deck.js?v=1788730675"></script>
+</body>
+</html>

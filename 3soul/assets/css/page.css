@@ -1,0 +1,423 @@
+/* ============================================================
+   Recreation of the live PriceIt page.
+   Every value here is a measured value from the source page —
+   see tokens.css. .pg = as it is now. .pg.fixed = rebuilt.
+   Type stays at source size in .pg on purpose: the 8–12px text
+   is one of the findings, so it has to be visible as it really is.
+   ============================================================ */
+
+.pg{
+  font-family:var(--s-body);
+  font-size:var(--s-body-size);
+  line-height:var(--s-body-lh);
+  letter-spacing:var(--s-body-ls);
+  color:var(--s-ink);
+  background:var(--s-white);
+  -webkit-font-smoothing:antialiased;
+}
+.pg *{box-sizing:border-box}
+.pg p{margin:0 0 12px}
+
+/* ---------- header ---------- */
+.pg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 16px;background:var(--s-white);border-bottom:1px solid rgba(18,18,18,.08);
+  position:sticky;top:0;z-index:6}
+.pg-burger,.pg-ico{width:22px;height:22px;flex:0 0 22px;opacity:.8}
+.pg-burger::before{content:'';display:block;height:1.5px;background:var(--s-ink-solid);
+  box-shadow:0 6px 0 var(--s-ink-solid),0 12px 0 var(--s-ink-solid);margin-top:4px}
+.pg-ico{border:1.5px solid var(--s-ink-solid);border-radius:50%;opacity:.75}
+.pg-ico.bag{border-radius:3px 3px 5px 5px}
+.pg-logo{font-family:var(--s-display);font-weight:500;font-size:19px;letter-spacing:.18em;
+  color:var(--s-navy);white-space:nowrap}
+.pg-crumb{padding:9px 16px;background:var(--s-white);border-bottom:1px solid rgba(18,18,18,.06);
+  font-family:var(--s-ui);font-size:10px;letter-spacing:.5px;color:var(--s-label)}
+
+/* ---------- hero ---------- */
+.pg-hero{padding:34px 14px 30px;text-align:center;background:var(--s-white)}
+.pg-eyebrow{font-family:var(--s-display);font-style:italic;font-weight:500;font-size:17px;
+  line-height:1.35;color:var(--s-tan);margin:0 0 14px}
+.pg-h{font-family:var(--s-display);font-weight:500;font-size:25px;line-height:27.5px;
+  letter-spacing:-.3px;color:var(--s-navy);margin:0 0 24px}
+.pg-h u{text-decoration:underline;text-decoration-color:var(--s-tan);text-underline-offset:4px;
+  text-decoration-thickness:1.5px}
+.pg-brandmark{font-family:var(--s-display);font-weight:500;font-size:26px;letter-spacing:.2em;
+  color:var(--s-navy);margin-bottom:3px}
+.pg-brandsub{font-family:var(--s-ui);font-size:7px;letter-spacing:.34em;color:var(--s-tan);
+  text-transform:uppercase;margin-bottom:16px}
+.pg-presents{font-family:var(--s-ui);font-size:8px;letter-spacing:.3em;color:var(--s-label);
+  text-transform:uppercase;margin-bottom:10px}
+.pg-display{font-family:var(--s-display);font-weight:500;font-size:56px;line-height:1;
+  letter-spacing:.01em;color:var(--s-navy);margin:0 0 6px}
+.pg-subline{font-family:var(--s-ui);font-size:10px;letter-spacing:3px;line-height:18px;
+  text-transform:uppercase;color:var(--s-tan);margin:6px 0 20px}
+.pg-cta{display:inline-block;background:var(--s-navy);color:var(--s-white);border:0;
+  border-radius:var(--s-r-btn-lg);padding:var(--s-btn-pad);
+  font-family:var(--s-ui);font-weight:600;font-size:13px;letter-spacing:.3px;line-height:23.4px;
+  cursor:pointer}
+.pg-cta em{font-style:normal;font-weight:400;opacity:.85}
+
+/* ---------- proof strip ---------- */
+.pg-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 0;
+  padding:14px 10px;background:var(--s-cream);border-block:1px solid var(--s-peach)}
+.pg-strip span{font-family:var(--s-ui);font-size:9px;letter-spacing:1.4px;line-height:10.8px;
+  text-transform:uppercase;color:var(--s-tan);padding:0 11px;border-right:1px solid rgba(176,141,87,.35)}
+.pg-strip span:last-child{border-right:0}
+.pg-know{text-align:center;padding:16px 10px;font-family:var(--s-ui);font-size:9px;
+  letter-spacing:1.4px;text-transform:uppercase;color:var(--s-tan)}
+
+/* ---------- form ---------- */
+.pg-formwrap{padding:26px 14px 32px;background:var(--s-white)}
+.pg-form{background:var(--s-white);border:1px solid var(--s-peach);border-radius:var(--s-r-card-lg);
+  padding:18px 16px;box-shadow:var(--s-shadow-card)}
+.pg-step{font-family:var(--s-ui);font-weight:600;font-size:9px;letter-spacing:1.6px;
+  text-transform:uppercase;color:var(--s-tan)}
+.pg-formtitle{font-family:var(--s-display);font-weight:600;font-size:21px;line-height:37.8px;
+  letter-spacing:.6px;color:var(--s-navy);margin:2px 0 4px}
+.pg-lab{display:block;font-family:var(--s-ui);font-weight:600;font-size:10px;letter-spacing:.5px;
+  line-height:18px;text-transform:uppercase;color:var(--s-label);margin:14px 0 8px}
+.pg-radios{display:flex;gap:7px}
+.pg-radios button{flex:1;background:var(--s-white);border:1px solid rgba(18,18,18,.18);
+  border-radius:9px;padding:10px 4px;cursor:pointer;
+  font-family:var(--s-ui);font-size:11px;letter-spacing:.2px;color:var(--s-ink)}
+.pg-radios button[aria-pressed=true]{background:var(--s-navy);border-color:var(--s-navy);
+  color:var(--s-white);font-weight:600}
+.pg-drop{border:1.5px dashed rgba(176,141,87,.55);border-radius:11px;background:#FDFBF6;
+  padding:22px 12px;text-align:center;font-family:var(--s-ui);font-size:11px;color:var(--s-label)}
+.pg-drop b{display:block;font-weight:600;color:var(--s-navy);margin-top:4px}
+.pg-or{font-family:var(--s-ui);font-weight:600;font-size:10px;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--s-label);margin:14px 0 8px}
+.pg-in{width:100%;background:var(--s-white);border:1px solid rgba(18,18,18,.18);border-radius:9px;
+  padding:11px 12px;font-family:var(--s-ui);font-size:12px;color:var(--s-ink)}
+.pg-in::placeholder{color:rgba(18,18,18,.35)}
+.pg-note{margin-top:10px;font-family:var(--s-ui);font-size:11px;color:var(--s-navy);
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;background:none;border:0;padding:0}
+.pg-btn{width:100%;margin-top:16px;background:var(--s-navy);color:var(--s-white);border:0;
+  border-radius:var(--s-r-btn);padding:14px;cursor:pointer;
+  font-family:var(--s-ui);font-weight:600;font-size:14px}
+.pg-fine{margin-top:9px;text-align:center;font-family:var(--s-ui);font-size:10px;
+  letter-spacing:.3px;color:var(--s-label)}
+.pg-wa{width:100%;margin-top:10px;background:var(--s-wa);color:var(--s-white);border:0;
+  border-radius:var(--s-r-btn);padding:12px;cursor:pointer;
+  font-family:var(--s-ui);font-weight:600;font-size:12.5px;letter-spacing:.6px;line-height:22.5px}
+.pg-back{background:none;border:0;color:var(--s-label);font-family:var(--s-ui);font-size:11px;
+  cursor:pointer;padding:8px 0;margin-top:6px}
+.pg-2col{display:flex;gap:8px}
+.pg-2col>*{flex:1;min-width:0}
+.pg-check{display:flex;gap:8px;align-items:flex-start;margin-top:12px;
+  font-family:var(--s-ui);font-size:11px;color:var(--s-ink)}
+.pg-check input{margin-top:3px;flex:0 0 auto}
+.pg-analysis{text-align:center;padding:8px 0}
+.pg-analysis .t{font-family:var(--s-display);font-weight:600;font-size:19px;color:var(--s-navy)}
+.pg-analysis .s{font-family:var(--s-ui);font-size:11px;color:var(--s-label);margin:6px 0 14px}
+.pg-prog{height:4px;background:var(--s-cream);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.pg-prog i{display:block;height:100%;width:0;background:var(--s-tan)}
+.pg-alist{text-align:left;font-family:var(--s-ui);font-size:11px;color:var(--s-label);
+  display:grid;gap:7px}
+
+/* ---------- sample price card ---------- */
+.pg-pricecard{background:#0C0C0E;border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  padding:14px;color:#fff;margin-top:18px}
+.pg-pricecard .nm{font-family:var(--s-display);font-style:italic;font-weight:500;font-size:17px}
+.pg-shot{height:120px;border-radius:10px;margin:10px 0;
+  background:radial-gradient(circle at 50% 55%,#3a2f22,#0d0d0f 70%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--s-ui);font-size:9px;letter-spacing:.2em;color:#5d5245;text-transform:uppercase}
+.pg-rows{display:grid;gap:0}
+.pg-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  font-family:var(--s-ui);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:#9a9285}
+.pg-row b{font-family:var(--s-body);font-size:12px;letter-spacing:.4px;text-transform:none;color:#fff;font-weight:400}
+.pg-row.tot{border-bottom:0;padding-top:10px;color:var(--s-gold)}
+.pg-row.tot b{font-family:var(--s-display);font-size:19px;font-weight:600;color:var(--s-gold)}
+.pg-illus{font-family:var(--s-ui);font-size:8.5px;color:#6d6558;margin-top:8px;line-height:1.5}
+
+/* ---------- generic section ---------- */
+.pg-sec{padding:30px 14px;background:var(--s-white)}
+.pg-sec.cream{background:var(--s-cream)}
+.pg-kick{text-align:center;font-family:var(--s-ui);font-size:9px;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--s-tan);margin-bottom:9px}
+.pg-t{font-family:var(--s-head);font-weight:400;font-size:var(--s-h2-size);line-height:var(--s-h2-lh);
+  letter-spacing:.6px;color:var(--s-navy-deep);text-align:center;margin:0 0 6px}
+.pg-lede{text-align:center;font-family:var(--s-ui);font-size:11px;color:var(--s-label);margin:0 0 16px}
+.pg-h3{font-family:var(--s-head);font-weight:400;font-size:var(--s-h3-size);line-height:var(--s-h3-lh);
+  letter-spacing:.6px;color:var(--s-navy-deep);margin:0 0 4px}
+
+/* proof buttons */
+.pg-proofs{display:grid;gap:9px;margin-top:14px}
+.pg-proof{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+  background:var(--s-white);border:1px solid var(--s-peach);border-radius:var(--s-r-card);
+  padding:12px 13px;cursor:pointer}
+.pg-proof .ic{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:var(--s-cream);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--s-tan)}
+.pg-proof .tx b{display:block;font-family:var(--s-ui);font-weight:600;font-size:12px;color:var(--s-navy)}
+.pg-proof .tx span{font-family:var(--s-ui);font-size:10px;color:var(--s-label)}
+
+/* stats */
+.pg-stats{display:flex;justify-content:space-between;gap:8px;text-align:center;margin-top:18px}
+.pg-stats>div{flex:1}
+.pg-statn{font-family:var(--s-display);font-weight:600;font-size:24px;color:var(--s-navy);line-height:1.1}
+.pg-statl{font-family:var(--s-ui);font-size:8px;letter-spacing:1px;line-height:14.4px;
+  text-transform:uppercase;color:var(--s-tan-deep)}
+
+/* testimonial cards */
+.pg-cards{display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:thin}
+.pg-card{flex:0 0 168px;background:var(--s-white);border:1px solid var(--s-peach);
+  border-radius:var(--s-r-card-lg);box-shadow:var(--s-shadow-card);padding:12px;overflow:hidden}
+.pg-card .ph{height:70px;border-radius:10px;background:linear-gradient(135deg,#EFE6D6,#E2D3BC);
+  margin-bottom:9px}
+.pg-card .nm{font-family:var(--s-ui);font-weight:600;font-size:12px;color:var(--s-navy-deep)}
+.pg-card .mt{font-family:var(--s-ui);font-size:11px;line-height:19.8px;color:var(--s-meta)}
+.pg-card .badge{display:inline-block;font-family:var(--s-ui);font-size:7.5px;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--s-tan);border:1px solid rgba(176,141,87,.4);
+  border-radius:4px;padding:3px 5px;margin:6px 0}
+.pg-card .sl{font-family:var(--s-ui);font-size:8px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--s-tan-deep);margin-top:6px}
+.pg-card .sv{font-family:var(--s-display);font-weight:600;font-size:22px;color:var(--s-navy);line-height:1.1}
+.pg-card .cp{font-family:var(--s-ui);font-size:10px;line-height:1.55;color:var(--s-meta);margin-top:6px}
+
+/* steps */
+.pg-steps{display:grid;gap:9px;margin-top:14px}
+.pg-stepcard{display:grid;grid-template-columns:26px 1fr;gap:11px;background:var(--s-white);
+  border:1px solid var(--s-peach);border-radius:var(--s-r-card);padding:12px}
+.pg-stepn{width:26px;height:26px;border-radius:50%;background:var(--s-navy);color:#fff;
+  font-family:var(--s-display);font-weight:600;font-size:13px;
+  display:flex;align-items:center;justify-content:center}
+.pg-stepcard p{font-family:var(--s-ui);font-size:10.5px;line-height:1.6;color:var(--s-meta);margin:0}
+
+/* trust list */
+.pg-trust{display:grid;gap:8px;margin-top:14px}
+.pg-trust div{background:var(--s-white);border:1px solid var(--s-peach);border-radius:var(--s-r-card);padding:12px}
+.pg-trust p{font-family:var(--s-ui);font-size:10.5px;line-height:1.6;color:var(--s-meta);margin:2px 0 0}
+
+/* who-uses pills */
+.pg-who{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.pg-who span{font-family:var(--s-ui);font-size:9px;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--s-navy);background:var(--s-white);border:1px solid var(--s-peach);
+  border-radius:100px;padding:8px 11px}
+
+/* faq */
+.pg-faqs{display:grid;gap:8px;margin-top:14px}
+.pg-faq{background:var(--s-white);border:1px solid var(--s-peach);border-radius:var(--s-r-card);
+  padding:12px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center;
+  font-family:var(--s-ui);font-size:11.5px;color:var(--s-navy-deep);cursor:pointer}
+.pg-faq i{font-style:normal;color:var(--s-tan)}
+
+/* footer */
+.pg-foot{background:var(--s-navy);color:#fff;padding:45px 18px 28px;
+  font-family:var(--s-ui);font-size:11px;line-height:1.9}
+.pg-foot .blurb{color:rgba(255,255,255,.72);margin-bottom:16px;font-size:11px;line-height:1.7}
+.pg-foot b{display:block;font-size:9px;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--s-gold);margin:0 0 6px;font-weight:600}
+.pg-fcols{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:18px}
+.pg-fcols div{color:rgba(255,255,255,.7)}
+.pg-cities{margin-top:6px}
+.pg-cities b{margin-bottom:8px}
+.pg-citylist{display:flex;flex-wrap:wrap;gap:5px}
+.pg-citylist span{font-size:8px;letter-spacing:.4px;color:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:4px 6px}
+
+/* video blocks — shown as they load on the live page */
+.pg-vid{position:relative;height:150px;background:#0d0d0f;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--s-ui);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#4d4d55}
+.pg-vid::after{content:'1080p · autoplay · 2.5 Mbps';position:absolute;right:9px;bottom:9px;
+  font-family:var(--s-ui);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:#6a6a72;border:1px solid #2a2a30;border-radius:3px;padding:4px 6px}
+
+/* ------------------------------------------------------------
+   Rebuilt page — accessibility corrections.
+   The tan and peach are 3Soul's own hues, darkened only as far
+   as 4.5:1 requires. The brand still reads as the brand.
+   ------------------------------------------------------------ */
+.pg.fixed{--s-tan:#7E6435;--s-tan-deep:#6E5729;--s-label:#5A5446;--s-meta:#4F4A3F}
+.pg.fixed .pg-eyebrow{color:#7E6435}
+.pg.fixed .pg-subline,
+.pg.fixed .pg-kick,
+.pg.fixed .pg-strip span,
+.pg.fixed .pg-card .sl,
+.pg.fixed .pg-statl{color:#6E5729}
+.pg.fixed .pg-card .badge{color:#6E5729;border-color:rgba(110,87,41,.45)}
+.pg.fixed .pg-lab,.pg.fixed .pg-or{color:#4F5663}
+.pg.fixed .pg-fine{color:#5A6270}
+.pg.fixed .pg-drop{border-color:rgba(126,100,53,.7);color:#5A6270}
+.pg.fixed .pg-in{border-color:rgba(18,18,18,.42)}
+.pg.fixed .pg-in::placeholder{color:#6B7280}
+.pg.fixed .pg-radios button{border-color:rgba(18,18,18,.42)}
+.pg.fixed .pg-foot b{color:#E7CFA0}
+.pg.fixed .pg-foot .blurb,.pg.fixed .pg-foot .pg-fcols div{color:rgba(255,255,255,.88)}
+.pg.fixed .pg-citylist span{color:rgba(255,255,255,.9);border-color:rgba(255,255,255,.3)}
+.pg.fixed .pg-illus{color:#8F887A}
+.pg.fixed .pg-proof .tx span{color:#5A6270}
+.pg.fixed .pg-stepcard p,.pg.fixed .pg-trust p,.pg.fixed .pg-card .cp{color:#4F4A3F}
+.pg.fixed .pg-card .mt{color:#4F4A3F}
+.pg.fixed .pg-lede{color:#4F5663}
+.pg.fixed .pg-crumb{color:#5A5446}
+/* visible labels, not placeholders doing a label's job */
+.pg.fixed .pg-fieldlab{display:block;font-family:var(--s-ui);font-weight:600;font-size:12px;
+  letter-spacing:.4px;color:#4F5663;margin:12px 0 6px}
+/* the video block now advertises a control rather than autoplaying */
+.pg.fixed .pg-vid{cursor:pointer}
+
+/* ============================================================
+   .pg.fixed — the rebuilt page.
+   Same markup, same tokens, corrected values only.
+   ============================================================ */
+.pg.fixed{font-size:16px;line-height:26px;color:#2A3342}
+.pg.fixed .pg-eyebrow{font-size:18px}
+.pg.fixed .pg-h{font-size:27px;line-height:31px}
+.pg.fixed .pg-brandsub{font-size:9.5px;letter-spacing:.3em}
+.pg.fixed .pg-presents{font-size:10px}
+.pg.fixed .pg-subline{font-size:11.5px;letter-spacing:2.2px;color:var(--s-tan-deep)}
+.pg.fixed .pg-crumb{font-size:12px}
+.pg.fixed .pg-strip span{font-size:10.5px;letter-spacing:1px;line-height:16px;padding:2px 10px;
+  color:var(--s-tan-deep)}
+.pg.fixed .pg-know{font-size:11px}
+.pg.fixed .pg-step{font-size:11px;letter-spacing:1.3px}
+.pg.fixed .pg-formtitle{font-size:24px;line-height:1.25}
+.pg.fixed .pg-lab{font-size:12px;letter-spacing:.6px;color:#5C6472}
+.pg.fixed .pg-radios button{font-size:14px;padding:14px 6px;min-height:48px}
+.pg.fixed .pg-drop{font-size:14px;padding:26px 14px;min-height:96px}
+.pg.fixed .pg-or{font-size:12px;color:#5C6472}
+.pg.fixed .pg-in{font-size:16px;padding:14px;min-height:48px}
+.pg.fixed .pg-note{font-size:14px;min-height:44px}
+.pg.fixed .pg-btn{font-size:16px;padding:16px;min-height:52px}
+.pg.fixed .pg-wa{font-size:14.5px;padding:15px;min-height:50px}
+.pg.fixed .pg-fine{font-size:12.5px}
+.pg.fixed .pg-check{font-size:13.5px}
+.pg.fixed .pg-cta{font-size:15px;padding:16px 30px;min-height:50px}
+.pg.fixed .pg-row{font-size:10.5px}
+.pg.fixed .pg-row b{font-size:14px}
+.pg.fixed .pg-row.tot b{font-size:22px}
+.pg.fixed .pg-illus{font-size:11px;color:#8d8578}
+.pg.fixed .pg-lede{font-size:14px}
+.pg.fixed .pg-kick{font-size:11px;color:var(--s-tan-deep)}
+.pg.fixed .pg-t{font-size:26px;line-height:1.3}
+.pg.fixed .pg-h3{font-size:17px;line-height:1.35}
+.pg.fixed .pg-proof .tx b{font-size:14.5px}
+.pg.fixed .pg-proof .tx span{font-size:12.5px}
+.pg.fixed .pg-proof{min-height:56px}
+.pg.fixed .pg-statn{font-size:27px}
+.pg.fixed .pg-statl{font-size:10px;letter-spacing:.8px;line-height:15px}
+.pg.fixed .pg-card{flex-basis:186px}
+.pg.fixed .pg-card .nm{font-size:14px}
+.pg.fixed .pg-card .mt{font-size:12.5px;line-height:1.5}
+.pg.fixed .pg-card .badge{font-size:9.5px;padding:4px 7px}
+.pg.fixed .pg-card .sl{font-size:10px}
+.pg.fixed .pg-card .cp{font-size:12.5px}
+.pg.fixed .pg-stepcard p{font-size:13px}
+.pg.fixed .pg-trust p{font-size:13px}
+.pg.fixed .pg-who span{font-size:11px;padding:11px 13px;min-height:44px;display:inline-flex;align-items:center}
+.pg.fixed .pg-faq{font-size:14px;padding:15px 14px;min-height:48px}
+.pg.fixed .pg-foot{font-size:13px}
+.pg.fixed .pg-foot .blurb{font-size:13px}
+.pg.fixed .pg-foot b{font-size:11px}
+.pg.fixed .pg-citylist span{font-size:11px;padding:7px 9px;color:rgba(255,255,255,.72)}
+/* posters, not autoplaying 1080p */
+.pg.fixed .pg-vid{height:130px;background:linear-gradient(135deg,#EFE6D6,#DED0B8);color:#8A7B60}
+.pg.fixed .pg-vid::after{content:'poster · tap to play · 34 KB';color:#8A7B60;
+  border-color:rgba(138,123,96,.4)}
+.pg.fixed .pg-fs{border:0;padding:0;margin:0}
+.pg.fixed .pg-fs legend{padding:0}
+.pg.fixed .pg-in{margin-bottom:2px}
+
+/* ============================================================
+   The recreation responds to the FRAME, not the browser window,
+   via container queries — so dragging the desktop preview from
+   1240 to 1920 exercises real breakpoints, not a scaled image.
+   ============================================================ */
+@container vp (min-width: 760px) {
+  .pg-hero{padding:52px 32px 44px}
+  .pg-h{font-size:36px;line-height:1.16;max-width:18ch;margin-inline:auto}
+  .pg-display{font-size:78px}
+  .pg-eyebrow{font-size:20px}
+  .pg-formwrap{padding:36px 32px 44px}
+  .pg-form{max-width:620px;margin-inline:auto}
+  .pg-sec{padding:48px 32px}
+  .pg-t{font-size:30px;line-height:1.25}
+  .pg-steps{grid-template-columns:repeat(2,1fr)}
+  .pg-trust{grid-template-columns:repeat(2,1fr)}
+  .pg-faqs{grid-template-columns:repeat(2,1fr)}
+  .pg-proofs{grid-template-columns:repeat(2,1fr)}
+  .pg-pricecard{max-width:560px;margin-inline:auto}
+  .pg-vid{height:280px}
+  .pg-fcols{gap:56px}
+}
+@container vp (min-width: 1100px) {
+  .pg-hero{padding:72px 56px 56px}
+  .pg-h{font-size:46px}
+  .pg-display{font-size:104px}
+  .pg-formwrap{padding:44px 56px 56px}
+  .pg-form{max-width:720px}
+  .pg-sec{padding:64px 56px}
+  .pg-t{font-size:36px}
+  .pg-steps{grid-template-columns:repeat(3,1fr)}
+  .pg-trust{grid-template-columns:repeat(4,1fr)}
+  .pg-faqs{grid-template-columns:repeat(2,1fr)}
+  .pg-proofs{grid-template-columns:repeat(2,1fr);max-width:840px;margin-inline:auto}
+  .pg-cards{justify-content:center}
+  .pg-card{flex-basis:220px}
+  .pg-stats{max-width:900px;margin-inline:auto}
+  .pg-statn{font-size:38px}
+  .pg-vid{height:380px}
+  .pg-foot{padding:64px 56px 40px}
+  .pg-who{justify-content:center}
+  .pg-lede{max-width:60ch;margin-inline:auto}
+}
+@container vp (min-width: 1500px) {
+  .pg-hero{padding:88px 80px 64px}
+  .pg-display{font-size:124px}
+  .pg-h{font-size:52px}
+  .pg-sec{padding:76px 80px}
+  .pg-formwrap{padding:52px 80px 64px}
+  .pg-steps{grid-template-columns:repeat(6,1fr)}
+  .pg-faqs{grid-template-columns:repeat(3,1fr)}
+  .pg-card{flex-basis:250px}
+  .pg-vid{height:440px}
+  .pg-foot{padding:76px 80px 44px}
+}
+/* same correction inside the rebuilt page; the live recreation keeps
+   white-on-green, because that is what the real page does (flag 3). */
+.pg.fixed .pg-wa{color:#06301F}
+
+/* ------------------------------------------------------------
+   Rebuilt page — legibility floor.
+   Running text no smaller than 14px; nothing at all below 11px.
+   (The live page runs to 7px, with running text at 8.5px.)
+   ------------------------------------------------------------ */
+.pg.fixed .pg-card .cp{font-size:14px;line-height:1.55}
+.pg.fixed .pg-card .mt{font-size:13.5px}
+.pg.fixed .pg-illus{font-size:13px}
+.pg.fixed .pg-stepcard p,
+.pg.fixed .pg-trust p{font-size:14px;line-height:1.6}
+.pg.fixed .pg-proof .tx span{font-size:14px}
+.pg.fixed .pg-foot .blurb,
+.pg.fixed .pg-foot .pg-fcols div{font-size:14px;line-height:1.8}
+.pg.fixed .pg-fine{font-size:13.5px;line-height:1.55}
+.pg.fixed .pg-lede{font-size:15px}
+.pg.fixed .pg-crumb{font-size:13px}
+.pg.fixed .pg-fieldlab{font-size:13px}
+.pg.fixed .pg-subline{font-size:12.5px;letter-spacing:1.8px}
+.pg.fixed .pg-kick{font-size:12px;letter-spacing:1.2px}
+.pg.fixed .pg-step{font-size:12px}
+.pg.fixed .pg-brandsub{font-size:11px}
+.pg.fixed .pg-strip span{font-size:11.5px}
+.pg.fixed .pg-card .badge{font-size:11px}
+.pg.fixed .pg-card .sl{font-size:11px}
+.pg.fixed .pg-statl{font-size:11.5px;line-height:1.5}
+.pg.fixed .pg-row{font-size:11.5px}
+.pg.fixed .pg-row b{font-size:15px}
+.pg.fixed .pg-shot{font-size:11px}
+.pg.fixed .pg-foot b{font-size:12px}
+.pg.fixed .pg-citylist span{font-size:12px}
+.pg.fixed .pg-analysis .s{font-size:13.5px}
+.pg.fixed .pg-vid{font-size:11.5px}
+.pg.fixed .pg-vid::after{font-size:11px}
+/* the rebuilt page's video is a poster with a real control, not an autoplaying file */
+.pg.fixed .pg-vid.poster{display:block;width:100%;border:0;cursor:pointer;
+  background:linear-gradient(135deg,#EFE6D6,#DED0B8);color:#6E5729;
+  font-family:var(--s-ui);font-weight:600;letter-spacing:.4px;min-height:130px}
+.pg.fixed .pg-vid.poster::after{content:'poster \00b7 34 KB \00b7 plays on tap';
+  color:#6E5729;border-color:rgba(110,87,41,.45)}
+
+/* the testimonial carousel must not chain sideways; vertical wheel still scrolls the page */
+.pg-cards{overscroll-behavior-x:contain;overscroll-behavior-y:auto}

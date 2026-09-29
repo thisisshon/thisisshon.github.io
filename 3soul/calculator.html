@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en-IN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFFFF">
+<!-- Price It, the calculator. The front door is index.html (upload).
+     Earlier versions live in archive/. -->
+<title>Diamond Jewellery Price Calculator | 3Soul Price It</title>
+<meta name="description" content="Price a diamond ring, earrings, pendant, bracelet, bangle, mangalsutra or necklace in seconds. Gold, diamonds, making and GST itemised, free.">
+<!-- Kept noindex while this is a prototype. Flip to index,follow at launch (audit E-01). -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://3soul.in/pages/diamond-cost-estimator">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="3Soul">
+<meta property="og:title" content="Diamond Jewellery Price Calculator | 3Soul Price It">
+<meta property="og:description" content="Choose a piece, pour the metal, set the diamonds and see the price itemised line by line.">
+<meta property="og:url" content="https://3soul.in/pages/diamond-cost-estimator">
+<meta property="og:image" content="assets/img/og-share-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta property="og:image:alt" content="A diamond solitaire ring in yellow gold on cream silk">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102A4E'/%3E%3Cpath d='M9 12l3-4h8l3 4-7 11z' fill='none' stroke='%23D6B27C' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M9 12h14' stroke='%23D6B27C' stroke-width='1.6'/%3E%3C/svg%3E">
+
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/outfit-var.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/baskervville-400.woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/priceit.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebApplication", "name": "3Soul Price It, Diamond Jewellery Price Calculator",
+      "url": "https://3soul.in/pages/diamond-cost-estimator",
+      "applicationCategory": "FinanceApplication", "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+      "publisher": { "@type": "Organization", "name": "3Soul", "url": "https://3soul.in/" } },
+    { "@type": "BreadcrumbList", "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://3soul.in/" },
+      { "@type": "ListItem", "position": 2, "name": "Price It", "item": "https://3soul.in/pages/diamond-cost-estimator" } ] }
+  ]
+}
+</script>
+</head>
+<body>
+
+<svg class="defs" aria-hidden="true" focusable="false"><defs id="sharedDefs"></defs></svg>
+
+<noscript>
+  <div class="nojs">
+    <h1>Diamond jewellery price calculator</h1>
+    <p>This calculator needs JavaScript to draw your piece and price it. You can still
+      <a href="https://3soul.in/pages/diamond-cost-estimator">send us your design</a> and a gemologist
+      will price it for free within 24 hours.</p>
+  </div>
+</noscript>
+
+<main class="app" id="app" data-step="1">
+  <h1 class="vh">Diamond jewellery price calculator</h1>
+
+  <header class="bar">
+    <button class="bar-back" id="back" type="button" aria-label="Previous step" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <a class="bar-brand" href="https://3soul.in/">3S&#332;UL<span>Price It</span></a>
+    <!-- The rail shows what you chose, not only where you are (audit S-03, S-08). -->
+    <nav class="rail" id="rail" aria-label="Your choices">
+      <button class="slot" type="button" data-go="1"><span class="slot-k">Piece</span><span class="slot-v" id="rv1"></span></button>
+      <button class="slot" type="button" data-go="2"><span class="slot-k">Metal</span><span class="slot-v" id="rv2"></span></button>
+      <button class="slot" type="button" data-go="3"><span class="slot-k">Stones</span><span class="slot-v" id="rv3"></span></button>
+      <button class="slot" type="button" data-go="4"><span class="slot-k">Size</span><span class="slot-v" id="rv4"></span></button>
+      <i class="rail-bar" aria-hidden="true"></i>
+    </nav>
+  </header>
+
+  <section class="stage" id="stage" data-stage="1" aria-label="Your piece and its estimate">
+    <div class="spot" aria-hidden="true"></div>
+    <div class="rays" aria-hidden="true"></div>
+    <div class="floor" aria-hidden="true"></div>
+
+    <div class="price" id="price">
+      <p class="price-k">Estimate, incl. GST</p>
+      <p class="odo" id="odo" aria-hidden="true"></p>
+      <p class="vh" id="priceLive" aria-live="polite"></p>
+      <p class="price-range" id="range"></p>
+      <div class="deltas" id="deltas" aria-hidden="true"></div>
+    </div>
+
+    <div class="piece-wrap" id="pieceWrap">
+      <svg class="piece" id="piece" viewBox="0 0 240 240" aria-hidden="true">
+        <defs>
+          <linearGradient id="mg" gradientUnits="userSpaceOnUse" x1="30" y1="20" x2="210" y2="220">
+            <stop offset="0"/><stop offset=".3"/><stop offset=".5"/><stop offset=".64"/><stop offset=".82"/><stop offset="1"/>
+          </linearGradient>
+          <linearGradient id="sweepG" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+            <stop offset=".5" stop-color="#fff" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <clipPath id="pour"><path id="liquid"/></clipPath>
+          <mask id="mMask" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="240"><g id="maskG"></g></mask>
+        </defs>
+        <g class="sketch" id="sketch"></g>
+        <rect class="stream" id="stream" x="118" y="0" width="4" height="0" rx="2"/>
+        <g class="metal" id="metal" clip-path="url(#pour)"></g>
+        <g mask="url(#mMask)"><g transform="rotate(20 120 120)"><rect class="sweep" id="sweep" x="-70" y="-100" width="56" height="440" fill="url(#sweepG)"/></g></g>
+        <g class="stones" id="stones"></g>
+        <g class="measure" id="measure"></g>
+        <g class="sparks" id="sparks"></g>
+      </svg>
+    </div>
+
+    <p class="stage-title" id="stageTitle" aria-hidden="true"></p>
+    <p class="hint" aria-hidden="true"><span class="hint-m">Swipe to change piece</span><span class="hint-d">Use the arrows or &#8592; &#8594; keys</span></p>
+    <button class="stage-nav prev" type="button" data-shift="-1" aria-label="Previous piece"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="stage-nav next" type="button" data-shift="1" aria-label="Next piece"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </section>
+
+  <section class="deck" id="deck">
+    <div class="views" id="views">
+
+      <!-- 1 · the piece -->
+      <div class="view" data-view="1">
+        <div class="v-head">
+          <p class="eyebrow"><span>01 · The piece</span><span class="proof">Made to order</span></p>
+          <h2 class="v-h" tabindex="-1">Choose the piece</h2>
+          <p class="v-sub">Pick a piece below, or browse it on the stage.</p>
+        </div>
+        <div class="hero">
+          <div class="tiles" id="tiles" role="radiogroup" aria-label="Piece"></div>
+        </div>
+        <div class="row facts" id="facts"></div>
+        <p class="nudge" id="n1"></p>
+      </div>
+
+      <!-- 2 · the metal -->
+      <div class="view" data-view="2" hidden>
+        <div class="v-head">
+          <p class="eyebrow"><span>02 · The metal</span><span class="proof">BIS hallmarked</span></p>
+          <h2 class="v-h" tabindex="-1">Pour the metal</h2>
+          <p class="v-sub">Purity is the share of pure gold. The rest is alloy.</p>
+        </div>
+        <div class="hero">
+          <div class="vials" role="radiogroup" aria-label="Purity">
+            <label class="vial"><input type="radio" name="pur" value="9"><span class="tube"><i class="alloy"></i><i class="liq" style="--f:.375"></i></span><b>9K</b><small>37.5% gold</small><em class="dl" data-k="purity" data-v="9"></em></label>
+            <label class="vial"><input type="radio" name="pur" value="14"><span class="tube"><i class="alloy"></i><i class="liq" style="--f:.585"></i></span><b>14K</b><small>58.5% gold</small><em class="dl" data-k="purity" data-v="14"></em></label>
+            <label class="vial"><input type="radio" name="pur" value="18" checked><span class="tube"><i class="alloy"></i><i class="liq" style="--f:.75"></i></span><b>18K</b><small>75% gold</small><em class="dl" data-k="purity" data-v="18"></em></label>
+          </div>
+        </div>
+        <div class="row coins" role="radiogroup" aria-label="Colour, does not change the price">
+          <label class="coin"><input type="radio" name="col" value="yellow" checked><i class="coin-y"></i><span>Yellow</span></label>
+          <label class="coin"><input type="radio" name="col" value="white"><i class="coin-w"></i><span>White</span></label>
+          <label class="coin"><input type="radio" name="col" value="rose"><i class="coin-r"></i><span>Rose</span></label>
+        </div>
+        <p class="nudge" id="n2"></p>
+      </div>
+
+      <!-- 3 · the diamonds -->
+      <div class="view" data-view="3" hidden>
+        <div class="v-head">
+          <p class="eyebrow"><span>03 · The diamonds</span><span class="proof">IGI certified</span></p>
+          <h2 class="v-h" tabindex="-1">Choose the diamonds</h2>
+          <p class="v-sub">They look the same. The price does not.</p>
+        </div>
+        <div class="hero lp">
+          <div class="lp-box" id="lpBox" tabindex="0" role="img" aria-label="">
+            <svg class="lp-base" viewBox="-60 -60 120 120" aria-hidden="true"><use href="#dia" x="-50" y="-50" width="100" height="100"/><g class="inc"></g></svg>
+            <div class="lp-mag" aria-hidden="true"><svg viewBox="-60 -60 120 120"><use href="#dia" x="-50" y="-50" width="100" height="100"/><g class="inc"></g></svg></div>
+            <i class="lp-ring" aria-hidden="true"></i>
+            <span class="lp-hint" aria-hidden="true">Drag the loupe</span>
+          </div>
+          <div class="clar" role="radiogroup" aria-label="Clarity">
+            <label class="cl"><input type="radio" name="clar" value="SI"><span class="cl-in"><b>SI</b><em class="dl" data-k="clarity" data-v="SI"></em><small>Eye-clean at arm&#8217;s length</small></span></label>
+            <label class="cl"><input type="radio" name="clar" value="VS" checked><span class="cl-in"><b>VS</b><em class="dl" data-k="clarity" data-v="VS"></em><small>Clean to the naked eye</small></span></label>
+            <label class="cl"><input type="radio" name="clar" value="VVS"><span class="cl-in"><b>VVS</b><em class="dl" data-k="clarity" data-v="VVS"></em><small>Near-flawless at 10x</small></span></label>
+          </div>
+        </div>
+        <div class="row types" role="radiogroup" aria-label="Diamond type">
+          <label class="type"><input type="radio" name="type" value="lab" checked><span class="type-in"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#dia" width="100" height="100"/></svg><span><b>Lab-grown</b><em class="dl" data-k="dtype" data-v="lab"></em></span></span></label>
+          <label class="type"><input type="radio" name="type" value="natural"><span class="type-in"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#dia" width="100" height="100"/></svg><span><b>Natural</b><em class="dl" data-k="dtype" data-v="natural"></em></span></span></label>
+        </div>
+        <p class="nudge" id="n3"></p>
+      </div>
+
+      <!-- 4 · the size -->
+      <div class="view" data-view="4" hidden>
+        <div class="v-head">
+          <p class="eyebrow"><span>04 · The size</span><span class="proof" id="ctRange"></span></p>
+          <h2 class="v-h" tabindex="-1">Set the size</h2>
+          <p class="v-sub">Total carat, across every stone in the piece.</p>
+        </div>
+        <div class="hero size">
+          <p class="size-v"><svg class="size-d" id="sizeD" viewBox="0 0 100 100" aria-hidden="true"><use href="#dia" width="100" height="100"/></svg><b id="ctV">0.90</b><span>ct</span></p>
+          <div class="ruler" id="ruler" role="slider" tabindex="0" aria-label="Total carat" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="0.9" aria-valuetext="0.90 carat">
+            <div class="ticks" id="ticks"></div>
+            <i class="needle" aria-hidden="true"></i>
+          </div>
+          <p class="size-note" id="ctNote"></p>
+        </div>
+        <div class="row quick" id="quick">
+          <label class="q q-in"><span class="vh" id="ctInLabel">Custom total carat</span><input id="ctIn" type="text" inputmode="decimal" autocomplete="off" placeholder="Custom" maxlength="5" aria-labelledby="ctInLabel"><i aria-hidden="true">ct</i></label>
+        </div>
+        <p class="nudge" id="n4"></p>
+      </div>
+
+      <!-- 5 · the estimate document -->
+      <div class="view" data-view="5" hidden>
+        <div class="v-head">
+          <p class="eyebrow"><span id="docRef">Estimate</span><span class="proof" id="docDate"></span></p>
+          <h2 class="v-h doc-h" tabindex="-1" id="docTitle">Your piece</h2>
+          <p class="v-sub" id="docSub"></p>
+        </div>
+        <div class="hero bd">
+          <p class="bd-k">Where every rupee goes</p>
+          <div class="bd-bar" id="bdBar"></div>
+          <p class="bd-say" id="bdSay"></p>
+          <ul class="bd-rows" id="bdRows"></ul>
+          <div class="bd-foot">
+            <p class="bd-total"><span>Total, incl. GST</span><b id="bdTotal"></b></p>
+            <p class="bd-range" id="bdRange"></p>
+          </div>
+        </div>
+        <div class="row">
+          <a class="story" id="story" href="https://3soul.in/pages/diamond-cost-estimator">
+            <img id="storyImg" src="" alt="" width="64" height="64" loading="lazy" decoding="async">
+            <span><b id="storyH"></b><small id="storyP"></small></span>
+          </a>
+        </div>
+        <details class="how"><summary>How this is priced</summary><p>Priced with 3Soul&#8217;s own rates: 18K gold at <b>&#8377;11,490/g</b>, diamonds from <b>&#8377;10,000/ct</b> lab-grown and <b>&#8377;38,600/ct</b> natural, labour at <b>&#8377;1,600/g</b>. Read from the 3Soul catalogue on 22 Sep 2026. Indicative until a gemologist prices your design.</p></details>
+      </div>
+
+    </div>
+
+    <div class="deck-foot">
+      <button class="btn" id="next" type="button"><span id="nextLabel">Let&#8217;s make this one</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <a class="btn shine" id="final" href="https://3soul.in/pages/diamond-cost-estimator" hidden><span>Price my exact design</span><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="foot-2">
+        <button class="txt" id="skip" type="button">Skip to my price</button>
+        <span class="foot-fin" id="finActions" hidden>
+          <button class="txt" id="share" type="button">Share</button>
+          <a class="txt" id="wa" href="https://wa.me/919819033336" target="_blank" rel="noopener">WhatsApp 3Soul</a>
+          <button class="txt" id="restart" type="button">Start over</button>
+        </span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 3Soul's own rates, read from their catalogue (pricing.js keeps the older placeholder rates) -->
+<script src="assets/js/pricing-3soul.js"></script>
+<script src="assets/js/calculator.js"></script>
+</body>
+</html>

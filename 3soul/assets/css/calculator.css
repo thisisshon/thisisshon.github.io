@@ -1,0 +1,12 @@
+/* Calculator page. Everything else comes from priceit-v2.css; this
+   file only covers what a page without the upload tabs needs. */
+[data-page="calc"] .hero-upload .panel{display:block}
+[data-page="calc"] .calc-next{margin-top:var(--gap-item);font-size:14px;line-height:24px;color:var(--pi-ink-2)}
+[data-page="calc"] .calc-next a{color:var(--pi-navy);font-weight:500;text-underline-offset:4px}
+[data-page="calc"] .est-cta a.btn{display:flex;text-decoration:none}
+
+/* Lenis (lenis.dev), the stylesheet it ships with */
+html.lenis,html.lenis body{height:auto}
+.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}
+.lenis [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-smooth iframe{pointer-events:none}

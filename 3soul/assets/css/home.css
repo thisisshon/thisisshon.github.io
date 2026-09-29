@@ -1,0 +1,200 @@
+/* ============================================================
+   The homepage recreation (.pg.hp).
+
+   Built on the same --s-* tokens as the estimator recreation, so
+   both pages are drawn from 3Soul's own measured values rather
+   than from two separate guesses. page.css supplies the shared
+   chrome (.pg-head, .pg-sec, .pg-h, .pg-lede, .pg-btn, .pg-card,
+   .pg-cards, .pg-foot); everything below is homepage-specific.
+
+   Section min-heights reproduce the measured 375x812 layout —
+   see the table at the top of home-page.js. They are min-heights
+   rather than fixed heights so that longer copy is never clipped;
+   the recreation should be able to be wrong in the honest
+   direction.
+
+   Like the estimator recreation, this one deliberately reproduces
+   the live page's failures — the 10px footer headings and the
+   sub-44px controls are the findings, not mistakes to tidy up.
+   ============================================================ */
+
+.pg.hp{background:var(--s-white);font-family:var(--s-body)}
+
+/* ---------- hero: 209px of autoplaying video ---------- */
+.hp-hero{position:relative;min-height:209px;
+  background:linear-gradient(150deg,#8C7A6B,#5C4E45 60%,#3A312B);
+  display:flex;align-items:flex-end;padding:12px}
+.hp-hero-lbl{font-family:var(--s-ui);font-size:11px;letter-spacing:.6px;
+  color:rgba(255,255,255,.92);background:rgba(0,0,0,.42);
+  padding:5px 9px;border-radius:var(--s-r-btn)}
+/* the unmute control — 44px, and one of the few on the page that is */
+.hp-mute{position:absolute;right:12px;top:12px;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.9);color:#2C2C2C;display:flex;align-items:center;
+  justify-content:center;font-size:13px}
+
+/* ---------- marquee: 57px, three copies, two aria-hidden ---------- */
+.hp-marq{min-height:57px;background:var(--s-cream-2);display:flex;align-items:center;
+  overflow:hidden;white-space:nowrap}
+.hp-marq-in{display:flex;align-items:center;gap:14px;padding-left:14px}
+.hp-marq b{font-family:var(--s-display);font-weight:400;font-size:15px;color:var(--s-navy)}
+.hp-marq i{color:var(--s-tan);font-style:normal}
+
+/* ---------- 3Soul Advantage: 499px ---------- */
+.hp-adv{min-height:499px;background:var(--s-cream);text-align:center}
+.hp-link{background:none;border:0;font-family:var(--s-ui);font-size:12px;letter-spacing:1.6px;
+  color:var(--s-navy);text-decoration:underline;text-underline-offset:4px;
+  padding:6px 4px;cursor:pointer}   /* 30px tall — one of the 161 */
+
+/* ---------- estimate, first telling: 1,891px ---------- */
+.hp-estA{min-height:1891px;text-align:center}
+.hp-steps{display:grid;gap:22px;margin:26px 0 24px}
+.hp-step{display:grid;gap:6px;justify-items:center}
+.hp-stepn{width:40px;height:40px;border-radius:50%;background:var(--s-cream-2);
+  color:var(--s-navy);font-family:var(--s-display);font-size:17px;
+  display:flex;align-items:center;justify-content:center}
+.hp-steph{font-family:var(--s-display);font-weight:400;font-size:var(--s-h3-size);
+  line-height:var(--s-h3-lh);color:var(--s-ink)}
+.hp-step p{font-size:13px;line-height:1.55;color:var(--s-ink);max-width:30ch}
+
+/* ---------- products: 627px ---------- */
+.hp-prods{min-height:627px}
+.hp-prod{flex:0 0 148px;display:grid;gap:3px}
+.hp-prod b{font-size:12px;font-weight:500;line-height:1.35;color:var(--s-ink)}
+.hp-prod span{font-size:10px;color:var(--s-tan-deep)}   /* 10px — flag 7 */
+.hp-prod em{font-style:normal;font-size:12px;font-weight:600;color:var(--s-navy)}
+
+/* ---------- Featured In: 283px of heading over four empty slots ----------
+   The boxes are drawn at the reserved 148x56 with nothing in them,
+   because that is precisely what the live page renders. The dashed
+   rule is the recreation admitting it is a recreation. */
+.hp-featured{min-height:283px;text-align:center;background:var(--s-white)}
+.hp-logos{display:grid;grid-template-columns:1fr 1fr;gap:8px;justify-items:center;margin-top:16px}
+.hp-logo{width:148px;height:56px;border:1px dashed rgba(33,55,92,.18);border-radius:4px}
+
+/* ---------- estimate, second telling: 2,011px ---------- */
+.hp-estB{min-height:2011px;background:var(--s-cream)}
+.hp-tblock{display:grid;gap:10px;justify-items:center;text-align:center;padding:20px 0}
+.pg-shot.wide{width:100%;height:180px;border-radius:var(--s-r-card)}
+.pg-h.sm{font-size:22px;line-height:1.25}
+.pg-btn.ghost{background:transparent;border:1px solid var(--s-navy);color:var(--s-navy)}
+
+/* ---------- Instagram: 707px, three untitled frames ---------- */
+.hp-social{min-height:707px;text-align:center}
+.hp-igs{display:grid;gap:10px;margin-top:14px}
+.hp-ig{height:192px;border:1px solid rgba(33,55,92,.16);border-radius:var(--s-r-card);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  background:var(--s-cream-2);font-family:var(--s-ui);font-size:12px;color:var(--s-navy)}
+.hp-ig span{font-size:10px;color:var(--s-tan-deep)}
+
+/* ---------- newsletter: 370px, correctly labelled ---------- */
+.hp-news{min-height:370px;background:var(--s-navy);text-align:center}
+.hp-news .pg-h,.hp-news .pg-lede{color:#fff}
+.hp-lab{display:block;font-family:var(--s-ui);font-size:12px;letter-spacing:1.2px;
+  color:rgba(255,255,255,.86);margin:14px 0 6px}
+.hp-in{width:100%;height:46px;border:1px solid rgba(255,255,255,.45);background:transparent;
+  border-radius:var(--s-r-btn);padding:0 12px;color:#fff;font-family:var(--s-body);font-size:14px}
+
+/* ---------- footer: 1,519px, 18.4% of the page ---------- */
+.hp-foot{min-height:1519px;background:var(--s-navy-deep);color:rgba(255,255,255,.86);
+  padding:26px 16px;display:grid;gap:20px;align-content:start}
+.hp-fbrand{font-size:13px;line-height:1.6;max-width:34ch}
+.hp-fcols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.hp-fcol{display:grid;gap:7px;align-content:start}
+/* 10px column headings — flag 7 reproduced, not corrected */
+.hp-fcol h4{font-family:var(--s-ui);font-size:10px;letter-spacing:1.5px;font-weight:600;
+  color:var(--s-tan);margin-bottom:2px}
+.hp-fcol a{font-size:13px;color:rgba(255,255,255,.8);text-decoration:none;
+  padding:2px 0}            /* ~21px tall — under 24px, flag 3 */
+.hp-faddr{font-size:13px;line-height:1.7;color:rgba(255,255,255,.78)}
+.hp-cities{display:grid;gap:5px}
+.hp-cities a.dead{color:#F0A9A2}
+.hp-cities a.dead i{font-style:normal;font-size:9px;font-family:var(--s-ui);letter-spacing:1px;
+  border:1px solid rgba(240,169,162,.6);border-radius:3px;padding:1px 4px;margin-left:6px}
+.hp-foot .pg-fine{color:rgba(255,255,255,.6);font-size:11px;margin-top:4px}
+
+/* Flags 3 and 7 are page-wide findings. Rather than float free at
+   the foot of the recreation, each pins to the block that carries
+   the densest example of it: the carousel for sub-44px controls,
+   the footer columns for the 10px headings. */
+
+/* ============================================================
+   Desktop, measured at 1440x900 on 29 August 2026.
+
+   The homepage is not the mobile page widened — it reflows, and
+   the proportions change enough that reusing the 375px heights
+   here would misrepresent it. Measured again at 1440:
+
+     header            83 px   (mobile  73)
+     hero video       645 px   (mobile 209)  — the big one
+     marquee           57 px   (mobile  57)
+     3Soul Advantage  398 px   (mobile 499)
+     Get an estimate  942 px   (mobile 1891)
+     Crafted with...  627 px   (mobile 627)
+     Featured In      260 px   (mobile 283)
+     Upload Any...   1449 px   (mobile 2011)
+     Instagram        707 px   (mobile 707)
+     Newsletter       280 px   (mobile 370)
+     footer           608 px   (mobile 1519) — columns go side by side
+     ------------------------
+     total           6055 px   (6.7 screens, against 10.2 on a phone)
+
+   The two findings that are proportions rather than counts move
+   with the layout, and the deck says so: the duplicated estimate
+   pitch is 47.3% of the phone page but 39.5% here, and the footer
+   drops from 18.4% to 10.0%. Neither stops being true.
+
+   Keyed to the .screen container (container-name: vp), not the
+   browser window, so the frame's own resize handles drive it.
+   ============================================================ */
+@container vp (min-width: 900px) {
+  .hp-hero{min-height:645px;padding:24px}
+  .hp-hero-lbl{font-size:13px}
+  .hp-marq{min-height:57px}
+  .hp-marq b{font-size:19px}
+
+  .hp-adv{min-height:398px;padding:22px 32px}
+  .hp-adv .pg-lede{max-width:78ch;margin-inline:auto}
+
+  /* the three steps sit in a row rather than stacking */
+  .hp-estA{min-height:942px}
+  .hp-steps{grid-template-columns:repeat(3,1fr);gap:32px;align-items:start}
+  .hp-step p{max-width:34ch}
+
+  .hp-prods{min-height:627px}
+  .hp-prod{flex:0 0 208px}
+
+  /* four logos in one row — the slots the live page reserves */
+  .hp-featured{min-height:260px}
+  .hp-logos{grid-template-columns:repeat(4,auto);gap:28px}
+
+  /* the three pitch blocks alternate rather than stack */
+  .hp-estB{min-height:1449px}
+  .hp-tblock{grid-template-columns:1fr 1fr;align-items:center;text-align:left;
+    justify-items:start;gap:32px;padding:28px 0}
+  .hp-tblock .pg-shot.wide{height:280px;grid-row:span 4}
+  .hp-tblock .pg-kick{text-align:left}
+  .hp-tblock .pg-lede{text-align:left}
+  .hp-tblock .pg-btn{width:auto;padding:0 28px}
+
+  .hp-social{min-height:707px}
+  .hp-igs{grid-template-columns:repeat(3,1fr)}
+  .hp-ig{height:320px}
+
+  .hp-news{min-height:280px;padding:26px 32px}
+  .hp-news .pg-h{font-size:30px;line-height:1.2}
+  .hp-news .pg-lede{max-width:60ch;margin:0 auto 4px}
+  .hp-news .hp-in{max-width:420px;margin-inline:auto}
+  .hp-lab{max-width:420px;margin:8px auto 4px;text-align:left}
+
+  /* the footer stops being 1.9 screens and becomes one band */
+  .hp-foot{min-height:608px;padding:28px 32px;
+    grid-template-columns:1.15fr 2fr 1.35fr;gap:22px;align-items:start}
+  .hp-foot .hp-fcol a{padding:1px 0}
+  .hp-faddr{line-height:1.55}
+  .hp-fbrand{max-width:28ch}
+  .hp-fcols{grid-template-columns:repeat(4,1fr);gap:22px}
+  /* twelve city links in three columns rather than six stacked pairs —
+     the live footer is one band at this width, not a column of lists */
+  .hp-cities{grid-template-columns:repeat(3,1fr);gap:4px 16px}
+  .hp-foot .pg-fine{grid-column:1 / -1;margin-top:0}
+}

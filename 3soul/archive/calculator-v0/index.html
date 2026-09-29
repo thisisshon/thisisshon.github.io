@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+
+<!-- 46 characters. The live page's title is 81 and truncates near 60. -->
+<title>Diamond Price Calculator | 3Soul Price It</title>
+<meta name="description" content="Configure a diamond piece and see metal, stones, making and GST itemised against published rates. 54 combinations priced live.">
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:title" content="Diamond Price Calculator | 3Soul Price It">
+<meta property="og:description" content="Metal, stones, making and GST itemised against published rates. 54 combinations priced live.">
+<meta property="og:type" content="website">
+<!-- 1200x628 landscape, served over https. The live page declares a
+     2488x3731 portrait over http, which every platform crops badly. -->
+<meta property="og:image" content="../../assets/img/og-share-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta property="og:image:alt" content="A diamond solitaire ring in yellow gold on cream silk">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="../../assets/css/tokens.css?v=1788730675">
+<link rel="stylesheet" href="../../assets/css/priceit-v2.css?v=1788734532">
+<link rel="stylesheet" href="../../assets/css/calculator.css?v=5">
+<link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/cormorant-var.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="../../assets/fonts/poppins-500.woff2" crossorigin>
+
+<!-- The markup this page has already earned. The live page carries
+     Organization only, with its FAQs unmarked. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebApplication", "name": "3Soul Price It, Diamond Cost Estimator",
+      "applicationCategory": "FinanceApplication", "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+      "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.7", "reviewCount": "600" } },
+    { "@type": "BreadcrumbList", "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://3soul.in/" },
+      { "@type": "ListItem", "position": 2, "name": "Estimation Solution", "item": "priceit-v2.html" },
+      { "@type": "ListItem", "position": 3, "name": "Calculator" } ] }
+  ]
+}
+</script>
+<script>window.ASSET_BASE="../../";</script>
+</head>
+
+<body class="pi">
+</head>
+
+<body class="pi" data-page="calc">
+<a class="sr" href="#calc">Skip to the Calculator</a>
+
+<header class="hd" aria-label="Site header">
+  <div class="hd-in hd-top">
+    <span class="hd-glyph hd-menu" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="hd-logo"><span class="hd-word">3 SŌUL</span><span class="hd-line">True To You</span></span>
+    <span class="hd-links" aria-label="Site sections">
+      <span class="hd-cur" aria-current="page">Price It</span>
+      <span>Customise</span>
+    </span>
+    <span class="hd-social" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M14 8h2V5h-2a3 3 0 0 0-3 3v2H9v3h2v6h3v-6h2l.5-3H14V8z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r=".8"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/></svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M10 17l1.6-6.4M11 12.5c.4 1 1.4 1.4 2.4 1.2 1.6-.4 2.4-2.2 2-3.8-.5-1.8-2.6-2.6-4.4-1.9-1.9.7-2.7 2.8-1.9 4.3"/></svg>
+    </span>
+    <span class="hd-tools" aria-hidden="true">
+      <span class="hd-glyph"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg></span>
+      <span class="hd-glyph hd-acct"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.4-3.6 4.4-5.4 8-5.4s6.6 1.8 8 5.4"/></svg></span>
+      <span class="hd-glyph"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span>
+    </span>
+  </div>
+  <div class="hd-in hd-shelf" aria-label="Shop categories">
+    <span class="hd-cats">
+      <span>All Jewellery</span><span>Rings</span><span>Earrings</span><span>Pendants</span>
+      <span>Bracelets</span><span>Mangalsutras</span><span>Collections</span><span>Gifting</span>
+    </span>
+    <span class="hd-help">
+      <span class="hd-help-k">Need Help?</span>
+      <span>WhatsApp +91 98190 44433</span>
+      <span>info@3soul.in</span>
+    </span>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="calc">
+  <div class="wrap hero-grid">
+
+    <div class="hero-copy">
+      <nav class="hero-crumb" aria-label="Breadcrumb">
+        <ol><li><a href="https://3soul.in/">Home</a></li><li aria-hidden="true">/</li><li><a href="../priceit-v2/">Estimation Solution</a></li><li aria-hidden="true">/</li><li aria-current="page">Calculator</li></ol>
+      </nav>
+      <h1 class="hero-mark">Price It</h1>
+      <p class="hero-rule" aria-hidden="true"></p>
+      <p class="hero-tag">The Diamond Price Calculator, Line by Line</p>
+
+      <p class="hero-sub">Pick a piece, a metal and a diamond. The calculator prices it against
+        published gold and diamond rates and shows metal, stones, making and GST as separate
+        lines, so you can see where every rupee goes.</p>
+
+      <aside class="hero-aside calc-aside" aria-label="What the calculator shows">
+        <p class="aside-kick">What You Will See</p>
+        <ul class="aside-list">
+          <li><i>&#9670;</i>Metal, stones, making and GST, itemised line by line</li>
+          <li><i>&#9670;</i>Natural and lab-grown priced side by side</li>
+          <li><i>&#9670;</i>Every metal and clarity combination for the piece</li>
+          <li><i>&#9670;</i>The rates each line is priced against, with dates</li>
+        </ul>
+        <p class="calc-next">Have a design in mind? <a href="../priceit-v2/#calc">Upload It for a Free Report</a></p>
+      </aside>
+    </div>
+
+    <div class="hero-upload" id="heroUpload">
+      <div class="panel" id="panel-price">
+        <div class="calc-grid calc-tab">
+    <div class="hero-conf">
+      <div class="conf calc-card">
+        <h2 class="conf-h">Configure the Piece</h2>
+        <p class="conf-sub">Every option here is one 3Soul actually makes.</p>
+
+        <!-- Group 1 · the piece -->
+        <fieldset class="cg">
+          <legend class="cg-h"><span class="cg-n">1</span>The Piece</legend>
+          <div class="opts" role="radiogroup" aria-label="Piece">
+            <label class="opt"><input type="radio" name="f-cat" value="ring" checked><span>Ring</span></label>
+            <label class="opt"><input type="radio" name="f-cat" value="earrings"><span>Earrings</span></label>
+            <label class="opt"><input type="radio" name="f-cat" value="pendant"><span>Pendant</span></label>
+            <label class="opt"><input type="radio" name="f-cat" value="bracelet"><span>Bracelet</span></label>
+            <label class="opt"><input type="radio" name="f-cat" value="bangle"><span>Bangle</span></label>
+            <label class="opt"><input type="radio" name="f-cat" value="mangalsutra"><span>Mangalsutra</span></label>
+            <label class="opt"><input type="radio" name="f-cat" value="necklace"><span>Necklace</span></label>
+          </div>
+        </fieldset>
+
+        <!-- Group 2 · the metal: purity and colour side by side as segments -->
+        <fieldset class="cg">
+          <legend class="cg-h"><span class="cg-n">2</span>The Metal</legend>
+          <div class="cg-row">
+            <div class="cg-col">
+              <span class="f-lab" id="lPur">Purity</span>
+              <div class="seg" role="radiogroup" aria-labelledby="lPur">
+                <label class="seg-i"><input type="radio" name="f-pur" value="9"><span>9K</span></label>
+                <label class="seg-i"><input type="radio" name="f-pur" value="14"><span>14K</span></label>
+                <label class="seg-i"><input type="radio" name="f-pur" value="18" checked><span>18K</span></label>
+              </div>
+            </div>
+            <div class="cg-col">
+              <span class="f-lab" id="lCol">Colour</span>
+              <div class="seg" role="radiogroup" aria-labelledby="lCol">
+                <label class="seg-i"><input type="radio" name="f-col" value="yellow" checked><span><i class="sw sw-y"></i>Yellow</span></label>
+                <label class="seg-i"><input type="radio" name="f-col" value="white"><span><i class="sw sw-w"></i>White</span></label>
+                <label class="seg-i"><input type="radio" name="f-col" value="rose"><span><i class="sw sw-r"></i>Rose</span></label>
+              </div>
+            </div>
+          </div>
+          <p class="cg-note">Colour does not change the cost of the metal.</p>
+        </fieldset>
+
+        <!-- Group 3 · the diamonds: type, clarity with a one-line meaning, carat -->
+        <fieldset class="cg">
+          <legend class="cg-h"><span class="cg-n">3</span>The Diamonds</legend>
+          <div class="cg-row">
+            <div class="cg-col">
+              <span class="f-lab" id="lType">Type</span>
+              <div class="seg" role="radiogroup" aria-labelledby="lType">
+                <label class="seg-i"><input type="radio" name="f-type" value="lab" checked><span>Lab-Grown</span></label>
+                <label class="seg-i"><input type="radio" name="f-type" value="natural"><span>Natural</span></label>
+              </div>
+            </div>
+            <div class="cg-col">
+              <span class="f-lab" id="lClar">Clarity</span>
+              <div class="seg" role="radiogroup" aria-labelledby="lClar">
+                <label class="seg-i"><input type="radio" name="f-clar" value="SI"><span>SI</span></label>
+                <label class="seg-i"><input type="radio" name="f-clar" value="VS" checked><span>VS</span></label>
+                <label class="seg-i"><input type="radio" name="f-clar" value="VVS"><span>VVS</span></label>
+              </div>
+            </div>
+          </div>
+          <p class="cg-note" id="clarNote">VS: no inclusions to the naked eye.</p>
+
+          <div class="cg-carat">
+            <label class="f-lab" for="fCarat">Total Carat <span class="v" id="fCaratVal">0.90 ct</span></label>
+            <div class="carat-row">
+              <button class="stp" type="button" data-step="-0.05" aria-label="Less carat">&minus;</button>
+              <input class="rng" id="fCarat" type="range" min="0.10" max="3.00" step="0.05" value="0.90">
+              <button class="stp" type="button" data-step="0.05" aria-label="More carat">+</button>
+            </div>
+            <div class="scale"><span>0.10 ct</span><span>1.50 ct</span><span>3.00 ct</span></div>
+          </div>
+        </fieldset>
+
+        <div class="calc-ask">
+          <button class="btn primary wide" type="button" id="calcGo">Show My Estimate</button>
+          <p class="est-note">Instant, against published rates. Nothing is asked for.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-live" id="calcResult" hidden>
+      <p class="live-lead">Your Estimate</p>
+      <div class="est" id="est">
+        <div class="est-top">
+          <p class="k">Estimated Cost</p>
+          <strong class="est-total" id="eTotal">&#8212;</strong>
+          <p class="est-spec" id="eSpec"></p>
+          <p class="est-band" id="eBand"></p>
+        </div>
+
+        <div class="est-rows" id="eRows"></div>
+
+        <div class="est-prov">
+          <h4>What This Is Priced Against</h4>
+          <ul>
+            <li><b>&#8377;16,000/g</b> <span>Gold 24K &#183; market range &#8377;15,982&#8211;16,486, 26&#8211;28 Aug 2026</span></li>
+            <li><b>&#8377;45,000/ct</b> <span>Lab-grown, 1 ct certified &#183; range &#8377;30,000&#8211;80,000</span></li>
+            <li><b>&#8377;2,00,000/ct</b> <span>Natural, 1 ct G/VS2 &#183; range &#8377;1.5&#8211;3.0 lakh</span></li>
+            <li><b>3% &amp; 5%</b> <span>GST on metal and stones, and on making charges</span></li>
+            <li><b>14%</b> <span>Making, plus &#8377;4,200/ct setting &#183; Indian range is 8&#8211;25%</span></li>
+          </ul>
+        </div>
+
+        <div class="grid-wrap" style="padding:0 var(--sp-7)">
+          <details class="grid-fold" id="gridFold">
+            <summary>Every Combination for This Piece</summary>
+            <p class="small" id="eGridNote" style="margin-bottom:var(--sp-3)"></p>
+            <div class="cmbs" id="eGrid"></div>
+          </details>
+        </div>
+        <div class="est-cta">
+          <a class="btn primary wide" href="../priceit-v2/#calc">Price My Exact Design</a>
+          <p class="est-note">Indicative only. This uses the standard gold weight for the
+            category; your design has its own. Upload it and a gemologist prices every
+            stone separately.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- The configurator. On a phone it sits directly under the number
+         it changes, so a thumb moves between the two without a jump. -->
+        <!-- the sample report folds in here: it is the same breakdown the
+             estimate above renders live -->
+        <details class="grid-fold report-fold" id="reportFold" hidden>
+          <summary>What Your Report Looks Like</summary>
+      <figure class="report">
+        <div class="report-top"><b>Estimate JWL-4881</b><span>Sample</span></div>
+        <div class="report-body">
+          <div class="row"><span class="d">Piece</span><span class="v">Solitaire ring, 18K yellow</span></div>
+          <div class="row"><span class="d">Gold, 3.5 g at 18K</span><span class="v">&#8377;42,000</span></div>
+          <div class="row"><span class="d">Natural diamond, 1.00 ct, G/VS2</span><span class="v">&#8377;2,00,000</span></div>
+          <div class="row"><span class="d">Making</span><span class="v">&#8377;10,080</span></div>
+          <div class="row"><span class="d">GST at 3% on metal and stones, 5% on making</span><span class="v">&#8377;7,764</span></div>
+          <div class="row sum"><span class="d">Total</span><span class="v">&#8377;2,59,844</span></div>
+        </div>
+        <figcaption class="report-seal">
+          <i aria-hidden="true">&#9670;</i>
+          <span>Priced against gold at &#8377;16,000/g and natural diamond at &#8377;2,00,000/ct, both
+            recorded 28 August 2026. Government-evaluator verified. IGI certificate supplied
+            with the finished piece.</span>
+        </figcaption>
+      </figure>
+        </details>
+      </div>
+    </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="wrap">
+    <ul class="stats">
+      <li class="stat"><b>54</b><span>Combinations Priced</span></li>
+      <li class="stat"><b>5</b><span>Gold Purities</span></li>
+      <li class="stat"><b>2</b><span>Diamond Types</span></li>
+      <li class="stat"><b>100%</b><span>Free</span></li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer class="ft">
+  <div class="wrap ft-in">
+    <div class="ft-brand">
+      <b class="ft-mark">3 SŌUL</b>
+      <p>India's most transparent and customisable diamond-jewellery platform. Certified natural
+        and lab-grown, priced in the open.</p>
+    </div>
+    <div class="ft-cols">
+      <div class="ft-col"><h4>Explore</h4>
+        <a href="../priceit-v2/">Price It</a><a href="https://3soul.in/collections/all">E-Shop</a>
+        <a href="https://3soul.in/pages/contact">Boutique</a>
+        <a href="https://3soul.in/pages/diamond-price-in-bangalore">Diamond Pricing</a></div>
+      <div class="ft-col"><h4>Shop</h4>
+        <a href="https://3soul.in/collections/rings">Rings</a>
+        <a href="https://3soul.in/collections/bracelets">Bracelets</a>
+        <a href="https://3soul.in/collections/pendants">Pendants</a>
+        <a href="https://3soul.in/collections/earrings">Earrings</a></div>
+      <div class="ft-col"><h4>Customer Service</h4>
+        <a href="../priceit-v2/#faq">FAQs</a><a href="https://3soul.in/policies/shipping-policy">Shipping</a>
+        <a href="https://3soul.in/policies/refund-policy">Return &amp; Exchange</a></div>
+      <div class="ft-col"><h4>Company</h4>
+        <a href="https://3soul.in/policies/privacy-policy">Privacy Policy</a>
+        <a href="https://3soul.in/policies/terms-of-service">Terms &amp; Conditions</a>
+        <a href="https://wa.me/919819044433">WhatsApp</a></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="ft-fine">235, Panchratna, Opera House, Charni Road, Mumbai 400004 ·
+      +91 98190 44433 · info@3soul.in<br>
+      Prototype built for the 3Soul audit. Rates are a snapshot recorded 26–28 August 2026, not a
+      live feed: a production build would read gold daily and price each stone on its own grade.
+      Configurator options are read from the live catalogue. Append <b>?debug=1</b> to watch the
+      funnel events fire.</p>
+  </div>
+</footer>
+
+<div class="sticky" id="sticky">
+  <span class="n"><span>Free · 24 Hours</span><b>Send a Design, Get It Priced</b></span>
+  <a class="btn primary" href="../priceit-v2/#calc">Upload</a>
+</div>
+
+<script src="../../assets/js/lenis.min.js?v=1.3.26"></script>
+<script src="../../assets/js/scroll.js?v=1"></script>
+<script src="../../assets/js/pricing.js?v=1788730675"></script>
+<script src="../../assets/js/priceit-v2.js?v=1788734389"></script>
+</body>
+</html>
