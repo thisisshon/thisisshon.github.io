@@ -227,30 +227,6 @@
   linkIn.addEventListener('blur', readLink);
 
   /* ---------- step 2: the same design, priced both ways ---------- */
-  // Indicative only: from the calculator's piece when there is one,
-  // otherwise a typical 18K ring. The report prices the real design.
-  var CASE = { ring: 'case-01-namrata-solitaire-ring.jpg', earrings: 'case-02-ananya-jhumka-earrings.jpg',
-    bracelet: 'case-03-hritik-tennis-bracelet.jpg', mangalsutra: 'case-04-kavita-mangalsutra.jpg',
-    pendant: 'case-05-sara-pendant.jpg', bangle: 'case-06-mihir-gold-kada.jpg', necklace: 'case-05-sara-pendant.jpg' };
-  function round(n) { return n >= 100000 ? Math.round(n / 1000) * 1000 : Math.round(n / 500) * 500; }
-  function compare() {
-    if (!P) return;
-    var base = from ? from.cfg : { category: 'ring', purity: '18', colour: 'yellow', clarity: 'VS', carat: P.CATEGORY.ring.carat };
-    var lab = P.estimate(Object.assign({}, base, { dtype: 'lab' })).total;
-    var nat = P.estimate(Object.assign({}, base, { dtype: 'natural' })).total;
-    var tag = (from ? 'Your ' : 'Example: Typical ') + base.purity + 'K ' + P.CATEGORY[base.category].label;
-    $$('.cmp-tag').forEach(function (t) { t.textContent = tag; });
-    $('#pLab').textContent = 'About ' + P.inr(round(lab));
-    $('#pNat').textContent = 'About ' + P.inr(round(nat));
-    $('#cmpGap').innerHTML = 'Same design. Natural costs about ' + b(P.inr(round(nat - lab))) + ' more.';
-    $('#cmpNote').textContent = from
-      ? 'Based on your ' + from.text.split(',')[0].replace(/^\w/, function (c) { return c.toLowerCase(); }) + '. Your report prices your exact design.'
-      : 'Example prices for a typical 18K diamond piece. Your report prices your exact design.';
-    var src = st.files.length ? st.files[0].url : 'assets/img/' + (CASE[base.category] || CASE.ring);
-    var alt = st.files.length ? 'Your design' : 'An example 3Soul piece';
-    $$('.cmp-pic').forEach(function (img) { if (img.getAttribute('src') !== src) img.src = src; img.alt = alt; });
-  }
-
   /* ---------- step 2: quick chips, and the note behind one ---------- */
   Choice.bind($('#chips'), function (k, v) { st[k] = v; brief(); });
   $('#chips').addEventListener('click', function (e) {
@@ -359,7 +335,6 @@
     say('');
     wasReady = false;
     stage.classList.toggle('is-done', n === 4);
-    if (n === 2) compare();
     $('#trk').classList.remove('go');
     if (n === 4) setTimeout(function () { $('#trk').classList.add('go'); }, RM ? 0 : 600);
     brief(); chrome();
@@ -380,15 +355,15 @@
   }
   function done() {
     sending = false; stage.classList.remove('sending');
-    var ref = 'PI-' + (Date.now() % 65536).toString(16).toUpperCase().padStart(4, '0');
-    $('#refK').textContent = 'Received · ' + ref;
+    // PI-, four hex characters, six digits (e.g. PI-A2EF000765)
+    var ref = 'PI-' + (Date.now() % 65536).toString(16).toUpperCase().padStart(4, '0') +
+      String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
+    $('#refK').textContent = 'Reference Number: ' + ref;
     $('.v-head.done').classList.remove('go');
     setTimeout(function () { $('.v-head.done').classList.add('go'); }, RM ? 0 : 450);
     $('#h4').textContent = st.first ? 'Thank You, ' + st.first : 'Thank You';
     var eta = new Date(Date.now() + 24 * 3600 * 1000);
     $('#etaT').textContent = eta.getHours() < 10 ? 'Tomorrow Morning' : 'Tomorrow, ' + eta.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).replace(/\s?(am|pm)/i, function (m) { return ' ' + m.trim().toLowerCase(); });
-    $('#gets').innerHTML = ['Itemised', 'Made at This Price', !st.dtype || st.dtype === 'both' ? 'Lab vs Natural' : TYPE[st.dtype]]
-      .map(function (t) { return '<span class="get"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-check-alt"/></svg>' + t + '</span>'; }).join('');
     $('#tlMail').textContent = st.email ? 'at ' + st.email : 'by email';
     $('#wa4').href = WA + '?text=' + encodeURIComponent('Hi, I have a query about my jewellery estimate ' + ref + '.');
     $('#final').href = 'estimate.html' + (from ? '?c=' + from.code : '');
