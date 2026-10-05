@@ -29,11 +29,13 @@
 (function(){var s=location.search,on=/[?&]type=outfit/.test(s);try{if(on)sessionStorage.setItem("type","outfit");if(/[?&]type=serif/.test(s))sessionStorage.removeItem("type");on=on||sessionStorage.getItem("type")==="outfit";}catch(e){}if(on)document.documentElement.classList.add("type-outfit");})();</script>
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/chrome.css">
-<link rel="stylesheet" href="assets/css/priceit.css">
-<link rel="stylesheet" href="assets/css/upload.css">
+<link rel="stylesheet" href="assets/css/priceit.css?v=9">
+<link rel="stylesheet" href="assets/css/upload.css?v=6">
 <link rel="stylesheet" href="assets/css/system.css">
-<link rel="stylesheet" href="assets/css/flow.css">
-<link rel="stylesheet" href="assets/css/bright.css">
+<link rel="stylesheet" href="assets/css/choice.css?v=7">
+<link rel="stylesheet" href="assets/css/flow.css?v=9">
+<link rel="stylesheet" href="assets/css/bright.css?v=8">
+<link rel="stylesheet" href="assets/css/actionbar.css?v=2">
 </head>
 <body>
 
@@ -49,9 +51,9 @@
 
     <div class="land-body">
       <ul class="proof" aria-label="Why people trust Price It">
-        <li><span class="pi" aria-hidden="true"><svg class="ic"><use href="assets/img/icons.svg#cil-star"/></svg></span><div><b>4.7 on Google</b><span>From 600+ Reviews</span></div></li>
-        <li><span class="pi" aria-hidden="true"><svg class="ic"><use href="assets/img/icons.svg#cil-notes"/></svg></span><div><b>15,500+ Estimates</b><span>Priced by Our Gemologists</span></div></li>
-        <li><span class="pi" aria-hidden="true"><svg class="ic"><use href="assets/img/icons.svg#cil-badge"/></svg></span><div><b>IGI &amp; BIS Certified</b><span>Certified Diamonds, Hallmarked Gold</span></div></li>
+        <li><span class="pi" aria-hidden="true"><svg class="ic"><use href="assets/img/icons.svg?v=7#cil-star"/></svg></span><div><b>4.7 on Google</b><span>From 600+ Reviews</span></div></li>
+        <li><span class="pi" aria-hidden="true"><svg class="ic"><use href="assets/img/icons.svg?v=7#cil-notes"/></svg></span><div><b>15,500+ Estimates</b><span>Priced by Our Gemologists</span></div></li>
+        <li><span class="pi" aria-hidden="true"><svg class="ic"><use href="assets/img/icons.svg?v=7#cil-badge"/></svg></span><div><b>IGI &amp; BIS Certified</b><span>Certified Diamonds, Hallmarked Gold</span></div></li>
       </ul>
 
       <section class="how" aria-labelledby="howH">
@@ -74,14 +76,14 @@
             <li><span>GST</span><b>&#8377;14,241</b></li>
           </ul>
           <p class="sample-sum"><span>Total, Itemised</span><b>&#8377;4,88,955</b></p>
-          <p class="sample-made"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-check-alt"/></svg>Like the price? We make it for exactly this.</p>
+          <p class="sample-made"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-check-alt"/></svg>Like the price? We make it for exactly this.</p>
         </div>
         <blockquote class="quote"><p>&#8220;Got my ring made exactly within the quoted price.&#8221;</p><cite>Isha Sneha, Google review</cite></blockquote>
       </figure>
     </div>
 
     <div class="land-foot">
-      <button class="btn" id="startBtn" type="button"><span>Get My Free Price</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg></button>
+      <button class="btn" id="startBtn" type="button"><span>Get My Free Price</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-right"/></svg></button>
       <a class="txt" href="estimate.html">Or See a Quick Estimate</a>
     </div>
   </div>
@@ -92,7 +94,7 @@
 
   <header class="bar">
     <button class="bar-back" id="back" type="button" aria-label="Back">
-      <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-left"/></svg>
+      <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-left"/></svg>
     </button>
     <a class="bar-brand" href="https://3soul.in/">3S&#332;UL<span>Price It</span></a>
     <nav class="rail" id="rail" aria-label="Your brief">
@@ -165,7 +167,7 @@
         <div class="hero">
           <input class="vh" id="file" type="file" accept="image/*" multiple>
           <label class="dz" id="dz" for="file">
-            <svg class="ic ic-lg" aria-hidden="true"><use href="assets/img/icons.svg#cil-cloud-upload"/></svg>
+            <svg class="ic ic-lg" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-cloud-upload"/></svg>
             <b>Add Photos</b>
             <small>Camera, gallery or screenshots · JPG, PNG, HEIC</small>
           </label>
@@ -174,22 +176,22 @@
         <div class="row">
           <label class="field link">
             <span class="vh">Or paste a link from Pinterest, Instagram or a website</span>
-            <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-link"/></svg>
+            <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-link"/></svg>
             <input id="link" type="url" inputmode="url" autocomplete="off" placeholder="Or Paste a Link">
             <em id="linkChip"></em>
           </label>
         </div>
         <div class="chips" id="chips">
-          <div class="cg" data-k="budget" role="group" aria-label="Budget"><button type="button" class="cg-h" aria-expanded="true"><span class="cg-k">Budget</span><span class="cg-v"></span><svg class="ic cg-c" aria-hidden="true"><use href="assets/img/icons.svg#cil-chevron-bottom"/></svg></button><div class="cg-b"><div class="cg-in"><div class="cg-o">
+          <div class="cg" data-k="budget" role="group" aria-label="Budget"><button type="button" class="cg-h" aria-expanded="true"><span class="cg-k">Budget</span><span class="cg-v"></span><svg class="ic cg-c" aria-hidden="true"><use href="assets/img/icons.svg?v=7#chev-down"/></svg></button><div class="cg-b"><div class="cg-in"><div class="cg-o">
             <button type="button" aria-pressed="false" data-v="Under &#8377;50k">Under &#8377;50k</button><button type="button" aria-pressed="false" data-v="&#8377;50k to 1L">&#8377;50k to 1L</button><button type="button" aria-pressed="false" data-v="&#8377;1L to 2L">&#8377;1L to 2L</button><button type="button" aria-pressed="false" data-v="&#8377;2L+">&#8377;2L+</button>
           </div></div></div></div>
-          <div class="cg" data-k="occasion" role="group" aria-label="Occasion"><button type="button" class="cg-h" aria-expanded="true"><span class="cg-k">Occasion</span><span class="cg-v"></span><svg class="ic cg-c" aria-hidden="true"><use href="assets/img/icons.svg#cil-chevron-bottom"/></svg></button><div class="cg-b"><div class="cg-in"><div class="cg-o">
+          <div class="cg" data-k="occasion" role="group" aria-label="Occasion"><button type="button" class="cg-h" aria-expanded="true"><span class="cg-k">Occasion</span><span class="cg-v"></span><svg class="ic cg-c" aria-hidden="true"><use href="assets/img/icons.svg?v=7#chev-down"/></svg></button><div class="cg-b"><div class="cg-in"><div class="cg-o">
             <button type="button" aria-pressed="false" data-v="Engagement">Engagement</button><button type="button" aria-pressed="false" data-v="Wedding">Wedding</button><button type="button" aria-pressed="false" data-v="Gift">Gift</button><button type="button" aria-pressed="false" data-v="Everyday">Everyday</button><button type="button" aria-pressed="false" data-v="Anniversary">Anniversary</button>
           </div></div></div></div>
-          <div class="cg" data-k="when" role="group" aria-label="When you need it"><button type="button" class="cg-h" aria-expanded="true"><span class="cg-k">When you need it</span><span class="cg-v"></span><svg class="ic cg-c" aria-hidden="true"><use href="assets/img/icons.svg#cil-chevron-bottom"/></svg></button><div class="cg-b"><div class="cg-in"><div class="cg-o">
+          <div class="cg" data-k="when" role="group" aria-label="When you need it"><button type="button" class="cg-h" aria-expanded="true"><span class="cg-k">When you need it</span><span class="cg-v"></span><svg class="ic cg-c" aria-hidden="true"><use href="assets/img/icons.svg?v=7#chev-down"/></svg></button><div class="cg-b"><div class="cg-in"><div class="cg-o">
             <button type="button" aria-pressed="false" data-v="Within a Month">Within a Month</button><button type="button" aria-pressed="false" data-v="1 to 3 Months">1 to 3 Months</button><button type="button" aria-pressed="false" data-v="Just Exploring">Just Exploring</button>
           </div></div></div></div>
-          <button type="button" class="note-t" id="noteT" aria-expanded="false" aria-controls="noteRow"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-plus"/></svg>Add a Note</button>
+          <button type="button" class="note-t" id="noteT" aria-expanded="false" aria-controls="noteRow"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-plus"/></svg>Add a Note</button>
         </div>
         <div class="row note-row" id="noteRow" hidden>
           <label class="field note">
@@ -237,7 +239,7 @@
           <label class="field"><span>WhatsApp Number <i>optional, for a faster reply</i></span><input id="phone" type="tel" inputmode="tel" autocomplete="tel"></label>
         </div>
         <div class="row">
-          <p class="lock"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-lock-locked"/></svg><span>Your images are used only to prepare your estimate. Never shared, never sold.</span></p>
+          <p class="lock"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-lock-locked"/></svg><span>Your images are used only to prepare your estimate. Never shared, never sold.</span></p>
         </div>
         <p class="nudge" id="n3"></p>
       </div>
@@ -253,7 +255,7 @@
           </div>
         </div>
         <div class="hero eta">
-          <p class="eta-k">Your report arrives by</p>
+          <p class="eta-k">Your Report Arrives By</p>
           <p class="eta-t" id="etaT">Tomorrow</p>
           <p class="eta-s" id="tlMail">by email</p>
           <ol class="trk" id="trk">
@@ -267,20 +269,20 @@
         <a class="story slim in" href="https://wa.me/919819033336" id="wa4" target="_blank" rel="noopener">
           <img src="assets/img/founders-jay-hemali.jpg" alt="Jay Parikh and Hemali Shah, founders of 3Soul" width="44" height="44" loading="lazy">
           <span><b>Questions Meanwhile?</b><small>WhatsApp Jay and Hemali&#8217;s team</small></span>
-          <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-chevron-right"/></svg>
+          <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#chev-right"/></svg>
         </a>
       </div>
 
     </div>
 
-    <div class="deck-foot">
+    <div class="deck-foot abar">
       <p class="msg" id="msg" role="alert"></p>
-      <button class="btn" id="next" type="button"><span id="nextLabel">Continue</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg></button>
-      <a class="btn" id="final" href="estimate.html" hidden><span>How Much Could It Cost?</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg></a>
+      <button class="btn" id="next" type="button"><span id="nextLabel">Continue</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-right"/></svg></button>
+      <a class="btn" id="final" href="estimate.html" hidden><span>How Much Could It Cost?</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-right"/></svg></a>
       <a class="btn-alt" id="waAlt" href="https://wa.me/919819033336" target="_blank" rel="noopener">
-        <svg class="ic ic-wa" aria-hidden="true"><use href="assets/img/icons.svg#cib-whatsapp"/></svg>
+        <svg class="ic ic-wa" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cib-whatsapp"/></svg>
         <span>Don&#8217;t want to upload? <b>WhatsApp us directly</b></span>
-        <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg>
+        <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-right"/></svg>
       </a>
       <div class="foot-2">
         <button class="txt" id="again" type="button" hidden>Send Another Design</button>
@@ -292,8 +294,9 @@
 
 <script>window.PAGE={crumbs:[["Price It"]],ours:[["Upload Your Design","index.html",1,"Free Report in 24 Hours"],["Quick Estimate","estimate.html",0,"A Price Range in Seconds"],["Full Calculator","calculator.html",0,"Every Detail, Itemised"]]};</script>
 <script src="assets/js/menu-data.js"></script>
-<script src="assets/js/chrome.js"></script>
+<script src="assets/js/chrome.js?v=8"></script>
 <script src="assets/js/pricing-3soul.js"></script>
-<script src="assets/js/upload.js"></script>
+<script src="assets/js/choice.js?v=6"></script>
+<script src="assets/js/upload.js?v=8"></script>
 </body>
 </html>

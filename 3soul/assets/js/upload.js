@@ -127,8 +127,8 @@
   /* ---------- the stage ---------- */
   var ROT = [-4, 3, -7, 6, -2];
   var ICON = {
-    link: '<svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-link"/></svg>',
-    note: '<svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-notes"/></svg>'
+    link: '<svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-link"/></svg>',
+    note: '<svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-notes"/></svg>'
   };
   function domain(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } }
   function stack() {
@@ -171,8 +171,8 @@
     var has = st.files.length > 0;
     dz.hidden = has; thumbs.hidden = !has;
     thumbs.innerHTML = st.files.map(function (f, i) {
-      return '<div class="th"><img src="' + f.url + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo ' + (i + 1) + '"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-x"/></svg></button></div>';
-    }).join('') + (st.files.length < MAX_FILES ? '<label class="th add" for="file"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-plus"/></svg><span>Add</span></label>' : '');
+      return '<div class="th"><img src="' + f.url + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo ' + (i + 1) + '"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-x"/></svg></button></div>';
+    }).join('') + (st.files.length < MAX_FILES ? '<label class="th add" for="file"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-plus"/></svg><span>Add</span></label>' : '');
   }
   fileIn.addEventListener('change', function () { addFiles(fileIn.files); fileIn.value = ''; });
   thumbs.addEventListener('click', function (e) {
@@ -251,28 +251,9 @@
     $$('.cmp-pic').forEach(function (img) { if (img.getAttribute('src') !== src) img.src = src; img.alt = alt; });
   }
 
-  function setOpen(g, open) {
-    g.classList.toggle('is-closed', !open);
-    $('.cg-h', g).setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-
   /* ---------- step 2: quick chips, and the note behind one ---------- */
+  Choice.bind($('#chips'), function (k, v) { st[k] = v; brief(); });
   $('#chips').addEventListener('click', function (e) {
-    // a section header reopens (or closes) its section
-    var head = e.target.closest('.cg-h');
-    if (head) { setOpen(head.parentNode, head.getAttribute('aria-expanded') !== 'true'); return; }
-    var btn = e.target.closest('.cg-o button');
-    if (btn) {
-      var g = btn.closest('.cg'), k = g.dataset.k, on = btn.getAttribute('aria-pressed') === 'true';
-      $$('.cg-o button', g).forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
-      if (!on) btn.setAttribute('aria-pressed', 'true');
-      st[k] = on ? '' : btn.dataset.v;
-      $('.cg-v', g).textContent = st[k];
-      // a choice folds its section away after a beat, so the tap reads first
-      if (!on) setTimeout(function () { setOpen(g, false); }, RM ? 0 : 260);
-      brief();
-      return;
-    }
     var nt = e.target.closest('#noteT');
     if (nt) {
       var row = $('#noteRow'), open = row.hidden;
@@ -407,7 +388,7 @@
     var eta = new Date(Date.now() + 24 * 3600 * 1000);
     $('#etaT').textContent = eta.getHours() < 10 ? 'Tomorrow Morning' : 'Tomorrow, ' + eta.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).replace(/\s?(am|pm)/i, function (m) { return ' ' + m.trim().toLowerCase(); });
     $('#gets').innerHTML = ['Itemised', 'Made at This Price', !st.dtype || st.dtype === 'both' ? 'Lab vs Natural' : TYPE[st.dtype]]
-      .map(function (t) { return '<span class="get"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-check-alt"/></svg>' + t + '</span>'; }).join('');
+      .map(function (t) { return '<span class="get"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-check-alt"/></svg>' + t + '</span>'; }).join('');
     $('#tlMail').textContent = st.email ? 'at ' + st.email : 'by email';
     $('#wa4').href = WA + '?text=' + encodeURIComponent('Hi, I have a query about my jewellery estimate ' + ref + '.');
     $('#final').href = 'estimate.html' + (from ? '?c=' + from.code : '');
@@ -430,7 +411,7 @@
     st.files = []; st.link = ''; st.note = ''; st.dtype = null; lastPts = 0; maxStep = 1;
     st.budget = st.occasion = st.when = '';
     $$('.cg-o button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
-    $$('.cg').forEach(function (g) { setOpen(g, true); $('.cg-v', g).textContent = ''; });
+    $$('.cg').forEach(function (g) { Choice.setOpen(g, true); $('.cg-v', g).textContent = ''; });
     $('#noteRow').hidden = true; $('#noteT').setAttribute('aria-expanded', 'false');
     linkIn.value = ''; $('#note').value = ''; $('#linkChip').textContent = '';
     $$('input[name="dtype"]').forEach(function (r) { r.checked = false; });

@@ -31,7 +31,7 @@
   }
 
   /* CoreUI Icons Free (CC BY 4.0), served from one sprite. */
-  var SPRITE = (PAGE.base || '') + 'assets/img/icons.svg';
+  var SPRITE = (PAGE.base || '') + 'assets/img/icons.svg?v=7';
   function ic(name, cls) {
     return '<svg class="ic ' + (cls || '') + '" aria-hidden="true"><use href="' + SPRITE + '#' + name + '"/></svg>';
   }
@@ -61,7 +61,7 @@
     }
     return '<li><div class="nav-g" data-depth="' + depth + '">' +
       '<button class="nav-t" type="button" aria-expanded="false">' + esc(node.t) +
-      ic('cil-chevron-bottom', 'nav-car') +
+      ic('chev-down', 'nav-car') +
       '</button><div class="nav-p"><ul>' + node.c.map(function (k) { return branch(k, depth + 1); }).join('') + '</ul></div>' +
       '</div></li>';
   }

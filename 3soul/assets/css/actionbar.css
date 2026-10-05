@@ -1,0 +1,51 @@
+/* ============================================================
+   Action bar: the pinned footer, shared by the upload flow
+   (.deck-foot on index.html) and the quick estimate (.qe-bar on
+   estimate.html). One surface, one primary button, one WhatsApp
+   button, one rhythm. Page files only decide where it sits.
+   Loaded after each page's own stylesheets.
+   ============================================================ */
+.abar{display:flex;flex-direction:column;align-items:stretch;gap:var(--s3)}
+
+/* the surface: white, a hairline on top, pinned to the bottom on phones */
+@media (max-width:959px){
+  .abar{position:fixed;left:0;right:0;bottom:0;z-index:50;
+    padding:var(--s5) 24px calc(var(--s3) + env(safe-area-inset-bottom))!important;
+    background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(14,36,64,.06);pointer-events:auto}
+  .abar::before{display:none!important}
+}
+
+/* primary action */
+.abar .btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:50px;margin:0;
+  border:0;border-radius:var(--r-m);background:var(--navy);color:#fff;text-decoration:none;cursor:pointer;
+  font-family:var(--s-body);font-size:15px;font-weight:600;letter-spacing:.2px;box-shadow:var(--lift-1);transition:transform .15s}
+.abar .btn[hidden]{display:none}
+.abar .btn .ic{width:17px;height:17px;transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.abar .btn:active{transform:scale(.98)}
+@media (hover:hover){.abar .btn:hover .ic{transform:translateX(3px)}}
+
+/* WhatsApp: a real second option in its own green, tinted so it
+   never competes with the primary */
+.btn-alt{--wa:#1DA851;--wa-ink:#0A5C32;display:flex;align-items:center;gap:var(--s3);width:100%;min-height:52px;margin:0;
+  padding:6px var(--s4) 6px 6px;border:1px solid rgba(29,168,81,.22);border-radius:var(--r-m);background:#EAF8EF;
+  color:var(--wa-ink);text-decoration:none;line-height:1.25;transition:background .2s,border-color .2s,transform .15s}
+.btn-alt[hidden]{display:none}
+.btn-alt span{flex:1;min-width:0;text-align:left;font-size:11.5px;letter-spacing:.01em;color:rgba(10,92,50,.72)}
+.btn-alt b{display:block;margin-top:2px;font-size:13.5px;font-weight:600;letter-spacing:0;color:var(--wa-ink);white-space:nowrap}
+.btn-alt .ic{width:15px;height:15px;flex:none;color:var(--wa);transition:transform .2s}
+.btn-alt .ic-wa{box-sizing:content-box;width:18px;height:18px;padding:9px;border-radius:50%;background:var(--wa);color:#fff;
+  box-shadow:0 4px 12px rgba(29,168,81,.32)}
+.btn-alt:active{background:#DDF3E5;transform:scale(.99)}
+@media (hover:hover){.btn-alt:hover{background:#DDF3E5;border-color:rgba(29,168,81,.4)}.btn-alt:hover .ic:last-child{transform:translateX(3px)}}
+
+/* small print rows inside the bar take no space when empty */
+.abar .msg{margin:0}
+.abar .foot-2{margin:0}
+
+/* on desktop the upload flow's bar sits inside its panel: same white
+   surface and hairline, just not pinned to the window */
+@media (min-width:960px){
+  .deck-foot.abar{background:#fff;border-top:1px solid var(--line);gap:var(--s3)}
+  .deck-foot.abar::before{display:none}
+}

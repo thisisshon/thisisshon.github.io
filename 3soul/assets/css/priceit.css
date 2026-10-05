@@ -345,7 +345,7 @@ input:focus-visible+.tile-in,input:focus-visible+.tube,input:focus-visible+.cl-i
    ============================================================ */
 @media (min-width:960px){
   body{background:var(--paper, #fff)}
-  .app{max-width:none;height:100vh;height:100svh;box-shadow:none;
+  .app{max-width:none;height:calc(100vh - var(--hdr-h,0px));height:calc(100svh - var(--hdr-h,0px));box-shadow:none;
     grid-template-columns:minmax(0,1fr) clamp(440px,38vw,560px);grid-template-rows:76px minmax(0,1fr)}
 
   .bar{grid-column:1 / -1;display:flex;align-items:center;gap:14px;height:76px;padding:0 28px;border-bottom:1px solid var(--line)}

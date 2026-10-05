@@ -10,7 +10,9 @@
   var WA = 'https://wa.me/919819033336';
   function $(s) { return document.querySelector(s); }
   function $$(s) { return Array.prototype.slice.call(document.querySelectorAll(s)); }
-  function val(name) { var i = $('input[name="' + name + '"]:checked'); return i ? i.value : null; }
+  function grp(k) { return $('.cg[data-k="' + k + '"]'); }
+  function opt(k, v) { var g = grp(k); return g && g.querySelector('.cg-o button[data-v="' + v + '"]'); }
+  function val(k) { return Choice.value(grp(k)); }
   function round(n) { return n >= 100000 ? Math.round(n / 1000) * 1000 : Math.round(n / 500) * 500; }
   function short(n) {
     n = round(n);
@@ -22,8 +24,8 @@
     var m = /[?&]c=([^&]+)/.exec(location.search);
     if (!m) return;
     var p = decodeURIComponent(m[1]).split('.');
-    var pick = function (name, v) { var i = $('input[name="' + name + '"][value="' + v + '"]'); if (i) i.checked = true; };
-    if (P.CATEGORY[p[0]] && $('input[name="category"][value="' + p[0] + '"]')) pick('category', p[0]);
+    var pick = function (k, v) { var b = opt(k, v); if (b) Choice.select(grp(k), b); };
+    if (P.CATEGORY[p[0]]) pick('category', p[0]);
     pick('purity', p[1]);
     pick('dtype', p[3]);
     var ct = parseFloat(p[5] + '.' + (p[6] || '0')), typ = P.CATEGORY[val('category')].carat;
@@ -82,6 +84,6 @@
     try { history.replaceState(null, '', '?c=' + k); } catch (err) { /* file:// */ }
   }
 
-  document.addEventListener('change', function (e) { if (e.target.matches('.qe-o input')) paint(); });
+  Choice.bind($('#qeCg'), paint, { required: true });
   paint();
 })();

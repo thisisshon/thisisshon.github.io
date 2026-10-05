@@ -90,3 +90,18 @@
 
 /* step 3's stage is a slim band: no room for the "added" chip over the title */
 .up[data-step="3"] .deltas{display:none!important}
+
+/* ---------- no eyebrows ----------
+   Small spaced capitals read as tags, not words. Every label is set in
+   plain title case at a calm size instead. Left alone on purpose: the
+   miniature report and its stamp (they draw a document) and the menu,
+   which mirrors 3soul.in. */
+.slot-k,.price-k,.eta-k,.bd-k,.hint,.lp-hint,.sample-sum span,.bd-total span,.cmp-both-in em,.ref span,.tl b,.eyebrow{
+  text-transform:none!important;letter-spacing:.01em!important}
+.slot-k{font-size:12px!important}
+.price-k,.eta-k,.bd-k{font-size:13px!important;font-weight:500}
+.hint,.lp-hint{font-size:12px!important}
+.sample-sum span,.bd-total span{font-size:13px!important}
+.cmp-both-in em{font-size:11.5px!important;font-weight:500}
+.ref span{font-size:12px!important}
+.tl b{font-size:12.5px!important}

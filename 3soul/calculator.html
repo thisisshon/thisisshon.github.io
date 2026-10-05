@@ -28,9 +28,9 @@
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/baskervville-400.woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/chrome.css">
-<link rel="stylesheet" href="assets/css/priceit.css">
+<link rel="stylesheet" href="assets/css/priceit.css?v=9">
 <link rel="stylesheet" href="assets/css/system.css">
-<link rel="stylesheet" href="assets/css/bright.css">
+<link rel="stylesheet" href="assets/css/bright.css?v=8">
 
 <script type="application/ld+json">
 {
@@ -66,7 +66,7 @@
 
   <header class="bar">
     <button class="bar-back" id="back" type="button" aria-label="Previous step" disabled>
-      <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-left"/></svg>
+      <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-left"/></svg>
     </button>
     <a class="bar-brand" href="https://3soul.in/">3S&#332;UL<span>Price It</span></a>
     <!-- The rail shows what you chose, not only where you are (audit S-03, S-08). -->
@@ -118,8 +118,8 @@
 
     <p class="stage-title" id="stageTitle" aria-hidden="true"></p>
     <p class="hint" aria-hidden="true"><span class="hint-m">Swipe to change piece</span><span class="hint-d">Use the arrows or &#8592; &#8594; keys</span></p>
-    <button class="stage-nav prev" type="button" data-shift="-1" aria-label="Previous piece"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-chevron-left"/></svg></button>
-    <button class="stage-nav next" type="button" data-shift="1" aria-label="Next piece"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-chevron-right"/></svg></button>
+    <button class="stage-nav prev" type="button" data-shift="-1" aria-label="Previous piece"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#chev-left"/></svg></button>
+    <button class="stage-nav next" type="button" data-shift="1" aria-label="Next piece"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#chev-right"/></svg></button>
   </section>
 
   <section class="deck" id="deck">
@@ -235,8 +235,8 @@
     </div>
 
     <div class="deck-foot">
-      <button class="btn" id="next" type="button"><span id="nextLabel">Let&#8217;s Make This One</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg></button>
-      <a class="btn shine" id="final" href="https://3soul.in/pages/diamond-cost-estimator" hidden><span>Price My Exact Design</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg></a>
+      <button class="btn" id="next" type="button"><span id="nextLabel">Let&#8217;s Make This One</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-right"/></svg></button>
+      <a class="btn shine" id="final" href="https://3soul.in/pages/diamond-cost-estimator" hidden><span>Price My Exact Design</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg?v=7#cil-arrow-right"/></svg></a>
       <div class="foot-2">
         <button class="txt" id="skip" type="button">Skip to My Price</button>
         <span class="foot-fin" id="finActions" hidden>
@@ -252,7 +252,7 @@
 <!-- 3Soul's own rates, read from their catalogue (pricing.js keeps the older placeholder rates) -->
 <script>window.PAGE={crumbs:[["Price It","index.html"],["Price calculator"]],ours:[["Upload your design","index.html",0,"Free report in 24 hours"],["Price calculator","calculator.html",1,"See a price in seconds"]]};</script>
 <script src="assets/js/menu-data.js"></script>
-<script src="assets/js/chrome.js"></script>
+<script src="assets/js/chrome.js?v=8"></script>
 <script src="assets/js/pricing-3soul.js"></script>
 <script src="assets/js/calculator.js"></script>
 </body>

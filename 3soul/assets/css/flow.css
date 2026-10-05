@@ -128,19 +128,17 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
    Step 2: chips
    ============================================================ */
 .chips{display:flex;flex-direction:column;gap:var(--s4)}
-.cg-k{margin:0 0 var(--s2);font-size:13px;font-weight:500;color:var(--ink-2)}
-.cg-o{display:flex;flex-wrap:wrap;gap:var(--s2)}
-.cg-o button,.note-t{min-height:40px;padding:0 var(--s4);border-radius:var(--r-pill);border:1px solid var(--line-2);
+/* chip look comes from choice.css; the note toggle borrows it */
+.note-t{min-height:40px;padding:0 var(--s4);border-radius:var(--r-pill);border:1px solid var(--line-2);
   background:var(--paper);font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer;
   transition:background .2s,border-color .2s,color .2s,transform .15s}
-.cg-o button:active,.note-t:active{transform:scale(.97)}
-.cg-o button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.note-t:active{transform:scale(.97)}
 .note-t{align-self:flex-start;display:inline-flex;align-items:center;gap:var(--s2);color:var(--navy)}
 .note-t .ic{width:13px;height:13px;transition:transform .3s var(--ease)}
 .note-t.is-on .ic{transform:rotate(45deg)}
 .note-row:not([hidden]){animation:rise .4s var(--ease) both}
 @media (hover:hover){
-  .cg-o button:hover,.note-t:hover{border-color:var(--navy)}
+  .note-t:hover{border-color:var(--navy)}
 }
 
 /* the hand-off from the calculator: one quiet line, not a box */
@@ -168,7 +166,6 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
 /* Budget, Occasion and When each get their own breathing room */
 .chips{gap:var(--s7)}
 .chips-h{margin-bottom:calc(var(--s1) * -1)}
-.cg-k{margin-bottom:var(--s3)}
 .note-t{margin-top:0}
 
 /* How It Works: three steps side by side, joined by one hairline */
@@ -286,20 +283,7 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
 /* the promise line under the headline: full white, a touch heavier, a soft shadow off the photo */
 .land-sub{color:#fff!important;font-weight:500;text-shadow:0 1px 12px rgba(10,28,54,.55)}
 
-/* ============================================================
-   WhatsApp: a genuine second option, clearly secondary.
-   Outlined, full width, under Continue. Never navy-filled, so it
-   never competes with the primary.
-   ============================================================ */
-.btn-alt{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:52px;margin-top:var(--s2);
-  padding:0 var(--s4);border:1px solid var(--line-2);border-radius:var(--r-m);background:var(--paper);
-  color:var(--ink);text-decoration:none;font-size:14px;line-height:1.3;transition:border-color .2s,background .2s}
-.btn-alt span{flex:1;text-align:left;color:var(--ink-2)}
-.btn-alt b{font-weight:600;color:var(--ink);white-space:nowrap}
-.btn-alt .ic{width:16px;height:16px;flex:none;color:var(--ink-3)}
-.btn-alt .ic-wa{width:22px;height:22px;color:#1DA851}
-.btn-alt:active{background:var(--blush)}
-@media (hover:hover){.btn-alt:hover{border-color:#1DA851;background:#F3FBF6}}
+/* WhatsApp and Continue: see actionbar.css */
 /* the bar now holds two actions, so content clears a taller bar */
 .up .deck{--foot-h:176px}
 .up[data-step="4"] .deck{--foot-h:122px}
@@ -354,23 +338,5 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
   .proof li+li{border-top:1px solid var(--line)!important}
 }
 
-/* ============================================================
-   Budget, Occasion, When: each folds to one line once chosen.
-   The header shows the choice; tapping it opens the section again.
-   ============================================================ */
-.cg-h{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:44px;margin:0;padding:0;border:0;background:none;
-  font:inherit;text-align:left;cursor:pointer;color:var(--ink)}
-.cg-h .cg-k{margin:0;font-size:14px;font-weight:500;color:var(--ink)}
-.cg-v{flex:1;text-align:right;font-size:14px;font-weight:500;color:var(--navy);opacity:0;transition:opacity .25s}
-.cg.is-closed .cg-v{opacity:1}
-.cg-c{width:14px;height:14px;color:var(--ink-3);transition:transform .3s cubic-bezier(.22,1,.36,1)}
-.cg-h[aria-expanded=true] .cg-c{transform:rotate(180deg)}
-.cg-b{display:grid;grid-template-rows:1fr;transition:grid-template-rows .32s cubic-bezier(.22,1,.36,1)}
-.cg.is-closed .cg-b{grid-template-rows:0fr}
-.cg-in{min-height:0;overflow:hidden}
-.cg-in .cg-o{padding-top:var(--s2)}
-/* closed sections sit closer together, divided by a hairline */
+/* Budget, Occasion, When: the fold itself is choice.css; closed sections sit closer */
 .chips{gap:var(--s5)!important}
-.cg{border-bottom:1px solid var(--line);padding-bottom:var(--s3)}
-.cg.is-closed{padding-bottom:0}
-@media (prefers-reduced-motion:reduce){.cg-b,.cg-c,.cg-v{transition:none}}
