@@ -238,6 +238,8 @@
     var base = from ? from.cfg : { category: 'ring', purity: '18', colour: 'yellow', clarity: 'VS', carat: P.CATEGORY.ring.carat };
     var lab = P.estimate(Object.assign({}, base, { dtype: 'lab' })).total;
     var nat = P.estimate(Object.assign({}, base, { dtype: 'natural' })).total;
+    var tag = (from ? 'Your ' : 'Example: Typical ') + base.purity + 'K ' + P.CATEGORY[base.category].label;
+    $$('.cmp-tag').forEach(function (t) { t.textContent = tag; });
     $('#pLab').textContent = 'About ' + P.inr(round(lab));
     $('#pNat').textContent = 'About ' + P.inr(round(nat));
     $('#cmpGap').innerHTML = 'Same design. Natural costs about ' + b(P.inr(round(nat - lab))) + ' more.';
