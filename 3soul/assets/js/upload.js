@@ -335,6 +335,12 @@
     say('');
     wasReady = false;
     stage.classList.toggle('is-done', n === 4);
+    // step 2: the design itself, once, so both options read as the same piece
+    if (n === 2) {
+      var cd = $('#cmpDesign'), img = $('img', cd);
+      cd.hidden = !st.files.length;
+      if (st.files.length && img.getAttribute('src') !== st.files[0].url) img.src = st.files[0].url;
+    }
     $('#trk').classList.remove('go');
     if (n === 4) setTimeout(function () { $('#trk').classList.add('go'); }, RM ? 0 : 600);
     brief(); chrome();

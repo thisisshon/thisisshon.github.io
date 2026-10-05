@@ -358,3 +358,34 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
 }
 /* the reference sits under the card, quietly */
 .up .view[data-view="4"] > .ref{margin:calc(var(--s5) * -1) 0 0;text-align:center}
+
+/* ============================================================
+   Desktop stage: the panel is wide, so the design and its report
+   sit centred and stacked, the photo lifted over the top of the
+   report, instead of the phone layout's offset fan (which ran off
+   the left edge here). Before a design is added, the three
+   examples sit centred and larger.
+   ============================================================ */
+@media (min-width:960px){
+  .v3 .stage.has .easel{display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+    padding:var(--s6) var(--s7) var(--s8);container-type:normal}
+  .v3 .stage.has .stack-wrap{--ph:clamp(200px,20vw,260px)!important;position:relative;z-index:2;order:-1;
+    margin:0 0 -56px!important;transform:rotate(-3deg)!important}
+  .v3 .stage.has .doc{position:relative!important;left:auto!important;top:auto!important;z-index:1;
+    width:min(420px,88%)!important;font-size:12px!important;padding:72px 28px 26px!important;
+    opacity:1!important;transform:rotate(1.2deg)!important;animation:none!important}
+  .v3 .stage.has .doc ul{gap:12px}
+  .v3 .stage.has .doc li{font-size:13px}
+  .v3 .stage.has .doc li i{height:9px}
+
+  .v3 .stage:not(.has) .easel{align-items:center!important;padding:0 0 var(--s8)!important}
+  .v3 .stage:not(.has) .stack-wrap{--ph:clamp(170px,17vw,220px)!important}
+}
+/* step 2: the uploaded design, once, above the two options */
+.cmp-design{display:flex;align-items:center;gap:var(--s4);padding:var(--s3);border-radius:var(--r-l);background:var(--blush)}
+.cmp-design[hidden]{display:none}
+.cmp-design img{width:64px;height:64px;flex:none;object-fit:cover;border-radius:var(--r-m);border:3px solid #fff;
+  box-shadow:0 4px 12px rgba(14,36,64,.12)}
+.cmp-design p{margin:0;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cmp-design b{font-family:var(--s-head);font-weight:400;font-size:17px;color:var(--ink)}
+.cmp-design span{font-size:12.5px;line-height:1.45;color:var(--ink-2)}

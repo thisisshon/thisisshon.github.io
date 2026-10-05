@@ -84,6 +84,16 @@
     try { history.replaceState(null, '', '?c=' + k); } catch (err) { /* file:// */ }
   }
 
-  Choice.bind($('#qeCg'), paint, { required: true });
+  // the last choice made: open the breakdown and bring it into view
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Choice.bind($('#qeCg'), function (k) {
+    paint();
+    if (k !== 'size') return;
+    var bd = $('.qe-bd');
+    setTimeout(function () {
+      bd.open = true;
+      bd.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'center' });
+    }, RM ? 0 : 360);
+  }, { required: true });
   paint();
 })();
