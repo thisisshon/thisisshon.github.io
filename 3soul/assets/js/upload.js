@@ -249,14 +249,25 @@
     $$('.cmp-pic').forEach(function (img) { if (img.getAttribute('src') !== src) img.src = src; img.alt = alt; });
   }
 
+  function setOpen(g, open) {
+    g.classList.toggle('is-closed', !open);
+    $('.cg-h', g).setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
   /* ---------- step 2: quick chips, and the note behind one ---------- */
   $('#chips').addEventListener('click', function (e) {
+    // a section header reopens (or closes) its section
+    var head = e.target.closest('.cg-h');
+    if (head) { setOpen(head.parentNode, head.getAttribute('aria-expanded') !== 'true'); return; }
     var btn = e.target.closest('.cg-o button');
     if (btn) {
       var g = btn.closest('.cg'), k = g.dataset.k, on = btn.getAttribute('aria-pressed') === 'true';
-      $$('button', g).forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      $$('.cg-o button', g).forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
       if (!on) btn.setAttribute('aria-pressed', 'true');
       st[k] = on ? '' : btn.dataset.v;
+      $('.cg-v', g).textContent = st[k];
+      // a choice folds its section away after a beat, so the tap reads first
+      if (!on) setTimeout(function () { setOpen(g, false); }, RM ? 0 : 260);
       brief();
       return;
     }
@@ -417,6 +428,7 @@
     st.files = []; st.link = ''; st.note = ''; st.dtype = null; lastPts = 0; maxStep = 1;
     st.budget = st.occasion = st.when = '';
     $$('.cg-o button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+    $$('.cg').forEach(function (g) { setOpen(g, true); $('.cg-v', g).textContent = ''; });
     $('#noteRow').hidden = true; $('#noteT').setAttribute('aria-expanded', 'false');
     linkIn.value = ''; $('#note').value = ''; $('#linkChip').textContent = '';
     $$('input[name="dtype"]').forEach(function (r) { r.checked = false; });

@@ -352,3 +352,24 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
   .proof li{flex-direction:row!important;align-items:center!important;gap:var(--s4)!important;padding:20px 0!important}
   .proof li+li{border-top:1px solid var(--line)!important}
 }
+
+/* ============================================================
+   Budget, Occasion, When: each folds to one line once chosen.
+   The header shows the choice; tapping it opens the section again.
+   ============================================================ */
+.cg-h{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:44px;margin:0;padding:0;border:0;background:none;
+  font:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+.cg-h .cg-k{margin:0;font-size:14px;font-weight:500;color:var(--ink)}
+.cg-v{flex:1;text-align:right;font-size:14px;font-weight:500;color:var(--navy);opacity:0;transition:opacity .25s}
+.cg.is-closed .cg-v{opacity:1}
+.cg-c{width:14px;height:14px;color:var(--ink-3);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.cg-h[aria-expanded=true] .cg-c{transform:rotate(180deg)}
+.cg-b{display:grid;grid-template-rows:1fr;transition:grid-template-rows .32s cubic-bezier(.22,1,.36,1)}
+.cg.is-closed .cg-b{grid-template-rows:0fr}
+.cg-in{min-height:0;overflow:hidden}
+.cg-in .cg-o{padding-top:var(--s2)}
+/* closed sections sit closer together, divided by a hairline */
+.chips{gap:var(--s5)!important}
+.cg{border-bottom:1px solid var(--line);padding-bottom:var(--s3)}
+.cg.is-closed{padding-bottom:0}
+@media (prefers-reduced-motion:reduce){.cg-b,.cg-c,.cg-v{transition:none}}
