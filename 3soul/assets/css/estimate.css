@@ -14,7 +14,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--s-body);letter-s
 
 
 /* the four questions: shared choice groups (choice.css) */
-.qe-cg{display:flex;flex-direction:column;gap:var(--s5)}
+.qe-cg{display:flex;flex-direction:column;gap:0;border-top:1px solid #EADFD8}
 
 /* how it adds up: there when wanted, folded away when not */
 .qe-bd{border:1px solid var(--line);border-radius:var(--r-l);background:var(--paper)}

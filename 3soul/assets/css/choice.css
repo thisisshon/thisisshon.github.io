@@ -37,3 +37,10 @@
 .cg-hint{margin:var(--s3) 0 0;font-size:12.5px;line-height:1.5;color:var(--ink-3)}
 
 @media (prefers-reduced-motion:reduce){.cg-b,.cg-c,.cg-v{transition:none}}
+
+/* Rows sit flush, one hairline between each, the label centred in its
+   row, so closed sections read as one tidy list instead of floating
+   lines. An open section adds room under its chips only. */
+.cg-h{min-height:56px}
+.cg-in .cg-o{padding-top:0}
+.cg:not(.is-closed){padding-bottom:var(--s4)}

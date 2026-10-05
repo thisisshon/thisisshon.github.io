@@ -389,3 +389,6 @@ html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
 .cmp-design p{margin:0;display:flex;flex-direction:column;gap:2px;min-width:0}
 .cmp-design b{font-family:var(--s-head);font-weight:400;font-size:17px;color:var(--ink)}
 .cmp-design span{font-size:12.5px;line-height:1.45;color:var(--ink-2)}
+/* Budget, Occasion, When: a flush list (see choice.css) */
+.chips{gap:0!important;padding-top:0!important}
+.chips .note-t{margin-top:var(--s5)}
