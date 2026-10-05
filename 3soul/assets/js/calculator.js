@@ -9,6 +9,11 @@
 
   var P = window.PriceIt;
   var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* CALM (client review, Oct 2026): simple motion for every age group.
+     Off: sparkles, flying particles, camera zoom, the 3D turn, the
+     ambient glint. Kept, and quicker: the pour, stones settling, the
+     price rolling, steps sliding. */
+  var CALM = true;
   var NS = 'http://www.w3.org/2000/svg';
   function $(s, r) { return (r || document).querySelector(s); }
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -299,8 +304,8 @@
     stream.setAttribute('height', 0);
     stream.style.opacity = 1;
     setLevel(b.bot);
-    tween(300, function (t) { stream.setAttribute('height', r2(b.bot * t)); }, easeIn, function () {
-      tween(1300, function (t, ms) {
+    tween(CALM ? 180 : 300, function (t) { stream.setAttribute('height', r2(b.bot * t)); }, easeIn, function () {
+      tween(CALM ? 700 : 1300, function (t, ms) {
         var y = b.bot + (b.top - b.bot) * t;
         setLevel(y, -((ms * 0.04) % 30));
         stream.setAttribute('height', r2(Math.max(0, y)));
@@ -340,7 +345,7 @@
   }
 
   function glint() {
-    if (RM || !filled) return;
+    if (RM || CALM || !filled) return;
     sweep.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(380px)' }],
       { duration: 1100, easing: 'cubic-bezier(.45,0,.2,1)' });
   }
@@ -401,7 +406,7 @@
           { transform: 'translateY(-70px)', opacity: 0 },
           { transform: 'translateY(3px)', opacity: 1, offset: .75 },
           { transform: 'translateY(0)', opacity: 1 }
-        ], { duration: 520, delay: i * gap, easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'backwards' });
+        ], { duration: CALM ? 360 : 520, delay: i * (CALM ? gap * .5 : gap), easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'backwards' });
       });
     }
     setTimeout(function () { sparkle(3); if (done) done(); }, RM ? 0 : n * gap + 460);
@@ -409,7 +414,7 @@
 
   var STAR = 'M0,-10 C1,-2 2,-1 10,0 C2,1 1,2 0,10 C-1,2 -2,1 -10,0 C-2,-1 -1,-2 0,-10Z';
   function sparkle(n) {
-    if (RM || step < 3) return;
+    if (RM || CALM || step < 3) return;
     var big = cur.s.slice().sort(function (a, b) { return b[2] - a[2]; });
     for (var i = 0; i < n; i++) {
       var s = i === 0 ? big[0] : cur.s[Math.floor(Math.random() * cur.s.length)];
@@ -425,6 +430,7 @@
 
   /* ---------- camera ---------- */
   function zoom(on) {
+    if (CALM) on = false;
     if (!on) { pieceWrap.style.transform = ''; return; }
     var w = piece.clientWidth, h = piece.clientHeight, s = Math.min(w, h) / 240, Z = 1.32;
     pieceWrap.style.transform = 'scale(' + Z + ') translate(' + r2((120 - cur.focus[0]) * s * .8) + 'px,' +
@@ -791,7 +797,7 @@
     return out;
   }
   function fly(from, tx, ty, cls, delay) {
-    if (RM) return;
+    if (RM || CALM) return;
     from.forEach(function (p, i) {
       var d = document.createElement('i');
       d.className = 'fly ' + cls;
@@ -839,7 +845,8 @@
         '<span class="bd-t"><i class="dot-' + p.k + '" style="width:' + r2(Math.max(pc, 1.5)) + '%"></i></span>' +
         '<small>' + p.det + '</small></li>';
     }).join('');
-    var top = parts.slice().sort(function (a, c) { return c.v - a.v; });
+    // the insight always compares the two things people choose: gold and diamonds
+    var top = parts.slice(0, 2).sort(function (a, c) { return c.v - a.v; });
     var nm = function (p) { return p.k === 'dia' ? 'the diamonds' : p.k === 'gold' ? 'the gold' : p.label.toLowerCase(); };
     var sayTop = nm(top[0]); sayTop = sayTop.charAt(0).toUpperCase() + sayTop.slice(1);
     $('#bdSay').innerHTML = sayTop + ' ' + (top[0].k === 'dia' ? 'are ' : 'is ') + b(Math.round(top[0].v / e.total * 100) + '%') +
@@ -850,7 +857,7 @@
     totRow.classList.remove('in');
     tot.textContent = P.inr(0);
 
-    if (!RM) {
+    if (!RM && !CALM) {
       piece.animate([
         { transform: 'perspective(700px) rotateY(0)' },
         { transform: 'perspective(700px) rotateY(28deg)', offset: .35 },
@@ -918,7 +925,7 @@
   }
 
   /* ---------- navigation ---------- */
-  var LABELS = { 1: 'Let’s make this one', 2: 'Set the metal', 3: 'Set these stones', 4: 'Reveal my price' };
+  var LABELS = { 1: 'Let’s Make This One', 2: 'Set the Metal', 3: 'Set These Stones', 4: 'Reveal My Price' };
 
   function chrome() {
     $('#back').disabled = step === 1;
@@ -962,7 +969,7 @@
     };
     Array.prototype.forEach.call(inn.children, function (c, i) {
       c.animate([{ opacity: 0, transform: 'translateX(' + 36 * dir + 'px)' }, { opacity: 1, transform: 'none' }],
-        { duration: 420, delay: 120 + i * 50, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
+        { duration: 300, delay: 80 + i * 30, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
     });
   }
 
@@ -1104,8 +1111,10 @@
       if (vv.height > baseH) baseH = vv.height;
       var kb = vv.height < baseH * 0.78;
       app.classList.toggle('kb', kb);
-      app.style.height = kb ? vv.height + 'px' : '';
-      if (kb) window.scrollTo(0, 0);
+      // the page scrolls on its own below 960px, so leave its height alone
+      var split = window.innerWidth >= 960;
+      app.style.height = kb && split ? vv.height + 'px' : '';
+      if (kb && split) window.scrollTo(0, 0);
     });
   }
   $('#ctIn').addEventListener('focus', function () {

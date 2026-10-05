@@ -1,7 +1,7 @@
 /* ============================================================
    Recreation of the live 3soul.in homepage + its flag set.
 
-   buildPage('current') — the homepage as it is now, at the real
+   buildPage('current'), the homepage as it is now, at the real
    type sizes, spacing and section order measured at 375x812 on
    29 August 2026. There is no 'fixed' mode: this audit stops at
    Flagged, because what the homepage needs is a list of repairs
@@ -47,7 +47,7 @@
   /* ---------- hero ----------
      Two <video> elements, both autoplay/loop/muted, both pointing at
      the same 4.36 MB 1080p file. The unmute control is a real 44px
-     button — one of the few on the page that is. */
+     button, one of the few on the page that is. */
   function hero() {
     return '<div class="hp-hero" data-fl="5">' +
       '<span class="hp-hero-lbl">autoplaying 1080p video · 4.36 MB</span>' +
@@ -57,7 +57,7 @@
 
   /* ---------- marquee ----------
      Three copies of the same four phrases scroll past. Two are
-     aria-hidden, so a screen reader meets the line once — correct,
+     aria-hidden, so a screen reader meets the line once, correct,
      and deliberately not flagged. */
   function marquee() {
     var line = '<b>Jewellery, without the confusion</b><i>·</i>' +
@@ -121,7 +121,7 @@
     }).join('');
     return '<div class="pg-sec hp-prods" data-fl="3">' +
       '<h2 class="pg-h">Crafted with Precision, Worn with Pride</h2>' +
-      '<p class="pg-lede">Explore our most-loved pieces — handpicked by our customers.</p>' +
+      '<p class="pg-lede">Explore our most-loved pieces, handpicked by our customers.</p>' +
       '<div class="pg-cards">' + cards + '</div></div>';
   }
 
@@ -149,11 +149,11 @@
     return '<div class="pg-sec hp-estB">' +
       blk('TRANSPARENCY', 'Upload Any Design, Get an Instant Estimate',
           'Simply upload a photo of any jewellery piece and our estimation tool breaks down the ' +
-          'exact material and labour costs. No inflated prices, no middleman markups — just ' +
+          'exact material and labour costs. No inflated prices, no middleman markups, just ' +
           'honest pricing you can trust.', 'Try It Now') +
       blk('FROM ESTIMATE TO DOORSTEP', 'Get It Made &amp; Delivered to You',
           'Once you’ve found your ideal combination, we handcraft your jewellery with precision ' +
-          'and care — and deliver it straight to your doorstep. From vision to reality, we’ve ' +
+          'and care, and deliver it straight to your doorstep. From vision to reality, we’ve ' +
           'got you covered.', 'Start Your Journey') +
       blk('', 'What Diamonds Really Cost',
           'Real-time diamond prices aligned with global benchmark standards.', 'Explore Combinations') +
@@ -175,7 +175,7 @@
     return '<div class="pg-sec hp-news">' +
       '<h2 class="pg-h">Exclusive Offers, Straight to Your Inbox</h2>' +
       '<p class="pg-lede">Be the first to know about new collections, limited-time offers, and ' +
-      'insider pricing — delivered right to you.</p>' +
+      'insider pricing, delivered right to you.</p>' +
       '<label class="hp-lab" for="hpEmail">Email</label>' +
       '<input class="hp-in" id="hpEmail" type="email" placeholder="Email" disabled></div>';
   }
@@ -220,7 +220,7 @@
     // call cannot silently render a page that claims to be repaired.
     if (mode === 'fixed') {
       return '<div class="pg hp"><div class="pg-sec"><h2 class="pg-h">Not built</h2>' +
-        '<p class="pg-lede">The homepage audit stops at Flagged — there is no rebuilt ' +
+        '<p class="pg-lede">The homepage audit stops at Flagged, there is no rebuilt ' +
         'recreation. The findings are repairs to the live page, not a redesign.</p></div></div>';
     }
     var h = '<div class="pg hp">';
@@ -253,15 +253,15 @@
       title: 'Put the press logos back on screen',
       where: '“Featured In”, 3,355 px',
       what: 'Outlook India, The Economic Times, VOGUE and IGI are all fetched successfully and ' +
-        'decode fine on their own — the first one is a 165×28 SVG. On the page they are laid ' +
+        'decode fine on their own, the first one is a 165×28 SVG. On the page they are laid ' +
         'out at 0×0 inside boxes that reserve 148×56 for them. The section keeps its 283 px ' +
         'and shows a heading over four empty slots.',
       ev: '4 logos · HTTP 200, 840–15,367 bytes · rendered 0×0 · section 283 px',
-      cost: 'This is the strongest outside credibility on the page — two national papers, VOGUE, ' +
-        'and the certifying body — and none of it is visible. It is a layout bug rather than a ' +
+      cost: 'This is the strongest outside credibility on the page, two national papers, VOGUE, ' +
+        'and the certifying body, and none of it is visible. It is a layout bug rather than a ' +
         'design decision, so it is the cheapest thing on this list to put right.' },
 
-    { n: 2, sev: 'crit', at: '2', wcag: '1.3.1 Info & Relationships · 2.4.6 Headings & Labels — A/AA',
+    { n: 2, sev: 'crit', at: '2', wcag: '1.3.1 Info & Relationships · 2.4.6 Headings & Labels, A/AA',
       title: 'Give the page a heading that says what it is',
       where: 'Header',
       what: 'There is exactly one h1 and it wraps the logo link, holding an image and no text. ' +
@@ -272,7 +272,7 @@
         'engines and screen readers nothing about itself at the level they read first. One line of ' +
         'markup.' },
 
-    { n: 3, sev: 'crit', at: '3', wcag: '2.5.8 Target Size (Minimum) — AA',
+    { n: 3, sev: 'crit', at: '3', wcag: '2.5.8 Target Size (Minimum), AA',
       title: 'Bring the controls up to 44 px',
       where: 'Whole page',
       what: '161 of 177 controls measure under 44×44 at 375×812. 45 of them are under 24×24, ' +
@@ -286,7 +286,7 @@
       title: 'Make the estimate offer once',
       where: '837 px and 3,638 px',
       what: '“Get an estimate” runs 1,891 px. “Upload Any Design, Get an Instant Estimate” runs ' +
-        '2,011 px and makes the same promise in the same words — upload a photo, get material ' +
+        '2,011 px and makes the same promise in the same words, upload a photo, get material ' +
         'and labour costs, no hidden fees. Together they are 3,902 px, and they end in three ' +
         'differently worded buttons: RECEIVE AN ESTIMATE, Try It Now, Explore Combinations.',
       ev: '1,891 px + 2,011 px = 3,902 px · 47.3% of the page · 3 competing CTAs',
@@ -299,14 +299,14 @@
       where: 'Hero, 73 px',
       what: 'Two video elements autoplay on load, both muted, both looping, both pointing at the ' +
         'same 1080p file. Content-Length is 4,575,154 bytes. Unlike the estimator, transfer does ' +
-        'not climb while the page sits idle — measured at 0 KB over 20 seconds — because the ' +
+        'not climb while the page sits idle, measured at 0 KB over 20 seconds, because the ' +
         'file is fetched once and looped from cache.',
       ev: '2 video elements · 1 file · 4,575,154 bytes · 1080p · 0 KB idle growth over 20 s',
       cost: 'One 4.4 MB file on a phone connection before anything is read. This is a fraction of ' +
-        'the estimator’s 425 MB and worth saying plainly — but it is still the largest single ' +
+        'the estimator’s 425 MB and worth saying plainly, but it is still the largest single ' +
         'thing the homepage loads, and it loads before the words do.' },
 
-    { n: 6, sev: 'high', at: '6', wcag: '4.1.2 Name, Role, Value — A',
+    { n: 6, sev: 'high', at: '6', wcag: '4.1.2 Name, Role, Value, A',
       title: 'Name the Instagram frames and defer them',
       where: '“Follow Us on Instagram”, 5,650 px',
       what: 'Three instagram.com iframes, none with a title attribute and none with ' +
@@ -316,10 +316,10 @@
       cost: 'A title attribute each and a lazy flag. The embeds also hand Instagram a record of ' +
         'every visit to the homepage, which is worth a deliberate decision rather than a default.' },
 
-    { n: 7, sev: 'med', at: '7', wcag: '1.4.4 Resize Text — AA',
+    { n: 7, sev: 'med', at: '7', wcag: '1.4.4 Resize Text, AA',
       title: 'Lift the smallest type off the floor',
       where: 'Footer headings and meta lines',
-      what: '16 elements render below 12 px, the smallest at 10 px — the footer column headings ' +
+      what: '16 elements render below 12 px, the smallest at 10 px, the footer column headings ' +
         'EXPLORE, SHOP, CUSTOMER SERVICE and COMPANY among them. The page’s working sizes are ' +
         '13 px (104 elements) and 16 px (49), so the small type is a separate decision rather than ' +
         'a consequence of the scale.',
@@ -330,13 +330,13 @@
     { n: 8, sev: 'med', at: '8',
       title: 'Shorten the footer',
       where: '6,726 px to 8,245 px',
-      what: 'The footer is 1,519 px — 1.9 screens on a phone, and 18.4% of the entire page. It ' +
+      what: 'The footer is 1,519 px, 1.9 screens on a phone, and 18.4% of the entire page. It ' +
         'carries six columns, a postal address, two phone numbers, an email, a newsletter line and ' +
         'twelve city links.',
       ev: '1,519 px · 18.4% of page height · 1.9 screens · 608 px / 10.0% at 1440',
       cost: 'Close to a fifth of the homepage is footer. Most of it is worth keeping somewhere; ' +
         'not all of it is worth keeping here, at the end of a scroll people have to earn. On a desktop the ' +
-        'columns move side by side and it costs 608 px — a tenth of the page — so this is a phone problem ' +
+        'columns move side by side and it costs 608 px, a tenth of the page, so this is a phone problem ' +
         'rather than a footer problem, and it is ranked on the phone figure.' },
 
     { n: 9, sev: 'med', at: '9',
@@ -353,8 +353,8 @@
       title: 'Account for the third-party scripts',
       where: 'Whole page',
       what: '84 script tags and 237 requests on a first load, against 4.6 MB transferred of which ' +
-        '4.4 MB is the hero video. The scripts themselves are small — 131 KB over the wire across ' +
-        '58 fetched files — so this is a request-count and execution question, not a payload one.',
+        '4.4 MB is the hero video. The scripts themselves are small, 131 KB over the wire across ' +
+        '58 fetched files, so this is a request-count and execution question, not a payload one.',
       ev: '84 script tags · 237 requests · 58 script fetches, 131 KB · no growth while idle',
       cost: 'Worth an inventory rather than an alarm. The homepage is not carrying the ' +
         'estimator’s runaway behaviour, and the honest version of this finding says so.' }
@@ -362,12 +362,12 @@
 
   // What the live homepage measures, for the stage's comparison label. The
   // page reflows, so the phone and desktop figures are genuinely different
-  // measurements rather than one scaled — both taken 29 Aug 2026.
+  // measurements rather than one scaled, both taken 29 Aug 2026.
   var LIVE = { screens: '10.2', height: 8245,
                desk: { screens: '6.7', height: 6055, at: '1440×900' } };
 
   var WEIGHT = { name: 'The homepage', transfer: '4.6 MB',
-                 transferNote: 'transferred — steady, no growth while idle',
+                 transferNote: 'transferred, steady, no growth while idle',
                  requests: '237', video: '4.4 MB',
                  videoNote: 'video, autoplaying on load' };
 

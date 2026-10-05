@@ -247,7 +247,7 @@
   .stage.sending .doc{animation:none}
 
   /* deck: the hero flexes so the step always fits */
-  .up .views{grid-template-rows:minmax(0,1fr);padding-top:18px}
+  .up .views{grid-template-rows:min-content;padding-top:18px}
   .up .view{min-height:0;gap:10px}
   .up .v-h{font-size:25px}
   .up .hero{min-height:124px;flex:1 1 178px;max-height:190px}
@@ -307,7 +307,8 @@
 @keyframes pulseG{0%{box-shadow:0 0 0 0 rgba(214,178,124,.6)}100%{box-shadow:0 0 0 10px rgba(214,178,124,0)}}
 .up .row.gets{min-height:0;flex-wrap:nowrap;gap:6px;justify-content:space-between}
 .get{white-space:nowrap;padding:7px 11px;border-radius:99px;background:var(--blush);font-size:12px;color:var(--ink)}
-.get::before{content:"✓";margin-right:6px;color:var(--down);font-weight:600}
+.get{display:inline-flex;align-items:center;gap:6px}
+.get .ic{width:13px;height:13px;color:var(--down)}
 .story.slim{flex:none}
 .story.slim>svg{margin-left:auto;flex:none;color:var(--ink-3)}
 @media (prefers-reduced-motion:reduce){.trk::after{transition:none}}
@@ -401,3 +402,63 @@
   .seal-ok{width:44px;height:44px}
   .v-head.done>div{gap:4px}
 }
+
+
+/* typography, cleaned: no eyebrow row on any step */
+.up .v-head{gap:7px}
+.up .v-h{font-size:clamp(26px,7.2vw,30px);line-height:1.14}
+.up .v-sub{font-size:14px;line-height:1.5}
+@media (min-width:960px){
+  .up .v-h{font-size:34px}
+  .up .v-h.big{font-size:40px}
+  .up .v-sub{font-size:15.5px}
+}
+
+/* CoreUI sprite icons in the upload flow */
+.dz .ic{width:28px;height:28px;color:var(--navy)}
+.field.link .ic{position:absolute;left:14px;width:17px;height:17px;color:var(--tan-deep);pointer-events:none}
+.lock .ic{width:18px;height:18px;color:var(--tan-deep)}
+.th button .ic{width:13px;height:13px;color:#fff}
+.th.add .ic{width:20px;height:20px;color:var(--navy)}
+.th.add span{font-size:12px}
+.o3 .ic-d{width:20px;height:20px;color:var(--tan);stroke:none}
+.o3 input:checked+.o3-in .ic-d{color:var(--gold)}
+.o3-in>span:first-child{display:flex;gap:3px;flex:none}
+.story>.ic{margin-left:auto;flex:none;width:16px;height:16px;color:var(--ink-3)}
+.ph.card .ic{width:24px;height:24px;color:var(--tan)}
+
+/* ============================================================
+   Step 1 fits the screen under the site header: no inner scroll.
+   The stage gives up height first, then the dropzone flexes into
+   whatever is left. Later steps keep a scroll as a safety net.
+   ============================================================ */
+@media (max-width:959px){
+  .up[data-step="1"] .view{gap:9px}
+  .up[data-step="1"] .stage{height:clamp(158px,24svh,250px)}
+  .up[data-step="1"] .easel{--ph:min(132px,66cqh)}
+  .up[data-step="1"] .stack-wrap{margin-bottom:14px}
+  .up[data-step="1"] .brief-w{font-size:25px}
+  .up[data-step="1"] .pips{margin-top:4px}
+  .up[data-step="1"] .price{padding-top:9px}
+  .up[data-step="1"] .hero{flex:1 1 auto;min-height:96px;max-height:none}
+  .up[data-step="1"] .dz{inset:10px}
+  .up[data-step="1"] .dz svg{animation:none}
+  .up[data-step="1"] .dz b{font-size:14.5px}
+  .up[data-step="1"] .dz small{font-size:11.5px;line-height:1.35}
+  .up[data-step="1"] .thumbs{padding:10px;gap:7px}
+  .up[data-step="1"] .field.link input{height:46px}
+  .up[data-step="1"] .deck::after{display:none}
+}
+@media (max-width:959px) and (max-height:700px){
+  .up[data-step="1"] .dz small{display:none}
+  .up[data-step="1"] .v-sub{display:none}
+}
+
+
+/* the floating action bar: step 1 keeps no scroll, so its content
+   simply ends above the bar */
+.up .deck{--foot-h:116px}
+@media (max-width:959px){
+  .up[data-step="4"] .deck{--foot-h:122px}
+}
+@media (min-width:960px){.up .deck{--foot-h:130px}}

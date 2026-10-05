@@ -7,14 +7,13 @@
    chrome (.pg-head, .pg-sec, .pg-h, .pg-lede, .pg-btn, .pg-card,
    .pg-cards, .pg-foot); everything below is homepage-specific.
 
-   Section min-heights reproduce the measured 375x812 layout —
-   see the table at the top of home-page.js. They are min-heights
+   Section min-heights reproduce the measured 375x812 layout, see the table at the top of home-page.js. They are min-heights
    rather than fixed heights so that longer copy is never clipped;
    the recreation should be able to be wrong in the honest
    direction.
 
    Like the estimator recreation, this one deliberately reproduces
-   the live page's failures — the 10px footer headings and the
+   the live page's failures, the 10px footer headings and the
    sub-44px controls are the findings, not mistakes to tidy up.
    ============================================================ */
 
@@ -27,7 +26,7 @@
 .hp-hero-lbl{font-family:var(--s-ui);font-size:11px;letter-spacing:.6px;
   color:rgba(255,255,255,.92);background:rgba(0,0,0,.42);
   padding:5px 9px;border-radius:var(--s-r-btn)}
-/* the unmute control — 44px, and one of the few on the page that is */
+/* the unmute control, 44px, and one of the few on the page that is */
 .hp-mute{position:absolute;right:12px;top:12px;width:44px;height:44px;border-radius:50%;
   background:rgba(255,255,255,.9);color:#2C2C2C;display:flex;align-items:center;
   justify-content:center;font-size:13px}
@@ -43,7 +42,7 @@
 .hp-adv{min-height:499px;background:var(--s-cream);text-align:center}
 .hp-link{background:none;border:0;font-family:var(--s-ui);font-size:12px;letter-spacing:1.6px;
   color:var(--s-navy);text-decoration:underline;text-underline-offset:4px;
-  padding:6px 4px;cursor:pointer}   /* 30px tall — one of the 161 */
+  padding:6px 4px;cursor:pointer}   /* 30px tall, one of the 161 */
 
 /* ---------- estimate, first telling: 1,891px ---------- */
 .hp-estA{min-height:1891px;text-align:center}
@@ -60,7 +59,7 @@
 .hp-prods{min-height:627px}
 .hp-prod{flex:0 0 148px;display:grid;gap:3px}
 .hp-prod b{font-size:12px;font-weight:500;line-height:1.35;color:var(--s-ink)}
-.hp-prod span{font-size:10px;color:var(--s-tan-deep)}   /* 10px — flag 7 */
+.hp-prod span{font-size:10px;color:var(--s-tan-deep)}   /* 10px, flag 7 */
 .hp-prod em{font-style:normal;font-size:12px;font-weight:600;color:var(--s-navy)}
 
 /* ---------- Featured In: 283px of heading over four empty slots ----------
@@ -100,11 +99,11 @@
 .hp-fbrand{font-size:13px;line-height:1.6;max-width:34ch}
 .hp-fcols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .hp-fcol{display:grid;gap:7px;align-content:start}
-/* 10px column headings — flag 7 reproduced, not corrected */
+/* 10px column headings, flag 7 reproduced, not corrected */
 .hp-fcol h4{font-family:var(--s-ui);font-size:10px;letter-spacing:1.5px;font-weight:600;
   color:var(--s-tan);margin-bottom:2px}
 .hp-fcol a{font-size:13px;color:rgba(255,255,255,.8);text-decoration:none;
-  padding:2px 0}            /* ~21px tall — under 24px, flag 3 */
+  padding:2px 0}            /* ~21px tall, under 24px, flag 3 */
 .hp-faddr{font-size:13px;line-height:1.7;color:rgba(255,255,255,.78)}
 .hp-cities{display:grid;gap:5px}
 .hp-cities a.dead{color:#F0A9A2}
@@ -120,12 +119,12 @@
 /* ============================================================
    Desktop, measured at 1440x900 on 29 August 2026.
 
-   The homepage is not the mobile page widened — it reflows, and
+   The homepage is not the mobile page widened, it reflows, and
    the proportions change enough that reusing the 375px heights
    here would misrepresent it. Measured again at 1440:
 
      header            83 px   (mobile  73)
-     hero video       645 px   (mobile 209)  — the big one
+     hero video       645 px   (mobile 209), the big one
      marquee           57 px   (mobile  57)
      3Soul Advantage  398 px   (mobile 499)
      Get an estimate  942 px   (mobile 1891)
@@ -134,7 +133,7 @@
      Upload Any...   1449 px   (mobile 2011)
      Instagram        707 px   (mobile 707)
      Newsletter       280 px   (mobile 370)
-     footer           608 px   (mobile 1519) — columns go side by side
+     footer           608 px   (mobile 1519), columns go side by side
      ------------------------
      total           6055 px   (6.7 screens, against 10.2 on a phone)
 
@@ -163,7 +162,7 @@
   .hp-prods{min-height:627px}
   .hp-prod{flex:0 0 208px}
 
-  /* four logos in one row — the slots the live page reserves */
+  /* four logos in one row, the slots the live page reserves */
   .hp-featured{min-height:260px}
   .hp-logos{grid-template-columns:repeat(4,auto);gap:28px}
 
@@ -193,8 +192,7 @@
   .hp-faddr{line-height:1.55}
   .hp-fbrand{max-width:28ch}
   .hp-fcols{grid-template-columns:repeat(4,1fr);gap:22px}
-  /* twelve city links in three columns rather than six stacked pairs —
-     the live footer is one band at this width, not a column of lists */
+  /* twelve city links in three columns rather than six stacked pairs, the live footer is one band at this width, not a column of lists */
   .hp-cities{grid-template-columns:repeat(3,1fr);gap:4px 16px}
   .hp-foot .pg-fine{grid-column:1 / -1;margin-top:0}
 }

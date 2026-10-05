@@ -63,7 +63,7 @@
 
 /* ---------- phone ---------- */
 @media (max-width:560px){
-  /* Static on a phone — see the note in deck.css. The filters sit at the top
+  /* Static on a phone, see the note in deck.css. The filters sit at the top
      of the list, which is close enough on a screen this size. */
   .stickybar{position:static;margin-bottom:18px;padding:4px 0 14px}
   .stickybar .frow{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
@@ -77,8 +77,7 @@
   .dcol{padding:15px 16px}
   .dcol p{font-size:16px;line-height:1.55}
   .dwhy,.dmeas{font-size:16px;line-height:1.55}
-  /* label and count together on one line, the note beneath —
-     stops the count being squeezed off the right edge */
+  /* label and count together on one line, the note beneath, stops the count being squeezed off the right edge */
   .dtier{margin:30px 0 14px;gap:8px 10px;align-items:center}
   .dtier-l{font-size:11px;padding:7px 11px;order:1}
   .dtier-c{order:2;margin-left:auto}
@@ -125,7 +124,7 @@
 .demo-result span{display:block;font-family:var(--s-ui);font-weight:400;font-size:10.5px;
   color:#6B6456;margin-top:5px}
 
-/* 1 — quote */
+/* 1, quote */
 .demo-quote{background:#21375C;border-radius:10px;padding:14px;margin-top:8px}
 .demo-quote-l{font-family:var(--s-ui);font-weight:600;font-size:9px;letter-spacing:1.4px;
   text-transform:uppercase;color:#C8A96E;margin-bottom:6px}
@@ -135,7 +134,7 @@
   font-family:var(--s-ui);font-size:10.5px;color:rgba(255,255,255,.82)}
 .demo-rows b{color:#fff;font-weight:600}
 
-/* 2 — phone stack */
+/* 2, phone stack */
 .demo-phone{border:1px solid #E6DCC9;border-radius:10px;padding:10px;background:#fff}
 .demo-mini{text-align:center;padding:5px 4px;font-family:var(--s-ui);color:#21375C}
 .demo-mini.eyebrow{font-family:var(--s-display);font-style:italic;font-size:11px;color:#B08D57}
@@ -155,7 +154,7 @@
 .pg.fixed .demo-fold{border-color:#3E6350}
 .pg.fixed .demo-fold span{background:#3E6350}
 
-/* 3 — contrast swatches */
+/* 3, contrast swatches */
 .demo-sw{display:flex;align-items:center;justify-content:space-between;gap:10px;
   background:#fff;border:1px solid #EEE6DA;border-radius:7px;padding:10px 12px;margin-bottom:7px}
 .demo-chip{font-family:var(--s-ui);font-weight:600;font-size:10px;letter-spacing:1.4px;text-transform:uppercase}
@@ -163,10 +162,10 @@
 .demo-ratio.bad{background:#FBEBE9;color:#A32118;border:1px solid #E0A69F}
 .demo-ratio.good{background:#EBF2EE;color:#3E6350;border:1px solid #B2CABC}
 
-/* 4 — typed field */
+/* 4, typed field */
 .demo-typed{color:#14202E!important;background:#fff}
 
-/* 5 — field list + keyboard */
+/* 5, field list + keyboard */
 .demo-list{list-style:none;margin:0;padding:0;font-family:var(--s-ui);font-size:11px}
 .demo-list li{display:flex;justify-content:space-between;gap:10px;align-items:baseline;
   padding:8px 0;border-bottom:1px solid #F0ECE5;color:#14202E}
@@ -180,7 +179,7 @@
 .demo-keys{font-family:var(--mono);font-size:11px;letter-spacing:2px;margin:6px 0 4px;color:#14202E}
 .demo-kbd small{opacity:.8}
 
-/* 6 — video */
+/* 6, video */
 .demo-vid{border-radius:9px;height:96px;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:5px;font-family:var(--s-ui);font-size:10px;text-align:center;padding:8px}
 .demo-vid.now{background:#0d0d0f;color:#6a6a72}
@@ -190,10 +189,10 @@
 .demo-play{width:30px;height:30px;border-radius:50%;background:#21375C;color:#fff;
   display:flex;align-items:center;justify-content:center;font-size:11px}
 
-/* 7 — type ladder */
+/* 7, type ladder */
 .demo-type{display:grid;gap:7px;font-family:var(--s-ui);color:#14202E}
 
-/* 8 — targets */
+/* 8, targets */
 .demo-targets{display:flex;align-items:center;gap:12px;min-height:52px}
 .demo-hit{display:flex;align-items:center;justify-content:center;border-radius:7px;
   border:1px dashed #A32118;background:#FBEBE9;color:#A32118;font-size:12px;flex:0 0 auto}
@@ -202,7 +201,7 @@
   font-family:var(--s-ui);font-size:9.5px;color:#6B6456}
 .demo-ruler i{display:block;height:5px;background:#21375C;border-radius:3px}
 
-/* 9 — report */
+/* 9, report */
 .demo-frame{border:1px solid #E6DCC9;border-radius:8px;overflow:hidden}
 .demo-frame-bar{background:#F3EFE6;font-family:var(--s-ui);font-size:9px;padding:6px 9px;color:#6B6456}
 .demo-frame-body{height:92px;display:flex;align-items:center;justify-content:center;
@@ -211,14 +210,14 @@
 .demo-shots span{background:linear-gradient(135deg,#EFE6D6,#DED0B8);border-radius:7px;
   padding:18px 8px;font-family:var(--s-ui);font-size:9.5px;color:#6E5729;text-align:center}
 
-/* 10 — duplicate cards */
+/* 10, duplicate cards */
 .demo-cards{display:flex;flex-wrap:wrap;gap:5px}
 .demo-cards i{font-style:normal;font-family:var(--s-ui);font-size:9px;padding:8px 6px;
   border:1px solid #EFCAA5;border-radius:6px;background:#fff;flex:1 0 28%;text-align:center;color:#14202E}
 .demo-cards i.dup{border-color:#E0A69F;background:#FBEBE9;color:#A32118}
 .demo-cards.wide i{flex:1 0 30%;padding:12px 6px}
 
-/* 11 — confirmation */
+/* 11, confirmation */
 .demo-confirm{background:#EBF2EE;border:1px solid #B2CABC;border-radius:9px;padding:13px;
   font-family:var(--s-ui);font-size:11px;color:#2F4A38;line-height:1.55}
 .demo-confirm b{display:block;font-size:13px;margin-bottom:5px}
@@ -226,7 +225,7 @@
 .demo-em{font-weight:600}
 .demo-link{text-decoration:underline;text-underline-offset:3px}
 
-/* 12 — scroll length */
+/* 12, scroll length */
 .demo-scroll{display:flex;gap:12px;align-items:stretch}
 .demo-scroll-bar{width:12px;flex:0 0 12px;background:#F0ECE5;border-radius:6px;
   position:relative;min-height:120px;overflow:hidden}
@@ -239,10 +238,10 @@
 .demo-jumps{display:flex;gap:5px;flex-wrap:wrap}
 .demo-jumps span{border:1px solid #C8A96E;border-radius:100px;padding:5px 9px;color:#6E5729}
 
-/* 13 — copy marks */
+/* 13, copy marks */
 .pg mark{background:#FBEBE9;color:#A32118;padding:0 3px;border-radius:3px}
 
-/* 14 — alt text */
+/* 14, alt text */
 .demo-alt{display:flex;gap:10px;align-items:center}
 .demo-img{width:64px;height:64px;flex:0 0 64px;border-radius:8px;
   background:linear-gradient(135deg,#EFE6D6,#DED0B8)}
@@ -250,7 +249,7 @@
 .demo-sr.bad{background:#FBEBE9;color:#A32118;border:1px solid #E0A69F}
 .demo-sr.good{background:#EBF2EE;color:#3E6350;border:1px solid #B2CABC}
 
-/* 15 — savings units */
+/* 15, savings units */
 .demo-saves{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .demo-saves i{font-style:normal;border:1px solid #EFCAA5;border-radius:7px;padding:9px;
   background:#fff;text-align:center}
@@ -266,7 +265,7 @@
 
 /* ---------- panes showing lifted source markup ----------
    The component carries its own pixel widths from the live page, so it is
-   scaled to fit the pane rather than reflowed — reflowing it would stop it
+   scaled to fit the pane rather than reflowed, reflowing it would stop it
    being the thing it is meant to be. */
 .ddemo-stage.src{padding:14px 10px;overflow:hidden}
 .srcwrap{transform-origin:top left;font-family:'Outfit',sans-serif}

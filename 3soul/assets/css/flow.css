@@ -1,0 +1,354 @@
+/* ============================================================
+   Price It, v3: the landing and the four stages.
+   Loaded after system.css. Built on its tokens: navy base, the
+   4px scale, four radii, eight type roles.
+   ============================================================ */
+
+html{overflow-x:clip}
+body{overflow-x:clip}
+html.app-page.on-land,html.app-page.on-land body{height:auto;overflow-y:auto}
+[hidden]{display:none!important}
+
+/* ============================================================
+   Landing
+   ============================================================ */
+.land{background:var(--paper);color:var(--ink)}
+.land-in{display:flex;flex-direction:column}
+
+/* hero: six real pieces, one at a time */
+.land-hero{position:relative;height:clamp(380px,62svh,560px);overflow:hidden;background:var(--navy-deep)}
+.land-slides{position:absolute;inset:0}
+.ls{position:absolute;inset:0;margin:0;opacity:0;animation:ls 36s linear infinite;animation-delay:calc(var(--i) * 6s)}
+.ls img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:lz 36s linear infinite;animation-delay:inherit}
+.ls figcaption{position:absolute;right:var(--gut);top:var(--s4);padding:5px 12px;border-radius:var(--r-pill);
+  font-size:11.5px;letter-spacing:.02em;color:#fff;background:rgba(10,28,54,.42);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ls:first-child{opacity:1}
+@keyframes ls{0%{opacity:0}2.5%{opacity:1}16.7%{opacity:1}19.2%{opacity:0}100%{opacity:0}}
+@keyframes lz{0%{transform:scale(1.06)}19.2%{transform:scale(1)}100%{transform:scale(1)}}
+.land-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(10,28,54,.92) 0%,rgba(10,28,54,.55) 34%,rgba(10,28,54,0) 62%)}
+.land-copy{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 var(--gut) var(--s7);color:#fff}
+.land-h{margin:0;font-family:var(--s-head);font-weight:400;font-size:clamp(31px,8.6vw,40px);line-height:1.1;letter-spacing:.2px}
+.land-sub{margin:var(--s3) 0 0;font-size:14px;letter-spacing:.06em;color:rgba(251,246,234,.86)}
+
+.land-body{display:flex;flex-direction:column;gap:var(--s7);padding:var(--s6) var(--gut) calc(140px + env(safe-area-inset-bottom))}
+.land-h2{margin:0;font-family:var(--s-head);font-weight:400;font-size:22px;line-height:1.2;color:var(--ink)}
+
+/* proof: three facts on one line, divided by hairlines */
+.proof{display:grid;grid-template-columns:repeat(3,1fr);margin:0;padding:0;list-style:none;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.proof li{display:flex;flex-direction:column;align-items:center;gap:3px;padding:var(--s4) var(--s1);text-align:center}
+.proof li+li{border-left:1px solid var(--line)}
+.proof b{font-family:var(--s-head);font-weight:400;font-size:19px;line-height:1.1;color:var(--ink);white-space:nowrap}
+.proof b span{color:var(--gold);margin-left:2px;font-size:.8em}
+.proof li>span{font-size:11.5px;line-height:1.3;color:var(--ink-3)}
+
+/* how it works */
+.how ol{list-style:none;margin:var(--s4) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--s4)}
+.how li{display:grid;grid-template-columns:36px 1fr;gap:var(--s3);align-items:start}
+.how i{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;font-style:normal;
+  font-family:var(--s-head);font-size:16px;color:var(--navy);background:var(--blush)}
+.how b{display:block;font-size:15px;font-weight:500;color:var(--ink);line-height:1.35}
+.how li span{display:block;margin-top:2px;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+
+/* the sample report: the outcome, shown before it is asked for */
+.sample{margin:0}
+.sample figcaption{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3)}
+.sample figcaption>span{font-size:12px;color:var(--ink-3)}
+.sample-card{margin-top:var(--s4);padding:var(--pad);border-radius:var(--r-l);background:var(--blush)}
+.sample-t{margin:0 0 var(--s3);font-family:var(--s-head);font-size:18px;color:var(--ink)}
+.sample-card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+.sample-card li{display:flex;justify-content:space-between;gap:var(--s3);font-size:14px;color:var(--ink-2)}
+.sample-card li b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.sample-sum{display:flex;justify-content:space-between;align-items:baseline;margin:var(--s4) 0 0;padding-top:var(--s3);border-top:1px solid var(--line-2)}
+.sample-sum span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.sample-sum b{font-family:var(--s-head);font-weight:400;font-size:24px;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* the landing's own action bar */
+.land-foot{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;flex-direction:column;align-items:center;
+  gap:var(--s1);padding:var(--s5) var(--gut) calc(var(--s2) + env(safe-area-inset-bottom));pointer-events:none}
+.land-foot::before{content:"";position:absolute;inset:-30px 0 0;z-index:-1;
+  background:linear-gradient(to top,#fff 60%,rgba(255,255,255,.88) 82%,rgba(255,255,255,0));
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  -webkit-mask:linear-gradient(to top,#000 68%,transparent);mask:linear-gradient(to top,#000 68%,transparent)}
+.land-foot>*{pointer-events:auto}
+.land-foot .btn{width:100%}
+.land-foot .txt{padding:10px}
+
+/* entrance: copy and proof rise in once */
+.land .land-copy>*,.land .proof li,.land .how li{animation:rise .7s var(--ease) both}
+.land .land-sub{animation-delay:.12s}
+.land .proof li:nth-child(1){animation-delay:.22s}
+.land .proof li:nth-child(2){animation-delay:.3s}
+.land .proof li:nth-child(3){animation-delay:.38s}
+.land .how li:nth-child(1){animation-delay:.42s}
+.land .how li:nth-child(2){animation-delay:.5s}
+.land .how li:nth-child(3){animation-delay:.58s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+@media (min-width:960px){
+  .land-in{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:0;min-height:calc(100vh - var(--hdr-h))}
+  .land-hero{height:auto;min-height:calc(100vh - var(--hdr-h));margin:20px 0 20px 20px;border-radius:var(--r-xl);position:sticky;top:calc(var(--hdr-h) + 20px);max-height:calc(100vh - var(--hdr-h) - 40px)}
+  .land-copy{padding:0 48px 48px}
+  .land-h{font-size:52px}
+  .land-sub{font-size:15.5px}
+  .land-body{padding:56px 64px 40px;gap:44px;max-width:620px}
+  .land-foot{position:static;padding:0 64px 56px;align-items:flex-start;max-width:620px;grid-column:2}
+  .land-foot::before{display:none}
+  .land-foot .btn{width:auto;min-width:300px;padding:0 32px}
+  .land-h2{font-size:26px}
+}
+
+/* ============================================================
+   Stage: the report assembles itself, the design clipped to it
+   ============================================================ */
+.v3 .stage .price{padding-top:var(--s4)}
+.v3 .brief-w{font-size:clamp(22px,6.2vw,28px)!important;letter-spacing:.1px}
+.v3 .stage .pips{display:none}
+.v3 .easel{display:flex!important;align-items:center;justify-content:center;place-items:unset;padding:0 var(--s5) var(--s5)}
+.v3 .stack-wrap{position:relative;flex:none;z-index:2;width:var(--ph);height:var(--ph);margin:0 calc(var(--ph) * -.24) 0 0!important;
+  transform:rotate(-6deg) translateY(6%)!important;transition:transform .7s var(--ease)}
+.v3 .doc{position:relative!important;left:auto!important;top:auto!important;flex:none;
+  width:calc(var(--ph) * 1.42)!important;opacity:1!important;transform:rotate(2deg)!important;
+  font-size:min(10px,6cqh)!important}
+.v3 .stage[data-stage="4"] .stack-wrap{transform:rotate(-8deg) translateY(4%) scale(.92)!important}
+
+.doc-brief{margin:.2em 0 .7em;display:flex;flex-direction:column;gap:.35em}
+.doc-brief>div{display:flex;align-items:baseline;gap:.6em;font-size:.95em}
+.doc-brief dt{width:4.6em;flex:none;color:var(--ink-3);font-size:.9em}
+.doc-brief dd{margin:0;color:var(--ink-3);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-brief .is-set dd{color:var(--ink);font-style:normal;font-weight:500}
+.doc-brief .is-set dt::before{content:"";display:inline-block;width:.42em;height:.42em;margin-right:.4em;
+  transform:rotate(45deg);background:var(--gold);vertical-align:.1em}
+.doc-brief .write dd{animation:write .6s var(--ease)}
+@keyframes write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+
+/* ============================================================
+   Step 2: chips
+   ============================================================ */
+.chips{display:flex;flex-direction:column;gap:var(--s4)}
+.cg-k{margin:0 0 var(--s2);font-size:13px;font-weight:500;color:var(--ink-2)}
+.cg-o{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.cg-o button,.note-t{min-height:40px;padding:0 var(--s4);border-radius:var(--r-pill);border:1px solid var(--line-2);
+  background:var(--paper);font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer;
+  transition:background .2s,border-color .2s,color .2s,transform .15s}
+.cg-o button:active,.note-t:active{transform:scale(.97)}
+.cg-o button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.note-t{align-self:flex-start;display:inline-flex;align-items:center;gap:var(--s2);color:var(--navy)}
+.note-t .ic{width:13px;height:13px;transition:transform .3s var(--ease)}
+.note-t.is-on .ic{transform:rotate(45deg)}
+.note-row:not([hidden]){animation:rise .4s var(--ease) both}
+@media (hover:hover){
+  .cg-o button:hover,.note-t:hover{border-color:var(--navy)}
+}
+
+/* the hand-off from the calculator: one quiet line, not a box */
+.nudge.from{padding:0 0 0 16px;background:none;border-radius:0}
+
+@media (prefers-reduced-motion:reduce){
+  .ls{animation:none}.ls:not(:first-child){display:none}.ls img{animation:none;transform:none}
+  .land .land-copy>*,.land .proof li,.land .how li,.doc-brief .write dd,.note-row:not([hidden]){animation:none}
+}
+
+/* the calculator estimate, carried onto the report as a tag */
+.doc-est{display:flex;align-items:baseline;justify-content:space-between;gap:.6em;margin:-.1em 0 .7em;padding:.45em .7em;
+  border-radius:.5em;background:rgba(201,162,39,.12);font-size:.9em}
+.doc-est span{color:var(--tan-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-est b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* step 1 now carries the optional details under the main action */
+.chips{margin-top:var(--s3);padding-top:var(--s5);border-top:1px solid var(--line)}
+.chips-h{display:flex;align-items:baseline;justify-content:space-between;margin:0;font-family:var(--s-head);font-size:19px;color:var(--ink)}
+.chips-h span{font-family:var(--s-body);font-size:12px;color:var(--ink-3)}
+
+/* "Add a Note" stands apart from the When chips above it */
+.note-t{margin-top:var(--s3)}
+
+/* Budget, Occasion and When each get their own breathing room */
+.chips{gap:var(--s7)}
+.chips-h{margin-bottom:calc(var(--s1) * -1)}
+.cg-k{margin-bottom:var(--s3)}
+.note-t{margin-top:0}
+
+/* How It Works: three steps side by side, joined by one hairline */
+.how{border:0;padding:0;background:none;box-shadow:none}
+.how .steps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);margin:var(--s5) 0 0;padding:0;list-style:none}
+.how .steps::before{content:"";position:absolute;top:18px;left:16.66%;right:16.66%;height:1px;background:var(--line-2)}
+.how .steps li{position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s1);text-align:center}
+.how .steps i{position:relative;z-index:1;display:grid;place-items:center;width:36px;height:36px;margin-bottom:var(--s2);border-radius:50%;
+  font-style:normal;font-family:var(--s-head);font-size:16px;color:var(--navy);background:var(--blush);box-shadow:0 0 0 5px var(--paper)}
+.how .steps b{display:block;font-size:14px;font-weight:500;line-height:1.3;color:var(--ink)}
+.how .steps span{display:block;margin:0;font-size:12.5px;line-height:1.4;color:var(--ink-3)}
+@media (min-width:960px){
+  .how .steps b{font-size:15px}
+  .how .steps span{font-size:13px}
+}
+
+
+/* the promise behind the price: we make it for exactly that */
+.sample-made{display:flex;align-items:center;gap:var(--s2);margin:var(--s4) 0 0;padding:var(--s3) var(--s4);
+  border-radius:var(--r-m);background:var(--paper);font-size:13.5px;font-weight:500;color:var(--navy)}
+.sample-made .ic{width:14px;height:14px;color:var(--down)}
+.quote{margin:var(--s5) 0 0;padding:0 0 0 var(--s4);border-left:2px solid var(--gold)}
+.quote p{margin:0;font-family:var(--s-head);font-size:18px;line-height:1.4;color:var(--ink)}
+.quote cite{display:block;margin-top:var(--s2);font-style:normal;font-size:12.5px;color:var(--ink-3)}
+
+/* the tracker now runs four stops, to the finished piece */
+.trk{grid-template-columns:repeat(4,1fr)!important}
+.trk::before,.trk::after{left:12.5%!important;right:12.5%!important}
+.trk::after{right:auto!important}
+.trk.go::after{width:25%!important}
+
+/* proof: three calm rows, an icon, a claim and the evidence under it */
+.proof{display:flex!important;flex-direction:column;gap:0;grid-template-columns:none;border:0!important;margin:0;padding:0;list-style:none}
+.proof li{display:flex!important;flex-direction:row!important;align-items:center!important;gap:var(--s4)!important;
+  padding:var(--s4) 0!important;text-align:left!important;border-left:0!important}
+.proof li+li{border-top:1px solid var(--line)}
+.proof .pi{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--blush)}
+.proof .pi .ic{width:19px;height:19px;color:var(--tan-deep)}
+.proof li:first-child .pi .ic{color:var(--gold)}
+.proof b{display:block;font-family:var(--s-head);font-weight:400;font-size:19px;line-height:1.2;color:var(--ink);white-space:normal}
+.proof li div>span{display:block;margin-top:2px;font-size:13.5px;line-height:1.4;color:var(--ink-2);text-transform:none;letter-spacing:.1px}
+@media (min-width:960px){
+  .proof{flex-direction:row;gap:var(--s5)}
+  .proof li{flex:1;flex-direction:column!important;align-items:flex-start!important;gap:var(--s3)!important;padding:0!important}
+  .proof li+li{border-top:0}
+}
+
+/* ============================================================
+   Room to breathe. The landing is read, not scanned: generous
+   gutters, a long pause between sections, a short one between
+   a heading and what it introduces.
+   ============================================================ */
+.land{--lg:26px}
+.land-copy{padding:0 var(--lg) 44px}
+.land-h{line-height:1.12}
+.land-sub{margin-top:var(--s4);line-height:1.6}
+.land-body{gap:64px;padding:44px var(--lg) calc(160px + env(safe-area-inset-bottom))}
+.land-h2{font-size:24px;line-height:1.2}
+
+.proof li{padding:22px 0!important}
+.proof .pi{width:46px;height:46px}
+
+.how .steps{margin-top:var(--s6);gap:var(--s4)}
+.how .steps li{gap:6px}
+.how .steps i{margin-bottom:var(--s3)}
+
+.sample figcaption{margin-bottom:0}
+.sample-card{margin-top:var(--s6);padding:26px 24px}
+.sample-t{margin-bottom:var(--s5);font-size:19px}
+.sample-card ul{gap:14px}
+.sample-sum{margin-top:var(--s5);padding-top:var(--s4)}
+.sample-made{margin-top:var(--s5)}
+.quote{margin-top:var(--s7)}
+
+.land-foot{padding:var(--s6) var(--lg) calc(var(--s3) + env(safe-area-inset-bottom))}
+
+/* the four stages breathe a little more too, now the page scrolls */
+@media (max-width:959px){
+  .up .view{gap:var(--s6)!important}
+  .up .views{padding-top:var(--s7)!important}
+  .chips{margin-top:var(--s4);padding-top:var(--s6)}
+}
+@media (min-width:960px){
+  .land{--lg:64px}
+  .land-body{gap:72px;padding:64px var(--lg) 48px}
+  .land-copy{padding:0 56px 56px}
+}
+
+/* the hero image at three quarters of its former height (was 380 to 560px, 62svh) */
+@media (max-width:959px){
+  .land-hero{height:clamp(285px,46.5svh,420px)}
+  .land-copy{padding-bottom:32px}
+}
+
+/* ============================================================
+   Variant: the landing set in Outfit alone (?type=outfit).
+   Outfit is wider and more geometric than Baskervville, so the
+   display sizes come down a step, tracking tightens, and weight
+   does the work the serif used to.
+   ============================================================ */
+.type-outfit .land-h{font-family:var(--s-body);font-weight:500;font-size:clamp(28px,7.8vw,36px);
+  line-height:1.1;letter-spacing:-.02em}
+.type-outfit .land-sub{letter-spacing:.02em}
+.type-outfit .land-h2{font-family:var(--s-body);font-weight:500;font-size:21px;letter-spacing:-.01em}
+.type-outfit .proof b{font-family:var(--s-body);font-weight:600;font-size:16.5px;letter-spacing:-.005em}
+.type-outfit .how .steps i{font-family:var(--s-body);font-weight:500;font-size:15px}
+.type-outfit .sample-t{font-family:var(--s-body);font-weight:500;font-size:17px;letter-spacing:-.005em}
+.type-outfit .sample-sum b{font-family:var(--s-body);font-weight:600;font-size:22px;letter-spacing:-.01em}
+.type-outfit .quote p{font-family:var(--s-body);font-weight:400;font-size:17px;line-height:1.45;letter-spacing:-.005em}
+@media (min-width:960px){
+  .type-outfit .land-h{font-size:46px}
+  .type-outfit .land-h2{font-size:24px}
+}
+
+/* the promise line under the headline: full white, a touch heavier, a soft shadow off the photo */
+.land-sub{color:#fff!important;font-weight:500;text-shadow:0 1px 12px rgba(10,28,54,.55)}
+
+/* ============================================================
+   WhatsApp: a genuine second option, clearly secondary.
+   Outlined, full width, under Continue. Never navy-filled, so it
+   never competes with the primary.
+   ============================================================ */
+.btn-alt{display:flex;align-items:center;gap:var(--s3);width:100%;min-height:52px;margin-top:var(--s2);
+  padding:0 var(--s4);border:1px solid var(--line-2);border-radius:var(--r-m);background:var(--paper);
+  color:var(--ink);text-decoration:none;font-size:14px;line-height:1.3;transition:border-color .2s,background .2s}
+.btn-alt span{flex:1;text-align:left;color:var(--ink-2)}
+.btn-alt b{font-weight:600;color:var(--ink);white-space:nowrap}
+.btn-alt .ic{width:16px;height:16px;flex:none;color:var(--ink-3)}
+.btn-alt .ic-wa{width:22px;height:22px;color:#1DA851}
+.btn-alt:active{background:var(--blush)}
+@media (hover:hover){.btn-alt:hover{border-color:#1DA851;background:#F3FBF6}}
+/* the bar now holds two actions, so content clears a taller bar */
+.up .deck{--foot-h:176px}
+.up[data-step="4"] .deck{--foot-h:122px}
+@media (min-width:960px){.up .deck{--foot-h:186px}.up[data-step="4"] .deck{--foot-h:130px}}
+
+/* ============================================================
+   Step 2: one design, two diamonds. The same picture twice, so
+   the only thing that differs is the price under it.
+   ============================================================ */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+.cmp-c{position:relative;cursor:pointer}
+.cmp-in{display:flex;flex-direction:column;height:100%;padding:var(--s2) var(--s2) var(--s4);border:1px solid var(--line);
+  border-radius:var(--r-l);background:var(--paper);transition:border-color .2s,box-shadow .2s}
+.cmp-img{display:block;aspect-ratio:1;overflow:hidden;border-radius:calc(var(--r-l) - 6px);background:var(--blush)}
+.cmp-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cmp-in b{margin:var(--s3) var(--s2) 0;font-family:var(--s-head);font-weight:400;font-size:19px;line-height:1.2;color:var(--ink)}
+.cmp-p{margin:2px var(--s2) 0;font-style:normal;font-size:15px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.cmp-in small{margin:2px var(--s2) 0;font-size:12.5px;color:var(--ink-3)}
+.cmp-c input:checked+.cmp-in{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy),var(--lift-1)}
+.cmp-c input:focus-visible+.cmp-in{outline:2px solid var(--tan);outline-offset:2px}
+.cmp-c input:checked+.cmp-in::after{content:"";position:absolute;top:16px;right:16px;width:22px;height:22px;border-radius:50%;
+  background:var(--navy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+
+.cmp-gap{margin:0;padding:var(--s3) var(--s4);border-radius:var(--r-m);background:var(--blush);
+  font-size:14px;line-height:1.5;color:var(--ink-2);text-align:center}
+.cmp-gap b{color:var(--ink);font-weight:600}
+
+.cmp-both{position:relative;display:block;cursor:pointer}
+.cmp-both-in{display:flex;align-items:center;gap:var(--s3);min-height:64px;padding:var(--s3) var(--s4);
+  border:1px solid var(--line);border-radius:var(--r-m);background:var(--paper);transition:border-color .2s,background .2s}
+.cmp-both-in>span{flex:1}
+.cmp-both-in b{display:block;font-size:15px;font-weight:500;color:var(--ink)}
+.cmp-both-in small{display:block;margin-top:2px;font-size:12.5px;color:var(--ink-3)}
+.cmp-both-in em{flex:none;font-style:normal;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:var(--r-pill);background:var(--blush);color:var(--tan-deep)}
+.cmp-both input:checked+.cmp-both-in{border-color:var(--navy);background:var(--navy)}
+.cmp-both input:checked+.cmp-both-in b{color:#fff}
+.cmp-both input:checked+.cmp-both-in small{color:rgba(255,255,255,.76)}
+.cmp-both input:checked+.cmp-both-in em{background:rgba(255,255,255,.16);color:#fff}
+.cmp-both input:focus-visible+.cmp-both-in{outline:2px solid var(--tan);outline-offset:2px}
+.cmp-note{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink-3);text-align:center}
+@media (min-width:960px){
+  .cmp{gap:var(--s4)}
+  .cmp-in b{font-size:21px}
+}
+
+/* desktop proof: stay as calm rows, never three cramped columns */
+@media (min-width:960px){
+  .proof{flex-direction:column!important;gap:0!important}
+  .proof li{flex-direction:row!important;align-items:center!important;gap:var(--s4)!important;padding:20px 0!important}
+  .proof li+li{border-top:1px solid var(--line)!important}
+}

@@ -1,13 +1,13 @@
 /* ============================================================
-   Price It — the final calculator.
+   Price It, the final calculator.
 
    THE MODEL
    The live page is a lead form: upload, wait 24 hours, receive a
    report. Its own title, its search traffic and its closing button
    all promise a number, and the screen after the phone field says
    "Thanks for sharing your details." This page keeps the whole of
-   that business — the upload, the expert review, the 24-hour
-   report, the WhatsApp route — and puts an instant number in front
+   that business, the upload, the expert review, the 24-hour
+   report, the WhatsApp route, and puts an instant number in front
    of it. Nothing is removed; the order is corrected.
 
    THE OPTIONS ARE THE REAL ONES
@@ -523,7 +523,7 @@
 })(window, document);
 
 /* ============================================================
-   v2 — tabs, the live teaser, and their instrumentation.
+   v2, tabs, the live teaser, and their instrumentation.
 
    Appended to a copy of the v1 script so the two pages share nothing
    at runtime: edit either without touching the other.
@@ -570,8 +570,8 @@
 
     /* The switch. STATE FIRST, ANIMATION SECOND.
        hidden/shown is set synchronously, so the page is correct the
-       instant a tab is pressed. The motion — the card's height easing
-       between the two panels, the new panel lifting in — is layered on
+       instant a tab is pressed. The motion, the card's height easing
+       between the two panels, the new panel lifting in, is layered on
        top and can be skipped, throttled or cancelled without leaving
        anything half-shown. An earlier version waited on the fade's
        `finished` promise before swapping; a throttled timeline never
@@ -604,7 +604,7 @@
     /* The breath: an ADDITIVE animation on the backdrop pseudo-element.
        composite:'add' stacks it on top of whatever the CSS drift is
        doing at that moment, so the drift never restarts and the image
-       never jumps — it just takes one slow breath and returns. */
+       never jumps, it just takes one slow breath and returns. */
     function breathe() {
       var hero = d.querySelector('.hero.has-backdrop');
       if (!hero || reduce || !hero.animate) return;
@@ -660,7 +660,7 @@
       var target = card ? card.getBoundingClientRect().top + (w.pageYOffset || 0) - 88 : 0;
       var dist = Math.abs((w.pageYOffset || 0) - target);
       /* Switching first collapsed a 2,900px panel to 1,500px while the
-         reader was a screen or two down it — the page jumped under them.
+         reader was a screen or two down it, the page jumped under them.
          Scroll to the card first, then switch once there, so the height
          change happens above the fold where nothing is being read. */
       var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -1,0 +1,92 @@
+/* ============================================================
+   Bright (client review, Oct 2026): elegant, bright, clean, close
+   to 3soul.in. The navy velvet stage becomes white and blush with
+   gold accents; navy stays for text and the primary action only.
+   Also carries the CSS half of the animation diet.
+   Loaded last on index.html and calculator.html.
+   ============================================================ */
+
+/* ---------- the stage, on both pages ---------- */
+.stage{
+  background:
+    radial-gradient(90% 70% at 50% 18%,rgba(251,241,236,.95) 0%,rgba(251,241,236,0) 70%),
+    linear-gradient(180deg,#FFFFFF 0%,#FCF6F2 100%)!important;
+  color:var(--ink);border-bottom:1px solid var(--line)}
+.stage .spot,.stage .rays{display:none!important}
+.stage .floor{background:radial-gradient(closest-side,rgba(14,36,64,.10),transparent)!important;opacity:.9}
+
+/* type on the stage: ink, with gold only for the small overline */
+.stage .price-k,.stage .eta-k{color:var(--tan-deep)!important}
+.stage .odo,.stage .brief-w{color:var(--ink)!important;text-shadow:none!important}
+.stage .price-range{color:var(--ink-3)!important}
+.stage .hint{color:var(--ink-3)!important}
+.stage .stage-title{color:var(--ink)!important}
+.stage .stage-title small{color:var(--ink-3)!important}
+
+/* the floating price-change chip, re-inked for a light background */
+.stage .chip,.up .chip{background:#fff!important;border:1px solid var(--line-2)!important;color:var(--ink)!important;
+  box-shadow:var(--lift-1);-webkit-backdrop-filter:none;backdrop-filter:none}
+.stage .chip.up{color:var(--up)!important}
+.stage .chip.down{color:var(--down)!important}
+
+/* calculator: gold reads beautifully on white; soften its shadow and the guides */
+.piece{filter:drop-shadow(0 10px 14px rgba(14,36,64,.14))!important}
+.ms-l{stroke:rgba(14,36,64,.3)!important}
+.ms-t{fill:var(--ink)!important}
+.stage-nav{border-color:var(--line-2)!important;background:#fff!important;color:var(--navy)!important;box-shadow:var(--lift-1)}
+
+/* ---------- upload stage: photos and the report on paper ---------- */
+.up .ph{box-shadow:0 6px 18px rgba(14,36,64,.14)!important;background:#fff!important}
+.up .doc{box-shadow:0 8px 26px rgba(14,36,64,.12)!important;border:1px solid var(--line)}
+
+/* step 1, before anything is added: three different pieces, fanned */
+.up .empty{border:0!important;background:none!important;display:block!important;animation:none!important}
+.up .ex{position:absolute;top:8%;width:62%;aspect-ratio:1;overflow:hidden;border-radius:10px;border:4px solid #fff;
+  box-shadow:0 6px 16px rgba(14,36,64,.14)}
+.up .ex img{width:100%;height:100%;object-fit:cover;display:block}
+.up .ex1{left:-8%;transform:rotate(-9deg)}
+.up .ex3{right:-8%;transform:rotate(9deg)}
+.up .ex2{left:19%;top:2%;z-index:2}
+.up .ex-t{position:absolute;left:-30%;right:-30%;bottom:-12%;text-align:center;font-size:12.5px;letter-spacing:.02em;color:var(--ink-3)}
+.up .stage.has .empty{opacity:0}
+
+/* ---------- animation diet (CSS) ----------
+   Gone: the scan line, the bobbing upload icon, the pulsing empty
+   frame, button shine sweeps, the floating report while sending,
+   the endless pulse on the tracker, the hero slow-zoom.
+   Calmer: the photo lands with a short fade and lift. */
+.up .scan{display:none!important}
+.dz svg,.dz .ic{animation:none!important}
+.btn.ready::after,.btn.shine::after{display:none!important;animation:none!important}
+.stage.sending .doc{animation:none!important}
+.trk.go li.now i{animation:none!important;box-shadow:0 0 0 4px rgba(201,162,39,.18)}
+.ls img{animation:none!important;transform:none!important}
+.ph{animation:landCalm .38s cubic-bezier(.22,1,.36,1) both!important}
+@keyframes landCalm{from{opacity:0;transform:translateY(10px) rotate(var(--r,0deg))}to{opacity:1;transform:rotate(var(--r,0deg))}}
+.land .land-copy>*,.land .proof li,.land .how li,.land .steps li{animation-duration:.45s!important}
+
+/* the hero cross-fade, slower and softer: one piece at a time, no zoom */
+@keyframes ls{0%{opacity:0}4%{opacity:1}16.7%{opacity:1}20.7%{opacity:0}100%{opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  .ph{animation:none!important}
+}
+
+/* the calculator's step 1 sketch: light gold vanishes on white, tan holds */
+.stage .sketch path,.stage .sketch circle{stroke:var(--tan)!important}
+
+/* step 1, nothing added yet: the examples alone, large and level.
+   The report appears once there is a design to put on it. */
+.v3 .stage:not(.has) .doc{display:none!important}
+.v3 .stage:not(.has) .stack-wrap{transform:none!important;margin:0!important;--ph:min(170px,58cqh)!important;
+  width:var(--ph);height:var(--ph)}
+.v3 .stage:not(.has) .easel{padding-bottom:var(--s7)}
+.up .ex-t{bottom:-26px!important;font-size:13px!important;color:var(--ink-2)!important}
+.v3 .stage:not(.has) .stack-wrap{--ph:116px!important}
+.v3 .stage:not(.has) .easel{align-items:flex-start;padding-top:var(--s3)}
+.up .ex-t{white-space:nowrap;bottom:-30px!important}
+.up .ex-t{display:none!important}
+.v3 .stage:not(.has) .easel{padding-top:0}
+
+/* step 3's stage is a slim band: no room for the "added" chip over the title */
+.up[data-step="3"] .deltas{display:none!important}

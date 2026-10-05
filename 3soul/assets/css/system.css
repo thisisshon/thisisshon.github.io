@@ -1,0 +1,214 @@
+/* ============================================================
+   3Soul design system, v2 (3 Oct 2026)
+   Loaded last, so it sets the rules the pages follow.
+
+   What it fixes, from the audit of the four estimation stages:
+   39 font sizes became 8 roles, 12 corner radii became 4, and
+   padding now comes off one 4px scale. Navy is the base of the
+   whole palette: the greys are navy at low opacity rather than
+   neutral black, so white, blush and gold sit on one family.
+   ============================================================ */
+
+:root{
+  /* ---- colour: navy is the base, blush the warmth, gold the metal ---- */
+  --navy:#102A4E;
+  --navy-deep:#0A1C36;
+  --ink:#0E2440;                      /* headings and primary text */
+  --ink-2:rgba(14,36,64,.74);         /* body, 7.4:1 on white */
+  --ink-3:rgba(14,36,64,.58);         /* captions, 4.8:1 on white */
+  --line:rgba(16,42,78,.12);
+  --line-2:rgba(16,42,78,.2);
+  --paper:#FFFFFF;
+  --blush:#FBF1EC;                    /* warm card, one step softer than before */
+  --blush-2:#F5E4DC;
+  --gold:#C9A227; --tan:#B08D57; --tan-deep:#7A5F2E;
+  --up:#8A5E0F; --down:#2E6B4F;
+
+  /* ---- space: one 4px scale, nothing between the steps ---- */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --gut:22px;                         /* page gutter, mobile */
+  --pad:18px;                         /* card padding, mobile */
+
+  /* ---- radius: four values, not twelve ---- */
+  --r-s:8px;                          /* chips, small controls */
+  --r-m:14px;                         /* buttons, fields, option rows */
+  --r-l:20px;                         /* cards */
+  --r-xl:26px;                        /* sheets */
+  --r-pill:999px;
+
+  /* ---- elevation: two levels only ---- */
+  --lift-1:0 1px 2px rgba(14,36,64,.05),0 6px 16px rgba(14,36,64,.06);
+  --lift-2:0 2px 6px rgba(14,36,64,.07),0 18px 40px rgba(14,36,64,.12);
+
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+@media (min-width:960px){:root{--gut:40px;--pad:24px}}
+
+/* ============================================================
+   Type: eight roles. Baskervville carries value and meaning,
+   Outfit carries instruction. Nothing in between.
+   ============================================================ */
+.t-display,.odo,.brief-w,.eta-t,.size-v,.bd-foot .bd-total b{
+  font-family:var(--s-head);font-weight:400;letter-spacing:.01em;line-height:1.06}
+.t-title,.v-h{font-family:var(--s-head);font-weight:400;font-size:clamp(27px,7.2vw,32px);line-height:1.16;letter-spacing:.1px;color:var(--ink)}
+.t-card,.nav-own b,.story b,.o3 b,.cl b,.vial b{font-family:var(--s-head);font-weight:400;letter-spacing:.1px}
+.t-lead,.v-sub{font-size:15px;line-height:1.55;color:var(--ink-2);letter-spacing:.1px}
+.t-body,.nudge,.lock,.tl span,.seal{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.t-label,.o3 b,.type b,.q,.field>span{font-size:14px;font-weight:500;letter-spacing:.1px;color:var(--ink)}
+.t-caption,.o3 small,.story small,.dz small,.bd-r small,.size-note,.price-range{font-size:12.5px;line-height:1.45;color:var(--ink-3)}
+.t-over,.price-k,.eta-k,.bd-k,.slot-k{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase}
+
+/* one display size per surface, so two numbers never compete */
+.odo{font-size:clamp(34px,9.4vw,42px)}
+.brief-w{font-size:clamp(27px,7.6vw,33px)}
+.eta-t{font-size:clamp(25px,7vw,30px)}
+.size-v{font-size:clamp(38px,11vw,46px)}
+@media (min-width:960px){
+  .v-h{font-size:34px}
+  .odo{font-size:58px}
+  .brief-w{font-size:44px}
+  .eta-t{font-size:34px}
+  .v-sub{font-size:16px}
+}
+
+/* ============================================================
+   Rhythm: the page breathes on a 4px scale. Luxury here means
+   air around few things, not more things.
+   ============================================================ */
+.views{padding-left:var(--gut)!important;padding-right:var(--gut)!important;padding-top:var(--s6)!important}
+.view{gap:var(--s4)}
+.v-head{gap:var(--s2)}
+.up .view{gap:var(--s4)}
+.hero{border-radius:var(--r-l);background:var(--blush);box-shadow:none}
+.row{gap:var(--s2)}
+.deck-foot{padding-left:var(--gut);padding-right:var(--gut)}
+@media (min-width:960px){
+  .view{gap:var(--s6)}
+  .v-head{gap:var(--s3)}
+}
+
+/* ============================================================
+   Geometry: one border weight, one hairline colour, four radii.
+   ============================================================ */
+.field input,.field textarea,.q,.o3-in,.type-in,.coin,.fact,.story,.seal,.th,.dz,.nav-own,.cl-in,.get,.tube{
+  border-radius:var(--r-m)}
+.hero,.bd,.story,.hero.eta{border-radius:var(--r-l)}
+.deck{border-radius:var(--r-xl) var(--r-xl) 0 0}
+.chip,.get,.fact,.ref span,.dl{border-radius:var(--r-pill)}
+.field input,.field textarea,.q,.type-in,.coin,.fact,.story,.th.add,.dz{
+  border:1px solid var(--line);background:var(--paper)}
+.btn{border-radius:var(--r-m);box-shadow:var(--lift-1)}
+
+/* ============================================================
+   Stage: the dark panel is the brand's own navy, not a generic
+   gradient, and the overline sits in gold at one size.
+   ============================================================ */
+.stage{background:radial-gradient(118% 92% at 50% 26%,#20406F 0%,var(--navy) 46%,var(--navy-deep) 100%)}
+.price{padding-top:var(--s4)}
+.price-k,.eta-k{color:var(--gold)}
+.price-range{color:rgba(251,246,234,.72)}
+
+/* ============================================================
+   Controls: bigger targets, calmer surfaces, one accent at a time.
+   ============================================================ */
+.dz{inset:var(--s3);gap:var(--s1);border:1.5px dashed var(--line-2);background:var(--paper)}
+.dz b{font-family:var(--s-body);font-size:15px;font-weight:600;color:var(--navy)}
+.dz small{padding:0 var(--s5)}
+.field input,.field textarea{height:52px;font-size:16px;color:var(--ink)}
+.field.link input{height:54px}
+.field textarea{height:54px}
+.o3-in{min-height:56px;padding:var(--s2) var(--s4);gap:var(--s3);background:var(--paper);border:1px solid var(--line)}
+.o3 b{font-size:16px}
+.o3 small{font-size:12.5px}
+.o3 input:checked+.o3-in{background:var(--navy);border-color:var(--navy);box-shadow:var(--lift-1)}
+.q{height:54px}
+.get{padding:8px var(--s3);background:var(--blush);border:0}
+.story{padding:var(--s2) var(--s4) var(--s2) var(--s2);box-shadow:none}
+.story b{font-size:17px}
+.nudge{color:var(--ink-2)}
+.nudge b{color:var(--ink)}
+
+/* the action bar: one weight of emphasis, the rest is quiet */
+.btn{height:56px;font-size:15px;letter-spacing:.2px}
+.txt{font-size:13.5px;color:var(--ink-3)}
+.txt:hover{color:var(--navy)}
+
+/* ============================================================
+   Accessibility and comfort: nothing below 12.5px carries meaning,
+   and every target clears 44px.
+   ============================================================ */
+.th button{width:30px;height:30px}
+.hdr-ic,.burger,.nav-x{width:44px;height:44px}
+:where(.view,.stage) :focus-visible{outline:2px solid var(--tan);outline-offset:3px}
+
+/* ============================================================
+   The four stages, stage by stage.
+   ============================================================ */
+
+/* 1 · Show us the piece ---------------------------------------
+   Was: a 178px dropzone shouting at a 46px link field, with the
+   nudge crowding both. Now one clear primary (add photos), the
+   link as a quiet alternative, and air between them. */
+.up[data-step="1"] .hero{min-height:188px;background:var(--blush)}
+.up[data-step="1"] .dz b{font-size:16px}
+.up[data-step="1"] .dz .ic{width:30px;height:30px;color:var(--navy)}
+.up[data-step="1"] .field.link{margin-top:var(--s1)}
+.up[data-step="1"] .field.link input{padding-left:46px}
+.up[data-step="1"] .field.link .ic{left:16px}
+.thumbs{padding:var(--s3);gap:var(--s2)}
+.th{border-radius:var(--r-m)}
+
+/* 2 · Which diamonds -----------------------------------------
+   Was: three rows of different heights, the recommended one
+   flagged with uppercase type competing with the label. Now one
+   row height, the recommendation as a quiet pill. */
+.hero.opts3{padding:var(--s3);gap:var(--s2);background:var(--blush)}
+.o3{flex:1}
+.o3 em{font-size:11px;letter-spacing:.14em;padding:4px 10px;border-radius:var(--r-pill);
+  background:rgba(16,42,78,.07);color:var(--tan-deep)}
+.o3 input:checked+.o3-in em{background:rgba(255,255,255,.16);color:#fff}
+.field.note textarea{font-size:15px;line-height:1.45}
+
+/* 3 · Where should it go -------------------------------------
+   Was: labels at 11.5px over 46px fields, two columns squeezed.
+   Now 13px labels, 52px fields, and real space between rows. */
+.hero.form{padding:var(--pad);gap:var(--s4);background:var(--blush)}
+.f2{gap:var(--s3)}
+.field>span{font-size:13px;font-weight:500;color:var(--ink-2)}
+.field>span i{font-weight:400;color:var(--ink-3)}
+.lock{gap:var(--s3);font-size:13px;color:var(--ink-3)}
+
+/* 4 · It is with our gemologists -----------------------------
+   Was: the promise card, chips and tracker all at similar weight.
+   Now one hero statement in navy, everything else steps back. */
+.hero.eta{padding:var(--s6) var(--s5);background:
+  radial-gradient(118% 150% at 50% 0%,#20406F 0%,var(--navy) 52%,var(--navy-deep) 100%)}
+.eta-s{font-size:13.5px;color:rgba(251,246,234,.8)}
+.trk b{font-size:11.5px;letter-spacing:.04em;text-transform:none}
+.v-head.done{gap:var(--s4)}
+.ref span{background:var(--blush);color:var(--tan-deep);padding:5px 12px;font-size:11px;letter-spacing:.16em}
+.gets{gap:var(--s2)}
+
+/* The action bar carries one action: Continue. The secondary line
+   only appears on the confirmation, where starting over makes sense. */
+.foot-2{height:auto;min-height:0;margin-top:var(--s1)}
+.foot-2:empty,.up:not([data-step="4"]) .foot-2{display:none}
+.up[data-step="4"] .foot-2{display:flex;min-height:40px}
+
+/* Breadcrumbs are desktop only: on a phone the step rail already
+   says where you are, and the header stays one compact row. */
+@media (max-width:959px){
+  .crumbs{display:none}
+  .hdr.is-slim .hdr-in{height:52px}
+}
+
+/* Selected states win over the type roles: on navy, text is white. */
+.o3 input:checked+.o3-in b,
+.type input:checked+.type-in b,
+.cl input:checked+.cl-in b,
+.q.is-on,.q.is-on span,
+.tile input:checked+.tile-in b{color:#fff}
+.o3 input:checked+.o3-in small,
+.type input:checked+.type-in small,
+.cl input:checked+.cl-in small{color:rgba(255,255,255,.76)}
+.o3 input:checked+.o3-in .ic-d{color:var(--gold)}

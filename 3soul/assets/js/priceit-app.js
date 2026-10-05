@@ -1,13 +1,13 @@
 /* ============================================================
-   Price It — the final calculator.
+   Price It, the final calculator.
 
    THE MODEL
    The live page is a lead form: upload, wait 24 hours, receive a
    report. Its own title, its search traffic and its closing button
    all promise a number, and the screen after the phone field says
    "Thanks for sharing your details." This page keeps the whole of
-   that business — the upload, the expert review, the 24-hour
-   report, the WhatsApp route — and puts an instant number in front
+   that business, the upload, the expert review, the 24-hour
+   report, the WhatsApp route, and puts an instant number in front
    of it. Nothing is removed; the order is corrected.
 
    THE OPTIONS ARE THE REAL ONES

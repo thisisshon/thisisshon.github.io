@@ -79,7 +79,7 @@
     return q;
   }
 
-  /* ---------- A — price first, ask later ---------- */
+  /* ---------- A, price first, ask later ---------- */
   function renderA(root) {
     var out = el('div');
     var body = el('div', 'card');
@@ -99,7 +99,7 @@
     gate.className = 'gate';
     gate.innerHTML =
       '<h3 style="font-size:23px;margin-bottom:8px">That is the range for a typical piece.</h3>' +
-      '<p style="color:var(--ink-2);margin-bottom:16px">Upload your design and we will price <em>yours</em> — every stone, ' +
+      '<p style="color:var(--ink-2);margin-bottom:16px">Upload your design and we will price <em>yours</em>, every stone, ' +
       'the real making charge, and 120 budget variations. Free, within 24 hours.</p>' +
       '<div class="calcrow">' +
       '<div class="field"><label for="a-nm">Name</label><input id="a-nm" type="text" autocomplete="given-name" placeholder="Your name"></div>' +
@@ -118,7 +118,7 @@
       var m = gate.querySelector('.okmsg');
       if (m) m.remove();
       gate.appendChild(el('div', 'okmsg',
-        '<b>Sent.</b> The visitor already knows roughly what it costs, so this ask is a step up — not a toll gate. ' +
+        '<b>Sent.</b> The visitor already knows roughly what it costs, so this ask is a step up, not a toll gate. ' +
         'They gave an email because the page had already been useful.'));
     });
     gate.querySelector('#a-wa').addEventListener('click', function () {
@@ -128,13 +128,13 @@
     });
   }
 
-  /* ---------- B — same model, friction removed ---------- */
+  /* ---------- B, same model, friction removed ---------- */
   function renderB(root) {
     var out = el('div');
     var sample = el('div', 'card');
     sample.innerHTML =
       '<h3 style="font-size:23px;margin-bottom:6px">See a real report before you give anything</h3>' +
-      '<p style="color:var(--ink-2)">Shown as images, not a PDF in a frame — so it works on every phone.</p>' +
+      '<p style="color:var(--ink-2)">Shown as images, not a PDF in a frame, so it works on every phone.</p>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px">' +
       ['Metal & weight', 'Every stone priced', 'Making & GST', '120 budget options'].map(function (t) {
         return '<div style="border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface-2)">' +
@@ -151,11 +151,11 @@
       '<div class="field"><label for="b-nm">Name</label><input id="b-nm" type="text" autocomplete="given-name" placeholder="Your name"></div>' +
       '<div class="field"><label for="b-em">Email</label><input id="b-em" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com"></div>' +
       '</div>' +
-      '<div class="field" style="margin-top:12px"><label for="b-ph">Phone — optional, only if you want it on WhatsApp</label>' +
+      '<div class="field" style="margin-top:12px"><label for="b-ph">Phone, optional, only if you want it on WhatsApp</label>' +
       '<input id="b-ph" type="tel" inputmode="numeric" autocomplete="tel" placeholder="+91"></div>' +
       '<div style="margin-top:16px"><button class="btn" id="b-go">Send me my free itemised report</button></div>' +
       '<p style="color:var(--ink-3);margin:14px 0 0">Free · itemised · within 24 hours. ' +
-      'By sending you agree to our <u>terms</u> — linked, not just claimed.</p>';
+      'By sending you agree to our <u>terms</u>, linked, not just claimed.</p>';
 
     out.appendChild(sample); out.appendChild(f);
     root.appendChild(out);
@@ -166,7 +166,7 @@
     });
   }
 
-  /* ---------- C — configure, then unlock ---------- */
+  /* ---------- C, configure, then unlock ---------- */
   function renderC(root) {
     var out = el('div');
     var body = el('div', 'card');
@@ -190,7 +190,7 @@
         g.querySelector('#c-go').addEventListener('click', function () { unlocked = true; draw(); });
       } else {
         result.appendChild(el('div', 'okmsg',
-          '<b>Unlocked.</b> Captured at peak intent — but the visitor was shown a blurred number first. ' +
+          '<b>Unlocked.</b> Captured at peak intent, but the visitor was shown a blurred number first. ' +
           'Read the risk note beside this before choosing it.'));
       }
     }
@@ -205,17 +205,17 @@
   /* ---------- notes rail ---------- */
   var NOTES = {
     a: {
-      name: 'A — Price first, ask later',
+      name: 'A, Price first, ask later',
       changed: ['The estimate appears with nothing asked in return.',
         'Photo upload becomes the upgrade, not the toll gate.',
         'Contact is requested after the page has already been useful.',
-        'Email only — no phone, no last name, no terms box.'],
+        'Email only, no phone, no last name, no terms box.'],
       why: 'It delivers what the page has always promised in its title, so search intent and the page finally agree.',
       fixes: [1, 3, 4, 5],
       risk: 'The pricing logic sits in the page unless it is moved behind a small service. That is Phase 2 in the recommendation.'
     },
     b: {
-      name: 'B — Same model, friction removed',
+      name: 'B, Same model, friction removed',
       changed: ['Button says what actually happens.',
         'Sample report shown before the ask, as images not a framed PDF.',
         'Last name and terms checkbox dropped; phone optional with a reason.',
@@ -225,10 +225,10 @@
       risk: 'Still asks people to wait 24 hours for a number the page implies it can produce now. The ceiling is lower.'
     },
     c: {
-      name: 'C — Configure, then unlock',
+      name: 'C, Configure, then unlock',
       changed: ['Full configuration is visible and live.',
         'The figure is computed, then masked until an email is given.',
-        'One field — no name, no phone.'],
+        'One field, no name, no phone.'],
       why: 'Captures the lead at the moment of highest intent, when the number is one click away.',
       fixes: [1, 3, 4],
       risk: 'Showing a blurred number you already calculated is the move people resent most. On a page whose argument is transparency, it works directly against the pitch.'

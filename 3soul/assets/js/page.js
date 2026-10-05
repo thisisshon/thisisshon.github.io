@@ -1,7 +1,7 @@
 /* ============================================================
    Recreation of the live PriceIt page + the flag set.
-   buildPage('current') — as it is now.
-   buildPage('fixed')   — every flag resolved.
+   buildPage('current'), as it is now.
+   buildPage('fixed'), every flag resolved.
    Elements carry data-fl="<n>" so pins can anchor to them.
    ============================================================ */
 (function (w) {
@@ -54,16 +54,16 @@
         '<div class="pg-radios"><button aria-pressed="true">Natural</button>' +
         '<button aria-pressed="false">Lab-grown</button>' +
         '<button aria-pressed="false">Compare both</button></div></fieldset>' +
-        '<span class="pg-fieldlab" id="fx-uplab">Upload your design — up to 5</span>' +
+        '<span class="pg-fieldlab" id="fx-uplab">Upload your design, up to 5</span>' +
         '<div class="pg-drop" role="button" tabindex="0" aria-labelledby="fx-uplab">' +
         'Drag an image here<b>or browse</b></div>' +
         '<label class="pg-fieldlab" for="fx-lk">Or paste a link</label>' +
         '<input class="pg-in" id="fx-lk" name="fx-lk" placeholder="Pinterest, Instagram or a website">' +
         '<label class="pg-fieldlab" for="fx-nm">Your name</label>' +
         '<input class="pg-in" id="fx-nm" name="fx-nm" autocomplete="given-name" placeholder="Priya Sharma">' +
-        '<label class="pg-fieldlab" for="fx-em">Email — where the report goes</label>' +
+        '<label class="pg-fieldlab" for="fx-em">Email, where the report goes</label>' +
         '<input class="pg-in" id="fx-em" name="fx-em" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" required>' +
-        '<label class="pg-fieldlab" for="fx-ph">Phone — optional, only for WhatsApp</label>' +
+        '<label class="pg-fieldlab" for="fx-ph">Phone, optional, only for WhatsApp</label>' +
         '<input class="pg-in" id="fx-ph" name="fx-ph" type="tel" inputmode="numeric" autocomplete="tel" placeholder="+91">' +
         '<button class="pg-btn">Send me my free itemised report</button>' +
         '<p class="pg-fine">Free · itemised · in your inbox within 24 hours.<br>' +
@@ -83,12 +83,12 @@
       '<input class="pg-in" placeholder="https://...">' +
       '<button class="pg-note">Add a note</button>' +
       '<button class="pg-btn">Continue →</button>' +
-      '<p class="pg-fine">Only takes 30 seconds — completely free</p>' +
-      '<button class="pg-wa">WhatsApp Us — It’s faster</button>' +
+      '<p class="pg-fine">Only takes 30 seconds, completely free</p>' +
+      '<button class="pg-wa">WhatsApp Us, It’s faster</button>' +
       /* step 2, shown inline so the gate is visible without clicking through */
       '<div style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--s-peach)">' +
       '<div class="pg-analysis"><div class="t">Your design’s being analysed</div>' +
-      '<div class="s">Working on your estimate right now — usually done within 24 hours.</div>' +
+      '<div class="s">Working on your estimate right now, usually done within 24 hours.</div>' +
       '<div class="pg-prog"><i style="width:0%"></i></div>' +
       '<div class="pg-alist"><span>● Reading your design</span>' +
       '<span>○ Checking today’s gold rate</span><span>○ Pricing your stones &amp; making</span></div></div>' +
@@ -121,7 +121,7 @@
       '<div class="pg-t">See exactly what you’ll get.</div>' +
       '<div class="pg-proofs">' +
       '<button class="pg-proof"' + (fx ? '' : ' data-fl="7"') + '><span class="ic">▤</span><span class="tx"><b>See a sample estimate</b>' +
-      '<span>' + (fx ? 'Opens as an image — works on every phone' : 'A real report, line by line') + '</span></span></button>' +
+      '<span>' + (fx ? 'Opens as an image, works on every phone' : 'A real report, line by line') + '</span></span></button>' +
       '<button class="pg-proof"><span class="ic">▶</span><span class="tx"><b>Watch how it works</b>' +
       '<span>60 seconds, start to finish</span></span></button></div>' +
       '<div class="pg-stats">' +
@@ -135,7 +135,7 @@
   /* ---------- testimonials (the duplication bug lives here) ---------- */
   function dupeAnchor(i, fx) {
     if (fx) return '';
-    if (i === 5) return ' data-fl="14"';   // Mihir — copy pasted from Namrata's card
+    if (i === 5) return ' data-fl="14"';   // Mihir, copy pasted from Namrata's card
     if (i === 6) return ' data-fl="11"';   // first card of the repeated set
     return '';
   }
@@ -175,15 +175,15 @@
   }
 
   function howItWorks() {
-    var s = [['Upload', 'Add a photo of any diamond jewellery — or paste a Pinterest, Instagram or website link.'],
+    var s = [['Upload', 'Add a photo of any diamond jewellery, or paste a Pinterest, Instagram or website link.'],
       ['AI analyses', 'Our software reads the design, stones and craftsmanship to map out what the piece is made of.'],
       ['Experts validate', 'Jewellery experts at 3Soul review every aspect of the report.'],
-      ['Estimate', 'Gold weight, diamond weight and manufacturing complexity — the true cost composition.'],
+      ['Estimate', 'Gold weight, diamond weight and manufacturing complexity, the true cost composition.'],
       ['Customise', '120+ budget options: gold purity, colour, natural vs lab-grown and diamond grades.'],
       ['Report', 'Metal, diamonds, making, GST and alternative pricing scenarios.']];
     var h = '<div class="pg-sec cream"><div class="pg-kick">From photo to fair price</div>' +
       '<div class="pg-t">How PriceIt works</div>' +
-      '<p class="pg-lede">From photo to final report, in 24 hours — free.</p><div class="pg-steps">';
+      '<p class="pg-lede">From photo to final report, in 24 hours, free.</p><div class="pg-steps">';
     s.forEach(function (x, i) {
       h += '<div class="pg-stepcard"><div class="pg-stepn">' + (i + 1) + '</div>' +
         '<div><div class="pg-h3">' + x[0] + '</div><p>' + x[1] + '</p></div></div>';
@@ -192,14 +192,14 @@
   }
 
   function trust() {
-    var t = [['All-round customisation', 'Your design, your stones, your story — nine in ten pieces we make are one of a kind.'],
+    var t = [['All-round customisation', 'Your design, your stones, your story, nine in ten pieces we make are one of a kind.'],
       ['Fabulous craftsmanship', 'Trusted by luxury brands across the globe for the quality of our craft.'],
       ['120+ budget options', 'Every report comes with over 120 price options.'],
       ['60+ years in the trade', 'Backed by Janam Diamonds, supplying premium international brands.']];
     var h = '<div class="pg-sec"><div class="pg-kick">Our promise, in writing</div>' +
       '<div class="pg-t">Why trust 3Soul?</div><div class="pg-trust">';
     t.forEach(function (x) { h += '<div><div class="pg-h3">' + x[0] + '</div><p>' + x[1] + '</p></div>'; });
-    h += '</div></div><div class="pg-sec cream"><div class="pg-kick">— Built for every jewellery decision —</div>' +
+    h += '</div></div><div class="pg-sec cream"><div class="pg-kick">, Built for every jewellery decision, </div>' +
       '<div class="pg-t">Who uses PriceIt?</div><div class="pg-who">' +
       ['Wedding families', 'Proposal ring shoppers', 'Investors', 'Designers', 'NRIs &amp; luxury buyers', 'Resale sellers']
         .map(function (x) { return '<span>' + x + '</span>'; }).join('') +
@@ -264,11 +264,11 @@
   }
 
   /* ============================================================
-     The flags — ranked most to least critical.
+     The flags, ranked most to least critical.
      `at` is the data-fl anchor; `where` names the spot in words.
      ============================================================ */
   /* ============================================================
-     The flags — ranked most to least critical.
+     The flags, ranked most to least critical.
      `at` matches a data-fl anchor in the markup above.
      `wcag` names the success criterion where one is failed;
      those are measured, not asserted. Contrast figures come from
@@ -276,7 +276,7 @@
      translucent layer was skipped rather than counted.
      ============================================================ */
   /* ============================================================
-     The flags — ranked most to least critical.
+     The flags, ranked most to least critical.
      Every figure below was re-verified on 29 Aug 2026 against the
      live page: DOM counts from the rendered document, file sizes
      from HTTP Content-Length, contrast from a scan that skips any
@@ -289,7 +289,7 @@
      Every figure was re-checked on 29 Aug 2026 against the live
      page: DOM counts from the rendered document, file sizes from
      HTTP Content-Length, contrast from computed styles. Load time
-     is deliberately absent — the note in Evidence explains why.
+     is deliberately absent, the note in Evidence explains why.
      ============================================================ */
   /* ============================================================
      Opportunities, ordered by the difference they'd make.
@@ -297,7 +297,7 @@
      Figures re-checked 29 Aug 2026 against the live page: DOM
      counts from the rendered document, file sizes from HTTP
      Content-Length, contrast from computed styles. Load time is
-     deliberately absent — the note in Evidence explains why.
+     deliberately absent, the note in Evidence explains why.
      ============================================================ */
   var FLAGS = [
     { n: 1, sev: 'crit', at: '1',
@@ -305,23 +305,23 @@
       where: 'End of the form',
       what: 'The page is set up as a lead form: upload a photo, watch the analysis animation, add a phone number, and the report follows within 24 hours. The button at the end reads “Reveal the True cost”, and what appears next is “Thanks for sharing your details”.',
       ev: 'Submit → h3: “Thanks for sharing your details.”',
-      cost: 'The title, the search traffic and the button all promise a number, so the moment right after someone hands over their phone is where expectation and page part company. Putting a figure on screen first would close that gap — it’s the change with the most upside here.' },
+      cost: 'The title, the search traffic and the button all promise a number, so the moment right after someone hands over their phone is where expectation and page part company. Putting a figure on screen first would close that gap, it’s the change with the most upside here.' },
 
     { n: 2, sev: 'crit', at: '2',
       title: 'Move the video to posters and tap-to-play',
       where: 'Whole page',
-      what: '18 embeds point at 10 unique files totalling 425 MB, the largest 79.5 MB on its own. All 1080p, at 2.5, 4.8 and 7.2 Mbps. Browsers stream rather than download them, so no one visit pays all of it — it arrives steadily for as long as the page is open.',
+      what: '18 embeds point at 10 unique files totalling 425 MB, the largest 79.5 MB on its own. All 1080p, at 2.5, 4.8 and 7.2 Mbps. Browsers stream rather than download them, so no one visit pays all of it, it arrives steadily for as long as the page is open.',
       ev: '10 files, 445,634,110 bytes · largest 79.5 MB · 616 s of footage',
       cost: 'The server responds in well under 100 ms, so this sits entirely in what the page loads rather than where it’s hosted. Posters with tap-to-play would recover most of it and keep the films for the people who want them.' },
 
-    { n: 3, sev: 'crit', at: '3', wcag: '1.4.3 Contrast (Minimum) — AA',
+    { n: 3, sev: 'crit', at: '3', wcag: '1.4.3 Contrast (Minimum), AA',
       title: 'Deepen the gold a few steps so it holds on screen',
       where: 'Section kickers and labels',
       what: 'The tan and peach used for kickers, “SAVED” labels and star ratings sit on white between 1.54:1 and 2.36:1, where AA asks for 4.5:1 at these sizes. 53 elements come in below the line; another 93 sit over images and were skipped rather than guessed at.',
       ev: '#EFCAA5 1.54:1 · #F5A623 2.03:1 · #C8A96E 2.24:1 · need 4.5:1',
-      cost: 'These carry the brand voice across the page, so it’s worth them being readable in sunlight and on cheaper screens. A few steps darker keeps the palette recognisably 3Soul and clears the line — the Rebuilt page shows how it looks.' },
+      cost: 'These carry the brand voice across the page, so it’s worth them being readable in sunlight and on cheaper screens. A few steps darker keeps the palette recognisably 3Soul and clears the line, the Rebuilt page shows how it looks.' },
 
-    { n: 4, sev: 'crit', at: '4', wcag: '1.3.1 Info & Relationships · 3.3.2 Labels — A',
+    { n: 4, sev: 'crit', at: '4', wcag: '1.3.1 Info & Relationships · 3.3.2 Labels, A',
       title: 'Add labels to the form fields',
       where: 'Step 2, contact fields',
       what: 'First name, last name, email, phone, the note and the pasted link are identified by placeholder text. Placeholders clear as soon as someone types, and screen readers may not announce them.',
@@ -335,10 +335,10 @@
       ev: 'autocomplete on 0 of 16 inputs · mobile: type=text, required · email: not required',
       cost: 'Each of these is small on its own, but they land together at the point where someone has already decided to go ahead. All five are one-line changes.' },
 
-    { n: 6, sev: 'crit', at: '6', wcag: '1.3.1 Info & Relationships — A',
+    { n: 6, sev: 'crit', at: '6', wcag: '1.3.1 Info & Relationships, A',
       title: 'Add an H1 and the search markup this page has earned',
       where: 'Hero and FAQ',
-      what: 'The headline is a div rather than an H1 — that’s in the served HTML, not only the rendered page. There’s also no structured markup for the tool, the 23 FAQs, the breadcrumb or the 4.7 rating already on display.',
+      what: 'The headline is a div rather than an H1, that’s in the served HTML, not only the rendered page. There’s also no structured markup for the tool, the 23 FAQs, the breadcrumb or the 4.7 rating already on display.',
       ev: '&lt;h1&gt; count: 0 · JSON-LD: Organization only · 23 &lt;details&gt; FAQs unmarked',
       cost: 'The city pages already do this, so it’s a pattern that exists in the codebase. Adding it here claims visibility the page has already done the work for, and gives anyone navigating by headings a way in.' },
 
@@ -349,14 +349,14 @@
       ev: 'iframe 335×497 at 375px wide · source: JWL-4881.pdf',
       cost: 'This is the asset that pre-sells the tool, and it’s worth it landing on the device most visitors arrive on. Exported as images it works everywhere and loads faster.' },
 
-    { n: 8, sev: 'high', at: '8', wcag: '2.2.2 Pause, Stop, Hide — A',
+    { n: 8, sev: 'high', at: '8', wcag: '2.2.2 Pause, Stop, Hide, A',
       title: 'Give the looping videos a pause control',
       where: 'Throughout',
       what: 'Nine of the eighteen embeds autoplay muted on a loop, and none expose a control. AA asks that anything moving beyond five seconds can be paused; these clips run 12 to 96 seconds.',
       ev: '9 × autoplay + loop + no controls · durations 12.2–96.3 s',
       cost: 'A control makes the page readable for anyone sensitive to motion, and it’s the same change that settles the download in flag 2.' },
 
-    { n: 9, sev: 'high', at: '9', wcag: '2.5.8 Target Size (Minimum) — AA',
+    { n: 9, sev: 'high', at: '9', wcag: '2.5.8 Target Size (Minimum), AA',
       title: 'Lift type and tap targets to comfortable sizes',
       where: 'Throughout',
       what: '53 of 204 controls measure under 24×24, which is below the AA minimum, and 162 are under the 44px comfortable size. Body text runs at 8 and 10px through several sections, with one element at 6px.',
@@ -366,9 +366,9 @@
     { n: 10, sev: 'high', at: '10',
       title: 'Bring the upload box into the first screen',
       where: 'Page length and form position',
-      what: 'The page runs 13,018 px on a 375×812 phone — sixteen screens. The upload box starts at 1,364 px, which puts it on the second.',
+      what: 'The page runs 13,018 px on a 375×812 phone, sixteen screens. The upload box starts at 1,364 px, which puts it on the second.',
       ev: '13,018 px ÷ 812 = 16.0 screens · upload at 1,364 px',
-      cost: 'The action the page exists for currently sits behind a scroll. Moving it up is a reordering rather than a redesign — the Rebuilt page puts it at 485 px.' },
+      cost: 'The action the page exists for currently sits behind a scroll. Moving it up is a reordering rather than a redesign, the Rebuilt page puts it at 485 px.' },
 
     { n: 11, sev: 'high', at: '11',
       title: 'De-duplicate the testimonials and reviews',
@@ -380,11 +380,11 @@
     { n: 12, sev: 'high', at: '12',
       title: 'Fix the Bengaluru link, and take a view on the city pages',
       where: 'Footer',
-      what: 'The sitemap lists 24 “diamond price in…” pages out of 52 in total. They run 260–395 words with a good deal of shared text — Mumbai and Surat are 72% identical, Mumbai and Chennai 65%. The footer links Bengaluru, which returns 404; the page exists as Bangalore.',
+      what: 'The sitemap lists 24 “diamond price in…” pages out of 52 in total. They run 260–395 words with a good deal of shared text, Mumbai and Surat are 72% identical, Mumbai and Chennai 65%. The footer links Bengaluru, which returns 404; the page exists as Bangalore.',
       ev: '24 of 52 pages · 260–395 words · up to 72% identical · 1 of 15 footer links = 404',
       cost: 'The 404 is quick and sits in the footer of every page on the site. The wider set is a judgement call worth making together: fewer cities with genuinely local content tends to hold up better than a broad set of near-copies.' },
 
-    { n: 13, sev: 'med', at: '13', wcag: '1.1.1 Non-text Content — A',
+    { n: 13, sev: 'med', at: '13', wcag: '1.1.1 Non-text Content, A',
       title: 'Add alt text to the remaining images',
       where: 'Throughout',
       what: '17 of 67 images have no alternative text, among them product photographs and the customer portraits used as proof.',
@@ -395,7 +395,7 @@
       title: 'Tidy two details in the testimonial copy',
       where: 'Mihir D., gold kada',
       what: 'Mihir’s card describes a kada, and the quote beneath it is Namrata’s solitaire-ring story, still reading “She’d been quoted a fortune”. Separately, a Nashik customer is listed as Nashua.',
-      ev: 'Mihir D. — “She’d been quoted…” · Kavita S. · Mangalsutra · Nashua',
+      ev: 'Mihir D., “She’d been quoted…” · Kavita S. · Mangalsutra · Nashua',
       cost: 'Both are quick copy edits, and they matter more than their size on a page whose case rests on being believed about numbers.' },
 
     { n: 15, sev: 'low', at: '15',
@@ -418,7 +418,7 @@
   // panel at the end. Named rather than hardcoded in deck.js so home.html
   // cannot end up quoting the estimator's figures.
   var WEIGHT = { name: 'PriceIt', transfer: '3.2 – 9.9 MB',
-                 transferNote: 'transferred — climbing while idle',
+                 transferNote: 'transferred, climbing while idle',
                  requests: '265 – 381', video: '425 MB',
                  videoNote: 'video behind 18 embeds' };
 

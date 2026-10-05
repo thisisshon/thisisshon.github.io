@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en-IN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFFFF">
+<!-- Quick estimate: four plain choices and a live price range on one screen.
+     The full calculator (calculator.html) stays one tap away for detail. -->
+<title>How Much Could It Cost? | 3Soul Price It</title>
+<meta name="description" content="Four quick choices and a live price range for any diamond piece. Then send your design for an exact price, and we make it at that price.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://3soul.in/pages/diamond-cost-estimator">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102A4E'/%3E%3Cpath d='M9 12l3-4h8l3 4-7 11z' fill='none' stroke='%23D6B27C' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M9 12h14' stroke='%23D6B27C' stroke-width='1.6'/%3E%3C/svg%3E">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/outfit-var.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/baskervville-400.woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/chrome.css">
+<link rel="stylesheet" href="assets/css/system.css">
+<link rel="stylesheet" href="assets/css/estimate.css">
+</head>
+<body>
+
+<main class="qe" id="qe">
+  <header class="qe-head">
+    <h1 class="qe-h">How Much Could It Cost?</h1>
+    <p class="qe-sub">Four quick choices. Your price range updates as you go.</p>
+  </header>
+
+  <section class="qe-q" aria-labelledby="q1">
+    <h2 class="qe-k" id="q1"><i>1</i>What Are You Thinking Of?</h2>
+    <div class="qe-o" role="radiogroup" aria-labelledby="q1" data-k="category">
+      <label><input type="radio" name="category" value="ring" checked><span>Ring</span></label>
+      <label><input type="radio" name="category" value="earrings"><span>Earrings</span></label>
+      <label><input type="radio" name="category" value="pendant"><span>Pendant</span></label>
+      <label><input type="radio" name="category" value="bracelet"><span>Bracelet</span></label>
+      <label><input type="radio" name="category" value="mangalsutra"><span>Mangalsutra</span></label>
+      <label><input type="radio" name="category" value="necklace"><span>Necklace</span></label>
+    </div>
+  </section>
+
+  <section class="qe-q" aria-labelledby="q2">
+    <h2 class="qe-k" id="q2"><i>2</i>Which Gold?</h2>
+    <div class="qe-o qe-o3" role="radiogroup" aria-labelledby="q2" data-k="purity">
+      <label><input type="radio" name="purity" value="9"><span>9K<small>Lightest on budget</small></span></label>
+      <label><input type="radio" name="purity" value="14"><span>14K<small>Everyday favourite</small></span></label>
+      <label><input type="radio" name="purity" value="18" checked><span>18K<small>Richest gold</small></span></label>
+    </div>
+  </section>
+
+  <section class="qe-q" aria-labelledby="q3">
+    <h2 class="qe-k" id="q3"><i>3</i>Which Diamonds?</h2>
+    <div class="qe-o qe-o2" role="radiogroup" aria-labelledby="q3" data-k="dtype">
+      <label><input type="radio" name="dtype" value="lab" checked><span>Lab-Grown<small id="dLab"></small></span></label>
+      <label><input type="radio" name="dtype" value="natural"><span>Natural<small id="dNat"></small></span></label>
+    </div>
+    <p class="qe-hint">They look the same. Only the price changes.</p>
+  </section>
+
+  <section class="qe-q" aria-labelledby="q4">
+    <h2 class="qe-k" id="q4"><i>4</i>How Much Sparkle?</h2>
+    <div class="qe-o qe-o3" role="radiogroup" aria-labelledby="q4" data-k="size">
+      <label><input type="radio" name="size" value="0.5"><span>Delicate<small id="sz1"></small></span></label>
+      <label><input type="radio" name="size" value="1" checked><span>Classic<small id="sz2"></small></span></label>
+      <label><input type="radio" name="size" value="2"><span>Statement<small id="sz3"></small></span></label>
+    </div>
+  </section>
+
+  <details class="qe-bd">
+    <summary>See How It Adds Up</summary>
+    <ul id="bd"></ul>
+    <p class="qe-fine">Priced with 3Soul&#8217;s own rates from their catalogue. Indicative: send your design and a gemologist prices it exactly, and we make it at that price.</p>
+  </details>
+
+  <p class="qe-more"><a id="full" href="calculator.html">Want every detail? Open the full calculator</a></p>
+</main>
+
+<!-- the answer, always in view -->
+<aside class="qe-bar" aria-live="polite">
+  <div class="qe-res">
+    <p class="qe-res-k">Your Estimate</p>
+    <p class="qe-res-v" id="total">&#8377;0</p>
+    <p class="qe-res-r" id="range"></p>
+  </div>
+  <a class="btn" id="exact" href="index.html#start"><span>Get My Exact Price</span><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg></a>
+  <a class="btn-alt" id="waQ" href="https://wa.me/919819033336" target="_blank" rel="noopener">
+    <svg class="ic ic-wa" aria-hidden="true"><use href="assets/img/icons.svg#cib-whatsapp"/></svg>
+    <span>Rather talk to us? <b>WhatsApp the team</b></span>
+    <svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-arrow-right"/></svg>
+  </a>
+</aside>
+
+<script>window.PAGE={crumbs:[["Price It","index.html"],["Quick Estimate"]],ours:[["Upload Your Design","index.html",0,"Free Report in 24 Hours"],["Quick Estimate","estimate.html",1,"A Price Range in Seconds"],["Full Calculator","calculator.html",0,"Every Detail, Itemised"]]};</script>
+<script src="assets/js/menu-data.js"></script>
+<script src="assets/js/chrome.js"></script>
+<script src="assets/js/pricing-3soul.js"></script>
+<script src="assets/js/estimate.js"></script>
+</body>
+</html>

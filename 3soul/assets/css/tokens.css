@@ -1,5 +1,5 @@
 /* ============================================================
-   3Soul — extracted design tokens
+   3Soul, extracted design tokens
    Measured from https://3soul.in/pages/diamond-cost-estimator
    on 2026-08-28 via getComputedStyle. Source of truth for both
    the page recreation and this deck's own interface.
@@ -23,8 +23,8 @@
 @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url(../fonts/poppins-600.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
 :root{
-  /* Pinned light: this also makes native UI — scrollbars, form controls,
-     the canvas behind the page — render light regardless of the OS setting. */
+  /* Pinned light: this also makes native UI, scrollbars, form controls,
+     the canvas behind the page, render light regardless of the OS setting. */
   color-scheme: light;
 
   /* ---- source families ---- */
@@ -61,7 +61,7 @@
   --s-btn-pad:15px 28px;
 
   /* ============================================================
-     Deck interface — colours derived from the tokens above.
+     Deck interface, colours derived from the tokens above.
      TYPE IS DELIBERATELY DIFFERENT: the deck speaks in one voice,
      Outfit only. The three other faces belong to 3Soul and appear
      solely inside the page recreation (.pg) and the prototype
@@ -78,9 +78,9 @@
   /* --ink-3 and --accent-deep are darkened from 3Soul's own values so they
      clear 4.5:1 on every deck background. The source tokens above keep the
      original values, because the recreation must stay accurate. */
-  --ink-3:#636B78;          /* was #7A8494 — 3.57:1, failed */
+  --ink-3:#636B78;          /* was #7A8494, 3.57:1, failed */
   --accent:var(--s-tan);    /* decorative only: rules, borders, focus rings */
-  --accent-deep:#806634;    /* was #9A7B3F — 3.75:1, failed */
+  --accent-deep:#806634;    /* was #9A7B3F, 3.75:1, failed */
   --on-brand:#C8A96E;       /* accent used on the navy quote panel */
   --brand:var(--s-navy);
 
@@ -98,7 +98,7 @@
 }
 
 /* The pages ship pinned to light via data-theme="light" on <html>.
-   The dark palette is kept and stays correct — remove that attribute and the
+   The dark palette is kept and stays correct, remove that attribute and the
    pages follow the reader's system setting again. */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme=light]){

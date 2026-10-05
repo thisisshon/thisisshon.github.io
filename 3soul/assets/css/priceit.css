@@ -23,7 +23,7 @@ button{font:inherit;color:inherit}
   --gold:#D6B27C; --tan:#B08D57; --tan-deep:#806634; --ivory:#FBF6EA;
   --m1:#FCEBB4; --m2:#E0BB5E; --m3:#9E7428;
   --ease:cubic-bezier(.2,.8,.2,1);
-  position:relative;max-width:none;margin:0;height:100vh;height:100svh;
+  position:relative;max-width:none;margin:0;height:calc(100svh - var(--hdr-h,0px));
   display:grid;grid-template-rows:auto auto minmax(0,1fr);background:var(--paper);overflow:hidden}
 
 /* ---------- top bar: back and the choice rail ---------- */
@@ -309,7 +309,10 @@ input[type=radio]{position:absolute;opacity:0;width:1px;height:1px;margin:0;poin
 .fly-gst{background:#DCD0C4}
 
 /* ---------- footer ---------- */
-.deck-foot{flex:none;display:flex;flex-direction:column;align-items:center;gap:0;padding:10px 20px calc(6px + env(safe-area-inset-bottom));background:var(--paper)}
+.deck-foot{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;flex-direction:column;align-items:center;gap:0;padding:14px 20px calc(8px + env(safe-area-inset-bottom));pointer-events:none;background:none}
+/* the blur and fade sit behind the controls, never over them */
+.deck-foot::before{content:"";position:absolute;left:0;right:0;top:-30px;bottom:0;z-index:-1;pointer-events:none;background:linear-gradient(to top,var(--paper) 58%,rgba(255,255,255,.88) 80%,rgba(255,255,255,0));-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);-webkit-mask:linear-gradient(to top,#000 68%,rgba(0,0,0,.55) 86%,transparent);mask:linear-gradient(to top,#000 68%,rgba(0,0,0,.55) 86%,transparent)}
+.deck-foot > *{pointer-events:auto}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:54px;border:0;border-radius:12px;
   background:var(--navy);color:#fff;font-family:var(--s-body);font-weight:600;font-size:14.5px;letter-spacing:.3px;text-decoration:none;cursor:pointer;
   position:relative;overflow:hidden;box-shadow:0 10px 22px rgba(16,42,78,.26);transition:transform .15s}
@@ -346,7 +349,7 @@ input:focus-visible+.tile-in,input:focus-visible+.tube,input:focus-visible+.cl-i
     grid-template-columns:minmax(0,1fr) clamp(440px,38vw,560px);grid-template-rows:76px minmax(0,1fr)}
 
   .bar{grid-column:1 / -1;display:flex;align-items:center;gap:14px;height:76px;padding:0 28px;border-bottom:1px solid var(--line)}
-  .bar-brand{display:flex;align-items:baseline;gap:12px;font-family:var(--s-head);font-size:22px;letter-spacing:.22em;color:var(--navy);text-decoration:none}
+  .bar-brand{display:none;align-items:baseline;gap:12px;font-family:var(--s-head);font-size:22px;letter-spacing:.22em;color:var(--navy);text-decoration:none}
   .bar-brand span{font-family:var(--s-body);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3);padding-left:12px;border-left:1px solid var(--line-2)}
   .rail{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,52vw)}
   .slot{min-height:54px;padding:6px 12px}
@@ -519,7 +522,7 @@ input:focus-visible+.tile-in,input:focus-visible+.tube,input:focus-visible+.cl-i
   .app:not(.up) .chip{position:static;background:rgba(10,26,51,.94)}
   .app:not(.up) .hint{bottom:28px}
 
-  .app:not(.up) .views{grid-template-rows:minmax(0,1fr);padding-top:18px}
+  .app:not(.up) .views{grid-template-rows:min-content;padding-top:18px}
   .app:not(.up) .view{min-height:0;gap:10px}
   .app:not(.up) .v-h{font-size:clamp(25px,7vw,30px)}
   .app:not(.up) .eyebrow span:first-child{color:var(--tan-deep);font-weight:500}
@@ -665,4 +668,114 @@ input:focus-visible+.tile-in,input:focus-visible+.tube,input:focus-visible+.cl-i
   .app:not(.up) .bd-r.mini{padding:16px 14px 14px}
   .app:not(.up) .bd-foot{padding-top:24px;padding-bottom:24px}
   .app[data-step="5"]:not(.up) .deck{justify-content:flex-start}
+}
+
+
+/* ============================================================
+   Typography, cleaned (3 Oct 2026). No eyebrow row: the title
+   leads every step, the sub carries the one line of help, and
+   small print stays small print. One serif size per role.
+   ============================================================ */
+.eyebrow{display:none}
+.v-head{gap:6px}
+.v-h{font-family:var(--s-head);font-weight:400;letter-spacing:.2px;color:var(--ink)}
+.app:not(.up) .v-h{font-size:clamp(27px,7.4vw,31px);line-height:1.12}
+.app:not(.up) .v-sub{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.doc-meta{display:flex;gap:10px;align-items:baseline;margin:0;font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.doc-meta span:first-child{color:var(--tan-deep);font-weight:500;letter-spacing:.04em}
+.doc-meta span+span::before{content:"";display:inline-block;width:3px;height:3px;margin-right:10px;vertical-align:middle;transform:rotate(45deg);background:var(--line-2)}
+.size-range{margin:0;font-size:12px;color:var(--ink-3);text-align:center;font-variant-numeric:tabular-nums}
+.app:not(.up) .bd-k{font-size:11px;letter-spacing:.18em;color:var(--tan-deep)}
+@media (min-width:960px){
+  .app:not(.up) .v-h{font-size:38px}
+  .app:not(.up) .v-sub{font-size:15.5px}
+  .doc-meta{font-size:13px}
+}
+
+/* CoreUI sprite icons inside the app */
+.btn .ic{width:17px;height:17px}
+.bar-back .ic{width:17px;height:17px}
+.stage-nav .ic{width:18px;height:18px}
+
+
+/* ============================================================
+   The action bar floats over the content: Continue is always
+   reachable, and the step underneath keeps its full height.
+   --foot-h is what the content leaves clear at the bottom.
+   ============================================================ */
+.deck{position:relative;--foot-h:118px}
+.views{padding-bottom:var(--foot-h)!important}
+.deck::after{display:none}
+.app:not(.up) .view[data-view="5"]{padding-bottom:2px}
+@media (min-width:960px){
+  .deck{--foot-h:132px}
+  .deck-foot{padding:18px 48px 26px}
+}
+@media (max-width:959px) and (max-height:700px){
+  .deck{--foot-h:106px}
+}
+
+
+/* ============================================================
+   Continue and the link under it stay pinned above the canvas:
+   fixed to the viewport on phones, so neither the stage nor a
+   scrolling step can ever cover them.
+   ============================================================ */
+html.app-page,html.app-page body{height:100%;overflow:hidden;overscroll-behavior:none}
+@media (max-width:959px){
+  .deck-foot{position:fixed;z-index:50;left:0;right:0;bottom:0}
+  .deck-foot::before{top:-34px}
+  .app.kb .deck-foot{position:absolute}
+}
+
+/* Only the step content moves: the header, the stage and the action
+   bar hold still while the deck scrolls underneath them. */
+.views{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.stage{flex:none}
+
+
+/* The deck scrolls to its content. The grid rows that stack the steps
+   must size to content, or a long step clips instead of scrolling. */
+.views{grid-template-rows:min-content;align-content:start}
+.view{min-height:0}
+@media (max-width:959px){
+  .deck{min-height:0}
+}
+
+/* ============================================================
+   Mobile: the page scrolls as one piece. The header, the stage
+   and the step all move together; only the step rail sticks to
+   the top and the action bar to the bottom. Desktop keeps its
+   split layout, where each column scrolls on its own.
+   ============================================================ */
+@media (max-width:959px){
+  html.app-page,html.app-page body{height:auto;overflow:visible;overscroll-behavior:auto}
+  .app{display:block;height:auto;min-height:calc(100svh - var(--hdr-h,0px));overflow:visible}
+  .bar{position:sticky;top:0;z-index:30;box-shadow:0 1px 0 rgba(18,18,18,.06)}
+  .stage{flex:none}
+  .deck{display:block;min-height:0;overflow:visible}
+  .views{display:grid;height:auto;overflow:visible;padding-bottom:calc(var(--foot-h) + 10px)!important}
+  .view{min-height:0}
+  /* the stage no longer has to shrink to make room for the step */
+  .app:not(.up) .stage,.up .stage,.up[data-step="1"] .stage{height:clamp(230px,34svh,320px)}
+  .app:not(.up) .stage[data-stage="5"],.up .stage[data-stage="4"]{height:clamp(200px,28svh,280px)}
+  .app:not(.up) .hero,.up .hero{max-height:none}
+  .up[data-step="1"] .hero{min-height:132px}
+  .app:not(.up) .v-sub,.up[data-step="1"] .v-sub,.up[data-step="1"] .dz small{display:block}
+}
+
+@media (max-width:959px){
+  /* one scroller only: the document. Nothing inside scrolls on its own. */
+  .views,.view,.deck,.hero,.app{overflow:visible!important;-webkit-overflow-scrolling:auto}
+  .views{overscroll-behavior:auto}
+  /* the photo strip is the one exception: it pans sideways by design */
+  .thumbs{overflow-x:auto!important}
+}
+
+/* The header holds at the top and the step rail parks underneath it,
+   so the brand, the breadcrumb and the step are always in view while
+   the piece and the step content scroll between them. */
+@media (max-width:959px){
+  .hdr{position:sticky;top:0;z-index:45}
+  .bar{position:sticky;top:var(--hdr-h,92px);z-index:30}
 }

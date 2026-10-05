@@ -2,7 +2,7 @@
    Deck interface. Typefaces and colours are 3Soul's own
    (tokens.css); only the layout is new.
    Rule for this file: nothing it documents as a fault may
-   appear in it — no body text under 16px, no target under 44px.
+   appear in it, no body text under 16px, no target under 44px.
    ============================================================ */
 
 *{box-sizing:border-box}
@@ -166,7 +166,7 @@ main em, .rail em{font-style:normal;font-weight:600;color:var(--ink)}
 
 /* ---------- pins ---------- */
 .pinLayer{position:absolute;inset:0;pointer-events:none;z-index:9}
-/* 44px touch target, 32px visual circle — the marker stays small on a
+/* 44px touch target, 32px visual circle, the marker stays small on a
    375px device mock without shrinking the thing you have to hit. */
 .pin{position:absolute;pointer-events:auto;width:44px;height:44px;padding:6px;border:0;
   background:transparent;border-radius:50%;color:#fff;
@@ -353,8 +353,7 @@ kbd{font-family:var(--deck-font);font-weight:600;font-size:12.5px;border:1px sol
   /* rail is gone here, so the mobile bar must stack above main
      rather than sit beside it as a flex sibling */
   .app{display:block}
-  /* No sticky layers on a phone. Sticky headers repaint partially here —
-     content below them intermittently fails to draw — and layer promotion
+  /* No sticky layers on a phone. Sticky headers repaint partially here, content below them intermittently fails to draw, and layer promotion
      makes it worse rather than better. On a small screen these pages read as
      documents, so everything scrolls in flow and nothing flickers.
      The desktop rail and side panels keep their sticky behaviour. */
@@ -363,7 +362,7 @@ kbd{font-family:var(--deck-font);font-weight:600;font-size:12.5px;border:1px sol
   .stickybar{position:static}
   .stickybar .seg,.stickybar .frow{max-width:100%}
   /* the findings panel scrolls internally, but the panel itself no longer
-     sticks — same repaint reason as above. The list keeps its own scroller,
+     sticks, same repaint reason as above. The list keeps its own scroller,
      so selecting a finding still lifts it to the top. */
   .fpanel{position:static;height:auto;max-height:none}
   .fpanel .flist{height:56vh;max-height:460px;padding-bottom:24vh}
@@ -466,7 +465,7 @@ button.fixref.w:hover{background:var(--crit);color:#fff;border-color:var(--crit)
 .deskpresets button:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
 .devwrap{transition:none}
 /* desktop preview: frame centred in a container that does not resize.
-   A class rather than :has() — :has() re-evaluates on every DOM change. */
+   A class rather than :has(), :has() re-evaluates on every DOM change. */
 .devwrap.deskmode{align-items:center}
 @media (max-width:980px){
   .dhandle{display:none}
@@ -474,7 +473,7 @@ button.fixref.w:hover{background:var(--crit);color:#fff;border-color:var(--crit)
 }
 
 /* ============================================================
-   Polish pass — Outfit needs different rhythm to the serif it
+   Polish pass, Outfit needs different rhythm to the serif it
    replaced: tighter tracking on display sizes, more air between
    blocks, and a consistent border/tone language.
    ============================================================ */
@@ -543,7 +542,7 @@ table.t td{padding:14px 12px}
 
 /* ---------- contrast corrections found by audit ---------- */
 /* The wordmark and the carat value were painted in --brand, which is a
-   dark navy — invisible on a dark background. */
+   dark navy, invisible on a dark background. */
 .rail-brand b{color:var(--ink)}
 .rval{color:var(--ink)}
 .screens b{color:var(--on-brand)}
@@ -581,7 +580,7 @@ a.deeplink:hover{color:var(--ink)}
   .card{padding:18px}
   .callout{padding:16px 18px}
 }
-/* Summary sits above the numbered pages — it is the way in, not a footnote */
+/* Summary sits above the numbered pages, it is the way in, not a footnote */
 .rail a.rail-top{font-weight:600;color:var(--ink)}
 .rail a.rail-top i{color:var(--accent-deep)}
 /* Summary is the entry point; a hairline separates it from the run of sections */
@@ -646,7 +645,7 @@ html, body{overscroll-behavior:none}
 .deskpresets{overscroll-behavior-x:contain;overscroll-behavior-y:auto}
 
 /* ============================================================
-   Deck switch — the two audits, side by side in the header.
+   Deck switch, the two audits, side by side in the header.
 
    Two pages are reviewed in this repo and they are each other's
    most likely next click, so the link belongs in the chrome
@@ -655,7 +654,7 @@ html, body{overscroll-behavior:none}
    each is already shown or hidden by the 980px breakpoint, so
    the switch inherits that without its own media query.
 
-   Both halves are links, not buttons — the current one included.
+   Both halves are links, not buttons, the current one included.
    It carries aria-current="page" and stays clickable, because a
    dead control in a two-item switch reads as broken rather than
    as "you are here". 46px tall, so it clears 44x44 like the rest

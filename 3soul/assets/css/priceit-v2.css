@@ -1,5 +1,5 @@
 /* ============================================================
-   Price It — the final calculator page.
+   Price It, the final calculator page.
 
    Built on 3Soul's measured tokens. The palette, the four
    typefaces and the section rhythm are theirs; what changes is
@@ -62,14 +62,14 @@
      Two treatments, not seven. Luxury goods have edges: a jewellery
      box, a certificate, a printed card. Soft 12-20px corners and
      100px pills read as consumer software, so everything rectangular
-     shares one 2px edge — enough to avoid looking unfinished, not
-     enough to look bubbly — and only genuinely circular things are
+     shares one 2px edge, enough to avoid looking unfinished, not
+     enough to look bubbly, and only genuinely circular things are
      circles. */
   /* 3Soul's own measured radii, from tokens.css. Containers take the
      card radius, controls the button radius, and only genuinely
      circular things are circles. Three values, not seven. */
-  --r-card:var(--s-r-card);       /* 14px — cards, panels, media */
-  --r-ctl:var(--s-r-btn-lg);      /* 12px — buttons, inputs, pills */
+  --r-card:var(--s-r-card);       /* 14px, cards, panels, media */
+  --r-ctl:var(--s-r-btn-lg);      /* 12px, buttons, inputs, pills */
   --r-round:50%;                  /* avatars, numerals, play button */
   --r-edge:var(--r-card);         /* alias for anything not re-pointed */
 
@@ -91,8 +91,7 @@
   text-rendering:optimizeLegibility}
 /* :where() so the reset carries zero specificity. As a plain
    selector (.pi p) it out-specified every component class on the
-   page, silently zeroing any margin a component set on a <p> —
-   including the auto margins that centre the hero. A reset should
+   page, silently zeroing any margin a component set on a <p>, including the auto margins that centre the hero. A reset should
    never win an argument with the thing it is resetting. */
 .pi :where(h1,h2,h3,h4,h5,p,figure,blockquote,ul,ol){margin:0;padding:0}
 .pi :where(ul,ol){list-style:none}
@@ -166,9 +165,9 @@
 .img img.on{opacity:1}
 /* Every slot sits inside a band a single 1:1 master can crop into
    without losing more than a quarter of the frame:
-     4:5  portrait  — 20% off the width
-     1:1  square    — no crop
-     4:3  landscape — 25% off the height
+     4:5  portrait, 20% off the width
+     1:1  square, no crop
+     4:3  landscape, 25% off the height
    Nothing wider than 4:3 and nothing taller than 4:5, which is why
    the film poster is no longer 16:9 and the story posters are no
    longer 9:16. See IMAGE-PROMPTS.md. */
@@ -303,7 +302,7 @@
 .scale{display:flex;justify-content:space-between;font-size:12px;color:var(--pi-ink-3);
   font-variant-numeric:tabular-nums}
 
-/* the upload path — kept in full, moved behind the number */
+/* the upload path, kept in full, moved behind the number */
 .up{margin-top:var(--sp-7);padding-top:var(--sp-6);border-top:1px solid var(--pi-rule)}
 .up-h{font-family:var(--s-ui);font-size:12px;font-weight:600;letter-spacing:.14em;
   text-transform:uppercase;color:var(--pi-tan-deep);margin-bottom:var(--sp-3)}
@@ -381,7 +380,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
   background:var(--pi-cream);color:var(--pi-tan-deep);border:1px solid var(--pi-rule)}
 
 /* ============================================================
-   How it works — six steps
+   How it works, six steps
    ============================================================ */
 .steps{display:grid;gap:var(--gap-item);counter-reset:step}
 .step{position:relative;padding:var(--sp-7);background:#fff;border:1px solid var(--pi-rule);
@@ -406,7 +405,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 .govt p{font-family:var(--s-display);font-size:20px;line-height:1.3;color:#fff}
 
 /* ============================================================
-   Why trust — six reasons + founders
+   Why trust, six reasons + founders
    ============================================================ */
 .trust{display:grid;gap:var(--gap-item)}
 .tcard{padding:var(--sp-7);background:#fff;border:1px solid var(--pi-rule);
@@ -496,7 +495,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 .rev-link:hover{text-decoration:underline}
 
 /* ============================================================
-   Stories of trust — posters, nothing autoplays
+   Stories of trust, posters, nothing autoplays
    ============================================================ */
 .reels{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);
   gap:var(--sp-4);overflow-x:auto;padding-bottom:var(--sp-4);
@@ -669,7 +668,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 }
 
 /* ============================================================
-   The combination grid — "120+ options", shown rather than promised
+   The combination grid, "120+ options", shown rather than promised
    ============================================================ */
 .grid-wrap{margin-top:var(--sp-7);padding-top:var(--sp-6);border-top:1px solid var(--pi-rule)}
 .grid-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;
@@ -723,7 +722,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
   /* Six steps and six trust cards stacked full width came to 3,300px
      between them, and two columns at 175px made the copy cramped.
      As rails they cost one card of height each, at a comfortable
-     measure, and they read in the order they are meant to — which
+     measure, and they read in the order they are meant to, which
      matters more for a numbered sequence than for a card set.
      Equal heights so the rail does not stagger as it scrolls. */
   .steps,.trust{align-items:stretch}
@@ -815,7 +814,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
   border-top:1px solid var(--pi-rule);display:grid;gap:var(--gap-item)}
 .up-send .btn{margin-top:0}
 
-/* name and phone fold away — two optional fields should not stand
+/* name and phone fold away, two optional fields should not stand
    between someone and the one field that matters */
 .more-fold summary{display:flex;align-items:center;gap:var(--sp-2);min-height:44px;
   cursor:pointer;list-style:none;font-size:14px;font-weight:600;color:var(--pi-navy)}
@@ -848,7 +847,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
    Cormorant italic line in tan, the name enormous in Cormorant
    navy, then letterspaced caps and a single navy pill. That
    composition is the reason the page feels expensive before it has
-   said anything, so it is kept — with the upload directly beneath
+   said anything, so it is kept, with the upload directly beneath
    rather than two screens below it.
 
    Measured from the live page: kicker Cormorant italic 14px/500 in
@@ -994,10 +993,10 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
    inside the reduced-motion guard at the foot of this block.
 
    Four kinds only:
-   1. reveal      — a block settles as it enters
-   2. stagger     — siblings settle in sequence, 60ms apart
-   3. response    — a control acknowledges being touched
-   4. transition  — a value that changed says so
+   1. reveal, a block settles as it enters
+   2. stagger, siblings settle in sequence, 60ms apart
+   3. response, a control acknowledges being touched
+   4. transition, a value that changed says so
    ============================================================ */
 
 :root{
@@ -1012,8 +1011,8 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 .rv{opacity:0;transform:translateY(16px);
   transition:opacity var(--dur-2) var(--ease),transform var(--dur-2) var(--ease)}
 /* `.rv-on`, not `.in`: `.in` is the text-input class, so the reveal
-   state was matching every input rule — white background, 1px border,
-   56px min-height — on all 25 revealed blocks, which is what turned
+   state was matching every input rule, white background, 1px border,
+   56px min-height, on all 25 revealed blocks, which is what turned
    the navy sections white. */
 .rv.rv-on{opacity:1;transform:none}
 
@@ -1021,8 +1020,8 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 
    IMPORTANT: the hidden start state is scoped to .hero.anim, which JS
    adds. Written as a bare default it made the hero invisible whenever
-   the animation did not run — a throttled tab, a background render, a
-   browser that skipped it — and the hero is the last thing on the page
+   the animation did not run, a throttled tab, a background render, a
+   browser that skipped it, and the hero is the last thing on the page
    that should ever be blank. Visible is the default; the animation is
    the enhancement. .anim-done is the failsafe. */
 .hero.anim .hero-copy > *{opacity:0;transform:translateY(12px);
@@ -1270,8 +1269,8 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
    Card interiors
 
    The heading, its explanation and the first control were sitting on
-   top of each other. A card has three zones — what this is, what it
-   says, what you do — and they need the same hierarchy as the page:
+   top of each other. A card has three zones, what this is, what it
+   says, what you do, and they need the same hierarchy as the page:
    tight inside a zone, a real gap between them.
    ============================================================ */
 .conf,.up-card,.ask{padding:var(--sp-8)}
@@ -1372,7 +1371,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 }
 
 /* ============================================================
-   v2 — TABS
+   v2, TABS
 
    Two tab sets: the upload card (send / price) and the proof module
    (savings / reviews / stories / who). Same component, same rules:
@@ -1404,7 +1403,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 .hero-upload .tabs{margin-bottom:var(--sp-5)}
 .hero-upload .up-card{margin-top:0}
 
-/* the calculator inside its tab: single column always — it shares the
+/* the calculator inside its tab: single column always, it shares the
    card with the upload, so it takes the card's width, not the page's */
 .calc-tab{display:grid;gap:var(--gap-group)}
 .calc-tab .hero-live{position:static;margin-top:0}
@@ -1457,7 +1456,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 .founders.no-photo .who{text-align:center}
 
 /* ============================================================
-   Hero aside — fills the left column at width
+   Hero aside, fills the left column at width
 
    Hidden on phones, where the same facts already appear in How It
    Works and Why Trust further down and the column is not empty.
@@ -1486,7 +1485,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 /* ============================================================
    Tab switch motion (v2)
 
-   The outgoing panel does nothing — it is simply hidden — and the
+   The outgoing panel does nothing, it is simply hidden, and the
    incoming panel settles up 12px over 420ms on the shared curve.
    The hero backdrop answers the switch with a slow breath: a 1.5%
    scale over 900ms, then back. Small enough to feel like the page
@@ -1497,7 +1496,7 @@ textarea.in{min-height:96px;padding:var(--sp-4);line-height:1.6;resize:vertical}
 /* the backdrop breath, triggered by JS with .breathe */
 /* the breath is an additive Web Animations API animation on the same
    pseudo-element, so the CSS drift keeps running underneath and there
-   is nothing to restart — see priceit-v2.js */
+   is nothing to restart, see priceit-v2.js */
 
 /* the tab underline slides from the previous tab to the next: one
    moving rule under the whole list rather than one per tab */
@@ -1536,7 +1535,7 @@ html,body{overflow-x:clip}
 
    One row at width. The copy column's containing block is then the
    whole card height, so the sticky copy travels the full length of
-   the card — on the price tab too — and stops exactly where the card
+   the card, on the price tab too, and stops exactly where the card
    does. Previously the grid kept a phantom "badges" row from v1;
    the stats strip auto-placed into it, and the sticky copy slid down
    over the strip. The sticky offset is the header (69px) plus one
@@ -1581,8 +1580,8 @@ details .det-body{overflow:hidden}
    Configurator (v2): one card, three numbered groups
 
    Piece → metal → diamonds, the order a jeweller would ask. Purity,
-   colour, type and clarity are segmented controls — one choice from
-   a short set reads faster as a segment than as loose chips — and
+   colour, type and clarity are segmented controls, one choice from
+   a short set reads faster as a segment than as loose chips, and
    the carat slider gains a stepper for precise thumbs. Everything
    lives inside the card; the ask closes it.
    ============================================================ */
@@ -1698,7 +1697,7 @@ details .det-body{overflow:hidden}
 @media (min-width:1200px){.cg-row{grid-template-columns:1fr 1fr}}
 
 /* The row splits into two columns only when the CARD is wide enough
-   for two three-cell segments with breathing room — a container
+   for two three-cell segments with breathing room, a container
    query, because the card's width is what matters, not the window's.
    Below 640px each control takes the full row. */
 .calc-card{container-type:inline-size}

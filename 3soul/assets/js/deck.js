@@ -31,8 +31,7 @@
     function moveIndicator(a) {
       if (!ind || !a || !rail) return;
       if (!a.closest('.rail')) { ind.style.opacity = '0'; return; }
-      // Measure against the rail's own box rather than walking offsetParents —
-      // it stays correct whatever the rail's padding or nesting happens to be.
+      // Measure against the rail's own box rather than walking offsetParents, // it stays correct whatever the rail's padding or nesting happens to be.
       var top = Math.round(a.getBoundingClientRect().top - rail.getBoundingClientRect().top);
       ind.style.opacity = '1';
       ind.style.transform = 'translateY(' + top + 'px)';
@@ -129,7 +128,7 @@
   }
 
   /* ============================================================
-     The page stage — Current / Flagged / Rebuilt
+     The page stage, Current / Flagged / Rebuilt
      ============================================================ */
   function Stage(opts) {
     var box = d.getElementById(opts.id);
@@ -170,7 +169,7 @@
       var top = drop.offsetTop, p = drop.offsetParent;
       while (p && p !== screen) { top += p.offsetTop; p = p.offsetParent; }
       var vh = screen.clientHeight;
-      node.innerHTML = 'Upload box starts at <b>' + Math.round(top) + ' px</b> — ' +
+      node.innerHTML = 'Upload box starts at <b>' + Math.round(top) + ' px</b>, ' +
         (top < vh ? 'inside the first screen.' : 'screen ' + (Math.floor(top / vh) + 1) + ', past the fold.');
       node.className = 'uploadOut ' + (top < vh ? 'ok' : 'bad');
     }
@@ -203,7 +202,7 @@
          first makes the measurement self-referential: the layer can never
          shrink, because it is propping up the number it is measured against.
          Switching a flagged stage from phone to desktop left the layer at the
-         taller phone height, which then held scrollHeight there — throwing off
+         taller phone height, which then held scrollHeight there, throwing off
          the meter, the screens badge and every pin position. Collapse it, read
          the page's real height, then size it. */
       pinLayer.style.height = '0px';
@@ -226,7 +225,7 @@
         }
         var px = Math.min(left + wd - 14, screen.clientWidth - 22);
         var py = top;
-        // two flags can share a row (the carousel) — step them apart so both stay clickable
+        // two flags can share a row (the carousel), step them apart so both stay clickable
         for (var g = 0; g < placed.length; g++) {
           if (Math.abs(placed[g][1] - py) < 34 && Math.abs(placed[g][0] - px) < 34) { px -= 36; g = -1; }
         }
@@ -339,7 +338,7 @@
         b.innerHTML = '<span class="n" aria-hidden="true">' + f.n + '</span><span>' +
           '<span class="sv">' + SEVN[f.sev] + ' · ' + f.where + '</span>' +
           '<h4>' + f.title + '</h4>' +
-          (f.wcag ? '<span class="wtag">WCAG ' + f.wcag + ' — not yet met</span>' : '') +
+          (f.wcag ? '<span class="wtag">WCAG ' + f.wcag + ', not yet met</span>' : '') +
           '<span class="body"><p>' + f.what + '</p>' +
           '<dl><dt>What we measured</dt><dd><code class="ev">' + f.ev + '</code></dd>' +
           '<dt>Why it’s worth doing</dt><dd>' + f.cost + '</dd></dl></span></span>';
@@ -363,8 +362,7 @@
     var VIEWPORT_H = 620;   // the frame keeps this height on screen at every width
 
     /* Each width gets the viewport height that actually pairs with it on a
-       real machine, so the page inside is laid out at a believable aspect —
-       not a fixed 760 that suits none of them. */
+       real machine, so the page inside is laid out at a believable aspect, not a fixed 760 that suits none of them. */
     function heightFor(w) {
       if (w < 1340) return 800;    // 1280×800 class
       if (w < 1700) return 900;    // 1440×900
@@ -654,8 +652,8 @@
   }
 
   /* ---------- the "what was done" list, built from the flag data ----------
-     `shown:true`  — visible in the rebuilt page beside this list, and verified there.
-     `shown:false` — head markup or asset attributes a visual recreation cannot
+     `shown:true`, visible in the rebuilt page beside this list, and verified there.
+     `shown:false`, head markup or asset attributes a visual recreation cannot
      demonstrate. Listed as specification, and labelled as such rather than
      implied to be on screen. */
   function initFixList(flagged, source) {
@@ -670,19 +668,19 @@
       4:  { t: 'Every field has a visible label tied to its input.', shown: true },
       5:  { t: 'Autofill on, numeric keypad for phone, phone optional, email required.', shown: true },
       6:  { t: 'Real H1 on the page.', shown: true,
-            spec: 'FAQ, tool, breadcrumb and rating schema — head markup, not visible here.' },
+            spec: 'FAQ, tool, breadcrumb and rating schema, head markup, not visible here.' },
       7:  { t: 'Sample report as images, not a PDF in a frame.', shown: true },
       8:  { t: 'Nothing autoplays; the one video is behind a control.', shown: true },
       9:  { t: 'Body copy at 16px, nothing below 11px, every control 44px and up.', shown: true },
       10: { t: 'Upload moved into the first screen.', shown: true },
       11: { t: 'Six testimonials, once each, instead of twelve cards for six people.', shown: true },
       12: { t: 'Six city pages with real local content, not twenty-four near-copies.', shown: true,
-            spec: 'The footer’s Bengaluru link is a 404 — the page exists at /diamond-price-in-bangalore. A URL fix, so not something this recreation can show.' },
+            spec: 'The footer’s Bengaluru link is a 404, the page exists at /diamond-price-in-bangalore. A URL fix, so not something this recreation can show.' },
       13: { t: 'Alt text on every image that carries meaning.', shown: false,
             spec: 'An attribute on the real images; this recreation draws placeholders, so there is nothing here to caption.' },
       14: { t: 'Mihir’s copy rewritten; Nashua corrected to Nashik.', shown: true },
       15: { t: 'Title trimmed, social image reshaped to landscape over https, images sized to their slot and lazy-loaded.', shown: false,
-            spec: 'All of it lives in the document head or in image attributes — nothing a rendered page can show.' }
+            spec: 'All of it lives in the document head or in image attributes, nothing a rendered page can show.' }
     };
     host.innerHTML = '';
     src.FLAGS.forEach(function (f) {
@@ -729,7 +727,7 @@
                 + (nav.encodedBodySize || 0);
       var kb = bytes / 1024;
       var size = kb < 1024 ? Math.round(kb) + ' KB' : (kb / 1024).toFixed(2) + ' MB';
-      // Deliberately no paint timing on either side — see the note in Evidence.
+      // Deliberately no paint timing on either side, see the note in Evidence.
       var srcW = ((w.PriceItPage || w.HomePage || {}).WEIGHT) || null;
       if (!srcW) { host.innerHTML = ''; return; }
       host.innerHTML =
@@ -750,7 +748,7 @@
      `.screen` frames get `overscroll-behavior-y:contain` so hitting the
      bottom of a prototype does not throw the page behind it. But a frame
      whose content is shorter than the frame never leaves its y-boundary,
-     and `contain` there swallows the wheel outright — the page locks up
+     and `contain` there swallows the wheel outright, the page locks up
      under the cursor. So the containment rides on a class, and the class
      tracks the one condition that justifies it.
 
@@ -776,7 +774,7 @@
         frame.classList.toggle('scrolls-y', scrolls);
       }
       // rAF coalesces the burst of callbacks a repaint fires, but it is
-      // paused while the tab is hidden — so a timer runs alongside it and
+      // paused while the tab is hidden, so a timer runs alongside it and
       // whichever lands first does the work. Without it, a frame that
       // changes in a background tab keeps a stale class.
       function schedule() {
@@ -810,7 +808,7 @@
       if (!hasRO) w.addEventListener('resize', schedule);
 
       // Both observers are driven by the rendering steps, which a hidden tab
-      // does not run — a frame that changes in the background would carry a
+      // does not run, a frame that changes in the background would carry a
       // stale class until the tab is looked at again. These two close that
       // gap from the other end: `visibilitychange` catches up on everything
       // missed, and `pointerenter` re-checks at the one instant the class

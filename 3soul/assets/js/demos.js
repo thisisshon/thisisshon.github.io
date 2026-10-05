@@ -11,7 +11,7 @@
 
   var D = {
 
-    /* 1 — estimate before the ask */
+    /* 1, estimate before the ask */
     1: {
       now:
         '<div class="pg-form" style="box-shadow:none">' +
@@ -55,7 +55,7 @@
         '</div>'
     },
 
-    /* 2 — upload above the fold */
+    /* 2, upload above the fold */
     2: {
       now:
         '<div class="demo-phone">' +
@@ -85,13 +85,13 @@
           '<div class="fx-fold"><span>fold · 812 px</span></div>' +
           '<div class="fx-below">Proof, the six-step explainer and the FAQ follow</div>' +
         '</div>' +
-        '<div class="demo-note good">Upload lands at 485 px — first screen, above the fold</div>'
+        '<div class="demo-note good">Upload lands at 485 px, first screen, above the fold</div>'
     },
 
-    /* 3 — contrast */
+    /* 3, contrast */
     3: {
       now:
-        '<div class="demo-sw"><span class="demo-chip" style="color:#C8A96E">— BUILT FOR EVERY DECISION —</span>' +
+        '<div class="demo-sw"><span class="demo-chip" style="color:#C8A96E">, BUILT FOR EVERY DECISION, </span>' +
         '<b class="demo-ratio bad">2.24:1</b></div>' +
         '<div class="demo-sw"><span class="demo-chip" style="color:#EFCAA5">OUR PROMISE, IN WRITING</span>' +
         '<b class="demo-ratio bad">1.54:1</b></div>' +
@@ -111,14 +111,14 @@
           '<div class="fx-sw muted"><i style="background:#EFCAA5"></i>' +
           '<span><b>#EFCAA5</b>Kept for rules, borders and fills</span><em>no minimum</em></div>' +
           '<div class="fx-context">' +
-            '<div class="fx-kick">— A real estimate · verified customer —</div>' +
+            '<div class="fx-kick">, A real estimate · verified customer, </div>' +
             '<div class="fx-ctx-t">This tool has saved people lakhs</div>' +
             '<div class="fx-ctx-s">★★★★★ <b>4.7</b> · 600+ reviews</div>' +
           '</div>' +
         '</div>'
     },
 
-    /* 4 — labels */
+    /* 4, labels */
     4: {
       now:
         '<div class="pg-form" style="box-shadow:none">' +
@@ -141,7 +141,7 @@
         '</div>'
     },
 
-    /* 5 — required fields and keyboard */
+    /* 5, required fields and keyboard */
     5: {
       now:
         '<ul class="demo-list">' +
@@ -167,7 +167,7 @@
         '</div>'
     },
 
-    /* 6 — video */
+    /* 6, video */
     6: {
       now:
         '<div class="demo-vid now"><span>autoplaying, looping, no control</span>' +
@@ -184,13 +184,13 @@
         '</div>'
     },
 
-    /* 7 — type scale */
+    /* 7, type scale */
     7: {
       now:
-        '<div class="demo-type"><span style="font-size:8px">8px — BUILT INTO EVERY SALE</span>' +
-        '<span style="font-size:10px">10px — Estimates generated</span>' +
-        '<span style="font-size:11px">11px — Every gram of her existing gold credited</span>' +
-        '<span style="font-size:12px">12px — Illustrative. Your report prices every stone.</span></div>' +
+        '<div class="demo-type"><span style="font-size:8px">8px, BUILT INTO EVERY SALE</span>' +
+        '<span style="font-size:10px">10px, Estimates generated</span>' +
+        '<span style="font-size:11px">11px, Every gram of her existing gold credited</span>' +
+        '<span style="font-size:12px">12px, Illustrative. Your report prices every stone.</span></div>' +
         '<div class="demo-note bad">Smallest on the page: 6px · 148 of 220 elements under 12px</div>',
       fix:
         
@@ -203,7 +203,7 @@
         '</div>'
     },
 
-    /* 8 — tap targets */
+    /* 8, tap targets */
     8: {
       now:
         '<div class="demo-targets">' +
@@ -227,7 +227,7 @@
         '</div>'
     },
 
-    /* 9 — sample report */
+    /* 9, sample report */
     9: {
       now:
         '<div class="demo-frame"><div class="demo-frame-bar">JWL-4881.pdf</div>' +
@@ -243,11 +243,11 @@
             '<figure><span class="pg4"></span><figcaption>120 options</figcaption></figure>' +
           '</div>' +
           '<button class="fx-btn ghost full" type="button" disabled>↓ Download the PDF</button>' +
-          '<div class="demo-note good">Images inline — opens on every phone</div>' +
+          '<div class="demo-note good">Images inline, opens on every phone</div>' +
         '</div>'
     },
 
-    /* 10 — duplicate proof */
+    /* 10, duplicate proof */
     10: {
       now:
         '<div class="demo-cards">' +
@@ -269,11 +269,11 @@
             '<span class="amt">' + RS + '31,000</span></article>' +
           '</div>' +
           '<div class="fx-dots"><i class="on"></i><i></i></div>' +
-          '<div class="demo-note good">Six people, once each — wider cards, more room to read</div>' +
+          '<div class="demo-note good">Six people, once each, wider cards, more room to read</div>' +
         '</div>'
     },
 
-    /* 11 — the analysis animation */
+    /* 11, the analysis animation */
     11: {
       now:
         '<div class="pg-analysis" style="text-align:left">' +
@@ -299,12 +299,12 @@
         '</div>'
     },
 
-    /* 12 — page length */
+    /* 12, page length */
     12: {
       now:
         '<div class="demo-scroll"><div class="demo-scroll-bar"><i style="height:6.2%"></i></div>' +
         '<div class="demo-scroll-l"><b>16 screens</b><span>13,018 px on a phone</span>' +
-        '<em>Six-step explainer, six trust cards, six audience pills, comparison table, FAQ — all in sequence.</em></div></div>',
+        '<em>Six-step explainer, six trust cards, six audience pills, comparison table, FAQ, all in sequence.</em></div></div>',
       fix:
         
         '<div class="fx">' +
@@ -320,14 +320,14 @@
         '</div>'
     },
 
-    /* 13 — testimonial copy */
+    /* 13, testimonial copy */
     13: {
       now:
         '<div class="pg-card" style="flex-basis:auto;box-shadow:none">' +
         '<div class="nm">Mihir D.</div><div class="mt">Gold kada · Punjab</div>' +
         '<span class="badge">Personalisation</span>' +
         '<p class="cp"><mark>She’d</mark> been quoted a fortune at a big-name store. Price It showed the ' +
-        'real cost — stone by stone — and we made it to order.</p></div>' +
+        'real cost, stone by stone, and we made it to order.</p></div>' +
         '<div class="pg-card" style="flex-basis:auto;box-shadow:none;margin-top:8px">' +
         '<div class="nm">Kavita S.</div><div class="mt">Mangalsutra · <mark>Nashua</mark></div></div>',
       fix:
@@ -336,14 +336,14 @@
           '<article class="fx-testi">' +
             '<header><span class="av"></span><div><b>Mihir D.</b><em>Gold kada · Punjab</em></div>' +
             '<span class="tagp">Personalisation</span></header>' +
-            '<p>He wanted a traditional kada with a personal touch — engraved and costed before casting.</p>' +
+            '<p>He wanted a traditional kada with a personal touch, engraved and costed before casting.</p>' +
             '<footer><span>Saved</span><b>' + RS + '58,900</b></footer>' +
           '</article>' +
           '<div class="fx-fixnote"><b>Kavita S.</b> · Mangalsutra · <mark class="ok">Nashik</mark></div>' +
         '</div>'
     },
 
-    /* 14 — alt text and image sizing */
+    /* 14, alt text and image sizing */
     14: {
       now:
         '<div class="demo-alt"><div class="demo-img"></div>' +
@@ -362,7 +362,7 @@
         '</div>'
     },
 
-    /* 15 — savings units */
+    /* 15, savings units */
     15: {
       now:
         '<div class="demo-saves"><i><span>SAVED</span><b>' + RS + '84,100</b></i>' +
@@ -379,7 +379,7 @@
             '<i><span>Saved</span><b>' + RS + '31,200</b></i>' +
             '<i><span>Saved</span><b>' + RS + '58,900</b></i>' +
           '</div>' +
-          '<div class="demo-note good">One unit across the set — rupees, always</div>' +
+          '<div class="demo-note good">One unit across the set, rupees, always</div>' +
         '</div>'
     }
   };
@@ -421,7 +421,7 @@
         ? 'On the page now <em>· lifted from the live page</em>'
         : 'On the page now';
       // On a phone the two panes stack, which doubles the page. A switch shows
-      // one at a time instead — and comparing in place beats scrolling between.
+      // one at a time instead, and comparing in place beats scrolling between.
       return '<div class="ddemo" data-pane="now">' +
         '<div class="ddemo-tabs" role="tablist">' +
           '<button type="button" role="tab" data-pane="now" aria-selected="true">Now</button>' +

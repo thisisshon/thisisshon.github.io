@@ -1,14 +1,13 @@
 /* ============================================================
    Illustrative pricing engine, shared by all three prototypes
    so the comparison is like-for-like.
-   Rates are plausible placeholders, NOT live market data —
-   every prototype says so on screen.
+   Rates are plausible placeholders, NOT live market data, every prototype says so on screen.
    ============================================================ */
 (function (w) {
   'use strict';
 
   /* ------------------------------------------------------------
-     Reference rates — Indian market, August 2026.
+     Reference rates, Indian market, August 2026.
      These are real market figures, not invented ones, but they are
      a snapshot: a live build would read gold daily and price stones
      per stone. Sources are printed on the estimate itself.
@@ -23,7 +22,7 @@
      catalogue on 7 Sep 2026: /products.json lists 250 products and
      13,835 variants whose Metal option is 9K, 10K, 14K or 18K.
      22K appears nowhere in the catalogue, so the estimator no longer
-     offers it — quoting a purity the shop cannot make is worse than
+     offers it, quoting a purity the shop cannot make is worse than
      offering one fewer choice. '22' is kept in the table only so an
      older saved configuration still resolves. */
   var PURITY = { '9': .375, '10': .417, '14': .585, '18': .750, '22': .916 };
@@ -69,7 +68,7 @@
 
   var GST_GOLD = 0.03;      // metal and stones
   var GST_MAKING = 0.05;    // labour
-  var MAKING_PCT = 0.14;    // share of metal value — typical Indian range is 8–25%
+  var MAKING_PCT = 0.14;    // share of metal value, typical Indian range is 8–25%
   var SETTING_PER_CT = 4200;
 
   function inr(n) {
@@ -108,12 +107,12 @@
       clarityLabel: clar ? clar.label : null,
       colourLabel: (COLOUR[cfg.colour] || {}).label || null,
       rows: [
-        ['Gold — ' + goldWeight.toFixed(1) + ' g at ' + cfg.purity + 'K' +
+        ['Gold, ' + goldWeight.toFixed(1) + ' g at ' + cfg.purity + 'K' +
           (COLOUR[cfg.colour] ? ', ' + COLOUR[cfg.colour].label.toLowerCase() : ''), gold],
-        [stone.label + ' diamonds — ' + carat.toFixed(2) + ' ct' +
+        [stone.label + ' diamonds, ' + carat.toFixed(2) + ' ct' +
           (clar ? ', ' + clar.label : ''), stones],
         ['Making', making],
-        ['GST — 3% metal & stones, 5% making', gst]
+        ['GST, 3% metal & stones, 5% making', gst]
       ]
     };
   }

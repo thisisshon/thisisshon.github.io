@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Homepage — audit | 3Soul</title>
+<title>Homepage, audit | 3Soul</title>
 <meta name="description" content="An audit of the 3soul.in homepage: ten findings, measured at 375x812 on 29 August 2026.">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="../../assets/css/tokens.css?v=1788730675">
@@ -32,9 +32,9 @@
     <a href="#s1" data-nav data-key="1" data-short="Summary" class="rail-top"><i>◆</i>Summary</a>
     <a href="#s2" data-nav data-key="2" data-short="Current"><i>01</i>Current</a>
     <a href="#s3" data-nav data-key="3" data-short="Flagged"><i>02</i>Flagged</a>
-    <a href="#s4" data-nav data-key="4" data-short="Evidence"><i>—</i>Evidence</a>
-    <a href="#s5" data-nav data-key="5" data-short="Recommendation"><i>—</i>Recommendation</a>
-    <a href="#s6" data-nav data-key="6" data-short="Measurement"><i>—</i>Measurement</a>
+    <a href="#s4" data-nav data-key="4" data-short="Evidence"><i>, </i>Evidence</a>
+    <a href="#s5" data-nav data-key="5" data-short="Recommendation"><i>, </i>Recommendation</a>
+    <a href="#s6" data-nav data-key="6" data-short="Measurement"><i>, </i>Measurement</a>
   </div>
 
   <div class="rail-grp">
@@ -51,7 +51,7 @@
 <!-- ================= mobile nav ================= -->
 <div class="mnav">
   <div class="mnav-bar">
-    <b id="mnavTitle">Homepage — audit</b>
+    <b id="mnavTitle">Homepage, audit</b>
     <button class="mnav-tog" id="mnavTog" type="button" aria-expanded="false" aria-controls="mnavList">Menu</button>
   </div>
   <div class="dswitch" role="group" aria-label="Switch audit">
@@ -80,26 +80,26 @@
     <h1>A healthier page <em>with four holes in it</em>.</h1>
     <p class="sub">The homepage is in markedly better shape than the estimator. Nothing fails contrast, nothing
       runs away with the network, and the one form on it is labelled correctly. What it has instead is a short
-      list of specific breakages — a press section that renders nothing, a heading that says nothing, controls
+      list of specific breakages, a press section that renders nothing, a heading that says nothing, controls
       too small to hit, and half the page spent making one offer twice.</p>
 
     <div class="metarow">
       <span class="chip">Audited 29 Aug 2026</span>
       <span class="chip">Measured at 375×812, from source</span>
       <span class="chip">10 findings · 3 to start with</span>
-      <span class="chip">Audit only — no rebuild</span>
+      <span class="chip">Audit only, no rebuild</span>
     </div>
-    <p class="scopeline"><b>Scope:</b> one page — <code>3soul.in</code>. Every figure here was measured on that
+    <p class="scopeline"><b>Scope:</b> one page, <code>3soul.in</code>. Every figure here was measured on that
       page, except finding 9, where the two city-page URLs were requested directly.</p>
 
     <div class="stats">
-      <div class="stat bad"><b>4</b><span>Press logos — Outlook India, The Economic Times, VOGUE, IGI — downloaded, then drawn at 0×0.</span><small>Measured 29 Aug</small></div>
+      <div class="stat bad"><b>4</b><span>Press logos, Outlook India, The Economic Times, VOGUE, IGI, downloaded, then drawn at 0×0.</span><small>Measured 29 Aug</small></div>
       <div class="stat bad"><b>161<span class="u">/177</span></b><span>Controls under 44×44, of which 45 are under 24×24.</span><small>Measured 29 Aug</small></div>
       <div class="stat bad"><b>47<span class="u">%</span></b><span>Of the page spent offering an estimate twice, in two separate sections.</span><small>Measured 29 Aug</small></div>
     </div>
 
     <div class="callout">
-      <p><strong>The recommendation, up front.</strong> Three of these are repairs, not redesigns — the logos,
+      <p><strong>The recommendation, up front.</strong> Three of these are repairs, not redesigns, the logos,
         the H1 and the Bengaluru link could be done in an afternoon and would change what the page communicates.
         The two that need a decision are the duplicated estimate pitch and the hero video.</p>
     </div>
@@ -107,7 +107,7 @@
     <div class="callout" style="margin-top:14px">
       <p><strong>What this page does <em>not</em> have.</strong> The estimator’s three worst findings do not
         repeat here, and the audit is more useful for saying so plainly. No contrast failure in 262 checked
-        elements. No runaway network — transfer held at 4.6 MB across twenty idle seconds. No 425 MB of video;
+        elements. No runaway network, transfer held at 4.6 MB across twenty idle seconds. No 425 MB of video;
         one 4.4 MB file, fetched once. <a href="#s4">The comparison is in Evidence.</a></p>
     </div>
   </div>
@@ -159,7 +159,7 @@
   <div class="wrap">
     <div class="kick">Page two of two</div>
     <h2>Flagged</h2>
-    <p class="lede">The same page with the findings marked on it — ten in total, ordered by the difference each
+    <p class="lede">The same page with the findings marked on it, ten in total, ordered by the difference each
       would make. <strong>Deliberately not an exhaustive list.</strong> Four relate to
       <strong>WCAG 2.2 AA</strong> and name the criterion. The first three are repairs rather than decisions.</p>
 
@@ -221,12 +221,12 @@
     <div class="kick">Evidence</div>
     <h2>Where the numbers come from</h2>
     <p class="lede">Everything here was measured on <code>3soul.in</code> at 375×812 on 29 August 2026, in the
-      same pass and by the same methods as the estimator audit — so the two are comparable line by line.</p>
+      same pass and by the same methods as the estimator audit, so the two are comparable line by line.</p>
 
     <div class="card" style="margin-top:20px">
       <h3 style="font-size:23px;margin-bottom:6px">The homepage against the estimator</h3>
       <p style="color:var(--ink-2)">The estimator’s three headline failures are the three this page does not
-        have. That is worth stating as plainly as the failures themselves — an audit that finds the same
+        have. That is worth stating as plainly as the failures themselves, an audit that finds the same
         problems everywhere is not measuring, it is repeating itself.</p>
       <div class="tw" style="margin-top:16px">
         <table class="t">
@@ -239,13 +239,13 @@
             <tr><td>Page height</td><td class="r">13,018 px · 16.0 screens</td><td class="mid">8,245 px · 10.2 screens</td></tr>
             <tr><td>Controls under 44×44</td><td class="r">162 of 204</td><td class="r">161 of 177</td></tr>
             <tr><td>Text under 12 px</td><td class="r">50 elements</td><td class="mid">16 elements</td></tr>
-            <tr><td>Readable H1</td><td class="r">none — 0 h1</td><td class="r">none — 1 h1, empty</td></tr>
+            <tr><td>Readable H1</td><td class="r">none, 0 h1</td><td class="r">none, 1 h1, empty</td></tr>
             <tr><td>Form labelling</td><td class="r">6 fields · 0 labels</td><td class="g">1 field · labelled</td></tr>
           </tbody>
         </table>
       </div>
       <p class="pnote">Both columns measured 29 Aug 2026 at 375×812. “Checked” contrast excludes elements over
-        images or translucent layers, which are skipped rather than guessed — 8 on the homepage, 93 on the estimator.</p>
+        images or translucent layers, which are skipped rather than guessed, 8 on the homepage, 93 on the estimator.</p>
     </div>
 
     <div class="card" style="margin-top:16px">
@@ -259,17 +259,17 @@
         <div style="width:34.2%;background:#9A6708"></div>
       </div>
       <div class="barkey">
-        <b><i style="background:#A32118"></i> “Get an estimate” — 1,891 px</b>
-        <b><i style="background:#C1451B"></i> “Upload Any Design…” — 2,011 px, same offer</b>
-        <b><i style="background:#3F5285"></i> Footer — 1,519 px, 18.4%</b>
-        <b><i style="background:#9A6708"></i> Everything else — 2,824 px</b>
+        <b><i style="background:#A32118"></i> “Get an estimate”, 1,891 px</b>
+        <b><i style="background:#C1451B"></i> “Upload Any Design…”, 2,011 px, same offer</b>
+        <b><i style="background:#3F5285"></i> Footer, 1,519 px, 18.4%</b>
+        <b><i style="background:#9A6708"></i> Everything else, 2,824 px</b>
       </div>
-      <p style="color:var(--ink-2);margin:18px 0 0">The two estimate sections total <b>3,902 px — 47.3%</b> of the
+      <p style="color:var(--ink-2);margin:18px 0 0">The two estimate sections total <b>3,902 px, 47.3%</b> of the
         page, and end in three differently worded buttons: RECEIVE AN ESTIMATE, Try It Now, Explore Combinations.
         Between them sit the products and the empty Featured In block, so the second pitch reads as a new offer
         rather than a repeat.</p>
       <p class="pnote">The bar above is the phone layout. At 1440×900 the page reflows to 6,055 px and the
-        proportions shift — the two estimate sections become <b>2,391 px, 39.5%</b>, and the footer drops from
+        proportions shift, the two estimate sections become <b>2,391 px, 39.5%</b>, and the footer drops from
         18.4% to <b>10.0%</b> as its columns move side by side. Both findings survive the change; the footer one
         is much smaller on a desktop, and is ranked here on the phone figure because that is where the page is
         read. Switch the device above to Desktop to see it.</p>
@@ -299,13 +299,13 @@
 
     <div class="card" style="margin-top:16px">
       <h3 style="font-size:23px;margin-bottom:6px">Speed: still the one number we don’t have</h3>
-      <p style="color:var(--ink-2)">The Lighthouse run quoted in the estimator audit — 47 performance, LCP 11.2 s,
-        17,302 KiB, mobile Moto&nbsp;G Power on Slow 4G, 29 Aug — <b>was measured on this page</b>. It was
+      <p style="color:var(--ink-2)">The Lighthouse run quoted in the estimator audit, 47 performance, LCP 11.2 s,
+        17,302 KiB, mobile Moto&nbsp;G Power on Slow 4G, 29 Aug, <b>was measured on this page</b>. It was
         borrowed there as a stand-in because the estimator’s own paint timings were unusable, and it belongs
         here. It is a real figure for the homepage and a floor for the estimator, which carries more video.</p>
       <p style="color:var(--ink-2);margin:14px 0 0">What is still missing is a Lighthouse run on the estimator
         itself. Until that exists, no like-for-like speed comparison between the two pages should be drawn from
-        this deck — including from the table above, which deliberately has no load-time row.</p>
+        this deck, including from the table above, which deliberately has no load-time row.</p>
     </div>
   </div>
 </section>
@@ -320,19 +320,19 @@
 
     <div class="phases">
       <div class="phase">
-        <b>Repairs — an afternoon</b>
+        <b>Repairs, an afternoon</b>
         <p>Findings <strong>1</strong>, <strong>2</strong> and <strong>9</strong>. Put the press logos back on
           screen, give the page a readable H1, and correct the Bengaluru URL. None is a design question, and
           together they change what the page says about itself: certified, credible, and findable.</p>
       </div>
       <div class="phase">
-        <b>A pass over the controls — a day</b>
+        <b>A pass over the controls, a day</b>
         <p>Finding <strong>3</strong>, with <strong>7</strong> alongside it. 161 controls under 44×44 and 16
           text elements under 12 px, most of both in the footer and the carousel. This is padding and type
-          scale, not layout — but it touches every screen, so it wants doing in one deliberate pass.</p>
+          scale, not layout, but it touches every screen, so it wants doing in one deliberate pass.</p>
       </div>
       <div class="phase">
-        <b>Two decisions — worth a conversation</b>
+        <b>Two decisions, worth a conversation</b>
         <p>Findings <strong>4</strong> and <strong>5</strong>. Does the homepage make the estimate offer once
           or twice, and does the hero lead with 4.4 MB of video? Both are defensible as they stand. Neither
           should stay by default, and merging the two pitches would return about two screens.</p>
@@ -346,8 +346,7 @@
     </div>
 
     <div class="callout" style="margin-top:20px">
-      <p><strong>On priority between the two pages.</strong> If only one gets attention, it is the estimator —
-        its findings are larger and its traffic is more intent-heavy. The homepage’s value here is that three
+      <p><strong>On priority between the two pages.</strong> If only one gets attention, it is the estimator, its findings are larger and its traffic is more intent-heavy. The homepage’s value here is that three
         of its ten findings are cheap enough to do while the larger work is still being decided.</p>
     </div>
   </div>
@@ -368,9 +367,9 @@
               <td><code>getBoundingClientRect</code> and <code>getComputedStyle</code> at 375×812</td></tr>
           <tr><td>Contrast</td>
               <td>Computed styles against the resolved background, walking ancestors. Text over an image or a
-                  translucent layer is <b>skipped, not guessed</b> — 8 elements were</td></tr>
+                  translucent layer is <b>skipped, not guessed</b>, 8 elements were</td></tr>
           <tr><td>Video size</td>
-              <td>HTTP <code>Content-Length</code> — 4,575,154 bytes — rather than streamed chunks</td></tr>
+              <td>HTTP <code>Content-Length</code>, 4,575,154 bytes, rather than streamed chunks</td></tr>
           <tr><td>Idle growth</td>
               <td>Resource timings sampled 4 s and 24 s after load, with no interaction between</td></tr>
           <tr><td>Logo rendering</td>
@@ -392,7 +391,7 @@
           threshold. The self-test on the ratio function returns 21.00 for black on white and 1.00 for white
           on white, so the zero is a result rather than a broken measurement.</li>
         <li><b>The marquee.</b> The four phrases scroll past three times, but two copies carry
-          <code>aria-hidden="true"</code> — a screen reader meets the line once. Correct as built.</li>
+          <code>aria-hidden="true"</code>, a screen reader meets the line once. Correct as built.</li>
         <li><b>The newsletter field.</b> The one input on the page has a real <code>&lt;label for&gt;</code>
           pointing at it. This is the pattern the estimator’s six fields are missing.</li>
       </ul>

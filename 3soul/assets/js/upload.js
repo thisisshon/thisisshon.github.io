@@ -24,9 +24,10 @@
   var app = $('#app'), stage = $('#stage'), views = {};
   $$('.view').forEach(function (v) { views[v.dataset.view] = v; });
 
-  var st = { files: [], link: '', note: '', dtype: null, first: '', last: '', email: '', phone: '' };
+  var st = { files: [], link: '', note: '', dtype: null, first: '', last: '', email: '', phone: '',
+             budget: '', occasion: '', when: '' };
   var step = 1, maxStep = 1, lastPts = 0, sending = false;
-  var TYPE = { both: 'Compare both', lab: 'Lab-grown', natural: 'Natural' };
+  var TYPE = { both: 'Compare Both', lab: 'Lab-Grown', natural: 'Natural' };
 
   /* ---------- arriving from the calculator: ?c=ring.18.yellow.lab.VS.0.40 ---------- */
   var from = (function () {
@@ -40,7 +41,7 @@
     return {
       code: m[1],
       text: e.catLabel + ' in ' + cfg.purity + 'K ' + cfg.colour + ' gold, ' + cfg.carat.toFixed(2) + ' ct ' + e.stoneLabel.toLowerCase() + ' ' + cfg.clarity,
-      price: P.inr(e.total), dtype: cfg.dtype
+      price: P.inr(e.total), dtype: cfg.dtype, cfg: cfg
     };
   })();
 
@@ -61,7 +62,6 @@
     if (st.files.length) a.push(st.files.length + (st.files.length === 1 ? ' photo' : ' photos'));
     if (st.link) a.push('link');
     if (noteOk()) a.push('note');
-    if (!a.length && from) a.push('From calculator');
     return a.join(' · ');
   }
 
@@ -71,34 +71,46 @@
     $('#deltas').innerHTML = ''; $('#deltas').appendChild(c);
   }
 
+  /* ---------- the report on the stage writes itself ---------- */
+  var filled = {};
+  function line(id, value) {
+    var row = $('#' + id), dd = $('dd', row), was = filled[id] || '';
+    if (value) value = value.charAt(0).toUpperCase() + value.slice(1);
+    dd.textContent = value || 'Waiting';
+    row.classList.toggle('is-set', !!value);
+    if (value && value !== was && !RM) {
+      row.classList.remove('write'); void row.offsetWidth; row.classList.add('write');
+      if (!was) chip('Added to Your Report');
+    }
+    filled[id] = value || '';
+  }
+  function extras() {
+    return [st.occasion, st.budget, st.when].filter(Boolean).join(' · ');
+  }
+  function status() {
+    if (step === 4) return 'On Its Way';
+    if (st.first && step === 3) return 'Ready to Send';
+    if (st.dtype) return 'Diamonds Chosen';
+    if (designText()) return 'Design Received';
+    return from ? 'Now Add Your Design' : 'Waiting for Your Design';
+  }
+
   function brief() {
-    var pts = points();
-    if (step < 4) {
-      $('#briefK').textContent = 'Brief strength';
-      $('#briefW').textContent = WORDS[pts];
-      $('#briefS').textContent = [designText(), st.dtype ? TYPE[st.dtype] : ''].filter(Boolean).join(' · ') || 'Add a photo to begin';
+    if (step < 4 && !sending) {
+      $('#briefK').textContent = 'Your Price It Report';
+      $('#briefW').textContent = status();
+      $('#briefS').textContent = extras();
     }
-    $$('#pips i').forEach(function (p, i) { p.classList.toggle('on', i < pts); });
-    if (pts > lastPts) {
-      chip('+' + (pts - lastPts) + ' · brief stronger');
-      if (!RM) { var w = $('#briefW'); w.classList.remove('bump'); void w.offsetWidth; w.classList.add('bump'); }
-      $('#live').textContent = 'Brief strength: ' + WORDS[pts];
-    }
-    lastPts = pts;
+    line('rD', designText());
+    line('rS', st.dtype ? TYPE[st.dtype] : '');
+    line('rF', st.first);
+    $('#live').textContent = status();
 
-    $('#rv1').textContent = designText() || 'Add a design';
+    $('#rv1').textContent = designText() || 'Add a Design';
     $('#rv2').textContent = st.dtype ? TYPE[st.dtype] : 'Choose';
-    $('#rv3').textContent = st.first || 'Your details';
+    $('#rv3').textContent = st.first || 'Your Details';
 
-    var n1 = $('#n1');
-    n1.classList.toggle('from', !!from && !st.files.length && !st.link);
-    if (from && !st.files.length && !st.link) n1.innerHTML = 'Starting from your ' + b(esc(from.text)) + ', estimated at ' + b(from.price) + '. Add a photo of the design you have in mind.';
-    else if (!st.files.length && !st.link) n1.innerHTML = 'No photo? Paste a link, or ' + b('describe it') + ' in the next step.';
-    else if (st.files.length === 1) n1.innerHTML = 'Add a ' + b('second angle') + ' and we can count the stones.';
-    else if (st.files.length && !st.link) n1.innerHTML = 'Seen it online? Paste the ' + b('link') + ' too.';
-    else n1.innerHTML = 'That is a ' + b('strong brief') + '. On to the diamonds.';
-
-    $('#n2').innerHTML = st.dtype === 'both' ? 'Most people are ' + b('surprised by the gap') + '. You will see both totals side by side.'
+    if ($('#n2')) $('#n2').innerHTML = st.dtype === 'both' ? 'Most people are ' + b('surprised by the gap') + '. You will see both totals side by side.'
       : st.dtype === 'lab' ? 'Lab-grown usually brings the same design down by ' + b('40% or more') + '.'
       : st.dtype === 'natural' ? 'We will also note what the ' + b('lab-grown') + ' version would cost.'
       : 'Not sure? ' + b('Compare both') + ' costs nothing extra.';
@@ -106,16 +118,17 @@
       : 'Free, itemised, and checked by a gemologist ' + b('within 24 hours') + '.';
 
     $('#doc').classList.toggle('both', st.dtype === 'both');
-    $('#docT').textContent = from ? from.text.split(',')[0] : st.first ? st.first + '’s design' : 'Your design';
+    $('#docT').textContent = st.first ? 'Prepared for ' + st.first : 'Your design';
     ready();
-    $('#wa').href = WA + '?text=' + encodeURIComponent('Hi, I’d like a 3Soul jewellery estimate.' + (from ? ' I priced this on Price It: ' + from.text + ', ' + from.price + '.' : ''));
+    var waLink = $('#waAlt');
+    if (waLink) waLink.href = WA + '?text=' + encodeURIComponent('Hi, I’d like a 3Soul jewellery estimate.' + (from ? ' I priced this on Price It: ' + from.text + ', ' + from.price + '.' : ''));
   }
 
   /* ---------- the stage ---------- */
   var ROT = [-4, 3, -7, 6, -2];
   var ICON = {
-    link: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg>',
-    note: '<svg viewBox="0 0 24 24"><path d="M5 5h14v10l-4 4H5zM9 10h6M9 14h3"/></svg>'
+    link: '<svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-link"/></svg>',
+    note: '<svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-notes"/></svg>'
   };
   function domain(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } }
   function stack() {
@@ -123,7 +136,6 @@
     var items = st.link ? [{ card: 'link', t: domain(st.link) }] : [];
     st.files.forEach(function (f) { items.push({ img: f.url }); });
     if (!items.length && noteOk()) items.push({ card: 'note', t: 'Described in words' });
-    if (!items.length && from) items.push({ card: 'note', t: from.text.split(',')[0] });
     $('#stack').innerHTML = items.map(function (it, i) {
       return '<div class="ph' + (it.card ? ' card' : '') + '" style="--r:' + ROT[i % 5] + 'deg">' +
         (it.img ? '<img src="' + it.img + '" alt="">' : ICON[it.card] + '<span>' + esc(it.t) + '</span>') + '</div>';
@@ -132,13 +144,9 @@
     if (!items.length) stage.classList.remove('read');
   }
   var scanT;
-  function scan() {
-    if (RM) { stage.classList.add('read'); return; }
-    stage.classList.remove('scanning'); void stage.offsetWidth;
-    stage.classList.add('scanning');
-    clearTimeout(scanT);
-    scanT = setTimeout(function () { stage.classList.remove('scanning'); stage.classList.add('read'); }, 950);
-  }
+  // no scanning sweep: the photo simply lands, and the report notes it
+  function scan() { stage.classList.add('read'); }
+
 
   /* ---------- step 1: photos and link ---------- */
   var fileIn = $('#file'), dz = $('#dz'), thumbs = $('#thumbs');
@@ -163,8 +171,8 @@
     var has = st.files.length > 0;
     dz.hidden = has; thumbs.hidden = !has;
     thumbs.innerHTML = st.files.map(function (f, i) {
-      return '<div class="th"><img src="' + f.url + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo ' + (i + 1) + '">&times;</button></div>';
-    }).join('') + (st.files.length < MAX_FILES ? '<label class="th add" for="file"><b>+</b>Add</label>' : '');
+      return '<div class="th"><img src="' + f.url + '" alt="Photo ' + (i + 1) + '"><button type="button" data-rm="' + i + '" aria-label="Remove photo ' + (i + 1) + '"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-x"/></svg></button></div>';
+    }).join('') + (st.files.length < MAX_FILES ? '<label class="th add" for="file"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-plus"/></svg><span>Add</span></label>' : '');
   }
   fileIn.addEventListener('change', function () { addFiles(fileIn.files); fileIn.value = ''; });
   thumbs.addEventListener('click', function (e) {
@@ -218,6 +226,50 @@
   linkIn.addEventListener('input', readLink);
   linkIn.addEventListener('blur', readLink);
 
+  /* ---------- step 2: the same design, priced both ways ---------- */
+  // Indicative only: from the calculator's piece when there is one,
+  // otherwise a typical 18K ring. The report prices the real design.
+  var CASE = { ring: 'case-01-namrata-solitaire-ring.jpg', earrings: 'case-02-ananya-jhumka-earrings.jpg',
+    bracelet: 'case-03-hritik-tennis-bracelet.jpg', mangalsutra: 'case-04-kavita-mangalsutra.jpg',
+    pendant: 'case-05-sara-pendant.jpg', bangle: 'case-06-mihir-gold-kada.jpg', necklace: 'case-05-sara-pendant.jpg' };
+  function round(n) { return n >= 100000 ? Math.round(n / 1000) * 1000 : Math.round(n / 500) * 500; }
+  function compare() {
+    if (!P) return;
+    var base = from ? from.cfg : { category: 'ring', purity: '18', colour: 'yellow', clarity: 'VS', carat: P.CATEGORY.ring.carat };
+    var lab = P.estimate(Object.assign({}, base, { dtype: 'lab' })).total;
+    var nat = P.estimate(Object.assign({}, base, { dtype: 'natural' })).total;
+    $('#pLab').textContent = 'About ' + P.inr(round(lab));
+    $('#pNat').textContent = 'About ' + P.inr(round(nat));
+    $('#cmpGap').innerHTML = 'Same design. Natural costs about ' + b(P.inr(round(nat - lab))) + ' more.';
+    $('#cmpNote').textContent = from
+      ? 'Based on your ' + from.text.split(',')[0].replace(/^\w/, function (c) { return c.toLowerCase(); }) + '. Your report prices your exact design.'
+      : 'Example prices for a typical 18K diamond piece. Your report prices your exact design.';
+    var src = st.files.length ? st.files[0].url : 'assets/img/' + (CASE[base.category] || CASE.ring);
+    var alt = st.files.length ? 'Your design' : 'An example 3Soul piece';
+    $$('.cmp-pic').forEach(function (img) { if (img.getAttribute('src') !== src) img.src = src; img.alt = alt; });
+  }
+
+  /* ---------- step 2: quick chips, and the note behind one ---------- */
+  $('#chips').addEventListener('click', function (e) {
+    var btn = e.target.closest('.cg-o button');
+    if (btn) {
+      var g = btn.closest('.cg'), k = g.dataset.k, on = btn.getAttribute('aria-pressed') === 'true';
+      $$('button', g).forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      if (!on) btn.setAttribute('aria-pressed', 'true');
+      st[k] = on ? '' : btn.dataset.v;
+      brief();
+      return;
+    }
+    var nt = e.target.closest('#noteT');
+    if (nt) {
+      var row = $('#noteRow'), open = row.hidden;
+      row.hidden = !open;
+      nt.setAttribute('aria-expanded', open ? 'true' : 'false');
+      nt.classList.toggle('is-on', open);
+      if (open) { var ta = $('#note'); setTimeout(function () { ta.focus(); }, 60); }
+    }
+  });
+
   /* ---------- step 2 and 3: answers ---------- */
   document.addEventListener('change', function (e) {
     if (e.target.name === 'dtype') { st.dtype = e.target.value; say(''); brief(); }
@@ -229,7 +281,11 @@
   });
 
   /* ---------- navigation ---------- */
-  var LABELS = { 1: 'Continue', 2: 'Almost there', 3: 'Send for my free report' };
+  /* DEMO ONLY, remove before launch: Continue always advances, so the flow
+     can be clicked through without adding a photo or filling the form. */
+  var DEMO_SKIP = true;
+
+  var LABELS = { 1: 'Continue', 2: 'Almost There', 3: 'Send for My Free Report' };
 
   function valid(n) {
     if (n === 1) return hasDesign();
@@ -263,7 +319,7 @@
   }
 
   function chrome() {
-    $('#back').disabled = step === 1 || step === 4 || sending;
+    $('#back').disabled = step === 4 || sending;
     $('#rail').style.setProperty('--w', step >= 3 ? 1 : step / 3);
     $$('.slot').forEach(function (g) {
       var n = +g.dataset.go;
@@ -275,7 +331,8 @@
     });
     var fin = step === 4;
     $('#next').hidden = fin; $('#final').hidden = !fin;
-    $('#wa').hidden = fin; $('#again').hidden = !fin; $('#proto').hidden = !fin;
+    $('#again').hidden = !fin;
+    $('#waAlt').hidden = fin; $('#proto').hidden = !fin;
     if (!fin) $('#nextLabel').textContent = sending ? 'Sending…' : LABELS[step];
     $('#next').disabled = sending;
     $('#next').classList.toggle('busy', sending);
@@ -290,11 +347,11 @@
     $('#views').scrollTop = 0;
     if (RM) { out.hidden = true; return; }
     [out, inn].forEach(function (v) { v.getAnimations({ subtree: true }).forEach(function (x) { x.cancel(); }); });
-    out.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(' + -28 * dir + 'px)' }],
+    out.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateX(' + -10 * dir + 'px)' }],
       { duration: 200, easing: 'ease-in', fill: 'forwards' }).onfinish = function () { if (+inn.dataset.view === step) out.hidden = true; };
     Array.prototype.forEach.call(inn.children, function (c, i) {
-      c.animate([{ opacity: 0, transform: 'translateX(' + 36 * dir + 'px)' }, { opacity: 1, transform: 'none' }],
-        { duration: 420, delay: 120 + i * 50, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
+      c.animate([{ opacity: 0, transform: 'translateX(' + 14 * dir + 'px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 300, delay: 80 + i * 30, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
     });
   }
 
@@ -308,6 +365,7 @@
     say('');
     wasReady = false;
     stage.classList.toggle('is-done', n === 4);
+    if (n === 2) compare();
     $('#trk').classList.remove('go');
     if (n === 4) setTimeout(function () { $('#trk').classList.add('go'); }, RM ? 0 : 600);
     brief(); chrome();
@@ -318,8 +376,8 @@
      names listed at the top of this file and POST it here. */
   function send() {
     sending = true; stage.classList.add('sending'); chrome();
-    var lines = ['Packing your photos', 'Adding your notes', 'Sending to our gemologists'], i = 0;
-    $('#briefK').textContent = 'Your brief';
+    var lines = ['Packing Your Photos', 'Adding Your Notes', 'Sending to Our Gemologists'], i = 0;
+    $('#briefK').textContent = 'Your Brief';
     (function tick() {
       $('#briefW').textContent = lines[i]; $('#live').textContent = lines[i];
       if (++i < lines.length) return setTimeout(tick, RM ? 0 : 750);
@@ -332,31 +390,34 @@
     $('#refK').textContent = 'Received · ' + ref;
     $('.v-head.done').classList.remove('go');
     setTimeout(function () { $('.v-head.done').classList.add('go'); }, RM ? 0 : 450);
-    $('#h4').textContent = 'Thank you, ' + st.first;
+    $('#h4').textContent = st.first ? 'Thank You, ' + st.first : 'Thank You';
     var eta = new Date(Date.now() + 24 * 3600 * 1000);
-    $('#etaT').textContent = eta.getHours() < 10 ? 'Tomorrow morning' : 'Tomorrow, ' + eta.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).replace(/\s?(am|pm)/i, function (m) { return ' ' + m.trim().toLowerCase(); });
-    $('#gets').innerHTML = ['Itemised', '120+ options', st.dtype === 'both' ? 'Lab vs natural' : TYPE[st.dtype]]
-      .map(function (t) { return '<span class="get">' + t + '</span>'; }).join('');
-    $('#tlMail').textContent = 'at ' + st.email;
+    $('#etaT').textContent = eta.getHours() < 10 ? 'Tomorrow Morning' : 'Tomorrow, ' + eta.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).replace(/\s?(am|pm)/i, function (m) { return ' ' + m.trim().toLowerCase(); });
+    $('#gets').innerHTML = ['Itemised', 'Made at This Price', !st.dtype || st.dtype === 'both' ? 'Lab vs Natural' : TYPE[st.dtype]]
+      .map(function (t) { return '<span class="get"><svg class="ic" aria-hidden="true"><use href="assets/img/icons.svg#cil-check-alt"/></svg>' + t + '</span>'; }).join('');
+    $('#tlMail').textContent = st.email ? 'at ' + st.email : 'by email';
     $('#wa4').href = WA + '?text=' + encodeURIComponent('Hi, I have a query about my jewellery estimate ' + ref + '.');
-    $('#final').href = 'calculator.html' + (from ? '?c=' + from.code : '');
+    $('#final').href = 'estimate.html' + (from ? '?c=' + from.code : '');
     goTo(4);
-    $('#briefK').textContent = 'Your report';
-    $('#briefW').textContent = 'On its way';
+    $('#briefK').textContent = 'Your Report';
+    $('#briefW').textContent = 'On Its Way';
     $('#briefS').textContent = ref + ' · within 24 hours';
   }
 
   $('#next').addEventListener('click', function () {
     if (sending) return;
-    var err = check(step);
+    var err = DEMO_SKIP ? '' : check(step);
     if (err) { say(err); return; }
     if (step === 3) send(); else goTo(step + 1);
   });
-  $('#back').addEventListener('click', function () { goTo(step - 1); });
+  $('#back').addEventListener('click', function () { if (step === 1) showLand(); else goTo(step - 1); });
   $('#rail').addEventListener('click', function (e) { var g = e.target.closest('.slot'); if (g && !g.disabled) goTo(+g.dataset.go); });
   $('#again').addEventListener('click', function () {
     st.files.forEach(function (f) { URL.revokeObjectURL(f.url); });
     st.files = []; st.link = ''; st.note = ''; st.dtype = null; lastPts = 0; maxStep = 1;
+    st.budget = st.occasion = st.when = '';
+    $$('.cg-o button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+    $('#noteRow').hidden = true; $('#noteT').setAttribute('aria-expanded', 'false');
     linkIn.value = ''; $('#note').value = ''; $('#linkChip').textContent = '';
     $$('input[name="dtype"]').forEach(function (r) { r.checked = false; });
     drawThumbs(); stack(); goTo(1);
@@ -370,8 +431,10 @@
       if (vv.height > baseH) baseH = vv.height;
       var kb = vv.height < baseH * 0.78;
       app.classList.toggle('kb', kb);
-      app.style.height = kb ? vv.height + 'px' : '';
-      if (kb) window.scrollTo(0, 0);
+      // the page scrolls on its own below 960px, so leave its height alone
+      var split = window.innerWidth >= 960;
+      app.style.height = kb && split ? vv.height + 'px' : '';
+      if (kb && split) window.scrollTo(0, 0);
     });
   }
   document.addEventListener('focusin', function (e) {
@@ -379,8 +442,40 @@
     setTimeout(function () { e.target.scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' }); }, 320);
   });
 
+  /* ---------- the landing ---------- */
+  var land = $('#land');
+  function showFlow(animate) {
+    doc().classList.remove('on-land');
+    land.hidden = true;
+    app.hidden = false;
+    window.scrollTo(0, 0);
+    if (animate && !RM) {
+      app.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 520, easing: 'cubic-bezier(.22,1,.36,1)' });
+    }
+    try { history.replaceState(null, '', location.pathname + (from ? '?c=' + from.code : '') + '#start'); } catch (err) {}
+    var h = $('.v-h', views[1]); if (h) h.focus({ preventScroll: true });
+  }
+  function showLand() {
+    doc().classList.add('on-land');
+    app.hidden = true;
+    land.hidden = false;
+    window.scrollTo(0, 0);
+    if (!RM) land.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 360, easing: 'ease-out' });
+    try { history.replaceState(null, '', location.pathname); } catch (err) {}
+  }
+  function doc() { return document.documentElement; }
+  $('#startBtn').addEventListener('click', function () { showFlow(true); });
+
   /* ---------- start ---------- */
   if (from) $('#sub1').textContent = 'Now show us the real thing: a photo, a screenshot or a saved post.';
   stack(); brief(); chrome();
   lastPts = points();
+  // arriving from the calculator: the estimate rides on the report itself
+  if (from) {
+    $('#docEst').hidden = false;
+    $('#docEstK').textContent = from.text.split(',')[0].replace(/ in /, ', ').replace(/ gold$/, '');
+    $('#docEstV').textContent = from.price;
+  }
+  if (from || /#start/.test(location.hash)) showFlow(false); else showLand();
 })();

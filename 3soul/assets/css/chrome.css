@@ -1,0 +1,140 @@
+/* Icons: CoreUI Icons Free, CC BY 4.0 (https://coreui.io/icons/).
+   One sprite at assets/img/icons.svg, referenced with <use>. */
+.ic{width:18px;height:18px;flex:none;fill:currentColor;display:block;pointer-events:none}
+.ic-lg{width:30px;height:30px}
+
+/* ============================================================
+   Site chrome: header, drawer, breadcrumbs.
+   The shared shell for the rebuild. Loads before the page's own
+   stylesheet, and exposes --hdr-h so a full-height app can sit
+   under it: height: calc(100svh - var(--hdr-h)).
+   ============================================================ */
+
+:root{
+  --hdr-h:92px;
+  --navy:#102A4E; --blush:#FAEEE8; --line:#EADFD8; --line-2:#DCCBC0;
+  --ink:#121212; --ink-2:rgba(18,18,18,.74); --ink-3:rgba(18,18,18,.66);
+  --tan:#B08D57; --tan-deep:#806634;
+  --ease-out:cubic-bezier(.22,1,.36,1);
+}
+html.nav-open,html.nav-open body{overflow:hidden}
+
+/* ---------- header ---------- */
+.hdr{position:relative;z-index:40;background:#fff;border-bottom:1px solid var(--line);
+  transition:box-shadow .3s}
+.hdr-in{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:8px;height:58px;padding:0 10px 0 6px;
+  transition:height .42s var(--ease-out)}
+.hdr-logo{justify-self:center;display:flex;align-items:center;padding:6px 10px;border-radius:10px}
+.hdr-logo img{display:block;width:auto;height:21px;transition:height .42s var(--ease-out)}
+.hdr-act{display:flex;align-items:center;gap:2px}
+.hdr-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--navy);
+  transition:background .2s,transform .2s}
+.hdr-ic .ic{width:19px;height:19px}
+.hdr-ic:active{transform:scale(.92)}
+
+/* the burger: two CoreUI glyphs that cross-fade and turn */
+.burger{position:relative;width:44px;height:44px;display:grid;place-items:center;border:0;background:none;
+  border-radius:50%;color:var(--navy);cursor:pointer;transition:background .2s}
+.burger .ic{position:absolute;width:21px;height:21px;transition:opacity .22s,transform .32s var(--ease-out)}
+.burger .burger-c{opacity:0;transform:rotate(-90deg) scale(.8)}
+.burger[aria-expanded=true] .burger-o{opacity:0;transform:rotate(90deg) scale(.8)}
+.burger[aria-expanded=true] .burger-c{opacity:1;transform:none}
+
+/* ---------- breadcrumbs ---------- */
+.crumbs{overflow:hidden;border-top:1px solid var(--line);background:#fff;
+  transition:height .42s var(--ease-out),opacity .3s}
+.crumbs ol{display:flex;align-items:center;gap:7px;margin:0;padding:9px 16px;list-style:none;
+  font-size:12px;letter-spacing:.02em;white-space:nowrap;overflow-x:auto;scrollbar-width:none}
+.crumbs ol::-webkit-scrollbar{display:none}
+.crumbs li{display:flex;align-items:center;gap:7px;color:var(--ink-3)}
+.crumbs li+li::before{content:"";width:4px;height:4px;transform:rotate(45deg);background:var(--line-2);flex:none}
+.crumbs a{color:var(--ink-3);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--navy)}
+.crumbs [aria-current]{color:var(--ink);font-weight:500}
+
+/* compact state: once the visitor is inside the flow, the chrome steps back */
+.hdr.is-slim .hdr-in{height:46px}
+.hdr.is-slim .hdr-logo img{height:17px}
+.hdr.is-slim .crumbs{height:0;opacity:0;border-top-color:transparent}
+.hdr.is-gone{height:0;min-height:0;overflow:hidden;border-bottom-color:transparent}
+.hdr.is-gone .hdr-in,.hdr.is-gone .crumbs{height:0;opacity:0}
+
+/* ---------- drawer ---------- */
+.nav{position:fixed;inset:0;z-index:60}
+.nav[hidden]{display:none}
+.nav-scrim{position:absolute;inset:0;background:rgba(10,20,36,.46);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.nav-panel{position:absolute;left:0;top:0;bottom:0;width:min(86vw,392px);display:flex;flex-direction:column;
+  background:#fff;box-shadow:0 0 60px rgba(10,20,36,.3)}
+.nav-top{flex:none;display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 10px 0 20px;border-bottom:1px solid var(--line)}
+.nav-top img{height:20px;width:auto}
+.nav-x{width:44px;height:44px;display:grid;place-items:center;border:0;background:none;border-radius:50%;color:var(--navy);cursor:pointer;transition:background .2s}
+.nav-x .ic{width:20px;height:20px}
+.nav-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+
+/* our own pages, pinned at the top of the menu */
+.nav-own-wrap{display:flex;flex-direction:column;gap:8px;padding:16px 20px 18px;background:var(--blush)}
+.nav-own{display:block;padding:12px 14px;border-radius:14px;background:#fff;color:inherit;text-decoration:none;
+  transition:transform .2s var(--ease-out),box-shadow .2s}
+.nav-own b{display:block;font-family:var(--s-head,serif);font-weight:400;font-size:17px;line-height:1.2}
+.nav-own small{display:block;margin-top:2px;font-size:12px;color:var(--ink-3)}
+.nav-own:active{transform:scale(.99)}
+.nav-own.is-here{background:var(--navy);color:#fff}
+.nav-own.is-here small{color:rgba(255,255,255,.72)}
+
+/* catalogue tree */
+.nav-main{padding:6px 0}
+.nav-main ul{list-style:none;margin:0;padding:0}
+.nav-main > ul > li{border-bottom:1px solid var(--line)}
+.nav-main > ul > li:last-child{border-bottom:0}
+.nav-t{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;
+  padding:12px 20px;border:0;background:none;text-align:left;cursor:pointer;color:var(--ink);
+  font-family:inherit;font-size:15.5px;font-weight:500;letter-spacing:.01em;transition:background .2s,color .2s}
+.nav-t .ic{width:16px;height:16px;flex:none;color:var(--ink-3);transition:transform .32s var(--ease-out),color .2s}
+.nav-g.is-open > .nav-t{color:var(--navy)}
+.nav-g.is-open > .nav-t .ic{transform:rotate(180deg);color:var(--navy)}
+.nav-p{height:0;overflow:hidden}
+.nav-l{display:block;padding:10px 20px 10px 32px;color:var(--ink-2);text-decoration:none;font-size:14.5px;
+  transition:color .2s,background .2s}
+.nav-l:hover{color:var(--navy);background:var(--blush)}
+
+/* a nested group (Shop by Category, Shop by Price) */
+.nav-g[data-depth="1"]{margin:2px 0 6px}
+.nav-g[data-depth="1"] > .nav-t{min-height:40px;padding:8px 20px 8px 32px;font-size:11px;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--tan-deep)}
+.nav-g[data-depth="1"] > .nav-t .ic{width:13px;height:13px}
+.nav-g[data-depth="1"] .nav-l{padding-left:44px}
+
+/* foot */
+.nav-foot{padding:18px 20px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);margin-top:6px}
+.nav-soc{display:flex;gap:6px;margin-bottom:8px}
+.nav-soc a{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
+  color:var(--navy);transition:background .2s,border-color .2s,transform .2s}
+.nav-soc a:hover{background:var(--blush);border-color:var(--line-2)}
+.nav-soc a:active{transform:scale(.94)}
+.nav-soc .ic{width:18px;height:18px}
+.nav-row{display:flex;align-items:center;gap:12px;min-height:46px;color:var(--ink-2);text-decoration:none;font-size:14.5px;transition:color .2s}
+.nav-row .ic{width:18px;height:18px;color:var(--tan-deep)}
+.nav-row:hover{color:var(--navy)}
+
+@media (hover:hover){
+  .hdr-ic:hover,.burger:hover,.nav-x:hover{background:var(--blush)}
+  .nav-t:hover{background:var(--blush)}
+  .nav-own:hover{box-shadow:0 8px 20px rgba(16,42,78,.12);transform:translateY(-1px)}
+}
+@media (max-width:420px){
+  .sm-hide{display:none}
+}
+@media (min-width:960px){
+  :root{--hdr-h:104px}
+  .hdr-in{height:68px;padding:0 24px 0 16px;gap:16px}
+  .hdr-logo img{height:24px}
+  .hdr.is-slim .hdr-in{height:56px}
+  .hdr.is-slim .hdr-logo img{height:20px}
+  .crumbs ol{padding:11px 28px;font-size:12.5px}
+  .nav-panel{width:400px}
+}
+:where(.hdr,.nav) :focus-visible{outline:2px solid var(--tan);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  .hdr,.hdr-in,.crumbs,.hdr-logo img,.burger-b i,.nav-t .ic{transition-duration:.01ms!important}
+}

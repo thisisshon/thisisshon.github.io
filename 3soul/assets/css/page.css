@@ -1,7 +1,6 @@
 /* ============================================================
    Recreation of the live PriceIt page.
-   Every value here is a measured value from the source page —
-   see tokens.css. .pg = as it is now. .pg.fixed = rebuilt.
+   Every value here is a measured value from the source page, see tokens.css. .pg = as it is now. .pg.fixed = rebuilt.
    Type stays at source size in .pg on purpose: the 8–12px text
    is one of the findings, so it has to be visible as it really is.
    ============================================================ */
@@ -216,7 +215,7 @@
 .pg-citylist span{font-size:8px;letter-spacing:.4px;color:rgba(255,255,255,.55);
   border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:4px 6px}
 
-/* video blocks — shown as they load on the live page */
+/* video blocks, shown as they load on the live page */
 .pg-vid{position:relative;height:150px;background:#0d0d0f;
   display:flex;align-items:center;justify-content:center;
   font-family:var(--s-ui);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#4d4d55}
@@ -225,7 +224,7 @@
   color:#6a6a72;border:1px solid #2a2a30;border-radius:3px;padding:4px 6px}
 
 /* ------------------------------------------------------------
-   Rebuilt page — accessibility corrections.
+   Rebuilt page, accessibility corrections.
    The tan and peach are 3Soul's own hues, darkened only as far
    as 4.5:1 requires. The brand still reads as the brand.
    ------------------------------------------------------------ */
@@ -259,7 +258,7 @@
 .pg.fixed .pg-vid{cursor:pointer}
 
 /* ============================================================
-   .pg.fixed — the rebuilt page.
+   .pg.fixed, the rebuilt page.
    Same markup, same tokens, corrected values only.
    ============================================================ */
 .pg.fixed{font-size:16px;line-height:26px;color:#2A3342}
@@ -322,7 +321,7 @@
 
 /* ============================================================
    The recreation responds to the FRAME, not the browser window,
-   via container queries — so dragging the desktop preview from
+   via container queries, so dragging the desktop preview from
    1240 to 1920 exercises real breakpoints, not a scaled image.
    ============================================================ */
 @container vp (min-width: 760px) {
@@ -380,7 +379,7 @@
 .pg.fixed .pg-wa{color:#06301F}
 
 /* ------------------------------------------------------------
-   Rebuilt page — legibility floor.
+   Rebuilt page, legibility floor.
    Running text no smaller than 14px; nothing at all below 11px.
    (The live page runs to 7px, with running text at 8.5px.)
    ------------------------------------------------------------ */
